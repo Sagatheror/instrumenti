@@ -1,36 +1,44 @@
+Поправь в этом коде
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Эксклюзивная Аналитика</title>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Font Awesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <!-- Стиль -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-/* Определяем переменные для светлой и тёмной темы */
+/* Переменные */
 :root {
   --font-family: 'Inter', sans-serif;
-  --border-radius: 15px;
-  --shadow: rgba(0, 0, 0, 0.05);
+  --border-radius: 16px;
+  --shadow: rgba(0, 0, 0, 0.2);
   --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
   --accent-gradient: linear-gradient(135deg, #89f7fe, #66a6ff);
   --background-gradient: linear-gradient(135deg, #f0f2f5, #d9e2ef);
   --text-color: #222;
   --bg-color: #fff;
-  --border-color: #ccc;
-  --hover-bg-color: #f4f4f4;
-  --label-color: #333;
+  --border-color: #ddd;
+  --hover-bg-color: #f9f9f9;
+  --label-color: #222;
   --chart-bg-color: #fafafa;
   --button-bg: linear-gradient(135deg, #667eea, #764ba2);
   --button-hover-bg: linear-gradient(135deg, #5a9, #4a8);
   --result-bg: linear-gradient(135deg, #e0f7fa, #b2ebf2);
-  --chart-text-color: #222; /* Цвет текста на светлой теме по умолчанию */
+  --chart-text-color: #222;
+  --font-size-base: 16px;
+  --changelog-header-color: #2c3e50; /* цвет версии */
+  --changelog-date-color: #7f8c8d;   /* цвет даты */
+  --changelog-type-bg: #3498db;      /* фон типа */
+  --changelog-entry-bg: #f9f9f9;     /* фон записи */
+  --changelog-entry-text: #333;      /* текст записи */
 }
 
-/* Тёмная тема переопределяет переменные */
+/* Тёмная тема */
 body.dark {
   --text-color: #eee;
   --bg-color: #2b2b2b;
@@ -40,9 +48,20 @@ body.dark {
   --chart-bg-color: #3a3a3a;
   --button-bg: linear-gradient(135deg, #444, #222);
   --result-bg: linear-gradient(135deg, #555, #333);
-  --chart-text-color: #eee; /* Текст графика в тёмной теме */
+  --chart-text-color: #eee;
+  --changelog-version-color: #2c3e50;
+  --changelog-date-color: #7f8c8d;
+  --changelog-type-bg: #3498db;
+  --changelog-entry-bg: #f9f9f9;
+  --changelog-entry-color: #333;
 }
-
+body.dark-theme {
+  --changelog-version-color: #ecf0f1;
+  --changelog-date-color: #bdc3c7;
+  --changelog-type-background: #2980b9;
+  --changelog-entry-background: #444;
+  --changelog-entry-color: #eee;
+}
 /* Общие стили */
 body {
   margin: 0;
@@ -55,40 +74,41 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* Стиль кнопки смены темы — более красивый */
+/* Кнопка смены темы */
 .theme-switch {
   position: fixed;
   top: 20px;
   right: 20px;
   background: linear-gradient(135deg, #667eea, #764ba2);
   border: none;
-  padding: 10px 20px;
-  border-radius: calc(var(--border-radius) / 2);
+  padding: 12px 20px;
+  border-radius: calc(var(--border-radius) * 1.2);
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1.4em;
   font-weight: 600;
   color: #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 15px var(--shadow);
+  transition: all 0.3s ease;
+}
+body.dark .theme-switch {
+  background: linear-gradient(135deg, #444, #222);
 }
 .theme-switch:hover {
-  background: linear-gradient(135deg, #5a9, #4a8);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow);
 }
 
 /* Основной контейнер */
 .container {
-  flex: 0;
-  max-width: 1400px;
-  margin: 0 auto 50px;
+  max-width: 1300px;
+  margin: 50px auto;
   padding: 30px;
   background: var(--bg-color);
-  border-radius: calc(var(--border-radius) * 2);
-  box-shadow: 0 20px 50px var(--shadow);
+  border-radius: calc(var(--border-radius));
+  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  gap: 50px;
-  overflow: hidden;
+  gap: 40px;
 }
 
 /* Верхняя панель */
@@ -96,109 +116,103 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-/* Загрузка файла */
+/* Загрузка файла + кнопка */
 .file-zone {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
+  gap: 12px;
 }
 .file-label {
-  background: var(--primary-gradient);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
-  padding: 14px 24px;
-  border-radius: calc(var(--border-radius) * 2);
+  padding: 15px 25px;
+  border-radius: calc(var(--border-radius));
   cursor: pointer;
-  font-size: 1.4em;
+  font-size: 1.3em;
   font-weight: 600;
-  box-shadow: 0 8px 20px var(--shadow);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px var(--shadow);
+  transition: all 0.2s ease;
 }
 .file-label:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 25px var(--shadow);
+  box-shadow: 0 6px 20px var(--shadow);
 }
 #csvFileInput {
   display: none;
 }
 #exportSOTBtn {
-  margin-left: 20px;
-  padding: 14px 20px;
+  margin-top: 12px;
+  padding: 15px 25px;
   font-size: 1.3em;
   border: none;
-  border-radius: calc(var(--border-radius) * 2);
-  background: var(--primary-gradient);
+  border-radius: calc(var(--border-radius));
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 4px 12px var(--shadow);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 #exportSOTBtn:hover {
- transform: translateY(-2px);
-  box-shadow: 0 12px 25px var(--shadow);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow);
 }
- /* Стиль для кнопки "Назад" */
-  .back-btn {
-    display: inline-block;
-    padding: 14px 20px;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #fff;
-    background-color: #ff5722; /* яркий цвет для выделения */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  .back-btn:hover {
-    background-color: #e64a19; /* чуть темнее при наведении */
-    transform: translateY(-2px);
-  }
+
 /* Настройки */
 .settings {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
-  flex: 2 1 700px;
+  gap: 20px;
   justify-content: center;
+  flex: 1;
 }
 .setting-box {
   background: var(--hover-bg-color);
-  padding: 20px 25px;
-  border-radius: calc(var(--border-radius) * 2);
-  box-shadow: 0 6px 15px var(--shadow);
+  padding: 20px;
+  border-radius: calc(var(--border-radius));
+  box-shadow: 0 4px 14px var(--shadow);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 200px;
-  transition: all 0.3s ease;
+  min-width: 220px;
+  transition: all 0.2s ease;
 }
 .setting-box:hover {
-  box-shadow: 0 10px 20px var(--shadow);
+  box-shadow: 0 6px 20px var(--shadow);
 }
 .setting-box label {
   font-weight: 600;
-  margin-bottom: 12px;
-  font-size: 1.3em;
+  margin-bottom: 10px;
+  font-size: 1.2em;
   color: var(--label-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .setting-box select {
   padding: 14px 20px;
-  border-radius: calc(var(--border-radius) * 2);
+  border-radius: calc(var(--border-radius));
   border: none;
   background: #fff;
-  font-size: 1.3em;
+  font-size: 1.2em;
   min-width: 150px;
-  box-shadow: 0 4px 12px var(--shadow);
+  box-shadow: 0 2px 8px var(--shadow);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .setting-box select:hover {
-  box-shadow: 0 6px 18px var(--shadow);
+  box-shadow: 0 4px 12px var(--shadow);
+  outline: none;
 }
 
 /* График и результаты */
@@ -206,43 +220,47 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 20px;
+  width: 100%;
 }
 #chartTitle {
-  font-size: 2.5em;
+  font-size: 2em;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: var(--label-color);
   text-align: center;
 }
 #chartContainer {
+  height: 500px;
   width: 100%;
-  max-width: 1500px;
   background: var(--chart-bg-color);
-  padding: 40px;
-  border-radius: calc(var(--border-radius) * 2);
-  box-shadow: inset 0 10px 20px rgba(0,0,0,0.02);
-  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: calc(var(--border-radius));
+  box-shadow: inset 0 8px 16px rgba(0,0,0,0.05);
   transition: background 0.3s;
 }
-
+.buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
 .btn {
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
-  padding: 16px 35px;
-  font-size: 1.4em;
+  padding: 12px 24px;
+  font-size: 1.2em;
   border: none;
-  border-radius: calc(var(--border-radius) * 2);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  border-radius: calc(var(--border-radius));
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   cursor: pointer;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-}
-.btn:active {
-  transform: translateY(0);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 /* Итоговая зона */
@@ -250,23 +268,22 @@ body {
   margin-top: 40px;
   padding: 30px;
   background: var(--result-bg);
-  border-radius: calc(var(--border-radius) * 2);
+  border-radius: calc(var(--border-radius));
   font-size: 1.8em;
   font-weight: 600;
   color: var(--label-color);
-  text-align: center;
   max-width: 800px;
   width: 90%;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  transition: background 0.3s, color 0.3s;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 #averageResult:hover {
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* Модальное окно для сайта (iframe) */
+/* Модальное окно */
 #sotModal {
   display: none; 
   position: fixed; 
@@ -278,16 +295,22 @@ body {
   justify-content: center; 
   align-items: center; 
   z-index: 9999;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+#sotModal.show {
+  display: flex;
+  opacity: 1;
 }
 #sotModal > div {
   background: #fff; 
-  padding: 20px; 
-  border-radius: 10px; 
-  max-width: 90%; 
-  width: 80%; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: stretch;
+  padding: 20px;
+  max-width: 90%;
+  width: 80%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 #sotIframe {
   width: 100%; 
@@ -296,62 +319,178 @@ body {
   border-radius: 10px;
 }
 #closeSOTModal {
-  margin-top: 10px;
+  align-self: center;
   padding: 10px 20px;
   font-size: 1.2em;
   border: none;
-  border-radius: calc(var(--border-radius) * 2);
+  border-radius: calc(var(--border-radius));
   background: #555;
   color: #fff;
   cursor: pointer;
-  align-self: center;
+  transition: background 0.2s;
 }
 #closeSOTModal:hover {
   background: #333;
 }
+
+/* Анимация появления модалки */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.changelog-version {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--changelog-header-color);
+}
+.changelog-date {
+  font-size: 13px;
+  color: var(--changelog-date-color);
+}
+.changelog-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background-color: var(--changelog-type-bg);
+}
+
+/* Фон для записи */
+.changelog-entry {
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  background-color: var(--changelog-entry-bg);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  transition: background 0.2s, transform 0.2s;
+}
+/* Расположение блока слева с красивым стилем */
+#changelogContainer {
+  display: none; /* по умолчанию скрыт */
+  position: fixed; top: 70px; left: 20px; /* слева */
+  width: 420px;
+  max-height: 500px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  z-index: 9999;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #333;
+  transition: opacity 0.3s, transform 0.3s;
+}
+#changelogContainer.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+#changelogContainer h4 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+  color: #222;
+}
+
+/* Стиль для каждой записи */
+.changelog-entry {
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  transition: background 0.2s, transform 0.2s;
+}
+.changelog-entry:hover {
+  background-color: #f1f1f1;
+  transform: translateY(-2px);
+}
+
+/* Заголовки внутри записи */
+.changelog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.changelog-version {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
+}
+.changelog-date {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+.changelog-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #3498db;
+}
+/* Цвет для типов */
+.changelog-type.Добавлено { background-color: #27ae60; }
+.changelog-type.Исправлено { background-color: #f39c12; }
+.changelog-type.Общее { background-color: #8e44ad; }
 </style>
 </head>
 <body>
-<div style="margin-bottom:20px;">
-  <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
-</div>
 
 <!-- Переключатель темы -->
-<button class="theme-switch" id="themeToggle">🌙 Тёмная тема</button>
+<button class="theme-switch" id="themeToggle"><i class="fas fa-moon"></i></button>
 
 <div class="container">
-
+<!-- Блок changelog -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
+  <button id="changelogToggle" style="padding:15px 20px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
+    Changelog
+  </button>
+</div>
+<div id="changelogContainer">
+  <h4 style="margin-top:0;">История изменений</h4>
+  <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
+  <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
+</div>
   <!-- Верхняя панель -->
   <div class="top-panel">
     <!-- Загрузка файла -->
     <div class="file-zone">
-            <!-- Новая кнопка -->
-      <label class="file-label" id="exportSOTBtn">Выгрузить кол-во СОТ</label>
+      <label class="file-label" id="exportSOTBtn">
+        <i class="fas fa-file-export"></i> Выгрузить СОТ
+      </label>
       <label class="file-label" for="csvFileInput">
-        📁 Выберите CSV
+        <i class="fas fa-upload"></i> Выберите CSV
       </label>
       <input type="file" id="csvFileInput" accept=".csv" />
-
     </div>
     <!-- Настройки -->
     <div class="settings">
       <div class="setting-box">
-        <label for="blockSelect">Блок</label>
+        <label for="blockSelect"><i class="fas fa-puzzle-piece"></i> Блок</label>
         <select id="blockSelect"></select>
       </div>
       <div class="setting-box">
-        <label for="toolSelect">Инструмент</label>
+        <label for="toolSelect"><i class="fas fa-wrench"></i> Инструмент</label>
         <select id="toolSelect"></select>
       </div>
       <div class="setting-box">
-        <label for="modeSelect">Режим</label>
+        <label for="modeSelect"><i class="fas fa-cog"></i> Режим</label>
         <select id="modeSelect">
           <option value="all">Общий</option>
           <option value="individual">По сотруднику</option>
         </select>
       </div>
       <div class="setting-box" id="employeeBox" style="display:none;">
-        <label for="employeeSelect">Сотрудник</label>
+        <label for="employeeSelect"><i class="fas fa-user"></i> Сотрудник</label>
         <select id="employeeSelect"></select>
       </div>
     </div>
@@ -359,25 +498,24 @@ body {
 
   <!-- График и итог -->
   <div class="chart-section">
-    <div id="chartTitle">Загрузите файл и выберите параметры</div>
+    <div id="chartTitle"><i class="fas fa-search"></i> Загрузите файл и выберите параметры</div>
     <div id="chartContainer">
       <canvas id="myChart"></canvas>
     </div>
     <div class="buttons">
-      <button class="btn" id="refreshBtn">Обновить</button>
-      <button class="btn" id="topBtn">ТОП</button>
+      <button class="btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Обновить</button>
+      <button class="btn" id="topBtn"><i class="fas fa-star"></i> ТОП</button>
     </div>
     <div id="averageResult"></div>
   </div>
 
 </div>
 
-<!-- Модальное окно для сайта -->
+<!-- Модальное окно -->
 <div id="sotModal">
   <div>
-    <h3>Вставьте ссылку</h3>
     <iframe id="sotIframe" src="https://s-o-t.ru/netcat/?catalogue=1&sub=1891833"></iframe>
-    <button class="btn" id="closeSOTModal">Закрыть</button>
+    <button class="btn" id="closeSOTModal"><i class="fas fa-times"></i> Закрыть</button>
   </div>
 </div>
 
@@ -400,253 +538,246 @@ let darkMode = false;
 themeBtn.onclick = () => {
   darkMode = !darkMode;
   document.body.classList.toggle('dark');
-  themeBtn.textContent = darkMode ? '☀️ Светлая тема' : '🌙 Тёмная тема';
-  updateChart(); // Обновляем стиль графика
+  document.body.classList.toggle('dark-theme', themeToggle.checked);
+  themeBtn.innerHTML = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+  // Меняем переменную --background-gradient
+  if (darkMode) {
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #111, #222)'
+    );
+  } else {
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #f0f2f5, #d9e2ef)'
+    );
+  }
+
+  updateChart();
 };
 
-// Обработка выбора файла
-document.getElementById('csvFileInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        processCSV(e.target.result);
-        document.getElementById('chartTitle').textContent = 'Данные загружены. Выберите параметры.';
-        document.getElementById('averageResult').innerHTML = '';
-        document.getElementById('modeSelect').value = 'all';
-        toggleEmployeeSelection();
-        updateChart();
-    };
-    reader.readAsText(file);
+// Обработка файла
+document.getElementById('csvFileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    processCSV(e.target.result);
+    document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
+    document.getElementById('averageResult').innerHTML = '';
+    document.getElementById('modeSelect').value = 'all';
+    toggleEmployeeSelection();
+    updateChart();
+  };
+  reader.readAsText(file);
 });
 
 // Парсинг даты
-function parseDate(dateStr) {
-    const parts = dateStr.trim().split('.');
-    if (parts.length !== 3) return null;
-    let day = parts[0], month = parts[1], year = parts[2];
-    if (year.length === 2) year = '20' + year;
-    return `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+function parseDate(str) {
+  const parts = str.trim().split('.');
+  if (parts.length !== 3) return null;
+  let [d, m, y] = parts;
+  if (y.length === 2) y = '20' + y;
+  return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
 }
 
 // Обработка CSV
-function processCSV(csvText) {
-    dataBlocks = {
-        SOT: { labels: [], data: {} },
-        PMK: { labels: [], data: {} },
-        TORUDA: { labels: [], data: {} }
-    };
-    const lines = csvText.trim().split(/\r?\n/);
-    let pmkIdx = lines.findIndex(line => line.includes("PMK"));
-    let torIdx = lines.findIndex(line => line.includes("TORUDA"));
+function processCSV(text) {
+  dataBlocks = {
+    SOT: { labels: [], data: {} },
+    PMK: { labels: [], data: {} },
+    TORUDA: { labels: [], data: {} }
+  };
+  const lines = text.trim().split(/\r?\n/);
+  const pmkIdx = lines.findIndex(l => l.includes("PMK"));
+  const torIdx = lines.findIndex(l => l.includes("TORUDA"));
 
-    const SOTLines = lines.slice(0, pmkIdx);
-    const PMKLines = lines.slice(pmkIdx, torIdx);
-    const TORUDALines = lines.slice(torIdx);
+  const SOTLines = lines.slice(0, pmkIdx);
+  const PMKLines = lines.slice(pmkIdx, torIdx);
+  const TORUDALines = lines.slice(torIdx);
 
-    ['SOT', 'PMK', 'TORUDA'].forEach(block => {
-        let blockLines = [];
-        if (block === 'SOT') blockLines = SOTLines;
-        else if (block === 'PMK') blockLines = PMKLines;
-        else if (block === 'TORUDA') blockLines = TORUDALines;
+  ['SOT', 'PMK', 'TORUDA'].forEach(block => {
+    let blockLines;
+    if (block === 'SOT') blockLines = SOTLines;
+    else if (block === 'PMK') blockLines = PMKLines;
+    else blockLines = TORUDALines;
 
-        const parsedData = {};
-        const datesSet = new Set();
+    const parsedData = {};
+    const dateSet = new Set();
 
-        // парсим строки
-        blockLines.forEach(line => {
-            const cols = line.split(';').map(c => c.trim());
-            if (cols.length < 7) return;
-            const person = cols[0];
-            const tool = cols[1];
-            const dateStr = cols[6];
-            const dateLabel = parseDate(dateStr);
-            if (!dateLabel) return;
-            datesSet.add(dateLabel);
-
-            const values = [];
-            for (let i=2; i<=5; i++) {
-                const v = parseFloat(cols[i].replace(',', '.')) || 0;
-                values.push(v);
-            }
-            const totalValue = values.reduce((a,b)=>a+b,0);
-
-            if (!parsedData[tool]) parsedData[tool] = {};
-            if (!parsedData[tool][person]) parsedData[tool][person] = {};
-            if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
-            parsedData[tool][person][dateLabel] += totalValue;
-        });
-
-        const labelsArray = Array.from(datesSet).sort((a,b)=> new Date(a) - new Date(b));
-        const dataPerTool = {};
-        for (const tool in parsedData) {
-            dataPerTool[tool] = {};
-            for (const person in parsedData[tool]) {
-                dataPerTool[tool][person] = Array(labelsArray.length).fill(0);
-                labelsArray.forEach((date, idx) => {
-                    if (parsedData[tool][person][date] !== undefined) {
-                        dataPerTool[tool][person][idx] = parsedData[tool][person][date];
-                    }
-                });
-            }
-        }
-        dataBlocks[block].labels = labelsArray;
-        dataBlocks[block].data = dataPerTool;
-    });
-    updateBlockOptions();
-    const firstBlock = Object.keys(dataBlocks)[0];
-    if (firstBlock) {
-        selectBlock(firstBlock);
-        toggleEmployeeSelection();
-        updateChart();
+    for (const line of blockLines) {
+      const cols = line.split(';').map(c => c.trim());
+      if (cols.length < 7) continue;
+      const [person, tool, , , , , dateStr] = cols;
+      const dateLabel = parseDate(dateStr);
+      if (!dateLabel) continue;
+      dateSet.add(dateLabel);
+      const values = [];
+      for (let i = 2; i <= 5; i++) {
+        const v = parseFloat(cols[i].replace(',', '.')) || 0;
+        values.push(v);
+      }
+      const total = values.reduce((a, b) => a + b, 0);
+      if (!parsedData[tool]) parsedData[tool] = {};
+      if (!parsedData[tool][person]) parsedData[tool][person] = {};
+      if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
+      parsedData[tool][person][dateLabel] += total;
     }
+    const labelsArr = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+    const dataPerTool = {};
+    for (const t in parsedData) {
+      dataPerTool[t] = {};
+      for (const p in parsedData[t]) {
+        dataPerTool[t][p] = Array(labelsArr.length).fill(0);
+        labelsArr.forEach((d, i) => {
+          if (parsedData[t][p][d] !== undefined) {
+            dataPerTool[t][p][i] = parsedData[t][p][d];
+          }
+        });
+      }
+    }
+    dataBlocks[block].labels = labelsArr;
+    dataBlocks[block].data = dataPerTool;
+  });
+  updateBlockOptions();
+  const firstBlock = Object.keys(dataBlocks)[0];
+  if (firstBlock) {
+    selectBlock(firstBlock);
+    toggleEmployeeSelection();
+    updateChart();
+  }
 }
 
 // Обновление вариантов выбора блока
 function updateBlockOptions() {
-    const select = document.getElementById('blockSelect');
-    select.innerHTML = '';
-    for (const block in dataBlocks) {
-        const option = document.createElement('option');
-        option.value = block;
-        option.textContent = block;
-        select.appendChild(option);
-    }
-    select.onchange = () => {
-        selectBlock(select.value);
-        toggleEmployeeSelection();
-        updateChart();
-    };
+  const select = document.getElementById('blockSelect');
+  select.innerHTML = '';
+  for (const b in dataBlocks) {
+    const option = document.createElement('option');
+    option.value = b;
+    option.textContent = b;
+    select.appendChild(option);
+  }
+  select.onchange = () => {
+    selectBlock(select.value);
+    toggleEmployeeSelection();
+    updateChart();
+  };
 }
 
 // Выбор блока
-function selectBlock(blockName) {
-    currentBlock = blockName;
-    const blockData = dataBlocks[blockName];
-    const tools = Object.keys(blockData.data);
-    const selectTool = document.getElementById('toolSelect');
-    const selectEmployee = document.getElementById('employeeSelect');
+function selectBlock(name) {
+  currentBlock = name;
+  const blockData = dataBlocks[name];
+  const tools = Object.keys(blockData.data);
+  const selectTool = document.getElementById('toolSelect');
+  const selectEmp = document.getElementById('employeeSelect');
 
-    selectTool.innerHTML = '';
-    selectEmployee.innerHTML = '';
+  selectTool.innerHTML = '';
+  selectEmp.innerHTML = '';
 
-    // Заполняем инструменты
-    tools.forEach(tool => {
-        const option = document.createElement('option');
-        option.value = tool;
-        option.textContent = tool;
-        selectTool.appendChild(option);
-    });
+  tools.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    selectTool.appendChild(opt);
+  });
 
-    // Собираем сотрудников
-    const employeesSet = new Set();
-    tools.forEach(tool => {
-        Object.keys(blockData.data[tool]).forEach(emp => employeesSet.add(emp));
-    });
-    const employeesArr = Array.from(employeesSet).sort();
+  // собираем сотрудников
+  const employees = new Set();
+  tools.forEach(t => {
+    Object.keys(blockData.data[t] || {}).forEach(e => employees.add(e));
+  });
+  const empArr = Array.from(employees).sort();
 
-    // Заполняем сотрудников
-    employeesArr.forEach(emp => {
-        const option = document.createElement('option');
-        option.value = emp;
-        option.textContent = emp;
-        selectEmployee.appendChild(option);
-    });
+  empArr.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e;
+    opt.textContent = e;
+    selectEmp.appendChild(opt);
+  });
 
-    // Обработчики
-    document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
-    document.getElementById('toolSelect').onchange = () => {
-      currentTool = document.getElementById('toolSelect').value;
-      updateChart();
-    };
-    document.getElementById('employeeSelect').onchange = () => {
-      currentEmployee = document.getElementById('employeeSelect').value;
-      updateChart();
-    };
+  document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
+  document.getElementById('toolSelect').onchange = () => {
+    currentTool = document.getElementById('toolSelect').value;
+    updateChart();
+  };
+  document.getElementById('employeeSelect').onchange = () => {
+    currentEmployee = document.getElementById('employeeSelect').value;
+    updateChart();
+  };
 
-    // Устанавливаем режим "Общий" по умолчанию
-    document.getElementById('modeSelect').value = 'all';
-    toggleEmployeeSelection();
+  document.getElementById('modeSelect').value = 'all';
+  toggleEmployeeSelection();
 
-    // Выбираем первый инструмент и сотрудника
-    if (tools.length > 0) {
-        currentTool = tools[0];
-        currentEmployee = employeesArr[0];
-        document.getElementById('toolSelect').value = currentTool;
-        document.getElementById('employeeSelect').value = currentEmployee;
-        updateChart();
-        document.getElementById('chartTitle').textContent = `Блок: ${currentBlock} | Инструмент: ${currentTool}`;
-    } else {
-        if (chartInstance) chartInstance.destroy();
-    }
+  if (tools.length > 0) {
+    currentTool = tools[0];
+    currentEmployee = empArr[0];
+    document.getElementById('toolSelect').value = currentTool;
+    document.getElementById('employeeSelect').value = currentEmployee;
+    updateChart();
+    document.getElementById('chartTitle').innerHTML = '<i class="fas fa-layer-group"></i> ' + name + ' | ' + currentTool;
+  } else {
+    if (chartInstance) chartInstance.destroy();
+  }
 }
 
-// Переключение режима отображения
+// Переключение режима
 function toggleEmployeeSelection() {
   const mode = document.getElementById('modeSelect').value;
-  const empBox = document.getElementById('employeeBox');
-  if (mode === 'individual') {
-    empBox.style.display = 'flex';
-  } else {
-    empBox.style.display = 'none';
-  }
+  document.getElementById('employeeBox').style.display = (mode === 'individual') ? 'flex' : 'none';
   updateChart();
 }
 
-// Функция получения цвета текста для графика
+// Получение цвета графика
 function getChartTextColor() {
   return darkMode ? '#fff' : '#000';
 }
 
 // Обновление графика
 function updateChart() {
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+  if (chartInstance) chartInstance.destroy();
 
   const ctx = document.getElementById('myChart').getContext('2d');
-
-  // Получаем текущие выбранные параметры
   const mode = document.getElementById('modeSelect').value;
-  const selectedTool = document.getElementById('toolSelect').value;
-  const selectedEmployee = document.getElementById('employeeSelect').value;
-
+  const tool = document.getElementById('toolSelect').value;
+  const employee = document.getElementById('employeeSelect').value;
   const blockData = dataBlocks[currentBlock];
   if (!blockData) return;
   const labels = blockData.labels;
-
   const textColor = getChartTextColor();
 
   currentLabels = labels;
 
-  if (!blockData.data[selectedTool]) {
+  if (!blockData.data[tool]) {
     if (chartInstance) chartInstance.destroy();
     return;
   }
 
   if (mode === 'all') {
-    const persons = Object.keys(blockData.data[selectedTool] || {});
-    currentDatasets = persons.map((person, index) => ({
-      label: person,
-      data: blockData.data[selectedTool][person],
-      borderColor: getColor(index),
-      backgroundColor: getColor(index, 0.4),
+    const persons = Object.keys(blockData.data[tool] || {});
+    currentDatasets = persons.map((p, i) => ({
+      label: p,
+      data: blockData.data[tool][p],
+      borderColor: getColor(i),
+      backgroundColor: getColor(i, 0.2),
       borderWidth: 2,
-      tension: 0.3,
-      fill: false,
-      pointBackgroundColor: getColor(index),
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: getColor(i),
       pointBorderColor: '#fff'
     }));
   } else {
-    if (selectedEmployee && blockData.data[selectedTool][selectedEmployee]) {
+    if (employee && blockData.data[tool][employee]) {
       currentDatasets = [{
-        label: selectedEmployee,
-        data: blockData.data[selectedTool][selectedEmployee],
+        label: employee,
+        data: blockData.data[tool][employee],
         borderColor: getColor(0),
-        backgroundColor: getColor(0, 0.4),
+        backgroundColor: getColor(0, 0.2),
         borderWidth: 3,
-        tension: 0.3,
-        fill: false,
+        tension: 0.4,
+        fill: true,
         pointBackgroundColor: getColor(0),
         pointBorderColor: '#fff'
       }];
@@ -658,42 +789,86 @@ function updateChart() {
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: currentLabels,
+      labels,
       datasets: currentDatasets
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
+          display: true,
+          position: 'top',
           labels: {
             color: textColor,
-            font: { size: 14, weight: '600' }
+            font: { size: 14, weight: '600' },
+            boxWidth: 20,
+            boxHeight: 20,
+            padding: 15,
+            useBorderRadius: true,
+            borderRadius: 4
           }
         },
         tooltip: {
-          backgroundColor: 'rgba(0,0,0,0.7)',
+          backgroundColor: 'rgba(0,0,0,0.8)',
           titleColor: '#fff',
-          bodyColor: '#fff'
+          bodyColor: '#fff',
+          borderColor: '#ccc',
+          borderWidth: 1,
+          padding: 10,
+          caretSize: 8,
+          cornerRadius: 4
         }
       },
       scales: {
         x: {
-          ticks: { color: textColor },
-          title: { display: true, text: 'Даты', color: textColor },
-          grid: { color: getGridColor() }
+          ticks: {
+            color: textColor,
+            font: { size: 14, weight: '600' }
+          },
+          grid: {
+            color: getGridColor(),
+            drawBorder: false,
+            tickBorderColor: 'transparent'
+          },
+          title: {
+            display: true,
+            text: '📅 Даты',
+            color: textColor,
+            font: { size: 14, weight: '600' }
+          }
         },
         y: {
-          ticks: { color: textColor },
-          title: { display: true, text: 'Значение', color: textColor },
-          grid: { color: getGridColor() }
+          ticks: {
+            color: textColor,
+            font: { size: 14, weight: '600' },
+            beginAtZero: true
+          },
+          grid: {
+            color: getGridColor(),
+            drawBorder: false
+          },
+          title: {
+            display: true,
+            text: 'Значение',
+            color: textColor,
+            font: { size: 14, weight: '600' }
+          }
+        }
+      },
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 20,
+          left: 20,
+          right: 20
         }
       }
     }
   });
 }
 
-// Вспомогательная функция для получения цвета линий
-function getColor(index, alpha=1) {
+function getColor(idx, alpha=1) {
   const palette = [
     `rgba(255, 99, 132, ${alpha})`,
     `rgba(54, 162, 235, ${alpha})`,
@@ -706,61 +881,148 @@ function getColor(index, alpha=1) {
     `rgba(0, 191, 255, ${alpha})`,
     `rgba(255, 215, 0, ${alpha})`
   ];
-  return palette[index % palette.length];
+  return palette[idx % palette.length];
 }
 
-// Цвет линий сетки
 function getGridColor() {
   return getComputedStyle(document.body).getPropertyValue('--chart-text-color').trim();
 }
 
-// Обработчики кнопок
-document.getElementById('refreshBtn').addEventListener('click', () => {
-  updateChart();
-});
+// Обработчики
+document.getElementById('refreshBtn').addEventListener('click', () => { updateChart(); });
 document.getElementById('topBtn').addEventListener('click', showTopEmployees);
-
-// Обработчик для кнопки "Выгрузить кол-во СОТ"
 document.getElementById('exportSOTBtn').onclick = () => {
-  document.getElementById('sotModal').style.display = 'flex';
+  document.getElementById('sotModal').classList.add('show');
 };
-
-// Обработчик для закрытия модального окна
 document.getElementById('closeSOTModal').onclick = () => {
-  document.getElementById('sotModal').style.display = 'none';
+  document.getElementById('sotModal').classList.remove('show');
 };
-// Клик вне окна
-document.getElementById('sotModal').onclick = (e) => {
+document.getElementById('sotModal').onclick = e => {
   if (e.target === document.getElementById('sotModal')) {
-    document.getElementById('sotModal').style.display = 'none';
+    document.getElementById('sotModal').classList.remove('show');
   }
 };
 
-// Функция для вывода ТОП сотрудников
+// ТОП сотрудников
 function showTopEmployees() {
   if (!dataBlocks[currentBlock]) return;
   const blockData = dataBlocks[currentBlock];
-  const currentToolSelected = document.getElementById('toolSelect').value;
+  const tool = document.getElementById('toolSelect').value;
   const mode = document.getElementById('modeSelect').value;
 
-  const employeeSums = {};
-  for (const employee in blockData.data[currentToolSelected]) {
-    employeeSums[employee] = blockData.data[currentToolSelected][employee].reduce((a, b) => a + b, 0);
+  const sums = {};
+  for (const emp in blockData.data[tool]) {
+    sums[emp] = blockData.data[tool][emp].reduce((a, b) => a + b, 0);
   }
 
-  const sortedEmployees = Object.entries(employeeSums)
-    .sort((a, b) => b[1] - a[1]);
-
-  const top3 = sortedEmployees.slice(0, 3);
+  const sorted = Object.entries(sums).sort((a, b) => b[1] - a[1]);
+  const top3 = sorted.slice(0, 3);
   const icons = ['🥇','🥈','🥉'];
-  let html = `<h3>ТОП сотрудников по инструменту: ${currentToolSelected}</h3><ol style="list-style:none; padding-left:0;">`;
-  top3.forEach((item, index) => {
-    html += `<li style="margin:8px 0; font-size:1.4em;">${icons[index]} <strong>${item[0]}</strong> — ${item[1].toFixed(2)}</li>`;
+  let html = `<h3>🏆 ТОП сотрудников по инструменту: ${tool}</h3><ol style="list-style:none; padding-left:0;">`;
+  top3.forEach((item, i) => {
+    html += `<li style="margin:8px 0; font-size:1.4em;">${icons[i]} <strong>${item[0]}</strong> — ${item[1].toFixed(2)}</li>`;
   });
   html += '</ol>';
-
   document.getElementById('averageResult').innerHTML = html;
 }
+
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
+
+// Обновленная часть loadChangelogFromSheet
+function loadChangelogFromSheet() {
+  fetch(sheetUrl)
+    .then(response => response.text())
+    .then(text => {
+      const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+      const rows = jsonData.table.rows;
+      let entriesHtml = '';
+
+      function formatDateToDDMMYY(dateStr) {
+  // Проверяем, есть ли строка вида Date(...)
+  const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+  if (dateMatch) {
+    let year = parseInt(dateMatch[1], 10);
+    let month = parseInt(dateMatch[2], 10); // нумерация с 0
+    let day = parseInt(dateMatch[3], 10);
+
+    // Месяц +1, чтобы получить правильный календарный месяц
+    month += 1;
+
+    // Форматируем
+    const dd = day.toString().padStart(2, '0');
+    const mm = month.toString().padStart(2, '0');
+    const yy = (year % 100).toString().padStart(2, '0');
+
+    return `${dd}.${mm}.${yy}`;
+  }
+  // Если строка не соответствует формату, возвращаем исходную
+  return dateStr;
+}
+
+      rows.forEach(row => {
+        const version = row.c[0].v;
+        const rawDate = row.c[1].v; // исходная дата
+        const date = formatDateToDDMMYY(rawDate); // преобразуем в дд.мм.гг
+        console.log('Исходная дата:', rawDate, 'Преобразованная:', date); // добавьте для проверки
+        const type = row.c[2].v.trim();
+        let description = row.c[3].v;
+
+        // обработка описания
+        description = description.replace(/^•\s?/gm, '<li>•</li>');
+
+        const descriptionHtml = description
+          .split('\n')
+          .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
+          .join('');
+
+        entriesHtml += `
+          <div class="changelog-entry">
+            <div class="changelog-header">
+              <div>
+                <span class="changelog-version">Версия ${version}</span>
+                <span class="changelog-date">[${date}]</span>
+              </div>
+              <div class="changelog-type ${type}">${type}</div>
+            </div>
+            <ul style="margin:0; padding-left:20px;">${descriptionHtml}</ul>
+          </div>`;
+      });
+
+      const container = document.getElementById('changelogContainer');
+      container.innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
+    })
+    .catch(() => {
+      document.getElementById('changelogContainer').innerHTML = 'Не удалось загрузить историю изменений.';
+    });
+}
+
+// Вариант 1: при загрузке страницы сразу загружаем историю
+window.addEventListener('load', () => {
+  loadChangelogFromSheet();
+  // также инициализация темы и сохранение из localStorage
+  const savedChangelog = localStorage.getItem('changelog') || '';
+  document.getElementById('changelogText').value = savedChangelog;
+});
+
+// Обработчик для кнопки "Changelog"
+const changelogBtn = document.getElementById('changelogToggle');
+const changelogContainer = document.getElementById('changelogContainer');
+
+changelogBtn.addEventListener('click', () => {
+  if (changelogContainer.classList.contains('show')) {
+    changelogContainer.classList.remove('show');
+  } else {
+    // Загружаем историю, если еще не загружали, или обновляем
+    loadChangelogFromSheet();
+    changelogContainer.classList.add('show');
+  }
+});
+
+// Инициализация при загрузке
+window.addEventListener('load', () => {
+  const savedChangelog = localStorage.getItem('changelog') || '';
+  document.getElementById('changelogText').value = savedChangelog;
+});
 </script>
 
 </body>
