@@ -42,7 +42,27 @@
     --btn-bg: #66bb6a;
     --btn-hover-bg: #5fa362;
   }
+  #footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  color: var(--text-color);
+  padding: 12px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  cursor: default;
+}
 
+#footer span {
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
   h2 {
     text-align: center;
     font-size: 40px;
@@ -364,6 +384,12 @@ body.dark-theme td:hover {
 </style>
 </head>
 <body>
+  <!-- Новый футер -->
+<div id="footer">
+  <span>Создатель сайта: EmPsOn &copy; 2025</span>
+</div>
+<!-- Уведомление -->
+<div id="notification"></div>
 <div style="margin-bottom:20px;">
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
@@ -384,9 +410,6 @@ body.dark-theme td:hover {
   <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
   <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
 </div>
-
-<!-- Уведомление -->
-<div id="notification"></div>
 
 <!-- Выбор колонки для работы -->
 <div class="section">
@@ -812,4 +835,5 @@ window.addEventListener('load', () => {
 });
 </script>
 </body>
+
 </html>
