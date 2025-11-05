@@ -55,7 +55,7 @@ body.dark {
   --changelog-entry-color: #333;
 }
 body.dark-theme {
-  --changelog-version-color: #ecf0f1;
+  --changelog-version-color: #fff;
   --changelog-date-color: #bdc3c7;
   --changelog-type-background: #2980b9;
   --changelog-entry-background: #444;
@@ -390,14 +390,14 @@ body.dark .theme-switch {
   width: 420px;
   max-height: 500px;
   overflow-y: auto;
-  background: #fff;
+  background: var(--chart-bg-color);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
   z-index: 9999;
   font-family: 'Montserrat', sans-serif;
   font-size: 14px;
-  color: #333;
+  color: var(--text-color);
   transition: opacity 0.3s, transform 0.3s;
 }
 #changelogContainer.show {
@@ -412,20 +412,20 @@ body.dark .theme-switch {
   font-weight: 600;
   border-bottom: 2px solid #ddd;
   padding-bottom: 8px;
-  color: #222;
+  color: var(--text-color);
 }
 
 /* Стиль для каждой записи */
 .changelog-entry {
   margin-bottom: 10px;
   padding: 12px 15px;
-  background-color: #f9f9f9;
+  background-color: var(--bg-color);
   border-radius: 8px;
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
   transition: background 0.2s, transform 0.2s;
 }
 .changelog-entry:hover {
-  background-color: #f1f1f1;
+  background-color: var(--hover-bg-color);
   transform: translateY(-2px);
 }
 
@@ -439,11 +439,11 @@ body.dark .theme-switch {
 .changelog-version {
   font-weight: 600;
   font-size: 15px;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 .changelog-date {
   font-size: 13px;
-  color: #7f8c8d;
+  color: var(--text-color);
 }
 .changelog-type {
   display: inline-block;
@@ -1046,4 +1046,5 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
 
