@@ -42,7 +42,7 @@
     border-radius: 30px;
     background: linear-gradient(135deg, #ffffff33, #ffffff22);
     color: #fff;
-    backdrop-filter: blur(25px);
+    backdrop-filter: blur(5px);
     box-shadow: 0 0 40px rgba(255,255,255,0.5), inset 0 0 20px rgba(255,255,255,0.3);
     transition: all 0.6s ease;
     font-weight: bold;
@@ -53,115 +53,141 @@
     box-shadow: 0 0 70px rgba(255,255,255,0.8), inset 0 0 30px rgba(255,255,255,0.4);
     transform: scale(1.15) rotate(1deg);
   }
- .changelog-version {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--changelog-header-color);
-}
-.changelog-date {
-  font-size: 13px;
-  color: var(--changelog-date-color);
-}
-.changelog-type {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background-color: var(--changelog-type-bg);
-}
+  .changelog-version {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--changelog-header-color);
+  }
+  .changelog-date {
+    font-size: 13px;
+    color: var(--changelog-date-color);
+  }
+  .changelog-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--changelog-type-bg);
+  }
 
-/* Фон для записи */
-.changelog-entry {
-  margin-bottom: 10px;
-  padding: 12px 15px;
-  background-color: var(--changelog-entry-bg);
-  border-radius: 8px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  transition: background 0.2s, transform 0.2s;
-}
-/* Расположение блока слева с красивым стилем */
-#changelogContainer {
-  display: none; /* по умолчанию скрыт */
-  position: fixed; top: 70px; left: 20px; /* слева */
-  width: 420px;
-  max-height: 500px;
-  overflow-y: auto;
-  background: var(--chart-bg-color);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  z-index: 9999;
-  font-family: 'Montserrat', sans-serif;
+  /* Фон для записи */
+  .changelog-entry {
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    background-color: var(--changelog-entry-bg);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    transition: background 0.2s, transform 0.2s;
+  }
+  /* Расположение блока слева с красивым стилем */
+  #changelogContainer {
+    display: none; /* по умолчанию скрыт */
+    position: fixed; top: 70px; left: 20px; /* слева */
+    width: 420px;
+    max-height: 500px;
+    overflow-y: auto;
+    background: var(--chart-bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #eee;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  #changelogContainer.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #changelogContainer h4 {
+    margin-top: 0;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 8px;
+    color: #eee;
+  }
+
+  /* Стиль для каждой записи */
+  .changelog-entry {
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .changelog-entry:hover {
+    background-color: var(--hover-bg-color);
+    transform: translateY(-2px);
+  }
+
+  /* Заголовки внутри записи */
+  .changelog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .changelog-version {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-color);
+  }
+  .changelog-date {
+    font-size: 13px;
+    color: var(--text-color);
+  }
+  .changelog-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #3498db;
+  }
+  /* Цвет для типов */
+  .changelog-type.Добавлено { background-color: #27ae60; }
+  .changelog-type.Исправлено { background-color: #f39c12; }
+  .changelog-type.Общее { background-color: #8e44ad; }
+
+#footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
   font-size: 14px;
-  color: #eee;
-  transition: opacity 0.3s, transform 0.3s;
-}
-#changelogContainer.show {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-#changelogContainer h4 {
-  margin-top: 0;
-  font-size: 18px;
-  margin-bottom: 15px;
-  font-weight: 600;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 8px;
-  color: #eee;
+  color: #ffffffcc;
+  padding: 12px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  cursor: default;
 }
 
-/* Стиль для каждой записи */
-.changelog-entry {
-  margin-bottom: 10px;
-  padding: 12px 15px;
-  background-color: var(--bg-color);
-  border-radius: 8px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  transition: background 0.2s, transform 0.2s;
+#footer span {
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
-.changelog-entry:hover {
-  background-color: var(--hover-bg-color);
+#footer span:hover {
+  background: linear-gradient(135deg, rgba(15, 32, 39, 1), rgba(32, 58, 67, 1));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
-
-/* Заголовки внутри записи */
-.changelog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.changelog-version {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--text-color);
-}
-.changelog-date {
-  font-size: 13px;
-  color: var(--text-color);
-}
-.changelog-type {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background-color: #3498db;
-}
-/* Цвет для типов */
-.changelog-type.Добавлено { background-color: #27ae60; }
-.changelog-type.Исправлено { background-color: #f39c12; }
-.changelog-type.Общее { background-color: #8e44ad; }
-</style>
 </style>
 </head>
 <body>
 <div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
-  <button id="changelogToggle" style="padding:15px 20px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
+  <button id="changelogToggle" style="padding:15px 20px; border:none; border-radius:8px; background:var(background); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.6s ease;">
     Changelog
   </button>
 </div>
@@ -175,7 +201,13 @@
   <button onclick="window.open('description.html', '_self')">Описание</button>
 </div>
 
+<!-- Канвас фона -->
 <canvas id="background"></canvas>
+
+<!-- Новый футер -->
+<div id="footer">
+  <span>Создатель сайта: EmPsOn &copy; 2025</span>
+</div>
 
 <script>
    const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист3';
@@ -185,19 +217,17 @@
     fetch(sheetUrl)
       .then(response => response.text())
       .then(text => {
-        // Ответ с Google таблицы — это JS-объект после префикса, нужно его распарсить
         const jsonData = JSON.parse(text.substring(47).slice(0, -2));
         const rows = jsonData.table.rows;
         let entriesHtml = '';
 
-        // Функция для форматирования даты
         function formatDateToDDMMYY(dateStr) {
           const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
           if (dateMatch) {
             let year = parseInt(dateMatch[1], 10);
             let month = parseInt(dateMatch[2], 10);
             let day = parseInt(dateMatch[3], 10);
-            month += 1; // месяца с 0
+            month += 1;
             const dd = day.toString().padStart(2,'0');
             const mm = month.toString().padStart(2,'0');
             const yy = (year % 100).toString().padStart(2,'0');
@@ -209,12 +239,11 @@
 
         rows.forEach(row => {
           const version = row.c[0].v;
-          const rawDate = row.c[1].v; // исходная дата
+          const rawDate = row.c[1].v;
           const date = formatDateToDDMMYY(rawDate);
           const type = row.c[2].v.trim();
           let description = row.c[3].v;
 
-          // обработка описания
           description = description.replace(/^•\s?/gm, '<li>•</li>');
           const descriptionHtml = description
             .split('\n')
@@ -241,7 +270,6 @@
       });
   }
 
-  // Обработчик кнопки
   document.getElementById('changelogToggle').addEventListener('click', () => {
     const container = document.getElementById('changelogContainer');
     if (container.classList.contains('show')) {
@@ -252,11 +280,10 @@
     }
   });
 
-  // Загрузка при старте
   window.addEventListener('load', () => {
-    // Можно автоматически загрузить при загрузке страницы
     loadChangelogFromSheet();
   });
+  
   const canvas = document.getElementById('background');
   const ctx = canvas.getContext('2d');
 
@@ -270,7 +297,6 @@
     canvas.height = height;
   });
 
-  // Частицы для эффекта
   const particlesCount = 150;
   const particles = [];
 
@@ -286,7 +312,6 @@
     });
   }
 
-  // Реакция на мышь
   let mouseX = width / 2;
   let mouseY = height / 2;
 
@@ -295,33 +320,23 @@
     mouseY = e.clientY;
   });
 
-  // Анимация
   function animate() {
     ctx.clearRect(0, 0, width, height);
-    
-    // Нарисовать градиентный фон с мягкими движениями
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, 'rgba(15, 32, 39, 0.8)');
     gradient.addColorStop(1, 'rgba(32, 58, 67, 0.8)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Обновление и отрисовка частиц
     for (let p of particles) {
-      // Движение
       p.x += p.vx;
       p.y += p.vy;
-
-      // Отскок от границ
       if (p.x < 0 || p.x > width) p.vx *= -1;
       if (p.y < 0 || p.y > height) p.vy *= -1;
 
-      // Взаимодействие с мышью
       const distToMouse = Math.hypot(p.x - mouseX, p.y - mouseY);
       if (distToMouse < 150) {
-        // Создаем мягкое освещение и притяжение к курсору
         p.opacity = Math.min(p.opacity + 0.02, 1);
-        // Немного притягиваем частицы к мыши
         const angle = Math.atan2(mouseY - p.y, mouseX - p.x);
         p.vx += Math.cos(angle) * 0.05;
         p.vy += Math.sin(angle) * 0.05;
@@ -329,14 +344,12 @@
         p.opacity = Math.max(p.opacity - 0.01, 0.3);
       }
 
-      // Рисуем частицы
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.opacity})`;
       ctx.fill();
     }
 
-    // Соединяем частицы линиями
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const p1 = particles[i];
@@ -356,12 +369,9 @@
     requestAnimationFrame(animate);
   }
 
-  // Инициализация
   canvas.width = width;
   canvas.height = height;
   animate();
 </script>
-
 </body>
 </html>
-
