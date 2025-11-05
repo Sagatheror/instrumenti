@@ -1,4 +1,3 @@
-Поправь в этом коде
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -167,7 +166,25 @@ body.dark .theme-switch {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--shadow);
 }
-
+/* Стиль для кнопки "Назад" */
+  .back-btn {
+    display: inline-block;
+    margin-top: 50px;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #fff;
+    background-color: #ff5722; /* яркий цвет для выделения */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .back-btn:hover {
+    background-color: #e64a19; /* чуть темнее при наведении */
+    transform: translateY(-2px);
+  }
 /* Настройки */
 .settings {
   display: flex;
@@ -444,7 +461,9 @@ body.dark .theme-switch {
 </style>
 </head>
 <body>
-
+<div style="margin-bottom:20px;">
+  <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
+</div>
 <!-- Переключатель темы -->
 <button class="theme-switch" id="themeToggle"><i class="fas fa-moon"></i></button>
 
@@ -1027,3 +1046,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
