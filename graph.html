@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Эксклюзивная Аналитика</title>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Стиль -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Определяем переменные для светлой и тёмной темы */
+:root {
+  --font-family: 'Inter', sans-serif;
+  --border-radius: 15px;
+  --shadow: rgba(0, 0, 0, 0.05);
+  --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
+  --accent-gradient: linear-gradient(135deg, #89f7fe, #66a6ff);
+  --background-gradient: linear-gradient(135deg, #f0f2f5, #d9e2ef);
+  --text-color: #222;
+  --bg-color: #fff;
+  --border-color: #ccc;
+  --hover-bg-color: #f4f4f4;
+  --label-color: #333;
+  --chart-bg-color: #fafafa;
+  --button-bg: linear-gradient(135deg, #667eea, #764ba2);
+  --button-hover-bg: linear-gradient(135deg, #5a9, #4a8);
+  --result-bg: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+  --chart-text-color: #222; /* Цвет текста на светлой теме по умолчанию */
+}
+
+/* Тёмная тема переопределяет переменные */
+body.dark {
+  --text-color: #eee;
+  --bg-color: #2b2b2b;
+  --border-color: #555;
+  --hover-bg-color: #444;
+  --label-color: #ddd;
+  --chart-bg-color: #3a3a3a;
+  --button-bg: linear-gradient(135deg, #444, #222);
+  --result-bg: linear-gradient(135deg, #555, #333);
+  --chart-text-color: #eee; /* Текст графика в тёмной теме */
+}
+
+/* Общие стили */
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background: var(--background-gradient);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Стиль кнопки смены темы — более красивый */
+.theme-switch {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: calc(var(--border-radius) / 2);
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.theme-switch:hover {
+  background: linear-gradient(135deg, #5a9, #4a8);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Основной контейнер */
+.container {
+  flex: 0;
+  max-width: 1400px;
+  margin: 0 auto 50px;
+  padding: 30px;
+  background: var(--bg-color);
+  border-radius: calc(var(--border-radius) * 2);
+  box-shadow: 0 20px 50px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  overflow: hidden;
+}
+
+/* Верхняя панель */
+.top-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Загрузка файла */
+.file-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.file-label {
+  background: var(--primary-gradient);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: calc(var(--border-radius) * 2);
+  cursor: pointer;
+  font-size: 1.4em;
+  font-weight: 600;
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: all 0.3s ease;
+}
+.file-label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px var(--shadow);
+}
+#csvFileInput {
+  display: none;
+}
+#exportSOTBtn {
+  margin-left: 20px;
+  padding: 14px 20px;
+  font-size: 1.3em;
+  border: none;
+  border-radius: calc(var(--border-radius) * 2);
+  background: var(--primary-gradient);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: all 0.3s ease;
+}
+#exportSOTBtn:hover {
+ transform: translateY(-2px);
+  box-shadow: 0 12px 25px var(--shadow);
+}
+ /* Стиль для кнопки "Назад" */
+  .back-btn {
+    display: inline-block;
+    padding: 14px 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #fff;
+    background-color: #ff5722; /* яркий цвет для выделения */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .back-btn:hover {
+    background-color: #e64a19; /* чуть темнее при наведении */
+    transform: translateY(-2px);
+  }
+/* Настройки */
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  flex: 2 1 700px;
+  justify-content: center;
+}
+.setting-box {
+  background: var(--hover-bg-color);
+  padding: 20px 25px;
+  border-radius: calc(var(--border-radius) * 2);
+  box-shadow: 0 6px 15px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+.setting-box:hover {
+  box-shadow: 0 10px 20px var(--shadow);
+}
+.setting-box label {
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 1.3em;
+  color: var(--label-color);
+}
+.setting-box select {
+  padding: 14px 20px;
+  border-radius: calc(var(--border-radius) * 2);
+  border: none;
+  background: #fff;
+  font-size: 1.3em;
+  min-width: 150px;
+  box-shadow: 0 4px 12px var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.setting-box select:hover {
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+/* График и результаты */
+.chart-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#chartTitle {
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--label-color);
+  text-align: center;
+}
+#chartContainer {
+  width: 100%;
+  max-width: 1500px;
+  background: var(--chart-bg-color);
+  padding: 40px;
+  border-radius: calc(var(--border-radius) * 2);
+  box-shadow: inset 0 10px 20px rgba(0,0,0,0.02);
+  margin-bottom: 30px;
+  transition: background 0.3s;
+}
+
+.btn {
+  background: var(--primary-gradient);
+  color: #fff;
+  padding: 16px 35px;
+  font-size: 1.4em;
+  border: none;
+  border-radius: calc(var(--border-radius) * 2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Итоговая зона */
+#averageResult {
+  margin-top: 40px;
+  padding: 30px;
+  background: var(--result-bg);
+  border-radius: calc(var(--border-radius) * 2);
+  font-size: 1.8em;
+  font-weight: 600;
+  color: var(--label-color);
+  text-align: center;
+  max-width: 800px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: background 0.3s, color 0.3s;
+}
+#averageResult:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Модальное окно для сайта (iframe) */
+#sotModal {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.5);
+  justify-content: center; 
+  align-items: center; 
+  z-index: 9999;
+}
+#sotModal > div {
+  background: #fff; 
+  padding: 20px; 
+  border-radius: 10px; 
+  max-width: 90%; 
+  width: 80%; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: stretch;
+}
+#sotIframe {
+  width: 100%; 
+  height: 70vh; 
+  border: none; 
+  border-radius: 10px;
+}
+#closeSOTModal {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: calc(var(--border-radius) * 2);
+  background: #555;
+  color: #fff;
+  cursor: pointer;
+  align-self: center;
+}
+#closeSOTModal:hover {
+  background: #333;
+}
+</style>
+</head>
+<body>
+<div style="margin-bottom:20px;">
+  <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
+</div>
+
+<!-- Переключатель темы -->
+<button class="theme-switch" id="themeToggle">🌙 Тёмная тема</button>
+
+<div class="container">
+
+  <!-- Верхняя панель -->
+  <div class="top-panel">
+    <!-- Загрузка файла -->
+    <div class="file-zone">
+            <!-- Новая кнопка -->
+      <label class="file-label" id="exportSOTBtn">Выгрузить кол-во СОТ</label>
+      <label class="file-label" for="csvFileInput">
+        📁 Выберите CSV
+      </label>
+      <input type="file" id="csvFileInput" accept=".csv" />
+
+    </div>
+    <!-- Настройки -->
+    <div class="settings">
+      <div class="setting-box">
+        <label for="blockSelect">Блок</label>
+        <select id="blockSelect"></select>
+      </div>
+      <div class="setting-box">
+        <label for="toolSelect">Инструмент</label>
+        <select id="toolSelect"></select>
+      </div>
+      <div class="setting-box">
+        <label for="modeSelect">Режим</label>
+        <select id="modeSelect">
+          <option value="all">Общий</option>
+          <option value="individual">По сотруднику</option>
+        </select>
+      </div>
+      <div class="setting-box" id="employeeBox" style="display:none;">
+        <label for="employeeSelect">Сотрудник</label>
+        <select id="employeeSelect"></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- График и итог -->
+  <div class="chart-section">
+    <div id="chartTitle">Загрузите файл и выберите параметры</div>
+    <div id="chartContainer">
+      <canvas id="myChart"></canvas>
+    </div>
+    <div class="buttons">
+      <button class="btn" id="refreshBtn">Обновить</button>
+      <button class="btn" id="topBtn">ТОП</button>
+    </div>
+    <div id="averageResult"></div>
+  </div>
+
+</div>
+
+<!-- Модальное окно для сайта -->
+<div id="sotModal">
+  <div>
+    <h3>Вставьте ссылку</h3>
+    <iframe id="sotIframe" src="https://s-o-t.ru/netcat/?catalogue=1&sub=1891833"></iframe>
+    <button class="btn" id="closeSOTModal">Закрыть</button>
+  </div>
+</div>
+
+<script>
+let dataBlocks = {
+    SOT: { labels: [], data: {} },
+    PMK: { labels: [], data: {} },
+    TORUDA: { labels: [], data: {} }
+};
+let currentBlock = null;
+let currentTool = null;
+let currentEmployee = null;
+let chartInstance = null;
+let currentLabels = [];
+let currentDatasets = [];
+
+// Переключение темы
+const themeBtn = document.getElementById('themeToggle');
+let darkMode = false;
+themeBtn.onclick = () => {
+  darkMode = !darkMode;
+  document.body.classList.toggle('dark');
+  themeBtn.textContent = darkMode ? '☀️ Светлая тема' : '🌙 Тёмная тема';
+  updateChart(); // Обновляем стиль графика
+};
+
+// Обработка выбора файла
+document.getElementById('csvFileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        processCSV(e.target.result);
+        document.getElementById('chartTitle').textContent = 'Данные загружены. Выберите параметры.';
+        document.getElementById('averageResult').innerHTML = '';
+        document.getElementById('modeSelect').value = 'all';
+        toggleEmployeeSelection();
+        updateChart();
+    };
+    reader.readAsText(file);
+});
+
+// Парсинг даты
+function parseDate(dateStr) {
+    const parts = dateStr.trim().split('.');
+    if (parts.length !== 3) return null;
+    let day = parts[0], month = parts[1], year = parts[2];
+    if (year.length === 2) year = '20' + year;
+    return `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+
+// Обработка CSV
+function processCSV(csvText) {
+    dataBlocks = {
+        SOT: { labels: [], data: {} },
+        PMK: { labels: [], data: {} },
+        TORUDA: { labels: [], data: {} }
+    };
+    const lines = csvText.trim().split(/\r?\n/);
+    let pmkIdx = lines.findIndex(line => line.includes("PMK"));
+    let torIdx = lines.findIndex(line => line.includes("TORUDA"));
+
+    const SOTLines = lines.slice(0, pmkIdx);
+    const PMKLines = lines.slice(pmkIdx, torIdx);
+    const TORUDALines = lines.slice(torIdx);
+
+    ['SOT', 'PMK', 'TORUDA'].forEach(block => {
+        let blockLines = [];
+        if (block === 'SOT') blockLines = SOTLines;
+        else if (block === 'PMK') blockLines = PMKLines;
+        else if (block === 'TORUDA') blockLines = TORUDALines;
+
+        const parsedData = {};
+        const datesSet = new Set();
+
+        // парсим строки
+        blockLines.forEach(line => {
+            const cols = line.split(';').map(c => c.trim());
+            if (cols.length < 7) return;
+            const person = cols[0];
+            const tool = cols[1];
+            const dateStr = cols[6];
+            const dateLabel = parseDate(dateStr);
+            if (!dateLabel) return;
+            datesSet.add(dateLabel);
+
+            const values = [];
+            for (let i=2; i<=5; i++) {
+                const v = parseFloat(cols[i].replace(',', '.')) || 0;
+                values.push(v);
+            }
+            const totalValue = values.reduce((a,b)=>a+b,0);
+
+            if (!parsedData[tool]) parsedData[tool] = {};
+            if (!parsedData[tool][person]) parsedData[tool][person] = {};
+            if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
+            parsedData[tool][person][dateLabel] += totalValue;
+        });
+
+        const labelsArray = Array.from(datesSet).sort((a,b)=> new Date(a) - new Date(b));
+        const dataPerTool = {};
+        for (const tool in parsedData) {
+            dataPerTool[tool] = {};
+            for (const person in parsedData[tool]) {
+                dataPerTool[tool][person] = Array(labelsArray.length).fill(0);
+                labelsArray.forEach((date, idx) => {
+                    if (parsedData[tool][person][date] !== undefined) {
+                        dataPerTool[tool][person][idx] = parsedData[tool][person][date];
+                    }
+                });
+            }
+        }
+        dataBlocks[block].labels = labelsArray;
+        dataBlocks[block].data = dataPerTool;
+    });
+    updateBlockOptions();
+    const firstBlock = Object.keys(dataBlocks)[0];
+    if (firstBlock) {
+        selectBlock(firstBlock);
+        toggleEmployeeSelection();
+        updateChart();
+    }
+}
+
+// Обновление вариантов выбора блока
+function updateBlockOptions() {
+    const select = document.getElementById('blockSelect');
+    select.innerHTML = '';
+    for (const block in dataBlocks) {
+        const option = document.createElement('option');
+        option.value = block;
+        option.textContent = block;
+        select.appendChild(option);
+    }
+    select.onchange = () => {
+        selectBlock(select.value);
+        toggleEmployeeSelection();
+        updateChart();
+    };
+}
+
+// Выбор блока
+function selectBlock(blockName) {
+    currentBlock = blockName;
+    const blockData = dataBlocks[blockName];
+    const tools = Object.keys(blockData.data);
+    const selectTool = document.getElementById('toolSelect');
+    const selectEmployee = document.getElementById('employeeSelect');
+
+    selectTool.innerHTML = '';
+    selectEmployee.innerHTML = '';
+
+    // Заполняем инструменты
+    tools.forEach(tool => {
+        const option = document.createElement('option');
+        option.value = tool;
+        option.textContent = tool;
+        selectTool.appendChild(option);
+    });
+
+    // Собираем сотрудников
+    const employeesSet = new Set();
+    tools.forEach(tool => {
+        Object.keys(blockData.data[tool]).forEach(emp => employeesSet.add(emp));
+    });
+    const employeesArr = Array.from(employeesSet).sort();
+
+    // Заполняем сотрудников
+    employeesArr.forEach(emp => {
+        const option = document.createElement('option');
+        option.value = emp;
+        option.textContent = emp;
+        selectEmployee.appendChild(option);
+    });
+
+    // Обработчики
+    document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
+    document.getElementById('toolSelect').onchange = () => {
+      currentTool = document.getElementById('toolSelect').value;
+      updateChart();
+    };
+    document.getElementById('employeeSelect').onchange = () => {
+      currentEmployee = document.getElementById('employeeSelect').value;
+      updateChart();
+    };
+
+    // Устанавливаем режим "Общий" по умолчанию
+    document.getElementById('modeSelect').value = 'all';
+    toggleEmployeeSelection();
+
+    // Выбираем первый инструмент и сотрудника
+    if (tools.length > 0) {
+        currentTool = tools[0];
+        currentEmployee = employeesArr[0];
+        document.getElementById('toolSelect').value = currentTool;
+        document.getElementById('employeeSelect').value = currentEmployee;
+        updateChart();
+        document.getElementById('chartTitle').textContent = `Блок: ${currentBlock} | Инструмент: ${currentTool}`;
+    } else {
+        if (chartInstance) chartInstance.destroy();
+    }
+}
+
+// Переключение режима отображения
+function toggleEmployeeSelection() {
+  const mode = document.getElementById('modeSelect').value;
+  const empBox = document.getElementById('employeeBox');
+  if (mode === 'individual') {
+    empBox.style.display = 'flex';
+  } else {
+    empBox.style.display = 'none';
+  }
+  updateChart();
+}
+
+// Функция получения цвета текста для графика
+function getChartTextColor() {
+  return darkMode ? '#fff' : '#000';
+}
+
+// Обновление графика
+function updateChart() {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  // Получаем текущие выбранные параметры
+  const mode = document.getElementById('modeSelect').value;
+  const selectedTool = document.getElementById('toolSelect').value;
+  const selectedEmployee = document.getElementById('employeeSelect').value;
+
+  const blockData = dataBlocks[currentBlock];
+  if (!blockData) return;
+  const labels = blockData.labels;
+
+  const textColor = getChartTextColor();
+
+  currentLabels = labels;
+
+  if (!blockData.data[selectedTool]) {
+    if (chartInstance) chartInstance.destroy();
+    return;
+  }
+
+  if (mode === 'all') {
+    const persons = Object.keys(blockData.data[selectedTool] || {});
+    currentDatasets = persons.map((person, index) => ({
+      label: person,
+      data: blockData.data[selectedTool][person],
+      borderColor: getColor(index),
+      backgroundColor: getColor(index, 0.4),
+      borderWidth: 2,
+      tension: 0.3,
+      fill: false,
+      pointBackgroundColor: getColor(index),
+      pointBorderColor: '#fff'
+    }));
+  } else {
+    if (selectedEmployee && blockData.data[selectedTool][selectedEmployee]) {
+      currentDatasets = [{
+        label: selectedEmployee,
+        data: blockData.data[selectedTool][selectedEmployee],
+        borderColor: getColor(0),
+        backgroundColor: getColor(0, 0.4),
+        borderWidth: 3,
+        tension: 0.3,
+        fill: false,
+        pointBackgroundColor: getColor(0),
+        pointBorderColor: '#fff'
+      }];
+    } else {
+      currentDatasets = [];
+    }
+  }
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: currentLabels,
+      datasets: currentDatasets
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { size: 14, weight: '600' }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          titleColor: '#fff',
+          bodyColor: '#fff'
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor },
+          title: { display: true, text: 'Даты', color: textColor },
+          grid: { color: getGridColor() }
+        },
+        y: {
+          ticks: { color: textColor },
+          title: { display: true, text: 'Значение', color: textColor },
+          grid: { color: getGridColor() }
+        }
+      }
+    }
+  });
+}
+
+// Вспомогательная функция для получения цвета линий
+function getColor(index, alpha=1) {
+  const palette = [
+    `rgba(255, 99, 132, ${alpha})`,
+    `rgba(54, 162, 235, ${alpha})`,
+    `rgba(255, 206, 86, ${alpha})`,
+    `rgba(75, 192, 192, ${alpha})`,
+    `rgba(153, 102, 255, ${alpha})`,
+    `rgba(255, 159, 64, ${alpha})`,
+    `rgba(199, 199, 199, ${alpha})`,
+    `rgba(255, 99, 255, ${alpha})`,
+    `rgba(0, 191, 255, ${alpha})`,
+    `rgba(255, 215, 0, ${alpha})`
+  ];
+  return palette[index % palette.length];
+}
+
+// Цвет линий сетки
+function getGridColor() {
+  return getComputedStyle(document.body).getPropertyValue('--chart-text-color').trim();
+}
+
+// Обработчики кнопок
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  updateChart();
+});
+document.getElementById('topBtn').addEventListener('click', showTopEmployees);
+
+// Обработчик для кнопки "Выгрузить кол-во СОТ"
+document.getElementById('exportSOTBtn').onclick = () => {
+  document.getElementById('sotModal').style.display = 'flex';
+};
+
+// Обработчик для закрытия модального окна
+document.getElementById('closeSOTModal').onclick = () => {
+  document.getElementById('sotModal').style.display = 'none';
+};
+// Клик вне окна
+document.getElementById('sotModal').onclick = (e) => {
+  if (e.target === document.getElementById('sotModal')) {
+    document.getElementById('sotModal').style.display = 'none';
+  }
+};
+
+// Функция для вывода ТОП сотрудников
+function showTopEmployees() {
+  if (!dataBlocks[currentBlock]) return;
+  const blockData = dataBlocks[currentBlock];
+  const currentToolSelected = document.getElementById('toolSelect').value;
+  const mode = document.getElementById('modeSelect').value;
+
+  const employeeSums = {};
+  for (const employee in blockData.data[currentToolSelected]) {
+    employeeSums[employee] = blockData.data[currentToolSelected][employee].reduce((a, b) => a + b, 0);
+  }
+
+  const sortedEmployees = Object.entries(employeeSums)
+    .sort((a, b) => b[1] - a[1]);
+
+  const top3 = sortedEmployees.slice(0, 3);
+  const icons = ['🥇','🥈','🥉'];
+  let html = `<h3>ТОП сотрудников по инструменту: ${currentToolSelected}</h3><ol style="list-style:none; padding-left:0;">`;
+  top3.forEach((item, index) => {
+    html += `<li style="margin:8px 0; font-size:1.4em;">${icons[index]} <strong>${item[0]}</strong> — ${item[1].toFixed(2)}</li>`;
+  });
+  html += '</ol>';
+
+  document.getElementById('averageResult').innerHTML = html;
+}
+</script>
+
+</body>
+</html>
