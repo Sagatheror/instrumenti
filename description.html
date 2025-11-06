@@ -795,18 +795,18 @@ document.getElementById('closeBugModal').addEventListener('click', () => {
 // Обработка отправки бага
 const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
 
-document.getElementById('sendBug').addEventListener('click', () => {
+// функция для отправки бага с указанием источника
+function sendBug(source) {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
 
-  // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
-    contentType: 'application/json',
-    body: JSON.stringify({description: description})
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description: description, source: source })
   })
   .then(response => response.json())
   .then(data => {
@@ -820,10 +820,16 @@ document.getElementById('sendBug').addEventListener('click', () => {
     showNotification('Ошибка сети или сервера.');
   });
 
-  // Очистка поля
   document.getElementById('bugDescription').value = '';
   document.getElementById('bugModal').style.display = 'none';
+}
+
+// Обработчики кнопок
+document.getElementById('sendBug').addEventListener('click', () => {
+  // Передача источника - например, 'description.html'
+  sendBug('description.html');
 });
 </script>
 </body>
 </html>
+
