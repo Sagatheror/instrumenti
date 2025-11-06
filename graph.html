@@ -478,6 +478,27 @@ body.dark .theme-switch {
 .changelog-type.Добавлено { background-color: #27ae60; }
 .changelog-type.Исправлено { background-color: #f39c12; }
 .changelog-type.Общее { background-color: #8e44ad; }
+
+#bugReportBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 0; /* убираем любые внутренние отступы */
+}
+
+/* Можно убрать font-size у кнопки, оставить только у иконки */
+#bugReportBtn i {
+  display: block;
+  margin: 0;
+}
 </style>
 </head>
 <body>
@@ -503,6 +524,38 @@ body.dark .theme-switch {
   <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
   <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
 </div>
+<!-- Кнопка баг-репорта -->
+<div style="position: fixed; bottom: 70px; right: 10px; z-index: 9999;">
+  <button id="bugReportBtn" style="
+    background:#f44336; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  ">
+    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
+  </button>
+</div>
+
+<!-- Модальное окно для описания бага -->
+<div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
+  <div style="background: var(--hover-bg-color); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
+    <h3>Сообщить о баге</h3>
+    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);" placeholder="Опишите проблему..."></textarea>
+    <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+      <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
+      <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
+    </div>
+  </div>
+</div>
+
   <!-- Верхняя панель -->
   <div class="top-panel">
     <!-- Загрузка файла -->
@@ -1066,10 +1119,47 @@ window.addEventListener('load', () => {
   const savedChangelog = localStorage.getItem('changelog') || '';
   document.getElementById('changelogText').value = savedChangelog;
 });
-</script>
+// Обработчик открытия окна баг-репорта
+document.getElementById('bugReportBtn').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display = 'flex';
+});
 
+// Обработчик закрытия окна
+document.getElementById('closeBugModal').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display = 'none';
+});
+
+// Обработка отправки бага
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+document.getElementById('sendBug').addEventListener('click', () => {
+  const description = document.getElementById('bugDescription').value.trim();
+  if (description === '') {
+    alert('Пожалуйста, опишите проблему.');
+    return;
+  }
+
+  // Отправляем POST-запрос
+  fetch(BUG_REPORT_URL, {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify({description: description})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.result === 'success') {
+      showNotification('Баг успешно отправлен!');
+    } else {
+      showNotification('Ошибка при отправке бага.');
+    }
+  })
+  .catch(() => {
+    showNotification('Ошибка сети или сервера.');
+  });
+
+  // Очистка поля
+  document.getElementById('bugDescription').value = '';
+  document.getElementById('bugModal').style.display = 'none';
+});
+</script>
 </body>
 </html>
-
-
-
