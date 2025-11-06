@@ -752,22 +752,22 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   const itemIdHeader = headers[itemIdIndex];
 
   const csvRows = [];
-  csvRows.push(`${itemIdHeader};${columnHeader}`); // разделитель - точка с запятой
+  csvRows.push(`${itemIdHeader};${columnHeader}`);
 
   csvData.forEach(row => {
-    if (row._visible === false) return;
-    let cell1 = row[columnHeader] || '';
-    let cell2 = row[itemIdHeader] || '';
+  if (row._visible === false) return;
+  let cellItemID = row['ItemID'] || '';
+  let cellSelected = row[headers[selectedColumnIndex]] || '';
 
-    if (typeof cell1 === 'string' && /[;"\n]/.test(cell1)) {
-      cell1 = `"${cell1.replace(/"/g, '""')}"`;
-    }
-    if (typeof cell2 === 'string' && /[;"\n]/.test(cell2)) {
-      cell2 = `"${cell2.replace(/"/g, '""')}"`;
-    }
+  if (typeof cellItemID === 'string' && /[;"\n]/.test(cellItemID)) {
+    cellItemID = `"${cellItemID.replace(/"/g, '""')}"`;
+  }
+  if (typeof cellSelected === 'string' && /[;"\n]/.test(cellSelected)) {
+    cellSelected = `"${cellSelected.replace(/"/g, '""')}"`;
+  }
 
-    csvRows.push(`${cell1};${cell2}`);
-  });
+  csvRows.push(`${cellItemID};${cellSelected}`);
+});
 
   const csvString = csvRows.join('\n');
 
