@@ -793,7 +793,6 @@ document.getElementById('closeBugModal').addEventListener('click', () => {
 });
 
 // Обработка отправки бага
-// Обработка отправки бага
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
@@ -801,19 +800,19 @@ document.getElementById('sendBug').addEventListener('click', () => {
     return;
   }
 
-  // Показываем сообщение "Информация отправлена. Спасибо"
+  // Показываем сообщение
   showNotification('Информация отправлена. Спасибо');
 
-  // Передача данных на issue.html через параметры URL
-  const encodedDescription = encodeURIComponent(description);
-  window.location.href = `issue.html?description=${encodedDescription}`;
+  // Можно сохранить в localStorage или отправить на сервер
+  // Например:
+  localStorage.setItem('lastBugDescription', description);
 
-  // Очистка поля (опционально, если не нужно при перенаправлении)
+  // Очистка поля
   document.getElementById('bugDescription').value = '';
 
-  // Закрытие модального окна
-  document.getElementById('bugModal').style.display = 'none';
+  // Не перенаправляем, остаемся на странице
 });
 </script>
 </body>
 </html>
+
