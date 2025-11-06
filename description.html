@@ -793,6 +793,8 @@ document.getElementById('closeBugModal').addEventListener('click', () => {
 });
 
 // Обработка отправки бага
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
@@ -800,19 +802,28 @@ document.getElementById('sendBug').addEventListener('click', () => {
     return;
   }
 
-  // Показываем сообщение
-  showNotification('Информация отправлена. Спасибо');
-
-  // Можно сохранить в localStorage или отправить на сервер
-  // Например:
-  localStorage.setItem('lastBugDescription', description);
+  // Отправляем POST-запрос
+  fetch(BUG_REPORT_URL, {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify({description: description})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.result === 'success') {
+      showNotification('Баг успешно отправлен!');
+    } else {
+      showNotification('Ошибка при отправке бага.');
+    }
+  })
+  .catch(() => {
+    showNotification('Ошибка сети или сервера.');
+  });
 
   // Очистка поля
   document.getElementById('bugDescription').value = '';
-
-  // Не перенаправляем, остаемся на странице
+  document.getElementById('bugModal').style.display = 'none';
 });
 </script>
 </body>
 </html>
-
