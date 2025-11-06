@@ -177,7 +177,7 @@
     margin-bottom: 15px;
     font-weight: 500;
   }
-  input[type="text"], select {
+  input[type="text"], select, textarea {
     width: 100%;
     padding: 14px 20px;
     border-radius: 12px;
@@ -185,7 +185,7 @@
     font-size: 16px;
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
   }
-  input[type="text"]:focus, select:focus {
+  input[type="text"]:focus, select:focus, textarea:focus {
     border-color: #4CAF50;
     box-shadow: 0 0 12px rgba(76, 175, 80, 0.2);
     outline: none;
@@ -377,6 +377,26 @@ body.dark-theme td:hover {
   color: #fff;
   background-color: #3498db;
 }
+#bugReportBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 0; /* убираем любые внутренние отступы */
+}
+
+/* Можно убрать font-size у кнопки, оставить только у иконки */
+#bugReportBtn i {
+  display: block;
+  margin: 0;
+}
 /* Цвет для типов */
 .changelog-type.Добавлено { background-color: #27ae60; }
 .changelog-type.Исправлено { background-color: #f39c12; }
@@ -497,6 +517,38 @@ body.dark-theme td:hover {
 
 <!-- Таблица -->
 <div id="tableContainer"></div>
+
+<!-- Кнопка баг-репорта -->
+<div style="position: fixed; bottom: 70px; right: 10px; z-index: 9999;">
+  <button id="bugReportBtn" style="
+    background:#f44336; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  ">
+    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
+  </button>
+</div>
+
+<!-- Модальное окно для описания бага -->
+<div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
+  <div style="background: var(--section-bg); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
+    <h3>Сообщить о баге</h3>
+    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);" placeholder="Опишите проблему..."></textarea>
+    <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+      <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
+      <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
 <script>
@@ -620,29 +672,21 @@ document.getElementById('replaceBtn').addEventListener('click', () => {
     return;
   }
 
-  console.log('Работаем с колонкой:', headers[selectedColumnIndex]);
-  console.log('searchVal:', searchVal);
   let count = 0;
-
-  // Экранирование для RegExp
   function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
-
   const regex = new RegExp(escapeRegExp(searchVal), 'g');
 
   csvData.forEach(row => {
     if (row._visible !== undefined && row._visible !== true) return;
     const cellContent = row[headers[selectedColumnIndex]] || '';
-    console.log('Проверка ячейки:', cellContent);
     if (cellContent.includes(searchVal)) {
-      console.log('Нашли совпадение:', cellContent);
       row[headers[selectedColumnIndex]] = cellContent.replace(regex, replaceVal);
       count++;
     }
   });
 
-  console.log('Данные после:', csvData);
   renderTable();
   showNotification(`Успешно заменено ${count} ячеек`);
 });
@@ -683,14 +727,7 @@ document.getElementById('insertBtn').addEventListener('click', () => {
   let count = 0;
   csvData.forEach(row => {
     if (isFilterActive && row._visible !== true) return;
-    if (type === 'html') {
-      if (position === 'start') {
-        row[headers[selectedColumnIndex]] = content + (row[headers[selectedColumnIndex]] || '');
-      } else {
-        row[headers[selectedColumnIndex]] = (row[headers[selectedColumnIndex]] || '') + content;
-      }
-      count++;
-    } else {
+    if (type === 'html' || type === 'text') {
       if (position === 'start') {
         row[headers[selectedColumnIndex]] = content + (row[headers[selectedColumnIndex]] || '');
       } else {
@@ -710,14 +747,12 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   }
 
   const columnIndex = selectedColumnIndex;
-  const itemIdIndex = 11; // индекс колонки ItemID (по вашему коду)
-
+  const itemIdIndex = 11; // индекс колонки ItemID
   const columnHeader = headers[columnIndex];
   const itemIdHeader = headers[itemIdIndex];
 
-  // Заголовки для файла
   const csvRows = [];
-   csvRows.push(`${itemIdHeader};${columnHeader}`); // разделитель - точка с запятой
+  csvRows.push(`${itemIdHeader};${columnHeader}`); // разделитель - точка с запятой
 
   csvData.forEach(row => {
     if (row._visible === false) return;
@@ -740,112 +775,63 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'new.csv'; // название файла
+  a.download = 'new.csv';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   showNotification(`Файл успешно сохранен`);
 });
 
-const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист1';
+// =================== БЛОК ОТПРАВКИ В GITHUB ===================
+// Замените эти переменные на свои данные
+const GITHUB_TOKEN = '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'; // вставьте сюда ваш токен
+const REPO_OWNER = 'Sagatheror'; // например: 'EmPsOn'
+const REPO_NAME = 'instrumenti'; // например: 'bug-reports'
 
-// Обновленная часть loadChangelogFromSheet
-function loadChangelogFromSheet() {
-  fetch(sheetUrl)
-    .then(response => response.text())
-    .then(text => {
-      const jsonData = JSON.parse(text.substring(47).slice(0, -2));
-      const rows = jsonData.table.rows;
-      let entriesHtml = '';
+// Открытие окна баг-репорта
+document.getElementById('bugReportBtn').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display = 'flex';
+});
 
-      function formatDateToDDMMYY(dateStr) {
-  // Проверяем, есть ли строка вида Date(...)
-  const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
-  if (dateMatch) {
-    let year = parseInt(dateMatch[1], 10);
-    let month = parseInt(dateMatch[2], 10); // нумерация с 0
-    let day = parseInt(dateMatch[3], 10);
+// Закрытие окна
+document.getElementById('closeBugModal').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display = 'none';
+});
 
-    // Месяц +1, чтобы получить правильный календарный месяц
-    month += 1;
-
-    // Форматируем
-    const dd = day.toString().padStart(2, '0');
-    const mm = month.toString().padStart(2, '0');
-    const yy = (year % 100).toString().padStart(2, '0');
-
-    return `${dd}.${mm}.${yy}`;
+// Отправка бага в GitHub
+document.getElementById('sendBug').addEventListener('click', () => {
+  const description = document.getElementById('bugDescription').value.trim();
+  if (description === '') {
+    alert('Пожалуйста, опишите проблему.');
+    return;
   }
-  // Если строка не соответствует формату, возвращаем исходную
-  return dateStr;
-}
+  const title = `Ошибка/баг от пользователя ${navigator.userAgent}`;
+  const body = `**Дата:** ${new Date().toISOString()}\n\n**Описание:**\n${description}`;
 
-      rows.forEach(row => {
-        const version = row.c[0].v;
-        const rawDate = row.c[1].v; // исходная дата
-        const date = formatDateToDDMMYY(rawDate); // преобразуем в дд.мм.гг
-        console.log('Исходная дата:', rawDate, 'Преобразованная:', date); // добавьте для проверки
-        const type = row.c[2].v.trim();
-        let description = row.c[3].v;
-
-        // обработка описания
-        description = description.replace(/^•\s?/gm, '<li>•</li>');
-
-        const descriptionHtml = description
-          .split('\n')
-          .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
-          .join('');
-
-        entriesHtml += `
-          <div class="changelog-entry">
-            <div class="changelog-header">
-              <div>
-                <span class="changelog-version">Версия ${version}</span>
-                <span class="changelog-date">[${date}]</span>
-              </div>
-              <div class="changelog-type ${type}">${type}</div>
-            </div>
-            <ul style="margin:0; padding-left:20px;">${descriptionHtml}</ul>
-          </div>`;
+  fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'token ' + GITHUB_TOKEN,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title: title, body: body })
+  })
+  .then(response => {
+    if (response.ok) {
+      alert('Баг успешно отправлен в GitHub! Спасибо за отзыв.');
+      document.getElementById('bugDescription').value = '';
+      document.getElementById('bugModal').style.display = 'none';
+    } else {
+      return response.json().then(data => {
+        throw new Error(data.message || 'Ошибка при отправке');
       });
-
-      const container = document.getElementById('changelogContainer');
-      container.innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
-    })
-    .catch(() => {
-      document.getElementById('changelogContainer').innerHTML = 'Не удалось загрузить историю изменений.';
-    });
-}
-
-// Вариант 1: при загрузке страницы сразу загружаем историю
-window.addEventListener('load', () => {
-  loadChangelogFromSheet();
-  // также инициализация темы и сохранение из localStorage
-  const savedChangelog = localStorage.getItem('changelog') || '';
-  document.getElementById('changelogText').value = savedChangelog;
-});
-
-// Обработчик для кнопки "Changelog"
-const changelogBtn = document.getElementById('changelogToggle');
-const changelogContainer = document.getElementById('changelogContainer');
-
-changelogBtn.addEventListener('click', () => {
-  if (changelogContainer.classList.contains('show')) {
-    changelogContainer.classList.remove('show');
-  } else {
-    // Загружаем историю, если еще не загружали, или обновляем
-    loadChangelogFromSheet();
-    changelogContainer.classList.add('show');
-  }
-});
-
-// Инициализация при загрузке
-window.addEventListener('load', () => {
-  const savedChangelog = localStorage.getItem('changelog') || '';
-  document.getElementById('changelogText').value = savedChangelog;
+    }
+  })
+  .catch(error => {
+    alert('Не удалось отправить баг: ' + error.message);
+  });
 });
 </script>
 </body>
-
 </html>
-
