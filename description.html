@@ -708,28 +708,39 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     alert('Нет данных для сохранения.');
     return;
   }
-  const selectedColumns = [11, 15, 16]; // Можно изменить, если нужно
+
+  const columnIndex = selectedColumnIndex;
+  const itemIdIndex = 11; // индекс колонки ItemID (по вашему коду)
+
+  const columnHeader = headers[columnIndex];
+  const itemIdHeader = headers[itemIdIndex];
+
+  // Заголовки для файла
   const csvRows = [];
-  csvRows.push(selectedColumns.map(i => headers[i]).join(';'));
-  let count = 0;
+  csvRows.push(`${columnHeader};${itemIdHeader}`); // разделитель - точка с запятой
+
   csvData.forEach(row => {
     if (row._visible === false) return;
-    const rowData = selectedColumns.map(i => {
-      let cell = row[headers[i]] || '';
-      if (typeof cell === 'string' && /[;"\n]/.test(cell)) {
-        cell = `"${cell.replace(/"/g, '""')}"`;
-      }
-      return cell;
-    });
-    csvRows.push(rowData.join(';'));
-    count++;
+    let cell1 = row[columnHeader] || '';
+    let cell2 = row[itemIdHeader] || '';
+
+    if (typeof cell1 === 'string' && /[;"\n]/.test(cell1)) {
+      cell1 = `"${cell1.replace(/"/g, '""')}"`;
+    }
+    if (typeof cell2 === 'string' && /[;"\n]/.test(cell2)) {
+      cell2 = `"${cell2.replace(/"/g, '""')}"`;
+    }
+
+    csvRows.push(`${cell1};${cell2}`);
   });
+
   const csvString = csvRows.join('\n');
+
   const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'filtered_data.csv';
+  a.download = 'new.csv'; // название файла
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
