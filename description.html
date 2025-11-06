@@ -717,7 +717,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
   // Заголовки для файла
   const csvRows = [];
-  csvRows.push(`${columnHeader};${itemIdHeader}`); // разделитель - точка с запятой
+   csvRows.push(`${itemIdHeader};${columnHeader}`); // разделитель - точка с запятой
 
   csvData.forEach(row => {
     if (row._visible === false) return;
@@ -848,3 +848,4 @@ window.addEventListener('load', () => {
 </body>
 
 </html>
+
