@@ -782,58 +782,38 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   showNotification(`Файл успешно сохранен`);
 });
 
-// =================== БЛОК ОТПРАВКИ В GITHUB ===================
-// Замените эти переменные на свои данные
-const GITHUB_TOKEN = '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'; // вставьте сюда ваш токен
-const REPO_OWNER = 'Sagatheror'; // например: 'EmPsOn'
-const REPO_NAME = 'instrumenti'; // например: 'bug-reports'
-
-// Открытие окна баг-репорта
+// Обработчик открытия окна баг-репорта
 document.getElementById('bugReportBtn').addEventListener('click', () => {
   document.getElementById('bugModal').style.display = 'flex';
 });
 
-// Закрытие окна
+// Обработчик закрытия окна
 document.getElementById('closeBugModal').addEventListener('click', () => {
   document.getElementById('bugModal').style.display = 'none';
 });
 
-// Отправка бага в GitHub
+// Обработка отправки бага
+// Обработка отправки бага
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
-  const title = `Ошибка/баг от пользователя ${navigator.userAgent}`;
-  const body = `**Дата:** ${new Date().toISOString()}\n\n**Описание:**\n${description}`;
 
-  fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-    method: 'POST',
-    headers: {
-      'Authorization': 'token ' + GITHUB_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ title: title, body: body })
-  })
-  .then(response => {
-    if (response.ok) {
-      alert('Баг успешно отправлен в GitHub! Спасибо за отзыв.');
-      document.getElementById('bugDescription').value = '';
-      document.getElementById('bugModal').style.display = 'none';
-    } else {
-      return response.json().then(data => {
-        throw new Error(data.message || 'Ошибка при отправке');
-      });
-    }
-  })
-  .catch(error => {
-    alert('Не удалось отправить баг: ' + error.message);
-  });
+  // Показываем сообщение "Информация отправлена. Спасибо"
+  showNotification('Информация отправлена. Спасибо');
+
+  // Передача данных на issue.html через параметры URL
+  const encodedDescription = encodeURIComponent(description);
+  window.location.href = `issue.html?description=${encodedDescription}`;
+
+  // Очистка поля (опционально, если не нужно при перенаправлении)
+  document.getElementById('bugDescription').value = '';
+
+  // Закрытие модального окна
+  document.getElementById('bugModal').style.display = 'none';
 });
 </script>
 </body>
 </html>
-
-
