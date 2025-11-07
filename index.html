@@ -34,33 +34,56 @@
     z-index: 1;
   }
 
-  button {
-    padding: 20px 60px;
-    font-size: 2em;
-    cursor: pointer;
-    border: none;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #ffffff33, #ffffff22);
-    color: #fff;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 0 40px rgba(255,255,255,0.5), inset 0 0 20px rgba(255,255,255,0.3);
-    transition: all 0.6s ease;
-    font-weight: bold;
-  }
-
-  button:hover {
-    background: linear-gradient(135deg, #ffffff88, #ffffff66);
-    box-shadow: 0 0 70px rgba(255,255,255,0.8), inset 0 0 30px rgba(255,255,255,0.4);
-    transform: scale(1.15) rotate(1deg);
-  }
+ button {
+  padding: 20px 60px;
+  font-size: 2em;
+  cursor: pointer;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #00f0f5, #00d4d9);
+  color: #fff;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.2),
+              0 0 10px rgba(0,255,255,0.4);
+  transition: all 0.4s ease;
+  backdrop-filter: blur(4px);
+  background-image: 
+    linear-gradient(255deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  background-blend-mode: overlay;
+}
+button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 90%);
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0.8;
+  transition: all 0.4s ease;
+}
+ button:hover {
+  background: linear-gradient(135deg, #00f0f5, #00d4d9);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.4),
+              0 0 30px rgba(0,255,255,0.6);
+  transform: scale(1.15) rotate(1deg);
+}
+button:hover::before {
+  opacity: 1;
+  transform: rotate(35deg) scale(1.1);
+}
   .changelog-version {
     font-weight: 600;
     font-size: 15px;
-    color: var(--changelog-header-color);
+    color: #fff;
   }
   .changelog-date {
     font-size: 13px;
-    color: var(--changelog-date-color);
+    color: #fff;
   }
   .changelog-type {
     display: inline-block;
@@ -75,7 +98,7 @@
   /* Фон для записи */
   .changelog-entry {
     margin-bottom: 10px;
-    padding: 12px 15px;
+    padding: 15px 15px;
     background-color: var(--changelog-entry-bg);
     border-radius: 8px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
@@ -84,12 +107,13 @@
   /* Расположение блока слева с красивым стилем */
   #changelogContainer {
     display: none; /* по умолчанию скрыт */
-    position: fixed; top: 70px; left: 20px; /* слева */
+    position: fixed; top: 85px; left: 20px; /* слева */
     width: 420px;
     max-height: 500px;
     overflow-y: auto;
+    backdrop-filter: blur(4px);
     background: var(--chart-bg-color);
-    padding: 20px;
+    padding: 10px;
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     z-index: 9999;
