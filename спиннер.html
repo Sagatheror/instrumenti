@@ -894,7 +894,9 @@ document.getElementById('sendBug').addEventListener('click', () => {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
-spinner.style.display = 'block';
+spinnerTimeout = setTimeout(() => {
+    spinner.style.display = 'block';
+  }, 300);
   // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
@@ -903,7 +905,8 @@ spinner.style.display = 'block';
   })
   .then(response => response.json())
   .then(data => {
-    spinner.style.display = 'none';
+    clearTimeout(spinnerTimeout);
+      spinner.style.display = 'none';
     if (data.result === 'success') {
       showNotification('Баг успешно отправлен!');
     } else {
@@ -911,7 +914,8 @@ spinner.style.display = 'block';
     }
   })
   .catch(() => {
-    spinner.style.display = 'none';
+    clearTimeout(spinnerTimeout);
+      spinner.style.display = 'none';
     showNotification('Ошибка сети или сервера.');
   });
 
