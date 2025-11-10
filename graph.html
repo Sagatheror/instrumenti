@@ -848,7 +848,7 @@ function getChartTextColor() {
   return darkMode ? '#fff' : '#000';
 }
 
-// Обновление графика
+
 // Обновление графика
 function updateChart() {
   if (chartInstance) chartInstance.destroy();
@@ -865,7 +865,31 @@ function updateChart() {
   currentLabels = labels;
 
   if (!blockData.data[tool]) {
-    if (chartInstance) chartInstance.destroy();
+    if (chartInstance) {
+  chartInstance.data = {
+    labels: labels,
+    datasets: currentDatasets
+  };
+  chartInstance.options.animation = {
+    duration: 1500,
+    easing: 'easeOutQuart',
+  };
+  chartInstance.update();
+} else {
+  // Создайте новый график, если еще не создан
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: currentDatasets },
+    options: {
+      // ваши текущие настройки
+      animation: {
+        duration: 1500,
+        easing: 'easeOutQuart'
+      },
+      // остальные параметры
+    }
+  });
+}
     return;
   }
 
