@@ -51,14 +51,7 @@ body.dark {
   --changelog-version-color: #2c3e50;
   --changelog-date-color: #7f8c8d;
   --changelog-type-bg: #3498db;
-  --changelog-entry-bg: #f9f9f9;
-  --changelog-entry-color: #333;
-}
-body.dark-theme {
-  --changelog-version-color: #fff;
-  --changelog-date-color: #bdc3c7;
-  --changelog-type-background: #2980b9;
-  --changelog-entry-background: #444;
+  --changelog-entry-bg: #444;
   --changelog-entry-color: #eee;
 }
 /* Общие стили */
@@ -72,6 +65,8 @@ body {
   color: var(--text-color);
   transition: background 0.3s, color 0.3s;
 }
+
+/* Фиксированный футер */
 #footer {
   position: fixed;
   bottom: 10px;
@@ -85,14 +80,8 @@ body {
   border-radius: 16px 16px 0 0;
   backdrop-filter: blur(4px);
   transition: all 0.3s ease;
-  cursor: default;
 }
 
-#footer span {
-  display: inline-block;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
 /* Кнопка смены темы */
 .theme-switch {
   position: fixed;
@@ -117,17 +106,25 @@ body.dark .theme-switch {
   box-shadow: 0 6px 20px var(--shadow);
 }
 
-/* Основной контейнер */
-.container {
-  max-width: 1300px;
-  margin: 50px auto;
-  padding: 30px;
-  background: var(--bg-color);
-  border-radius: calc(var(--border-radius));
-  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+/* Основной контейнер, чтобы занимал всё пространство между верхом и низом */
+body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  flex: 1; /* занимает всё оставшееся пространство */
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  max-width: 1300px;
+  margin: 0 auto;
+  box-sizing: border-box;
   gap: 40px;
+  /* добавлено для растяжения */
+  width: 100%;
 }
 
 /* Верхняя панель */
@@ -254,27 +251,33 @@ body.dark .theme-switch {
 
 /* График и результаты */
 .chart-section {
+  flex: 1; /* растягивается, чтобы занять всё свободное пространство внутри .container */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
 }
 #chartTitle {
+  margin-bottom: 15px;
   font-size: 2em;
   font-weight: 700;
-  margin-bottom: 15px;
-  color: var(--label-color);
   text-align: center;
+  color: var(--label-color);
 }
+/* Контейнер с графиком */
 #chartContainer {
-  height: 500px;
+  flex: 1; /* растягиваться по высоте */
+  min-height: 300px; /* минимальная высота */
   width: 100%;
   background: var(--chart-bg-color);
   padding: 20px;
   border-radius: calc(var(--border-radius));
   box-shadow: inset 0 8px 16px rgba(0,0,0,0.05);
-  transition: background 0.3s;
+  box-sizing: border-box;
+  display: flex;
+  /* добавлено для растяжения внутри */
+}
+#chartContainer canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 .buttons {
   display: flex;
@@ -306,14 +309,22 @@ body.dark .theme-switch {
   padding: 30px;
   background: var(--result-bg);
   border-radius: calc(var(--border-radius));
-  font-size: 1.8em;
   font-weight: 600;
   color: var(--label-color);
-  max-width: 800px;
   width: 90%;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+#averageResult {
+  max-width: 700px; /* увеличено с 500px */
+  max-height: 300px; /* увеличено с 200px */
+  overflow-y: auto;
+  padding: 10 px; /* немного больше внутреннего отступа */
+  font-size: 1 em; /* немного больше шрифта */
+  background-color: #f0f0f0; /* оставить или изменить по желанию */
+  border-radius: 8px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 #averageResult:hover {
@@ -499,6 +510,12 @@ body.dark .theme-switch {
   display: block;
   margin: 0;
 }
+  .buttons {
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    gap: 20px; /* Межкнопочное расстояние, по желанию */
+  }
+
 </style>
 </head>
 <body>
@@ -506,7 +523,7 @@ body.dark .theme-switch {
 <div id="footer">
   <span>Создатель сайта: EmPsOn &copy; 2025</span>
 </div>
-<div style="margin-bottom:20px;">
+<div style="margin-top: 15px; margin-left: 0px;">
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
 <!-- Переключатель темы -->
@@ -515,7 +532,7 @@ body.dark .theme-switch {
 <div class="container">
 <!-- Блок changelog -->
 <div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
-  <button id="changelogToggle" style="padding:15px 20px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
+  <button id="changelogToggle" style="padding:15px 30px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; font-size:20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
     Changelog
   </button>
 </div>
@@ -548,7 +565,7 @@ body.dark .theme-switch {
 <div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
   <div style="background: var(--hover-bg-color); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
     <h3>Сообщить о баге</h3>
-    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);" placeholder="Опишите проблему..."></textarea>
+    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);"></textarea>
     <div style="margin-top:10px; display:flex; justify-content:flex-end;">
       <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
       <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
@@ -561,7 +578,7 @@ body.dark .theme-switch {
     <!-- Загрузка файла -->
     <div class="file-zone">
       <label class="file-label" id="exportSOTBtn">
-        <i class="fas fa-file-export"></i> Выгрузить СОТ
+        <i class="fas fa-file-upload"></i> Выгрузить СОТ
       </label>
       <label class="file-label" for="csvFileInput">
         <i class="fas fa-upload"></i> Выберите CSV
@@ -571,7 +588,7 @@ body.dark .theme-switch {
     <!-- Настройки -->
     <div class="settings">
       <div class="setting-box">
-        <label for="blockSelect"><i class="fas fa-puzzle-piece"></i> Блок</label>
+        <label for="blockSelect"><i class="fa-solid fa-database"></i> Блок</label>
         <select id="blockSelect"></select>
       </div>
       <div class="setting-box">
@@ -579,7 +596,7 @@ body.dark .theme-switch {
         <select id="toolSelect"></select>
       </div>
       <div class="setting-box">
-        <label for="modeSelect"><i class="fas fa-cog"></i> Режим</label>
+        <label for="modeSelect"><i class="fas fa-sliders-h"></i> Режим</label>
         <select id="modeSelect">
           <option value="all">Общий</option>
           <option value="individual">По сотруднику</option>
@@ -599,7 +616,7 @@ body.dark .theme-switch {
       <canvas id="myChart"></canvas>
     </div>
     <div class="buttons">
-      <button class="btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Обновить</button>
+      <button class="btn" id="refreshBtn"><i class="fas fa-rotate"></i> Обновить</button>
       <button class="btn" id="topBtn"><i class="fas fa-star"></i> ТОП</button>
     </div>
     <div id="averageResult"></div>
@@ -832,6 +849,7 @@ function getChartTextColor() {
 }
 
 // Обновление графика
+// Обновление графика
 function updateChart() {
   if (chartInstance) chartInstance.destroy();
 
@@ -963,7 +981,6 @@ function updateChart() {
     }
   });
 }
-
 function getColor(idx, alpha=1) {
   const palette = [
     `rgba(255, 99, 132, ${alpha})`,
@@ -1013,8 +1030,13 @@ function showTopEmployees() {
 
   const sorted = Object.entries(sums).sort((a, b) => b[1] - a[1]);
   const top3 = sorted.slice(0, 3);
-  const icons = ['🥇','🥈','🥉'];
-  let html = `<h3>🏆 ТОП сотрудников по инструменту: ${tool}</h3><ol style="list-style:none; padding-left:0;">`;
+  const trophyIcon = '<i class="fas fa-trophy" style="color: #FFD700; font-size: 1.8em; margin-right: 10px;"></i>';
+const icons = [
+  '<i class="fas fa-trophy" style="color:gold; font-size:1.4em;"></i>',
+  '<i class="fas fa-medal" style="color:silver; font-size:1.4em;"></i>',
+  '<i class="fas fa-award" style="color:#cd7f32; font-size:1.4em;"></i>'
+];
+  let html = `<h3>${trophyIcon} ТОП сотрудников по инструменту: ${tool}</h3><ol style="list-style:none; padding-left:0;">`;
   top3.forEach((item, i) => {
     html += `<li style="margin:8px 0; font-size:1.4em;">${icons[i]} <strong>${item[0]}</strong> — ${item[1].toFixed(2)}</li>`;
   });
@@ -1024,7 +1046,7 @@ function showTopEmployees() {
 
 const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
 
-// Обновленная часть loadChangelogFromSheet
+// Вариант 1: при загрузке страницы сразу загружаем историю
 function loadChangelogFromSheet() {
   fetch(sheetUrl)
     .then(response => response.text())
