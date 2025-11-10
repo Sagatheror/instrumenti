@@ -100,7 +100,7 @@
     gap: 10px;
     z-index: 999;
     font-size: 14px;
-    background: rgba(255,255,255,0.8);
+    background: var(--section-bg);
     padding: 8px 12px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -136,7 +136,7 @@
   }
 
   /* Общий стиль секций */
-  .section {
+  .section1 {
     background: var(--section-bg);
     border-radius: 20px;
     padding: 30px;
@@ -144,13 +144,13 @@
     box-shadow: 0 16px 32px var(--shadow);
     transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
   }
-  .section:hover {
+  .section1:hover {
     box-shadow: 0 20px 40px var(--shadow);
     transform: translateY(-4px);
   }
 
   /* Заголовки секций */
-  .section h3 {
+  .section1 h3 {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 22px;
@@ -161,13 +161,13 @@
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 8px;
   }
-  .section h3 i {
+  .section1 h3 i {
     margin-right: 12px;
     font-size: 24px;
     transition: color 0.3s;
     color: #4CAF50;
   }
-  .section h3:hover i {
+  .section1 h3:hover i {
     color: #388E3C;
   }
 
@@ -401,6 +401,66 @@ body.dark-theme td:hover {
 .changelog-type.Добавлено { background-color: #27ae60; }
 .changelog-type.Исправлено { background-color: #f39c12; }
 .changelog-type.Общее { background-color: #8e44ad; }
+.bug-modal-hidden {
+  display: none !important;
+}
+
+.bug-modal-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.bug-modal-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease-out;
+}
+
+
+.bug-modal-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bug-modal-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in;
+}
+/* Контейнер спиннера — фиксирует по центру экрана */
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Внутренний круг — анимированная «крутилка» */
+.spinner-inner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid transparent;
+  border-top: 4px solid var(--btn-bg);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+/* Анимация вращения */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* Тёмная тема: цвет спиннера */
+body.dark-theme .spinner-inner {
+  border-top-color: var(--btn-hover-bg);
+}
 </style>
 </head>
 <body>
@@ -432,7 +492,7 @@ body.dark-theme td:hover {
 </div>
 
 <!-- Выбор колонки для работы -->
-<div class="section">
+<div class="section1">
   <h3><i class="fas fa-columns"></i>Выберите колонку для работы</h3>
   <label>
     <strong>Колонка:</strong>
@@ -444,13 +504,13 @@ body.dark-theme td:hover {
 </div>
 
 <!-- Загрузка файла -->
-<div class="section">
+<div class="section1">
   <h3><i class="fas fa-upload"></i>Загрузите CSV файл</h3>
   <input type="file" id="fileInput" accept=".csv" style="width:98%; padding:14px; border-radius:12px; border:1px solid var(--border-color); font-size:16px; cursor:pointer; box-shadow: inset 0 0 5px rgba(0,0,0,0.1);" />
 </div>
 
 <!-- Режим замены -->
-<div class="section">
+<div class="section1">
   <h3><i class="fas fa-sync-alt"></i>Режим замены</h3>
   <label>
     <strong>Выберите режим:</strong>
@@ -473,7 +533,7 @@ body.dark-theme td:hover {
 </div>
 
 <!-- Поиск по кодам 1С -->
-<div class="section">
+<div class="section1">
   <h3><i class="fas fa-search"></i>Поиск по кодам 1С</h3>
   <label>
     <strong>Введите коды 1С (через запятую или пробел):</strong>
@@ -485,7 +545,7 @@ body.dark-theme td:hover {
 </div>
 
 <!-- Вставка данных -->
-<div class="section">
+<div class="section1">
   <h3><i class="fas fa-plus-circle"></i>Добавить текст/html</h3>
   <label>
     <strong>Что вставлять:</strong>
@@ -539,7 +599,7 @@ body.dark-theme td:hover {
 </div>
 
 <!-- Модальное окно для описания бага -->
-<div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
+<div id="bugModal" class="bug-modal-hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background: var(--section-bg); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
     <h3>Сообщить о баге</h3>
     <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);" placeholder="Опишите проблему..."></textarea>
@@ -555,7 +615,15 @@ body.dark-theme td:hover {
 let csvData = [];
 let headers = [];
 let selectedColumnIndex = 15; // по умолчанию 16-й столбец
+// Показывать спиннер
+function showLoader() {
+  document.getElementById('loader').style.display = 'flex';
+}
 
+// Скрывать спиннер
+function hideLoader() {
+  document.getElementById('loader').style.display = 'none';
+}
 // Обработчик выбора
 document.getElementById('columnSelect').addEventListener('change', (e) => {
   selectedColumnIndex = parseInt(e.target.value);
@@ -582,24 +650,37 @@ function showNotification(message) {
 document.getElementById('fileInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (file) {
+    showLoader(); // Показываем спиннер
     Papa.parse(file, {
       header: false,
       skipEmptyLines: true,
       delimiter: ';',
-      complete: function(results) {
-        headers = results.data[0];
-        csvData = results.data.slice(1).map(row => {
-          const obj = {};
-          headers.forEach((h, i) => {
-            obj[h] = row[i] || '';
-          });
-          obj._visible = true;
-          return obj;
-        });
-        renderTable();
-      },
+    
+complete: function(results) {
+  const rawHeaders = results.data[0]; // Исходные заголовки
+  const priorityPromoIndex = rawHeaders.indexOf('PriorityPromo');
+
+  // Формируем очищенные заголовки (без PriorityPromo)
+  headers = rawHeaders.filter((_, idx) => idx !== priorityPromoIndex);
+
+  csvData = results.data.slice(1).map(row => {
+    const obj = {};
+    headers.forEach(header => {
+      // Находим исходный индекс заголовка в rawHeaders
+      const originalIndex = rawHeaders.indexOf(header);
+      // Берём значение из строки по этому индексу
+      obj[header] = row[originalIndex] || '';
+    });
+    obj._visible = true;
+    return obj;
+  });
+  renderTable();
+ 
+  hideLoader(); // Скрываем после рендера
+},
       error: function(err) {
         alert('Ошибка при парсинге файла: ' + err.message);
+        hideLoader(); // Скрываем при ошибке
       }
     });
   }
@@ -782,25 +863,50 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   showNotification(`Файл успешно сохранен`);
 });
 
-// Обработчик открытия окна баг-репорта
-document.getElementById('bugReportBtn').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display = 'flex';
-});
+function showBugModal() {
+  const bugModal = document.getElementById('bugModal');
 
-// Обработчик закрытия окна
-document.getElementById('closeBugModal').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display = 'none';
-});
+  // 1. Убираем скрывающий класс
+  bugModal.classList.remove('bug-modal-hidden');
+
+  // 2. Принудительная перерисовка (ключевой шаг!)
+  bugModal.offsetHeight; // или bugModal.getBoundingClientRect()
+
+  // 3. Добавляем начальный класс анимации (без transition)
+  bugModal.classList.add('bug-modal-enter');
+
+  // 4. Через микрозадержку добавляем класс с transition
+  requestAnimationFrame(() => {
+    bugModal.classList.add('bug-modal-enter-active');
+  });
+}
+
+function hideBugModal() {
+  const bugModal = document.getElementById('bugModal');
+  bugModal.classList.remove('bug-modal-enter-active');
+  bugModal.classList.add('bug-modal-exit-active');
+  setTimeout(() => {
+    bugModal.classList.remove('bug-modal-exit-active');
+    bugModal.classList.add('bug-modal-hidden');
+  }, 300);
+}
+
+// Привязываем функции к кнопкам
+document.getElementById('bugReportBtn').addEventListener('click', showBugModal);
+document.getElementById('closeBugModal').addEventListener('click', hideBugModal);
 
 // Обработка отправки бага
 const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
+  const spinner = document.querySelector('.spinner');
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
-
+spinnerTimeout = setTimeout(() => {
+    spinner.style.display = 'block';
+  }, 300);
   // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
@@ -809,6 +915,8 @@ document.getElementById('sendBug').addEventListener('click', () => {
   })
   .then(response => response.json())
   .then(data => {
+    clearTimeout(spinnerTimeout);
+      spinner.style.display = 'none';
     if (data.result === 'success') {
       showNotification('Баг успешно отправлен!');
     } else {
@@ -816,12 +924,15 @@ document.getElementById('sendBug').addEventListener('click', () => {
     }
   })
   .catch(() => {
+    clearTimeout(spinnerTimeout);
+      spinner.style.display = 'none';
     showNotification('Ошибка сети или сервера.');
   });
 
   // Очистка поля
   document.getElementById('bugDescription').value = '';
-  document.getElementById('bugModal').style.display = 'none';
+  // ПРАВИЛЬНОЕ СКРЫТИЕ МОДАЛЬНОГО ОКНА
+  hideBugModal(); // Используем существующую функцию для анимации
 });
 const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист1';
 
@@ -921,5 +1032,9 @@ window.addEventListener('load', () => {
   document.getElementById('changelogText').value = savedChangelog;
 });
 </script>
+<!-- Спиннер (изначально скрыт) -->
+<div id="loader" class="spinner" style="display: none;">
+  <div class="spinner-inner"></div>
+</div>
 </body>
 </html>
