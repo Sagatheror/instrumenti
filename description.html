@@ -474,9 +474,12 @@ body.dark-theme .spinner-inner {
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
 <!-- Переключатель темы -->
-<div class="theme-switcher">
-  <label for="themeToggle" style="color: var(--text-color); font-weight: 500;">Тёмная тема</label>
-  <input type="checkbox" id="themeToggle" />
+<div class="custom-theme-switcher" style="top: 20px; right: 20px;">
+  <div id="custom-theme-toggle" style="width: 60px; height: 35px; background: #FFA500; border-radius: 25px; cursor: pointer; display: flex; align-items: center; padding: 0 5px; transition: background 0.5s; position: fixed; top: 20px; right: 20px; z-index: 999;">
+    <div class="icon-moon" style="position: absolute; left: 6px; font-size: 18px;">🌙</div>
+    <div class="icon-sun" style="position: absolute; right: 6px; font-size: 18px;">☀️</div>
+    <div class="knob" style="position: absolute; top: 3px; width: 30px; height: 30px; background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); transition: all 0.5s ease; left: 5px;"></div>
+  </div>
 </div>
 
 <!-- Блок changelog -->
@@ -631,11 +634,33 @@ document.getElementById('columnSelect').addEventListener('change', (e) => {
 });
 
 // Переключатель темы
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('change', () => {
-  document.body.classList.toggle('dark-theme', themeToggle.checked);
+const customToggle = document.getElementById('custom-theme-toggle');
+const knob = customToggle.querySelector('.knob');
+
+customToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-theme');
+
+  if (document.body.classList.contains('dark-theme')) {
+    // Перемещаем бегунок вправо
+    knob.style.transform = 'translateX(30px)';
+    // Можно убрать текст или оставить, если есть
+  } else {
+    // Возвращаем бегунок в исходное положение
+    knob.style.transform = 'translateX(0)';
+  }
 });
 
+// Для смены цвета фона ползунка при смене темы
+const toggleDiv = document.getElementById('custom-theme-toggle');
+
+const observer = new MutationObserver(() => {
+  if (document.body.classList.contains('dark-theme')) {
+    toggleDiv.style.background = '#555'; // делаем фон тёмным
+  } else {
+    toggleDiv.style.background = '#FFA500'; // светлый фон
+  }
+});
+observer.observe(document.body, { attributes: true, className: true });
 // Функция для уведомлений
 function showNotification(message) {
   const notif = document.getElementById('notification');
@@ -675,7 +700,7 @@ complete: function(results) {
     return obj;
   });
   renderTable();
- 
+ showNotification(`Файл успешно загружен`);
   hideLoader(); // Скрываем после рендера
 },
       error: function(err) {
@@ -1036,5 +1061,22 @@ window.addEventListener('load', () => {
 <div id="loader" class="spinner" style="display: none;">
   <div class="spinner-inner"></div>
 </div>
+<script>
+window.addEventListener('scroll', () => {
+  const toggle = document.getElementById('custom-theme-toggle');
+  if (!toggle) return; // Защита, если элемента нет
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  const maxScroll = 300; // Максимальная прокрутка для изменения прозрачности
+  const minOpacity = 0.3; // минимальный уровень прозрачности
+  const maxOpacity = 1;   // максимальный уровень прозрачности
+
+  let opacity = maxOpacity - (scrollY / maxScroll) * (maxOpacity - minOpacity);
+  if (opacity < minOpacity) opacity = minOpacity;
+  if (opacity > maxOpacity) opacity = maxOpacity;
+
+  toggle.style.opacity = opacity;
+});
+</script>
 </body>
 </html>
