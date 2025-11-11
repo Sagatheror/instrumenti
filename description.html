@@ -1074,7 +1074,13 @@ window.addEventListener('scroll', () => {
   let opacity = maxOpacity - (scrollY / maxScroll) * (maxOpacity - minOpacity);
   if (opacity < minOpacity) opacity = minOpacity;
   if (opacity > maxOpacity) opacity = maxOpacity;
-
+const changelogBtn = document.getElementById('changelogToggle');
+if (changelogBtn) {
+  let opacity = maxOpacity - (scrollY / maxScroll) * (maxOpacity - minOpacity);
+  if (opacity < minOpacity) opacity = minOpacity;
+  if (opacity > maxOpacity) opacity = maxOpacity;
+  changelogBtn.style.opacity = opacity;
+}
   toggle.style.opacity = opacity;
 });
 </script>
