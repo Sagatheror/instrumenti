@@ -1222,6 +1222,25 @@ document.getElementById('sendBug').addEventListener('click', () => {
   document.getElementById('bugDescription').value = '';
   document.getElementById('bugModal').style.display = 'none';
 });
+// Обработчик прокрутки для изменения прозрачности обеих кнопок
+window.addEventListener('scroll', () => {
+  const themeBtn = document.getElementById('themeToggle');
+  const changelogBtn = document.getElementById('changelogToggle');
+  if (!themeBtn || !changelogBtn) return;
+
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  const maxScroll = 300; // Максимальная прокрутка для изменения прозрачности
+  const minOpacity = 0.3; // Минимальный уровень прозрачности
+  const maxOpacity = 1;   // Максимальный уровень прозрачности
+
+  let opacityValue = maxOpacity - (scrollY / maxScroll) * (maxOpacity - minOpacity);
+  if (opacityValue < minOpacity) opacityValue = minOpacity;
+  if (opacityValue > maxOpacity) opacityValue = maxOpacity;
+
+  themeBtn.style.opacity = opacityValue;
+  changelogBtn.style.opacity = opacityValue;
+});
 </script>
 </body>
 </html>
