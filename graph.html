@@ -321,8 +321,8 @@ body {
   max-width: 700px; /* увеличено с 500px */
   max-height: 300px; /* увеличено с 200px */
   overflow-y: auto;
-  padding: 10 px; /* немного больше внутреннего отступа */
-  font-size: 1 em; /* немного больше шрифта */
+  padding: 10px; /* исправил: убрать лишний пробел */
+  font-size: 1em; /* убрать лишний пробел */
   background-color: #f0f0f0; /* оставить или изменить по желанию */
   border-radius: 8px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
@@ -349,16 +349,6 @@ body {
 #sotModal.show {
   display: flex;
   opacity: 1;
-}
-#sotModal > div {
-  background: #fff; 
-  padding: 20px;
-  max-width: 90%;
-  width: 80%;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 #sotIframe {
   width: 100%; 
@@ -589,11 +579,15 @@ body {
     <div class="settings">
       <div class="setting-box">
         <label for="blockSelect"><i class="fa-solid fa-database"></i> Блок</label>
-        <select id="blockSelect"></select>
+        <select id="blockSelect">
+          <option value="" disabled selected>выберите CSV</option>
+        </select>
       </div>
       <div class="setting-box">
         <label for="toolSelect"><i class="fas fa-wrench"></i> Инструмент</label>
-        <select id="toolSelect"></select>
+        <select id="toolSelect">
+          <option value="" disabled selected>выберите CSV</option>
+        </select>
       </div>
       <div class="setting-box">
         <label for="modeSelect"><i class="fas fa-sliders-h"></i> Режим</label>
@@ -671,8 +665,13 @@ themeBtn.onclick = () => {
 };
 
 // Обработка файла
-document.getElementById('csvFileInput').addEventListener('change', e => {
-  const file = e.target.files[0];
+const fileInput = document.getElementById('csvFileInput');
+const blockSelect = document.getElementById('blockSelect');
+const toolSelect = document.getElementById('toolSelect');
+let fileChosen = false;
+
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
@@ -684,82 +683,23 @@ document.getElementById('csvFileInput').addEventListener('change', e => {
     updateChart();
   };
   reader.readAsText(file);
+  // После выбора файла заменяем опции
+  if (!fileChosen) {
+    // Удаляем начальные опции
+    blockSelect.innerHTML = '';
+    toolSelect.innerHTML = '';
+
+    // Заполняем актуальными данными после processCSV
+    // Однако, сначала вызываем processCSV, чтобы данные подготовить
+  }
+  fileChosen = true;
 });
 
-// Парсинг даты
-function parseDate(str) {
-  const parts = str.trim().split('.');
-  if (parts.length !== 3) return null;
-  let [d, m, y] = parts;
-  if (y.length === 2) y = '20' + y;
-  return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-}
-
-// Обработка CSV
-function processCSV(text) {
-  dataBlocks = {
-    SOT: { labels: [], data: {} },
-    PMK: { labels: [], data: {} },
-    TORUDA: { labels: [], data: {} }
-  };
-  const lines = text.trim().split(/\r?\n/);
-  const pmkIdx = lines.findIndex(l => l.includes("PMK"));
-  const torIdx = lines.findIndex(l => l.includes("TORUDA"));
-
-  const SOTLines = lines.slice(0, pmkIdx);
-  const PMKLines = lines.slice(pmkIdx, torIdx);
-  const TORUDALines = lines.slice(torIdx);
-
-  ['SOT', 'PMK', 'TORUDA'].forEach(block => {
-    let blockLines;
-    if (block === 'SOT') blockLines = SOTLines;
-    else if (block === 'PMK') blockLines = PMKLines;
-    else blockLines = TORUDALines;
-
-    const parsedData = {};
-    const dateSet = new Set();
-
-    for (const line of blockLines) {
-      const cols = line.split(';').map(c => c.trim());
-      if (cols.length < 7) continue;
-      const [person, tool, , , , , dateStr] = cols;
-      const dateLabel = parseDate(dateStr);
-      if (!dateLabel) continue;
-      dateSet.add(dateLabel);
-      const values = [];
-      for (let i = 2; i <= 5; i++) {
-        const v = parseFloat(cols[i].replace(',', '.')) || 0;
-        values.push(v);
-      }
-      const total = values.reduce((a, b) => a + b, 0);
-      if (!parsedData[tool]) parsedData[tool] = {};
-      if (!parsedData[tool][person]) parsedData[tool][person] = {};
-      if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
-      parsedData[tool][person][dateLabel] += total;
-    }
-    const labelsArr = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
-    const dataPerTool = {};
-    for (const t in parsedData) {
-      dataPerTool[t] = {};
-      for (const p in parsedData[t]) {
-        dataPerTool[t][p] = Array(labelsArr.length).fill(0);
-        labelsArr.forEach((d, i) => {
-          if (parsedData[t][p][d] !== undefined) {
-            dataPerTool[t][p][i] = parsedData[t][p][d];
-          }
-        });
-      }
-    }
-    dataBlocks[block].labels = labelsArr;
-    dataBlocks[block].data = dataPerTool;
-  });
-  updateBlockOptions();
-  const firstBlock = Object.keys(dataBlocks)[0];
-  if (firstBlock) {
-    selectBlock(firstBlock);
-    toggleEmployeeSelection();
-    updateChart();
-  }
+// Восстановить начальные опции
+function resetSelects() {
+  // Возвращаем опцию "выберите CSV"
+  blockSelect.innerHTML = '<option value="" disabled selected>выберите CSV</option>';
+  toolSelect.innerHTML = '<option value="" disabled selected>выберите CSV</option>';
 }
 
 // Обновление вариантов выбора блока
@@ -843,11 +783,117 @@ function toggleEmployeeSelection() {
   updateChart();
 }
 
-// Получение цвета графика
+// Парсинг даты
+function parseDate(str) {
+  const parts = str.trim().split('.');
+  if (parts.length !== 3) return null;
+  let [d, m, y] = parts;
+  if (y.length === 2) y = '20' + y;
+  return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+// Обработка CSV
+function processCSV(text) {
+  dataBlocks = {
+    SOT: { labels: [], data: {} },
+    PMK: { labels: [], data: {} },
+    TORUDA: { labels: [], data: {} }
+  };
+  const lines = text.trim().split(/\r?\n/);
+  const pmkIdx = lines.findIndex(l => l.includes("PMK"));
+  const torIdx = lines.findIndex(l => l.includes("TORUDA"));
+
+  const SOTLines = lines.slice(0, pmkIdx);
+  const PMKLines = lines.slice(pmkIdx, torIdx);
+  const TORUDALines = lines.slice(torIdx);
+
+  ['SOT', 'PMK', 'TORUDA'].forEach(block => {
+    let blockLines;
+    if (block === 'SOT') blockLines = SOTLines;
+    else if (block === 'PMK') blockLines = PMKLines;
+    else blockLines = TORUDALines;
+
+    const parsedData = {};
+    const dateSet = new Set();
+
+    for (const line of blockLines) {
+      const cols = line.split(';').map(c => c.trim());
+      if (cols.length < 7) continue;
+      const [person, tool, , , , , dateStr] = cols;
+      const dateLabel = parseDate(dateStr);
+      if (!dateLabel) continue;
+      dateSet.add(dateLabel);
+      const values = [];
+      for (let i = 2; i <= 5; i++) {
+        const v = parseFloat(cols[i].replace(',', '.')) || 0;
+        values.push(v);
+      }
+      const total = values.reduce((a, b) => a + b, 0);
+      if (!parsedData[tool]) parsedData[tool] = {};
+      if (!parsedData[tool][person]) parsedData[tool][person] = {};
+      if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
+      parsedData[tool][person][dateLabel] += total;
+    }
+    const labelsArr = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+    const dataPerTool = {};
+    for (const t in parsedData) {
+      dataPerTool[t] = {};
+      for (const p in parsedData[t]) {
+        dataPerTool[t][p] = Array(labelsArr.length).fill(0);
+        labelsArr.forEach((d, i) => {
+          if (parsedData[t][p][d] !== undefined) {
+            dataPerTool[t][p][i] = parsedData[t][p][d];
+          }
+        });
+      }
+    }
+    dataBlocks[block].labels = labelsArr;
+    dataBlocks[block].data = dataPerTool;
+  });
+  updateBlockOptions();
+  const firstBlock = Object.keys(dataBlocks)[0];
+  if (firstBlock) {
+    selectBlock(firstBlock);
+    toggleEmployeeSelection();
+    updateChart();
+  }
+}
+
+// Изначально вызываем resetSelects() чтобы было "выберите CSV"
+resetSelects();
+
+// Обработка изменения выбора блока
+const selectBlockElem = document.getElementById('blockSelect');
+selectBlockElem.onchange = () => {
+  selectBlock(selectBlockElem.value);
+  toggleEmployeeSelection();
+  updateChart();
+};
+
+// Обработка изменения выбора инструмента
+const selectToolElem = document.getElementById('toolSelect');
+selectToolElem.onchange = () => {
+  currentTool = selectToolElem.value;
+  updateChart();
+};
+
+// Обработка изменения выбора сотрудника
+const selectEmpElem = document.getElementById('employeeSelect');
+selectEmpElem.onchange = () => {
+  currentEmployee = selectEmpElem.value;
+  updateChart();
+};
+
+// Обработка смены режима
+document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
+
+// Остальной код как есть...
+// (Объявление getChartTextColor, updateChart, getColor, getGridColor, showNotification, и прочие функции, как в вашем оригинале)
+// ... (оставьте их без изменений, только убедитесь, что они есть в конце скрипта)
+
 function getChartTextColor() {
   return darkMode ? '#fff' : '#000';
 }
-
 
 function updateChart() {
   const ctx = document.getElementById('myChart').getContext('2d');
@@ -1021,6 +1067,7 @@ function updateChart() {
     });
   }
 }
+
 function getColor(idx, alpha=1) {
   const palette = [
     `rgba(255, 99, 132, ${alpha})`,
@@ -1160,6 +1207,8 @@ window.addEventListener('load', () => {
   // также инициализация темы и сохранение из localStorage
   const savedChangelog = localStorage.getItem('changelog') || '';
   document.getElementById('changelogText').value = savedChangelog;
+  // Инициализация темы
+  // можно добавить сюда, если нужно
 });
 
 // Обработчик для кнопки "Changelog"
