@@ -179,6 +179,7 @@
   }
   input[type="text"], select, textarea {
     width: 100%;
+    box-sizing: border-box;
     padding: 14px 20px;
     border-radius: 12px;
     border: 1px solid var(--border-color);
@@ -461,6 +462,41 @@ body.dark-theme td:hover {
 body.dark-theme .spinner-inner {
   border-top-color: var(--btn-hover-bg);
 }
+/* Улучшение стиля для кнопки загрузки файла */
+#fileInput {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 2px dashed #4CAF50;
+  padding: 14px 20px;
+  font-size: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+#fileInput::-webkit-file-upload-button {
+  background: linear-gradient(135deg, #4CAF50, #66bb6a);
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  transition: background 0.3s, transform 0.2s;
+}
+#fileInput::-webkit-file-upload-button:hover {
+  background: linear-gradient(135deg, #45a049, #5fa362);
+  transform: translateY(-2px);
+}
+#custom-theme-toggle i {
+  font-size: 18px;
+  transition: color 0.3s;
+}
+#custom-theme-toggle:hover i {
+  color: #ffd700; /* или любой цвет по вашему вкусу */
+}
 </style>
 </head>
 <body>
@@ -473,11 +509,19 @@ body.dark-theme .spinner-inner {
 <div style="margin-bottom:20px;">
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
+
 <!-- Переключатель темы -->
 <div class="custom-theme-switcher" style="top: 20px; right: 20px;">
   <div id="custom-theme-toggle" style="width: 60px; height: 35px; background: #FFA500; border-radius: 25px; cursor: pointer; display: flex; align-items: center; padding: 0 5px; transition: background 0.5s; position: fixed; top: 20px; right: 20px; z-index: 999;">
-    <div class="icon-moon" style="position: absolute; left: 6px; font-size: 18px;">🌙</div>
-    <div class="icon-sun" style="position: absolute; right: 6px; font-size: 18px;">☀️</div>
+    <!-- Иконка луны -->
+    <div class="icon-moon" style="position: absolute; left: 10px; font-size: 18px; color: #fff;">
+      <i class="fas fa-moon"></i>
+    </div>
+    <!-- Иконка солнца -->
+    <div class="icon-sun" style="position: absolute; right: 10px; font-size: 18px; color: #fff;">
+      <i class="fas fa-sun"></i>
+    </div>
+    <!-- бегунок -->
     <div class="knob" style="position: absolute; top: 3px; width: 30px; height: 30px; background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); transition: all 0.5s ease; left: 5px;"></div>
   </div>
 </div>
