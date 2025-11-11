@@ -849,10 +849,7 @@ function getChartTextColor() {
 }
 
 
-// Обновление графика
 function updateChart() {
-  if (chartInstance) chartInstance.destroy();
-
   const ctx = document.getElementById('myChart').getContext('2d');
   const mode = document.getElementById('modeSelect').value;
   const tool = document.getElementById('toolSelect').value;
@@ -864,32 +861,14 @@ function updateChart() {
 
   currentLabels = labels;
 
+  // Формируем datasets
   if (!blockData.data[tool]) {
+    // Если данных по выбранному инструменту нет — очищаем график
     if (chartInstance) {
-  chartInstance.data = {
-    labels: labels,
-    datasets: currentDatasets
-  };
-  chartInstance.options.animation = {
-    duration: 1500,
-    easing: 'easeOutQuart',
-  };
-  chartInstance.update();
-} else {
-  // Создайте новый график, если еще не создан
-  chartInstance = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: currentDatasets },
-    options: {
-      // ваши текущие настройки
-      animation: {
-        duration: 1500,
-        easing: 'easeOutQuart'
-      },
-      // остальные параметры
+      chartInstance.data.labels = labels;
+      chartInstance.data.datasets = [];
+      chartInstance.update();
     }
-  });
-}
     return;
   }
 
@@ -924,86 +903,99 @@ function updateChart() {
     }
   }
 
-  chartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: currentDatasets
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            color: textColor,
-            font: { size: 14, weight: '600' },
-            boxWidth: 20,
-            boxHeight: 20,
-            padding: 15,
-            useBorderRadius: true,
-            borderRadius: 4
+  if (chartInstance) {
+    // Обновляем существующий график
+    chartInstance.data.labels = labels;
+    chartInstance.data.datasets = currentDatasets;
+    chartInstance.options.animation = {
+      duration: 1500,
+      easing: 'easeOutQuart'
+    };
+    chartInstance.update();
+  } else {
+    // Создаем новый график при первом вызове
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: currentDatasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1500,
+          easing: 'easeOutQuart'
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              color: getChartTextColor(),
+              font: { size: 14, weight: '600' },
+              boxWidth: 20,
+              boxHeight: 20,
+              padding: 15
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            padding: 10,
+            caretSize: 8,
+            cornerRadius: 4
           }
         },
-        tooltip: {
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          titleColor: '#fff',
-          bodyColor: '#fff',
-          borderColor: '#ccc',
-          borderWidth: 1,
-          padding: 10,
-          caretSize: 8,
-          cornerRadius: 4
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColor,
-            font: { size: 14, weight: '600' }
+        scales: {
+          x: {
+            ticks: {
+              color: getChartTextColor(),
+              font: { size: 14, weight: '600' }
+            },
+            grid: {
+              color: getGridColor(),
+              drawBorder: false
+            },
+            title: {
+              display: true,
+              text: '📅 Даты',
+              color: getChartTextColor(),
+              font: { size: 14, weight: '600' }
+            }
           },
-          grid: {
-            color: getGridColor(),
-            drawBorder: false,
-            tickBorderColor: 'transparent'
-          },
-          title: {
-            display: true,
-            text: '📅 Даты',
-            color: textColor,
-            font: { size: 14, weight: '600' }
+          y: {
+            ticks: {
+              color: getChartTextColor(),
+              font: { size: 14, weight: '600' },
+              beginAtZero: true
+            },
+            grid: {
+              color: getGridColor(),
+              drawBorder: false
+            },
+            title: {
+              display: true,
+              text: 'Значение',
+              color: getChartTextColor(),
+              font: { size: 14, weight: '600' }
+            }
           }
         },
-        y: {
-          ticks: {
-            color: textColor,
-            font: { size: 14, weight: '600' },
-            beginAtZero: true
-          },
-          grid: {
-            color: getGridColor(),
-            drawBorder: false
-          },
-          title: {
-            display: true,
-            text: 'Значение',
-            color: textColor,
-            font: { size: 14, weight: '600' }
+        layout: {
+          padding: {
+            top: 20,
+            bottom: 20,
+            left: 20,
+            right: 20
           }
-        }
-      },
-      layout: {
-        padding: {
-          top: 20,
-          bottom: 20,
-          left: 20,
-          right: 20
         }
       }
-    }
-  });
+    });
+  }
 }
 function getColor(idx, alpha=1) {
   const palette = [
