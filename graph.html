@@ -855,18 +855,25 @@ function updateChart() {
   const tool = document.getElementById('toolSelect').value;
   const employee = document.getElementById('employeeSelect').value;
   const blockData = dataBlocks[currentBlock];
+
   if (!blockData) return;
+
   const labels = blockData.labels;
   const textColor = getChartTextColor();
 
   currentLabels = labels;
 
-  // Формируем datasets
   if (!blockData.data[tool]) {
-    // Если данных по выбранному инструменту нет — очищаем график
     if (chartInstance) {
       chartInstance.data.labels = labels;
       chartInstance.data.datasets = [];
+      // Обновляем заголовок
+      chartInstance.options.plugins.title = {
+        display: true,
+        text: document.getElementById('chartTitle').innerText || 'График',
+        color: getChartTextColor(),
+        font: { size: 16, weight: 'bold' }
+      };
       chartInstance.update();
     }
     return;
@@ -904,16 +911,28 @@ function updateChart() {
   }
 
   if (chartInstance) {
-    // Обновляем существующий график
+    // Обновляем данные и заголовок
     chartInstance.data.labels = labels;
     chartInstance.data.datasets = currentDatasets;
-    chartInstance.options.animation = {
-      duration: 1500,
-      easing: 'easeOutQuart'
+
+    // Обновляем заголовок графика, чтобы он соответствовал теме
+    chartInstance.options.plugins.title = {
+      display: true,
+      text: document.getElementById('chartTitle').innerText || 'График',
+      color: getChartTextColor(),
+      font: { size: 16, weight: 'bold' }
     };
+
+    chartInstance.options.plugins.title.color = getChartTextColor();
+    chartInstance.options.plugins.legend.labels.color = getChartTextColor();
+    chartInstance.options.scales.x.ticks.color = getChartTextColor();
+    chartInstance.options.scales.y.ticks.color = getChartTextColor();
+    chartInstance.options.scales.x.title.color = getChartTextColor();
+    chartInstance.options.scales.y.title.color = getChartTextColor();
+
     chartInstance.update();
   } else {
-    // Создаем новый график при первом вызове
+    // Создаем новый график
     chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
@@ -933,10 +952,7 @@ function updateChart() {
             position: 'top',
             labels: {
               color: getChartTextColor(),
-              font: { size: 14, weight: '600' },
-              boxWidth: 20,
-              boxHeight: 20,
-              padding: 15
+              font: { size: 14, weight: '600' }
             }
           },
           tooltip: {
@@ -948,6 +964,15 @@ function updateChart() {
             padding: 10,
             caretSize: 8,
             cornerRadius: 4
+          },
+          title: {
+            display: true,
+            text: document.getElementById('chartTitle').innerText || 'График',
+            color: getChartTextColor(),
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
           }
         },
         scales: {
@@ -970,8 +995,7 @@ function updateChart() {
           y: {
             ticks: {
               color: getChartTextColor(),
-              font: { size: 14, weight: '600' },
-              beginAtZero: true
+              font: { size: 14, weight: '600' }
             },
             grid: {
               color: getGridColor(),
