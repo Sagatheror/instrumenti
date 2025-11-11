@@ -346,12 +346,23 @@ body {
   opacity: 0;
   animation: fadeIn 0.3s forwards;
 }
+#sotModal > div {
+  background: var(--hover-bg-color);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 1200px; /* увеличиваем максимальную ширину */
+  width: 95%; /* почти на всю ширину экрана */
+  max-height: 80vh; /* ограничение по высоте — 80% окна */
+  height: auto; /* высота по содержимому */
+  overflow: auto; /* при переполнении — прокрутка */
+}
 #sotModal.show {
   display: flex;
   opacity: 1;
 }
 #sotIframe {
   width: 100%; 
+  max-width: 1200px;
   height: 70vh; 
   border: none; 
   border-radius: 10px;
@@ -1293,3 +1304,4 @@ window.addEventListener('scroll', () => {
 </script>
 </body>
 </html>
+
