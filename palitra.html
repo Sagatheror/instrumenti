@@ -647,6 +647,8 @@ function addItem() {
   if (type === 'color') {
     const color = document.getElementById('newColor').value;
     palette.push({ type:'color', color, name, size, borderRadius, scale });
+    renderPalette();
+    updateHTMLCode();
   } else if (type === 'image') {
     const file = document.getElementById('newImage').files[0];
     if (file) {
@@ -654,6 +656,7 @@ function addItem() {
       reader.onload = () => {
         palette.push({ type:'image', src: reader.result, name, size, borderRadius, scale });
         renderPalette();
+        updateHTMLCode();
       };
       reader.readAsDataURL(file);
     } else {
@@ -661,12 +664,10 @@ function addItem() {
       return;
     }
   }
+  // Очистка полей
   document.getElementById('newName').value = '';
   toggleMediaInput();
-  renderPalette();
-  updateHTMLCode();
 }
-
 function clearPalette() {
   if (confirm('Удалить все элементы?')) {
     palette = [];
