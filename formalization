@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Шрифты Google -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+<!-- Иконки Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  :root {
+    --bg-color: #f0f2f5;
+    --text-color: #222;
+    --section-bg: #fff;
+    --border-color: #d0d0d0;
+    --primary-gradient: linear-gradient(135deg, #4CAF50, #66bb6a);
+    --hover-gradient: linear-gradient(135deg, #45a049, #5fa362);
+    --shadow: rgba(0,0,0,0.1);
+  }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 30px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.5s, color 0.5s;
+    line-height: 1.6;
+  }
+  body.dark-theme {
+    --bg-color: #222;
+    --text-color: #eee;
+    --section-bg: #333;
+    --border-color: #555;
+    --primary-gradient: linear-gradient(135deg, #66bb6a, #4CAF50);
+    --hover-gradient: linear-gradient(135deg, #5fa362, #45a049);
+    --shadow: rgba(0,0,0,0.3);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+  /* Блок выбора */
+.select-container {
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  background: var(--section-bg);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 16px 32px var(--shadow);
+  transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+}
+.select-container:hover {
+  box-shadow: 0 20px 40px var(--shadow);
+  transform: translateY(-4px);
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+select:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.2);
+  outline: none;
+}
+
+/* Скрытые разделы инструментов */
+.tools {
+  display: none;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.tool-section {
+  display: none;
+  background: var(--section-bg);
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 16px;
+  box-shadow: 0 16px 32px var(--shadow);
+}
+h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+}
+h2 i {
+  margin-right: 10px;
+  font-size: 24px;
+  color: #4CAF50;
+}
+label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+input[type="text"], textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+}
+input[type="text"]:focus, textarea:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.2);
+  outline: none;
+}
+
+/* Кнопки */
+button {
+  padding: 14px 30px;
+  font-size: 17px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+button:hover {
+  background: var(--hover-gradient);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+button i {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+/* Таблица */
+#tableContainer {
+  margin-top: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  background: #fff;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+body.dark-theme table {
+  background: #444;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+thead {
+  background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
+}
+body.dark-theme thead {
+  background: linear-gradient(135deg, #555, #333);
+}
+th, td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 16px;
+}
+td.editable {
+  background-color: #fff8dc;
+  cursor: text;
+}
+body.dark-theme td.editable {
+  background-color: #777;
+}
+td:hover {
+  background-color: #f0f0f0;
+}
+body.dark-theme td:hover {
+  background-color: #666;
+}
+
+/* Кнопка сохранения */
+#saveBtn {
+  display: block;
+  margin: 30px auto;
+}
+
+/* Футер */
+#footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  color: var(--text-color);
+  padding: 12px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+}
+
+/* Уведомление */
+#notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4CAF50;
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-size: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+#notification.show {
+  opacity: 1;
+}
+
+/* Блок информационной плашки */
+#infoBoxContainer {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--section-bg);
+  border-radius: 16px;
+  box-shadow: 0 16px 32px var(--shadow);
+  display: none;
+}
+#infoBoxContainer.active {
+  display: block;
+}
+#infoPreview {
+  margin-top: 20px;
+  padding: 10px;
+  background: var(--section-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  min-height: 40px;
+  width: 100%;
+}
+#previewText {
+  font-size: 20px;
+  font-weight: 700;
+  color: #d84315;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  width: 100%;
+  min-height: 40px;
+}
+
+/* Остальные стили без изменений */
+
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff0f5, #ffe0ec);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.warning:hover {
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #ffe0ec, #fff0f5);
+}
+.warning-text {
+  font-size: 25px;
+  font-weight: 700;
+  color: #d84315;
+}
+
+/* Медиазапрос для мобильных устройств */
+@media(max-width:600px) {
+  .warning {
+    align-items: center;
+  }
+  .warning-text {
+    font-size: 20px !important;
+  }
+}
+
+/* Стиль для иконки-инфо с высоким z-index */
+#infoIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  cursor: pointer;
+  background: #4CAF50;
+  color: #fff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-size: 24px;
+  display: none;
+}
+#tooltip {
+  position: absolute;
+  padding: 8px 12px;
+  background: #333;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: none;
+  z-index: 10000;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+/* Добавлены стили для иконок Yes и No */
+.copied-table td.icon-yes {
+  text-align: center;
+}
+.copied-table td.icon-no {
+  text-align: center;
+}
+.icon-yes {
+  color: green;
+  font-size: 22px;
+}
+.icon-no {
+  color: red;
+  font-size: 22px;
+}
+</style>
+</head>
+<body>
+
+<h1>Оформление текста</h1>
+
+<div class="select-container">
+  <label for="formatSelect">Выберите вид оформления:</label>
+  <select id="formatSelect">
+    <option value="">--Выберите--</option>
+    <option value="table">Таблица</option>
+    <option value="infoBox">Информационная плашка</option>
+    <option value="blocks">Блоки описаний</option>
+    <option value="list">Описание с маркированным списком</option>
+  </select>
+</div>
+
+<div class="tools">
+
+  <!-- Инструменты для таблицы -->
+  <div id="section-table" class="tool-section">
+    <h2><i class="fas fa-table"></i>Инструменты для таблицы</h2>
+    <label>Количество строк:
+      <input type="number" min="1" />
+    </label>
+    <label>Количество столбцов:
+      <input type="number" min="1" />
+    </label>
+  </div>
+
+  <!-- Инструменты для информационной плашки -->
+  <div id="section-infoBox" class="tool-section">
+    <h2><i class="fas fa-info-circle"></i>Инструменты для информационной плашки</h2>
+    <label>Заголовок:
+      <input type="text" />
+    </label>
+    <label>Текст:
+      <textarea rows="4"></textarea>
+    </label>
+  </div>
+
+  <!-- Инструменты для блоков описаний -->
+  <div id="section-blocks" class="tool-section">
+    <h2><i class="fas fa-th-large"></i>Инструменты для блоков описаний</h2>
+    <label>Количество блоков:
+      <input type="number" min="1" />
+    </label>
+  </div>
+
+  <!-- Инструменты для маркированного списка -->
+  <div id="section-list" class="tool-section">
+    <h2><i class="fas fa-list"></i>Инструменты для маркированного списка</h2>
+    <label>Количество пунктов:
+      <input type="number" min="1" />
+    </label>
+  </div>
+
+</div>
+
+<!-- Новая секция для информационной плашки -->
+<div id="infoBoxContainer" class="">
+  <h2>Настройка информационной плашки</h2>
+  <label>Текст для плашки:
+    <textarea id="infoText" rows="4" placeholder="Введите текст"></textarea>
+  </label>
+  <div id="infoPreview" class="">
+    <div class="warning-text" id="previewText">⚠️ Вводимый текст</div>
+  </div>
+  <!-- Блок подсказок -->
+  <div id="styleHints" style="margin-top:20px; padding:15px; background:#f7f7f7; border-radius:10px; font-family:Arial, sans-serif; font-size:16px;">
+    <h3 style="margin-top:0; font-family: 'Montserrat', sans-serif;font-size: 22px;">Подсказки по стилям текста</h3>
+    <ul style="margin:0; padding-left:20px; list-style-type: disc;">
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Размер шрифта:</span> измените свойство <code>font-size</code> в стиле <code>.warning-text</code>.</li>
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Цвет текста:</span> поменяйте <code>color</code> в стиле <code>.warning-text</code>.</li>
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положение блока:</span> используйте <code>margin</code> для изменения расположения блока <code>.warning</code> относительно страницы: <ul> 
+        <li><code>margin: 0 auto </code>- горизонтальное выравнивание по центру</li> 
+        <li><code>margin-left: 50px; </code> - сдвиг вправо на 50px</li> 
+        <li><code>margin-left: -50px;</code> - сдвиг влево на 50px</li> 
+        <li><code>margin: 10px 20px 30px 40px;</code> - заданные отступы сверху, справа, снизу, слева</li></ul></li>
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положения текста внутри блока:</span> используйте <code>padding</code> в стиле <code>.warning-text</code>, чтобы увеличить или уменьшить отступы относительно краев поля:<ul>
+        <li><code> padding-left: 10px;</code> - отступ слева</li> 
+        <li> <code>padding-right: 10px;</code> - отступ справа</li> 
+      </ul></li>
+        <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положения текста внутри блока:</span> используйте <code>margin</code> в стиле <code>.warning-text</code>, чтобы сместить текст внутри блока:<ul>
+        <li><code>  margin-left: 20px;</code> - сдвиг вправо на 20px</li> 
+        <li> <code>margin-left: -10px;</code> - сдвиг влево на 10px</li>
+        <li><code>margin-top: 10px</code> - отступ сверху</li>
+        <li><code>margin-bottom: 10px;</code> - отступ снизу</li> </ul> </li>
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Максимальная ширина блока:</span> используйте <code>max-width</code> в <code>.warning</code>, чтобы увеличить или уменьшить максимальную ширину блока</li>
+      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Толщина шрифта:</span> задавайте через свойство <code>font-weight</code> в стиле <code>.warning-text</code>: значение от 100 до 800, где 800 - самое жирное выделение</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Интерактивная таблица -->
+<div id="tableContainer" style="display:none; max-width: 800px; margin: 20px auto;">
+  <h2><i class="fas fa-table"></i>Интерактивная таблица</h2>
+  <div style="margin-bottom: 10px; display:flex; gap:10px;">
+    <button id="addRowBtn"><i class="fas fa-plus"></i> Добавить строку</button>
+    <button id="removeRowBtn"><i class="fas fa-minus"></i> Удалить строку</button>
+    <button id="addColBtn"><i class="fas fa-plus"></i> Добавить столбец</button>
+    <button id="removeColBtn"><i class="fas fa-minus"></i> Удалить столбец</button>
+  </div>
+  <div style="overflow-x:auto;">
+    <table id="interactiveTable" style="width:100%; border-collapse:collapse; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+      <thead>
+        <tr></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Кнопка копировать -->
+<div style="text-align:center; margin-top:50px;">
+  <button id="copyBtn"><i class="fas fa-copy"></i> Копировать</button>
+</div>
+
+<!-- Футер -->
+<div id="footer">
+  <span>Создатель сайта: EmPsOn &copy; 2025</span>
+</div>
+
+<!-- Иконка информации -->
+<div id="infoIcon">
+  <i class="fas fa-info-circle"></i>
+</div>
+
+<!-- Всплывающая подсказка -->
+<div id="tooltip"></div>
+
+<!-- Уведомление -->
+<div id="notification"></div>
+
+<script>
+const select = document.getElementById('formatSelect');
+const sections = {
+  'table': document.getElementById('section-table'),
+  'infoBox': document.getElementById('section-infoBox'),
+  'blocks': document.getElementById('section-blocks'),
+  'list': document.getElementById('section-list')
+};
+
+const infoBox = document.getElementById('infoBoxContainer');
+const infoTextArea = document.getElementById('infoText');
+const previewText = document.getElementById('previewText');
+
+select.addEventListener('change', () => {
+  for (let key in sections) {
+    sections[key].classList.remove('active');
+  }
+  const val = select.value;
+  if (sections[val]) {
+    sections[val].classList.add('active');
+  }
+  if (val === 'table') {
+    document.getElementById('tableContainer').style.display = 'block';
+    if (!table.dataset.initialized) {
+      initTable();
+      table.dataset.initialized = 'true';
+    }
+    document.getElementById('infoIcon').style.display = 'flex';
+  } else {
+    document.getElementById('tableContainer').style.display = 'none';
+    document.getElementById('infoIcon').style.display = 'none';
+  }
+  if (val === 'infoBox') {
+    infoBox.classList.add('active');
+  } else {
+    infoBox.classList.remove('active');
+  }
+});
+
+infoTextArea.addEventListener('input', () => {
+  const text = infoTextArea.value;
+  document.getElementById('previewText').innerHTML = `
+    <div class="warning">
+      <div class="warning-text">⚠️ ${text}</div>
+    </div>
+  `;
+});
+
+// Таблица и управление ею
+const tableContainer = document.getElementById('tableContainer');
+const table = document.getElementById('interactiveTable');
+const theadRow = table.querySelector('thead tr');
+const tbody = table.querySelector('tbody');
+
+const addRowBtn = document.getElementById('addRowBtn');
+const removeRowBtn = document.getElementById('removeRowBtn');
+const addColBtn = document.getElementById('addColBtn');
+const removeColBtn = document.getElementById('removeColBtn');
+
+let colCount = 5;
+let rowCount = 3;
+let selectedCell = null;
+
+// Инициализация таблицы
+function initTable() {
+  for (let i = 0; i < colCount; i++) {
+    const th = document.createElement('th');
+    th.contentEditable = true;
+    th.innerText = `Колонка ${i + 1}`;
+    th.onclick = () => selectCell(th);
+    theadRow.appendChild(th);
+  }
+  for (let i = 0; i < rowCount; i++) {
+    const tr = document.createElement('tr');
+    for (let j = 0; j < colCount; j++) {
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.innerText = `Ячейка ${i + 1}-${j + 1}`;
+      if (j === 0) td.classList.add('product-name'); // добавляем класс к первому столбцу
+      td.onclick = () => selectCell(td);
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+
+function selectCell(cell) {
+  if (selectedCell) selectedCell.classList.remove('selected');
+  selectedCell = cell;
+  selectedCell.classList.add('selected');
+  selectedCell.focus();
+}
+
+document.getElementById('addRowBtn').onclick = () => {
+  addRow();
+};
+document.getElementById('addColBtn').onclick = () => {
+  addColumn();
+};
+document.getElementById('removeRowBtn').onclick = () => {
+  removeLastRow();
+};
+document.getElementById('removeColBtn').onclick = () => {
+  removeLastColumn();
+};
+
+function addRow() {
+  const newRow = document.createElement('tr');
+  for (let i = 0; i < colCount; i++) {
+    const td = document.createElement('td');
+    td.contentEditable = true;
+    td.innerText = `Ячейка ${tbody.children.length + 1}-${i + 1}`;
+    if (i === 0) td.classList.add('product-name'); // добавляем класс к первому столбцу
+    td.onclick = () => selectCell(td);
+    newRow.appendChild(td);
+  }
+  tbody.appendChild(newRow);
+  rowCount++;
+}
+
+function addColumn() {
+  const headerRow = document.querySelector('#interactiveTable thead tr');
+  const colIndex = headerRow.children.length;
+  const newHeader = document.createElement('th');
+  newHeader.innerText = `Заголовок ${colIndex + 1}`;
+  newHeader.onclick = () => selectCell(newHeader);
+  headerRow.appendChild(newHeader);
+  Array.from(tbody.children).forEach((tr, index) => {
+    const newTd = document.createElement('td');
+    newTd.contentEditable = true;
+    newTd.innerText = `Ячейка ${index + 1}-${colIndex + 1}`;
+    if (0 === 0) newTd.classList.add('product-name'); // добавляем класс к первому столбцу
+    newTd.onclick = () => selectCell(newTd);
+    tr.appendChild(newTd);
+  });
+  colCount++;
+}
+
+function removeLastRow() {
+  if (tbody.children.length > 0) {
+    tbody.removeChild(tbody.lastElementChild);
+    rowCount--;
+  }
+}
+
+function removeLastColumn() {
+  const headerRow = document.querySelector('#interactiveTable thead tr');
+  if (headerRow.children.length > 0) {
+    const lastIndex = headerRow.children.length -1;
+    headerRow.removeChild(headerRow.children[lastIndex]);
+    Array.from(tbody.children).forEach((row) => {
+      if (row.children[lastIndex]) row.children[lastIndex].remove();
+    });
+    colCount--;
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!selectedCell) return;
+  if (e.key === 'Delete' && e.ctrlKey) {
+    deleteRow();
+    e.preventDefault();
+  } else if (e.key === 'Backspace' && e.ctrlKey) {
+    deleteColumn();
+    e.preventDefault();
+  } else if (e.key === 'Enter' && e.ctrlKey) {
+    addRow();
+    e.preventDefault();
+  } else if (e.key === 'i' && e.ctrlKey) {
+    addColumn();
+    e.preventDefault();
+  }
+});
+
+function deleteRow() {
+  if (!selectedCell) return;
+  const row = selectedCell.closest('tr');
+  if (row) {
+    row.remove();
+    selectedCell = null;
+  }
+}
+
+function deleteColumn() {
+  if (!selectedCell) return;
+  const cellIndex = Array.prototype.indexOf.call(selectedCell.parentElement.children, selectedCell);
+  const table = selectedCell.closest('table');
+  if (table) {
+    Array.from(table.rows).forEach((row) => {
+      if (row.children.length > cellIndex) row.deleteCell(cellIndex);
+    });
+    selectedCell = null;
+  }
+}
+
+// Обработка режима информационной плашки и копирования
+const infoIcon = document.getElementById('infoIcon');
+const tooltip = document.getElementById('tooltip');
+
+infoIcon.addEventListener('mouseenter', (e) => {
+  const rect = infoIcon.getBoundingClientRect();
+  const message = `
+<ul style="margin:0; padding-left:20px; list-style-type: disc; font-family:'Montserrat', sans-serif; font-size:14px;">
+  <li><strong>Ctrl+Enter</strong> — новая строка</li>
+  <li><strong>Ctrl+i</strong> — новый столбец</li>
+  <li><strong>Ctrl+Delete</strong> — удаление строки с выбранной ячейкой</li>
+  <li><strong>Ctrl+Backspace</strong> — удаление столбца с выбранной ячейкой</li>
+  <li><strong>Плюс в ячейке</strong> — преобразуется в "галочку"</li>
+  <li><strong>Минус в ячейке</strong> — преобразуется в "крестик"</li>
+</ul>`;
+  tooltip.innerHTML = message;
+  tooltip.style.display = 'block';
+  tooltip.style.width = '250px'; // чуть больше, чтобы вместить список
+  tooltip.style.height = 'auto';
+  tooltip.style.visibility = 'hidden';
+
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  let top = rect.top + scrollY - tooltipHeight - 8;
+  if (top < scrollY) top = rect.bottom + scrollY + 8;
+  let left = rect.left + scrollX + (rect.width - tooltipWidth) / 2;
+  if (left < scrollX + 50) left = scrollX + 20;
+  else if (left + tooltipWidth > scrollX + window.innerWidth - 20) left = scrollX + window.innerWidth - tooltipWidth - 20;
+
+  tooltip.style.top = top + 'px';
+  tooltip.style.left = left + 'px';
+  tooltip.style.visibility = 'visible';
+});
+
+document.addEventListener('mousemove', (e) => {
+  const tooltipEl = document.getElementById('tooltip');
+  if (!tooltipEl || tooltipEl.style.display !== 'block') return;
+  const tooltipWidth = tooltipEl.offsetWidth;
+  const tooltipHeight = tooltipEl.offsetHeight;
+  const rect = infoIcon.getBoundingClientRect();
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  let top = rect.top + scrollY - tooltipHeight - 8;
+  if (top < scrollY) top = rect.bottom + scrollY + 8;
+  let left = rect.left + scrollX + (rect.width - tooltipWidth) / 2;
+  if (left < scrollX) left = scrollX;
+  if (left + tooltipWidth > scrollX + window.innerWidth) left = scrollX + window.innerWidth - tooltipWidth;
+  tooltip.style.top = top + 'px';
+  tooltip.style.left = left + 'px';
+});
+
+document.querySelector('#infoIcon').addEventListener('mouseleave', () => {
+  document.getElementById('tooltip').style.display = 'none';
+});
+
+// Обработка копирования для режима "информационная плашка" и "таблица"
+const copyBtn = document.getElementById('copyBtn');
+copyBtn.onclick = () => {
+  const mode = document.getElementById('formatSelect').value;
+  if (mode === 'table') {
+    // Клонируем таблицу
+    const table = document.getElementById('interactiveTable');
+    const tableHtml = table.outerHTML;
+
+    const styles = `
+<style type="text/css">
+/* Стили для таблицы с классом .copied-table */
+.copied-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  background: #fff;
+  font-family: 'Montserrat', sans-serif;
+}
+.copied-table thead {
+  background: linear-gradient(135deg, #66bb6a, #43a047);
+  color: #fff;
+}
+.copied-table thead th {
+  padding: 16px;
+  font-size: 15px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.copied-table tbody tr {
+  transition: all 0.3s ease;
+}
+.copied-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+.copied-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+.copied-table tbody tr:hover {
+  background-color: #dcedc8;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+.copied-table td, .copied-table th {
+  padding: 14px 12px;
+  font-size: 15px;
+  border: none;
+  vertical-align: middle;
+}
+.copied-table td.product-name {
+  text-align: left;
+  font-weight: 600;
+  color: #37474f;
+}
+/* Иконки для ячеек "+" и "-" */
+.copied-table td.icon-yes {
+  text-align: center;
+}
+.copied-table td.icon-no {
+  text-align: center;
+}
+td.icon-yes, td.icon-no {
+  text-align: center;
+  font-size: 22px;
+}
+.icon-yes::before {
+  content: "✔";
+  color: #2e7d32;
+  font-size: 22px;
+  display: inline-block;
+}
+.icon-no::before {
+  content: "✘";
+  color: #c62828;
+  font-size: 22px;
+  display: inline-block;
+}
+
+</style>
+`;
+
+    // Клонируем таблицу и назначаем класс
+    const tableWithClass = table.cloneNode(true);
+    tableWithClass.className = 'copied-table';
+
+    // Обработка ячеек "+" и "-"
+    Array.from(tableWithClass.querySelectorAll('td')).forEach(td => {
+      const cellText = td.innerText.trim();
+      if (cellText === '+') {
+        td.innerHTML = '<i class="fas fa-check-circle icon-yes"></i>';
+        td.className = '';
+      } else if (cellText === '-') {
+        td.innerHTML = '<i class="fas fa-times-circle icon-no"></i>';
+        td.className = '';
+      }
+    });
+
+    const htmlToCopy = styles + tableWithClass.outerHTML;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(htmlToCopy).then(() => {
+        alert('Таблица с стилями скопирована в буфер обмена!');
+      }).catch(() => {
+        fallbackCopy(htmlToCopy);
+      });
+    } else {
+      fallbackCopy(htmlToCopy);
+    }
+  } else {
+    // остальные режимы
+    const htmlContent = document.querySelector('#previewText').innerHTML;
+
+    const styles = `
+<style>
+/* Стили для warning блока, без конфликтов с таблицей */
+.custom-section .warning {
+  display: flex;
+  align-items: flex-start; 
+  justify-content: center;
+  background: linear-gradient(135deg, #fff0f5, #ffe0ec);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 100%; 
+  box-sizing: border-box; 
+  margin: 0 auto;
+}
+.custom-section .warning:hover {
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #ffe0ec, #fff0f5);
+}
+.warning-text {
+  font-size: 25px;
+  font-weight: 700;
+  color: #d84315;
+}
+</style>
+`;
+
+    const fullHtml = `
+<section class="custom-section">
+  ${styles}
+  ${htmlContent}
+</section>
+`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(fullHtml).then(() => {
+        alert('Код скопирован в буфер обмена!');
+      }).catch(() => {
+        fallbackCopy(fullHtml);
+      });
+    } else {
+      fallbackCopy(fullHtml);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      alert('Код скопирован в буфер обмена!');
+    } catch (err) {
+      alert('Ошибка копирования.');
+    }
+    document.body.removeChild(textarea);
+  }
+};
+</script>
+</body>
+</html>
