@@ -681,7 +681,30 @@ function clearPalette() {
     updateHTMLCode();
   }
 }
+function applySettingsToAll() {
+  // Получаем значения из полей
+  const borderRadius = parseInt(document.getElementById('applyBorderRadius').value);
+  const size = parseInt(document.getElementById('applySize').value);
+  const scale = parseFloat(document.getElementById('applyScale').value);
 
+  // Проходим по всем элементам палитры и обновляем параметры
+  palette.forEach(item => {
+    if (typeof borderRadius === 'number' && !isNaN(borderRadius)) {
+      item.borderRadius = borderRadius;
+    }
+    if (typeof size === 'number' && !isNaN(size)) {
+      item.size = size;
+    }
+    if (typeof scale === 'number' && !isNaN(scale)) {
+      item.scale = scale;
+    }
+  });
+
+  // Обновляем отображение и HTML код
+  renderPalette();
+  updateHTMLCode();
+  showNotification('Настройки применены ко всем элементам!');
+}
 function sortPalette() {
   palette.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
   renderPalette();
@@ -791,7 +814,7 @@ function copyPaletteHTML() {
     return;
   }
   navigator.clipboard.writeText(html).then(() => {
-    alert('HTML код скопирован в буфер');
+  showNotification('HTML код скопирован в буфер обмена');
   });
 }
 // Инициализация
