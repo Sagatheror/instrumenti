@@ -457,9 +457,9 @@ background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,
 <div style="position: fixed; top: 20px; left: 0px; z-index: 9998;">
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
-<!-- Баг-репорт -->
+<!-- Контейнер с кнопками, позиционированный фиксировано -->
 <div style="position: fixed; bottom: 70px; right: 10px; font-size: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center;">
-  <!-- Инструкция -->
+  <!-- Кнопка показать инструкцию с иконкой Font Awesome -->
   <button onclick="document.getElementById('instructionModal').style.display='flex'" style="
     background:#f44336; 
     color:#fff; 
@@ -474,8 +474,8 @@ background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,
     justify-content: center;
     padding: 0;
   ">
-  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i></button>
-  <!-- Баг-репорт -->
+  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i> 
+  <!-- Кнопка баг-репорта -->
   <button id="bugReportBtn" style="
     background:#f44336; 
     color:#fff; 
@@ -494,11 +494,11 @@ background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,
   </button>
 </div>
 
-<!-- Модальное окно баг-репорта -->
+<!-- Модальное окно для описания бага -->
 <div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
   <div style="background: #fff; padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
     <h3>Сообщить о баге</h3>
-    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);"></textarea>
+    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: #222; background: #fff;"></textarea>
     <div style="margin-top:10px; display:flex; justify-content:flex-end;">
       <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
       <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
@@ -517,7 +517,41 @@ function toggleMediaInput() {
   document.getElementById('colorInputContainer').style.display = (type === 'color') ? 'block' : 'none';
   document.getElementById('imageInputContainer').style.display = (type === 'image') ? 'block' : 'none';
 }
+function showNotification(message) {
+  // Создаем элемент уведомления
+  const notification = document.createElement('div');
+  notification.innerText = message;
+  notification.style.position = 'fixed';
+  notification.style.top = '20px';
+  notification.style.left = '50%';
+  notification.style.transform = 'translateX(-50%)';
+  notification.style.backgroundColor = 'rgba(0,0,0,0.8)';
+  notification.style.color = '#fff';
+  notification.style.padding = '15px 20px';
+  notification.style.borderRadius = '8px';
+  notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+  notification.style.zIndex = '10000';
+  notification.style.fontSize = '14px';
+  notification.style.opacity = '0';
+  notification.style.transition = 'opacity 0.3s';
 
+  document.body.appendChild(notification);
+
+  // Анимация появления
+  setTimeout(() => {
+    notification.style.opacity = '1';
+  }, 10);
+
+  // Удаление через 3 секунды
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        document.body.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
 function renderPalette() {
   const container = document.getElementById('palette');
   container.innerHTML = '';
@@ -740,7 +774,7 @@ function copyPaletteHTML() {
 toggleMediaInput();
 renderPalette();
 // =================== Changelog ===================
-const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист4';
 
 function loadChangelogFromSheet() {
   fetch(sheetUrl)
@@ -822,34 +856,46 @@ document.getElementById('saveChangelog').addEventListener('click', () => {
   alert('История изменений сохранена');
 });
 
-// =================== Баг-репорт ===================
-const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
-
+/// Обработчик открытия окна баг-репорта
 document.getElementById('bugReportBtn').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display='flex';
+  document.getElementById('bugModal').style.display = 'flex';
 });
 
+// Обработчик закрытия окна
 document.getElementById('closeBugModal').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display='none';
+  document.getElementById('bugModal').style.display = 'none';
 });
 
+// Обработка отправки бага
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
-  if (!description) { alert('Пожалуйста, опишите проблему.'); return; }
-  fetch(BUG_REPORT_URL, {
-    method:'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ description: description })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.result==='success') { showNotification('Баг успешно отправлен!'); }
-    else { showNotification('Ошибка при отправке бага.'); }
-  });
-  document.getElementById('bugDescription').value='';
-  document.getElementById('bugModal').style.display='none';
-});
+  if (description === '') {
+    alert('Пожалуйста, опишите проблему.');
+    return;
+  }
 
+  // Отправляем POST-запрос
+  fetch(BUG_REPORT_URL, {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify({description: description})
+  })
+  .then(response => response.json())
+  .then(data => {
+  console.log('Ответ сервера:', data);
+  if (data.result === 'success') {
+    console.log('Уведомление появится');
+    showNotification('Баг успешно отправлен!');
+  } else {
+    showNotification('Ошибка при отправке бага.');
+  }
+})
+
+  // Очистка поля
+  document.getElementById('bugDescription').value = '';
+  document.getElementById('bugModal').style.display = 'none';
+});
 // =================== Инструкция ===================
 const instructionModal = document.getElementById('instructionModal');
 function closeInstruction() {
