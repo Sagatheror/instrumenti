@@ -4,9 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<title>Улучшенный интерфейс</title>
 <style>
 body {
-  margin: 0;
+  margin: 10px;
   font-family: Arial, sans-serif;
   background: #f4f4f4;
 }
@@ -16,7 +17,7 @@ body {
   display: flex;
   flex-direction: row;
   max-width: 1200px;
-  margin: 20px auto;
+  margin: 150px auto;
   gap: 20px;
 }
 
@@ -141,6 +142,23 @@ button:hover {
 .item-actions button {
   padding: 4px 8px;
   font-size: 0.8em;
+}
+#changelogToggle {
+  padding: 15px 30px;
+  border: none;
+  max-width: 200px;
+  border-radius: 8px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background 0.3s;
+  position: fixed;
+  top: 10px;
+  left: 20px;
+  z-index: 10000; /* выше, чтобы не налезали */
 }
 /* =================== Changelog =================== */
 #changelogContainer {
@@ -442,7 +460,7 @@ background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,
 </div>
 
 <!-- Кнопка для вызова changelog -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
+<div style="position: fixed; top: 10px; left: 20px; z-index: 9999;">
   <button id="changelogToggle" style="padding:15px 30px; border:none; border-radius:8px; background:#007bff; color:#fff; cursor:pointer; font-weight:600; font-size:20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
     Changelog
   </button>
@@ -453,7 +471,7 @@ background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,
   <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
   <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
 </div>
-<div style="position: fixed; top: 20px; left: 0px; z-index: 9998;">
+<div style="position: fixed; top: 10px; left: 0px; z-index: 9998;">
   <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
 </div>
 <!-- Контейнер с кнопками, позиционированный фиксировано -->
@@ -903,4 +921,3 @@ function closeInstruction() {
 </script>
 </body>
 </html>
-
