@@ -948,6 +948,19 @@ const instructionModal = document.getElementById('instructionModal');
 function closeInstruction() {
   instructionModal.style.display='none';
 }
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY || window.pageYOffset;
+  const changelogBtn = document.getElementById('changelogToggle');
+  const backBtn = document.querySelector('.back-btn');
+
+  if (scrollY > 100) { // например, при скролле более 100px
+    if (changelogBtn) changelogBtn.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'none';
+  } else {
+    if (changelogBtn) changelogBtn.style.display = '';
+    if (backBtn) backBtn.style.display = '';
+  }
+});
 </script>
 </body>
 </html>
