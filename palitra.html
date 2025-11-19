@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<title>Улучшенный интерфейс</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+}
+
+/* Обертка для контейнера */
+.container {
+  display: flex;
+  flex-direction: row;
+  max-width: 1200px;
+  margin: 20px auto;
+  gap: 20px;
+}
+
+/* Левая панель */
+.sidebar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Основная часть */
+.main {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Заголовки */
+h2 {
+  margin-top: 0;
+  font-size: 1.4em;
+  margin-bottom: 10px;
+}
+
+/* Блоки внутри панели */
+.section {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+/* Поля и кнопки */
+label {
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+input[type="text"], input[type="number"], input[type="color"], select {
+  width: 100%;
+  padding: 6px 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Палитра элементов */
+#palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.item-card {
+  background: #fafafa;
+  border-radius: 8px;
+  width: 150px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.item-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+.item-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius, 10px);
+  border: 2px solid #999;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.item-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.item-actions button {
+  padding: 4px 8px;
+  font-size: 0.8em;
+}
+/* =================== Changelog =================== */
+#changelogContainer {
+  display: none; /* по умолчанию скрыт */
+  position: fixed; top: 85px; left: 20px;
+  width: 420px;
+  max-height: 500px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  z-index: 9999;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #222;
+  transition: opacity 0.3s, transform 0.3s;
+}
+#changelogContainer.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.changelog-version {
+  font-weight: 600;
+  font-size: 15px;
+  color: #222;
+}
+.changelog-date {
+  font-size: 13px;
+  color: #222;
+}
+.changelog-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background-color: var(--changelog-type-bg);
+}
+.changelog-entry {
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  background-color: var(--changelog-entry-bg);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  transition: background 0.2s, transform 0.2s;
+}
+.changelog-entry:hover {
+  background-color: var(--hover-bg-color);
+  transform: translateY(-2px);
+}
+#changelogText {
+  width: 100%;
+  height: 200px;
+  resize: vertical;
+}
+.changelog-type.Добавлено { background-color: #27ae60; }
+.changelog-type.Исправлено { background-color: #f39c12; }
+.changelog-type.Общее { background-color: #8e44ad; }
+/* =================== Баг-репорт =================== */
+#bugModal {
+  display: none; 
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.6);
+  justify-content: center; align-items: center; 
+  z-index: 10000;
+}
+#bugModal > div {
+  background: var(--hover-bg-color);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+}
+#bugModal h3 {
+  margin-top: 0;
+}
+#bugDescription {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+#sendBug, #closeBugModal {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#sendBug {
+  background-color: #4CAF50;
+  color: #fff;
+}
+#closeBugModal {
+  background-color: #ccc;
+  color: #000;
+}
+/* Стиль для кнопки "Назад" */
+  .back-btn {
+    display: inline-block;
+    margin: 65px 20px;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #fff;
+    background-color: ##007bff; /* яркий цвет для выделения */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .back-btn:hover {
+    background-color: #0077ff; /* чуть темнее при наведении */
+    transform: translateY(-2px);
+  }
+  #footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  color: var(--text-color);
+  padding: 12px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Левая панель -->
+  <div class="sidebar">
+    <h2>Редактор</h2>
+
+    <!-- Добавление элемента -->
+    <div class="section">
+      <h3>Добавить элемент</h3>
+      <label>Тип:</label>
+      <select id="addType" onchange="toggleMediaInput()">
+        <option value="color">Цвет</option>
+        <option value="image">Изображение</option>
+      </select>
+
+      <div id="colorInputContainer">
+        <label>Цвет:</label>
+        <input type="color" id="newColor" value="#ff0000" />
+      </div>
+      <div id="imageInputContainer" style="display:none;">
+        <label>Изображение:</label>
+        <input type="file" id="newImage" accept="image/*" />
+      </div>
+
+      <label>Название:</label>
+      <input type="text" id="newName" placeholder="Название" />
+
+      <label>Размер (px):</label>
+      <input type="number" id="newSize" value="80" min="10" max="300" />
+
+      <label>Закругление (px):</label>
+      <input type="number" id="newBorderRadius" value="10" min="0" max="50" />
+
+      <label>Масштаб:</label>
+      <input type="range" id="newScale" min="0" max="2" step="0.1" value="1" />
+
+      <button onclick="addItem()">Добавить</button>
+    </div>
+
+    <!-- Общие настройки -->
+    <div class="section" style="margin-top:20px;">
+      <h3>Общие настройки</h3>
+      <label>Закругление (px):</label>
+      <input type="number" id="applyBorderRadius" value="10" min="0" max="50" />
+
+      <label>Размер (px):</label>
+      <input type="number" id="applySize" value="80" min="10" max="300" />
+
+      <label>Масштаб:</label>
+      <input type="range" id="applyScale" min="0" max="2" step="0.1" value="1" />
+
+      <button onclick="applySettingsToAll()">Применить ко всем</button>
+    </div>
+
+    <!-- Действия -->
+    <div style="margin-top:20px;">
+      <h3>Действия</h3>
+      <button onclick="savePalette()">Сохранить</button>
+      <button onclick="loadPalette()">Загрузить</button>
+      <button onclick="importFromHTML()">Импорт из HTML</button>
+      <button onclick="clearPalette()">Удалить все</button>
+      <button onclick="sortPalette()">Сортировать</button>
+      <button onclick="copyPaletteHTML()">Копировать HTML</button>
+    </div>
+  </div>
+
+  <!-- Основная часть -->
+  <div class="main">
+    <h2>Палитра</h2>
+    <div id="palette"></div>
+  </div>
+</div>
+
+<!-- Быстрый редактор -->
+<div id="quickEdit" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2); max-width:400px; z-index:100;">
+  <h3>Редактировать элемент</h3>
+  <label>Название:</label>
+  <input type="text" id="editName" />
+
+  <label>Цвет:</label>
+  <input type="color" id="editColor" />
+
+  <label>Размер (px):</label>
+  <input type="number" id="editSize" min="10" max="300" />
+
+  <label>Закругление (px):</label>
+  <input type="number" id="editBorderRadius" min="0" max="50" />
+
+  <label>Масштаб:</label>
+  <input type="range" id="editScale" min="0" max="2" step="0.1" />
+
+  <div style="margin-top:15px; display:flex; gap:10px; justify-content:space-between;">
+    <button onclick="saveEdit()">Сохранить</button>
+    <button onclick="closeQuickEdit()">Отмена</button>
+  </div>
+</div>
+<textarea id="htmlCode" style="display:none;"></textarea>
+<!-- Инструкция как модальное окно -->
+<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
+  <div style="background: #fff; padding:20px; max-width:700px; max-height:90%; overflow-y:auto; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position:relative;">
+<h2 style="margin-top:0; font-size: 20px;">Инструкция как пользоваться инструментом</h2>
+<p><strong>Добро пожаловать!</strong></p>
+<p>Этот сайт позволяет вам создавать и настраивать палитру элементов — цветов и изображений. Ниже — пошаговая инструкция, чтобы быстро начать работу:</p>
+<hr>
+<h3>Шаг 1: Добавление элемента</h3>
+<ul>
+  <li>В левой панели выберите тип элемента:
+    <ul>
+      <li><strong>"Цвет"</strong> — выберите цвет с помощью цветового пикера.</li>
+      <li><strong>"Изображение"</strong> — загрузите изображение с компьютера.</li>
+    </ul>
+  </li>
+  <li>Введите название элемента (не обязательно).</li>
+  <li>Настройте параметры:
+    <ul>
+      <li>Размер — укажите, насколько большой будет элемент (в пикселях).</li>
+      <li>Закругление — укажите радиус скругления углов.</li>
+      <li>Масштаб — выберите коэффициент увеличения/уменьшения.</li>
+    </ul>
+  </li>
+  <li>Нажмите кнопку <strong>"Добавить"</strong>, чтобы добавить элемент в палитру.</li>
+</ul>
+<h3>Шаг 2: Просмотр палитры</h3>
+<ul>
+  <li>В правой части отображается ваша палитра — все добавленные элементы.</li>
+  <li>Каждый элемент можно перетащить — менять порядок, перетаскивая его.</li>
+  <li>Для редактирования элемента нажмите на кнопку <strong>"Редактировать"</strong> или кликните на изображение/цвет.</li>
+  <li>Чтобы удалить элемент — нажмите кнопку <strong>"Удалить"</strong> на карточке элемента.</li>
+</ul>
+<h3>Шаг 3: Быстрое редактирование элемента</h3>
+<ul>
+  <li>Нажмите кнопку <strong>"Редактировать"</strong> на карточке элемента или кликните на изображение — откроется окно редактирования.</li>
+  <li>Измените название, цвет, размер, закругление или масштаб и нажмите <strong>"Сохранить"</strong>.</li>
+  <li>Чтобы отменить — нажмите <strong>"Отмена"</strong>.</li>
+</ul>
+<h3>Шаг 4: Настройка глобальных параметров</h3>
+<ul>
+  <li>В левой панели есть блок "Общие настройки". Здесь можно изменить радиус, размер или масштаб для всех элементов сразу.</li>
+  <li>После изменения нажмите кнопку <strong>"Применить ко всем"</strong>, чтобы применить настройки ко всей палитре.</li>
+</ul>
+<h3>Шаг 5: Управление палитрой</h3>
+<ul>
+  <li>Для сохранения вашей текущей палитры — нажмите кнопку <strong>"Сохранить"</strong>. Файл JSON сохранится на компьютере.</li>
+  <li>Чтобы загрузить ранее сохранённую палитру — нажмите <strong>"Загрузить"</strong> и выберите файл.</li>
+  <li>Для очистки всей палитры — нажмите <strong>"Удалить все"</strong>.</li>
+  <li>Чтобы отсортировать элементы по названию — нажмите <strong>"Сортировать"</strong>.</li>
+  <li>Для копирования HTML-кода элементов в буфер — нажмите <strong>"Копировать HTML"</strong>.</li>
+</ul>
+<h3>Шаг 6: Импорт из HTML</h3>
+<ul>
+  <li>Если у вас есть HTML-код элементов, вставьте его в появившееся окно по кнопке <strong>"Импорт из HTML"</strong>.</li>
+  <li>Нажмите <strong>"ОК"</strong> — элементы добавятся в палитру.</li>
+</ul>
+<h3>Дополнительные функции</h3>
+<ul>
+  <li><strong>"Changelog"</strong> — просмотрите историю обновлений сайта.</li>
+  <li><strong>"Обратная связь"</strong>: нажмите на кнопку с жучком, чтобы оставить отзыв или сообщить о проблеме.</li>
+</ul>
+       <button onclick="document.getElementById('instructionModal').style.display='none'" style="margin-top:10px; font-size: 14px; padding:8px 16px; border:none; background:#007bff; color:#fff; border-radius:4px; cursor:pointer;">Понятно, спасибо</button>
+  </div>
+</div>
+
+<!-- Кнопка для вызова changelog -->
+<div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
+  <button id="changelogToggle" style="padding:15px 30px; border:none; border-radius:8px; background:#007bff; color:#fff; cursor:pointer; font-weight:600; font-size:20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
+    Changelog
+  </button>
+</div>
+<!-- Changelog container -->
+<div id="changelogContainer">
+  <h4 style="margin-top:0;">История изменений</h4>
+  <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
+  <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
+</div>
+<div style="position: fixed; top: 20px; left: 0px; z-index: 9998;">
+  <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
+</div>
+<!-- Баг-репорт -->
+<div style="position: fixed; bottom: 70px; right: 10px; font-size: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+  <!-- Инструкция -->
+  <button onclick="document.getElementById('instructionModal').style.display='flex'" style="
+    background:#f44336; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: block; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  ">
+  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i></button>
+  <!-- Баг-репорт -->
+  <button id="bugReportBtn" style="
+    background:#f44336; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: block; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  ">
+    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
+  </button>
+</div>
+
+<!-- Модальное окно баг-репорта -->
+<div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
+  <div style="background: #fff; padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
+    <h3>Сообщить о баге</h3>
+    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);"></textarea>
+    <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+      <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
+      <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
+    </div>
+  </div>
+</div>
+<div id="footer">
+  <span>Создатель сайта: EmPsOn &copy; 2025</span>
+</div>
+<script>
+let palette = [];
+let editingIndex = null;
+
+function toggleMediaInput() {
+  const type = document.getElementById('addType').value;
+  document.getElementById('colorInputContainer').style.display = (type === 'color') ? 'block' : 'none';
+  document.getElementById('imageInputContainer').style.display = (type === 'image') ? 'block' : 'none';
+}
+
+function renderPalette() {
+  const container = document.getElementById('palette');
+  container.innerHTML = '';
+
+  palette.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+
+    // Перетаскивание
+    card.draggable = true;
+    card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', index); };
+    card.ondragover = (e) => { e.preventDefault(); };
+    card.ondrop = (e) => {
+      e.preventDefault();
+      const fromIdx = e.dataTransfer.getData('text/plain');
+      const toIdx = index;
+      [palette[fromIdx], palette[toIdx]] = [palette[toIdx], palette[fromIdx]];
+      renderPalette();
+      updateHTMLCode();
+    };
+
+    // Предпросмотр
+    const preview = document.createElement('img');
+    preview.className = 'item-preview';
+
+    if (item.type === 'color') {
+      preview.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="' + encodeURIComponent(item.color) + '"/></svg>';
+      preview.style.borderRadius = item.borderRadius + 'px';
+    } else if (item.type === 'image' && item.src) {
+      preview.src = item.src;
+      preview.style.borderRadius = item.borderRadius + 'px';
+    } else {
+      preview.src = '';
+      preview.style.background = '#ddd';
+    }
+    preview.style.width = (item.size || 80) + 'px';
+    preview.style.height = (item.size || 80) + 'px';
+
+    // Клик для быстрого редактирования
+    preview.onclick = () => { openQuickEdit(index); };
+
+    // Информация и кнопки
+    const infoDiv = document.createElement('div');
+
+    const nameDiv = document.createElement('div');
+    nameDiv.innerText = item.name || 'Без названия';
+    nameDiv.style.fontSize = '0.9em';
+
+    const btnEdit = document.createElement('button');
+    btnEdit.innerText = 'Редактировать';
+    btnEdit.style.fontSize = '0.8em';
+    btnEdit.onclick = () => { openQuickEdit(index); };
+
+    const btnDel = document.createElement('button');
+    btnDel.innerText = 'Удалить';
+    btnDel.style.fontSize = '0.8em';
+    btnDel.onclick = () => { palette.splice(index,1); renderPalette(); updateHTMLCode(); };
+
+    infoDiv.appendChild(nameDiv);
+    infoDiv.appendChild(btnEdit);
+    infoDiv.appendChild(btnDel);
+
+    card.appendChild(preview);
+    card.appendChild(infoDiv);
+    container.appendChild(card);
+  });
+}
+
+function addItem() {
+  const type = document.getElementById('addType').value;
+  const name = document.getElementById('newName').value.trim();
+  const size = parseInt(document.getElementById('newSize').value);
+  const borderRadius = parseInt(document.getElementById('newBorderRadius').value);
+  const scale = parseFloat(document.getElementById('newScale').value);
+
+  if (type === 'color') {
+    const color = document.getElementById('newColor').value;
+    palette.push({ type:'color', color, name, size, borderRadius, scale });
+  } else if (type === 'image') {
+    const file = document.getElementById('newImage').files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        palette.push({ type:'image', src: reader.result, name, size, borderRadius, scale });
+        renderPalette();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Выберите изображение!');
+      return;
+    }
+  }
+  document.getElementById('newName').value = '';
+  toggleMediaInput();
+  renderPalette();
+  updateHTMLCode();
+}
+
+function clearPalette() {
+  if (confirm('Удалить все элементы?')) {
+    palette = [];
+    renderPalette();
+    updateHTMLCode();
+  }
+}
+
+function sortPalette() {
+  palette.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+  renderPalette();
+}
+
+function updateHTMLCode() {
+  let html = '';
+  palette.forEach((item) => {
+    if (item.type === 'color') {
+      html += `<div style="
+        width:${item.size || 80}px; 
+        height:${item.size || 80}px; 
+        background-color:${item.color}; 
+        border-radius:${item.borderRadius}px;
+        transform:scale(${item.scale || 1});
+        display:inline-block;
+        margin:4px;
+      "></div>\n`;
+    } else if (item.type === 'image' && item.src) {
+      html += `<img src="${item.src}" style="
+        width:${item.size || 80}px; 
+        height:${item.size || 80}px; 
+        border-radius:${item.borderRadius}px;
+        transform:scale(${item.scale || 1});
+        display:inline-block;
+        margin:4px;
+        object-fit:cover;
+      "/>\n`;
+    }
+  });
+  document.getElementById('htmlCode').value = html;
+}
+
+function savePalette() {
+  const dataStr = JSON.stringify(palette);
+  const blob = new Blob([dataStr], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'palette.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadPalette() {
+  const input = document.createElement('input');
+  input.type='file';
+  input.accept='application/json';
+  input.onchange=()=> {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload=()=> {
+      try {
+        const data=JSON.parse(reader.result);
+        if (Array.isArray(data)) { palette=data; renderPalette(); }
+      } catch(e){ alert('Ошибка загрузки'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function importFromHTML() {
+  const html = prompt('Введите HTML код элементов');
+  if (!html) return;
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML=html;
+  const newItems=[];
+  for (let el of tempDiv.children) {
+    if (el.tagName==='DIV' && el.style.backgroundColor) {
+      newItems.push({ type:'color', color:el.style.backgroundColor, name:'', size:80, borderRadius:0, scale:1 });
+    } else if (el.tagName==='IMG' && el.src) {
+      newItems.push({ type:'image', src:el.src, name:'', size:80, borderRadius:0, scale:1 });
+    }
+  }
+  if (newItems.length) { palette=newItems; renderPalette(); }
+}
+
+function openQuickEdit(index) {
+  editingIndex=index;
+  const item=palette[index];
+  document.getElementById('editName').value = item.name || '';
+  document.getElementById('editColor').value = item.color || '#ffffff';
+  document.getElementById('editSize').value = item.size || 80;
+  document.getElementById('editBorderRadius').value = item.borderRadius || 10;
+  document.getElementById('editScale').value = item.scale || 1;
+  document.getElementById('quickEdit').style.display='block';
+}
+function closeQuickEdit() { document.getElementById('quickEdit').style.display='none'; }
+function saveEdit() {
+  if (editingIndex!==null) {
+    const item=palette[editingIndex];
+    item.name=document.getElementById('editName').value;
+    item.color=document.getElementById('editColor').value;
+    item.size=parseInt(document.getElementById('editSize').value);
+    item.borderRadius=parseInt(document.getElementById('editBorderRadius').value);
+    item.scale=parseFloat(document.getElementById('editScale').value);
+    renderPalette();
+    updateHTMLCode();
+    closeQuickEdit();
+  }
+}
+function copyPaletteHTML() {
+  const html = document.getElementById('htmlCode').value;
+  if (!html.trim()) {
+    alert('Пожалуйста, добавьте элементы в палитру.');
+    return;
+  }
+  navigator.clipboard.writeText(html).then(() => {
+    alert('HTML код скопирован в буфер');
+  });
+}
+// Инициализация
+toggleMediaInput();
+renderPalette();
+// =================== Changelog ===================
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
+
+function loadChangelogFromSheet() {
+  fetch(sheetUrl)
+    .then(response => response.text())
+    .then(text => {
+      const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+      const rows = jsonData.table.rows;
+      let entriesHtml = '';
+
+      function formatDateToDDMMYY(dateStr) {
+        const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+        if (dateMatch) {
+          let year = parseInt(dateMatch[1], 10);
+          let month = parseInt(dateMatch[2], 10);
+          let day = parseInt(dateMatch[3], 10);
+          month += 1;
+          const dd = day.toString().padStart(2, '0');
+          const mm = month.toString().padStart(2, '0');
+          const yy = (year % 100).toString().padStart(2, '0');
+          return `${dd}.${mm}.${yy}`;
+        }
+        return dateStr;
+      }
+
+      rows.forEach(row => {
+        const version = row.c[0].v;
+        const rawDate = row.c[1].v;
+        const date = formatDateToDDMMYY(rawDate);
+        const type = row.c[2].v.trim();
+        let description = row.c[3].v;
+        // Обработка списка
+        description = description.replace(/^•\s?/gm, '<li>•</li>');
+        const descriptionHtml = description
+          .split('\n')
+          .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
+          .join('');
+        entriesHtml += `
+          <div class="changelog-entry">
+            <div class="changelog-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div>
+                <span class="changelog-version">Версия ${version}</span>
+                <span class="changelog-date">[${date}]</span>
+              </div>
+              <div class="changelog-type ${type}">${type}</div>
+            </div>
+            <ul style="margin:0; padding-left:20px;">${descriptionHtml}</ul>
+          </div>`;
+      });
+      document.getElementById('changelogContainer').innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
+    })
+    .catch(() => {
+      document.getElementById('changelogContainer').innerHTML = 'Не удалось загрузить историю изменений.';
+    });
+}
+
+// Автозагрузка при старте
+window.addEventListener('load', () => {
+  loadChangelogFromSheet();
+  const savedChangelog = localStorage.getItem('changelog') || '';
+  document.getElementById('changelogText').value = savedChangelog;
+});
+
+// Обработчик для кнопки Changelog
+const changelogBtn = document.getElementById('changelogToggle');
+const changelogContainer = document.getElementById('changelogContainer');
+
+changelogBtn.addEventListener('click', () => {
+  if (changelogContainer.classList.contains('show')) {
+    changelogContainer.classList.remove('show');
+  } else {
+    loadChangelogFromSheet();
+    changelogContainer.classList.add('show');
+  }
+});
+
+document.getElementById('saveChangelog').addEventListener('click', () => {
+  const text = document.getElementById('changelogText').value;
+  localStorage.setItem('changelog', text);
+  alert('История изменений сохранена');
+});
+
+// =================== Баг-репорт ===================
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+
+document.getElementById('bugReportBtn').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display='flex';
+});
+
+document.getElementById('closeBugModal').addEventListener('click', () => {
+  document.getElementById('bugModal').style.display='none';
+});
+
+document.getElementById('sendBug').addEventListener('click', () => {
+  const description = document.getElementById('bugDescription').value.trim();
+  if (!description) { alert('Пожалуйста, опишите проблему.'); return; }
+  fetch(BUG_REPORT_URL, {
+    method:'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description: description })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.result==='success') { showNotification('Баг успешно отправлен!'); }
+    else { showNotification('Ошибка при отправке бага.'); }
+  });
+  document.getElementById('bugDescription').value='';
+  document.getElementById('bugModal').style.display='none';
+});
+
+// =================== Инструкция ===================
+const instructionModal = document.getElementById('instructionModal');
+function closeInstruction() {
+  instructionModal.style.display='none';
+}
+</script>
+</body>
+</html>
