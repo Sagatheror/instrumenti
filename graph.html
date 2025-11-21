@@ -505,7 +505,6 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   padding: 0; /* убираем любые внутренние отступы */
 }
-
 /* Можно убрать font-size у кнопки, оставить только у иконки */
 #bugReportBtn i {
   display: block;
@@ -524,6 +523,74 @@ li {
 }
 p {
   font-size: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 0.95em;
+  font-family: 'Arial', sans-serif;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+body.dark table,
+body.dark th,
+body.dark td {
+  background-color: var(--hover-bg-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+/* Можно дополнительно задать стили для заголовков таблиц, чтобы они хорошо смотрелись в тёмной теме */
+body.dark th {
+  background-color: transparent;
+  border-color: var(--border-color);
+}
+body.dark #comparisonResult {
+  background: var(--section-bg);
+  color: var(--text-color);
+  box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
+  border: 1px solid #555;
+}
+#compareBtn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 1.4em;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#compareBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+  @keyframes colorShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 </style>
 </head>
@@ -553,7 +620,7 @@ p {
     <ul>
       <li>В верхней части страницы вы найдете блоки для выбора:
         <ul>
-          <li><strong>Блок</strong> — выберите нужную категорию данных.</li>
+          <li><strong>Сайт</strong> — выберите нужную категорию данных.</li>
           <li><strong>Инструмент</strong> — выберите интересующий инструмент или подразделение.</li>
           <li><strong>Режим</strong> — выберите, показывать ли данные по всему объекту или по сотруднику.</li>
           <li><strong>Сотрудник</strong> — если выбран режим "по сотруднику", выберите конкретного человека.</li>
@@ -567,12 +634,32 @@ p {
       <li>На графике вы увидите динамику выбранных данных по датам.</li>
       <li>Используйте кнопку <strong>"Обновить"</strong> для ручного обновления графика.</li>
       <li>Если хотите увидеть лучших сотрудников, нажмите <strong>"ТОП"</strong> — вам покажут тройку лучших по показателям.</li>
+      <li>Если хотите увидеть общие итоги за период, нажмите <strong>"Итоги"</strong> — вам покажут сводную таблицу с суммой всех действий по выбранным параметрам.</li>
     </ul>
-     <h3>Шаг 5: Дополнительные функции</h3>
+     <h3>Шаг 5: Сравнение выгрузок  <span style="
+    font-weight: bold; 
+    font-size: 24px; 
+    display: inline-block; 
+    color: red; 
+    background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
+    background-size: 600% 600%;
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    animation: colorShift 3s linear infinite;
+  ">
+    - NEW
+  </span></h3>  
     <ul>
-      <li><strong>"Changelog"</strong> — просмотрите историю обновлений сайта.</li>
+      <li>Если вы хотите увидеть сравнене показателей за два разных периода, то сначала подготовьте выгрузки CSV за нужный период.</li>
+      <li>Первый файл загрузите в поле <strong>"Выберите CSV"</strong>, а второй файл в поле <strong>"Загрузите второй CSV"</strong>.</li>
+      <li>Используйте кнопку <strong>"Сравнить файлы"</strong>, чтобы появилась сравнительная таблица. В таблице будет дана информация с данными по первому файлу, по второму файлу и их процентное сравнение </li>
+    </ul>
+     <h3>Шаг 6: Дополнительные функции</h3>
+    <ul>
+      <li><strong>Changelog</strong> — просмотрите историю обновлений сайта.</li>
       <li><strong>Тёмная тема</strong> — нажав на кнопку луны в верхнем правом углу тема сменится на тёмную, при повторном вернётся светлая тема.</li>
       <li><strong>Обратная связь</strong> — сообщите о баге или оставьте отзыв, нажав на кнопку с жучком.</li>
+      <li><strong>Инструкция</strong> — открывается автоматически при загрузке страницы, дополнительно открыть можно в любой момент, нажав на иконку со знаком вопроса.</li>
     </ul>
        <button onclick="document.getElementById('instructionModal').style.display='none'" style="margin-top:10px; font-size: 14px; padding:8px 16px; border:none; background:#007bff; color:#fff; border-radius:4px; cursor:pointer;">Понятно, спасибо</button>
   </div>
@@ -663,7 +750,7 @@ p {
     <!-- Настройки -->
     <div class="settings">
       <div class="setting-box">
-        <label for="blockSelect"><i class="fa-solid fa-database"></i> Блок</label>
+        <label for="blockSelect"><i class="fa-solid fa-database"></i> Сайт</label>
         <select id="blockSelect">
           <option value="" disabled selected>выберите CSV</option>
         </select>
@@ -697,6 +784,7 @@ p {
     <div class="buttons">
       <button class="btn" id="refreshBtn"><i class="fas fa-rotate"></i> Обновить</button>
       <button class="btn" id="topBtn"><i class="fas fa-star"></i> ТОП</button>
+     <button class="btn" id="summaryBtn"><i class="fas fa-chart-pie"></i> Итоги</button>
     </div>
     <div id="averageResult"></div>
   </div>
@@ -710,7 +798,45 @@ p {
     <button class="btn" id="closeSOTModal"><i class="fas fa-times"></i> Закрыть</button>
   </div>
 </div>
-
+<label class="file-label" for="csvFileInput2" style="margin-left:20px; width: 200px;">
+  <i class="fas fa-upload"></i> Загрузить второй CSV
+</label>
+<input type="file" id="csvFileInput2" accept=".csv" style="display:none;" />
+<button id="compareBtn" style="
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 1.4em;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 20px;
+  max-width: 200px;
+  width: 100%;
+  align-self: center;
+" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.2)';">
+  <i class="fas fa-code-compare"></i> Сравнить файлы
+</button>
+<div id="comparisonResult" style="
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  max-height: 500px;
+  overflow-y: auto;
+  font-family: 'Arial', sans-serif;
+  margin-bottom: 80px;
+  transition: box-shadow 0.3s;
+">
+  <h3 style="margin-top:0; text-align:center; font-size:1.8em; color:var(--text-color);">Результаты сравнения</h3>
+  <div style="margin-bottom: 20px; text-align: center;">
+</div>
+  <div id="comparisonContent" style="margin-top:10px; line-height:1.6;">
+      <!-- Здесь будут таблицы -->
+  </div>
+</div>
 <script>
 let dataBlocks = {
     SOT: { labels: [], data: {} },
@@ -758,41 +884,76 @@ function showNotification(message) {
     }, 300);
   }, 3000);
 }
-// Переключение темы
-const themeBtn = document.getElementById('themeToggle');
-let darkMode = false;
-themeBtn.onclick = () => {
-  darkMode = !darkMode;
-  document.body.classList.toggle('dark');
-  document.body.classList.toggle('dark-theme', themeToggle.checked);
-  themeBtn.innerHTML = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
-  // Меняем переменную --background-gradient
-  if (darkMode) {
+// =====================
+// Инициализация темы из localStorage
+// =====================
+let darkMode = false; // глобальная переменная для темы
+window.addEventListener('load', () => {
+  const savedTheme = localStorage.getItem('theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (savedTheme === 'dark') {
+    darkMode = true;
+    document.body.classList.add('dark');
+    themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
     document.documentElement.style.setProperty(
       '--background-gradient',
       'linear-gradient(135deg, #111, #222)'
     );
   } else {
+    // светлая тема
+    darkMode = false;
+    document.body.classList.remove('dark');
+    themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
     document.documentElement.style.setProperty(
       '--background-gradient',
       'linear-gradient(135deg, #f0f2f5, #d9e2ef)'
     );
   }
+  updateChart(); // обновим график под тему
+});
 
+// =====================
+// Обработчик переключения темы
+// =====================
+const themeBtn = document.getElementById('themeToggle');
+themeBtn.onclick = () => {
+  darkMode = !darkMode;
+  if (darkMode) {
+    document.body.classList.add('dark');
+    themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #111, #222)'
+    );
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #f0f2f5, #d9e2ef)'
+    );
+    localStorage.setItem('theme', 'light');
+  }
   updateChart();
 };
+
+// =====================
 // Обработка файла
+// =====================
 const fileInput = document.getElementById('csvFileInput');
 const blockSelect = document.getElementById('blockSelect');
 const toolSelect = document.getElementById('toolSelect');
 let fileChosen = false;
+let savedToolSelection = ''; // переменная для хранения выбранного инструмента
 
 fileInput.addEventListener('change', () => {
+  
   const file = fileInput.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
+    localStorage.setItem('csvData', e.target.result);
     processCSV(e.target.result);
     document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
     document.getElementById('averageResult').innerHTML = '';
@@ -806,21 +967,19 @@ fileInput.addEventListener('change', () => {
     // Удаляем начальные опции
     blockSelect.innerHTML = '';
     toolSelect.innerHTML = '';
-
-    // Заполняем актуальными данными после processCSV
-    // Однако, сначала вызываем processCSV, чтобы данные подготовить
   }
   fileChosen = true;
 });
 
-// Восстановить начальные опции
+// =====================
+// Функции для выбора и обработки CSV
+// =====================
 function resetSelects() {
   // Возвращаем опцию "выберите CSV"
   blockSelect.innerHTML = '<option value="" disabled selected>выберите CSV</option>';
   toolSelect.innerHTML = '<option value="" disabled selected>выберите CSV</option>';
 }
 
-// Обновление вариантов выбора блока
 function updateBlockOptions() {
   const select = document.getElementById('blockSelect');
   select.innerHTML = '';
@@ -837,7 +996,6 @@ function updateBlockOptions() {
   };
 }
 
-// Выбор блока
 function selectBlock(name) {
   currentBlock = name;
   const blockData = dataBlocks[name];
@@ -845,17 +1003,25 @@ function selectBlock(name) {
   const selectTool = document.getElementById('toolSelect');
   const selectEmp = document.getElementById('employeeSelect');
 
+  // Запоминаем текущий выбранный инструмент, если есть
+  const previousTool = savedToolSelection;
+
   selectTool.innerHTML = '';
   selectEmp.innerHTML = '';
 
-  tools.forEach(t => {
+  // Заполняем инструменты
+  for (const t of tools) {
     const opt = document.createElement('option');
     opt.value = t;
     opt.textContent = t;
+    // Если есть сохраненный инструмент, выбираем его
+    if (t === previousTool) {
+      opt.selected = true;
+    }
     selectTool.appendChild(opt);
-  });
+  }
 
-  // собираем сотрудников
+  // Заполняем сотрудников
   const employees = new Set();
   tools.forEach(t => {
     Object.keys(blockData.data[t] || {}).forEach(e => employees.add(e));
@@ -869,24 +1035,41 @@ function selectBlock(name) {
     selectEmp.appendChild(opt);
   });
 
-  document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
-  document.getElementById('toolSelect').onchange = () => {
-    currentTool = document.getElementById('toolSelect').value;
-    updateChart();
-  };
-  document.getElementById('employeeSelect').onchange = () => {
-    currentEmployee = document.getElementById('employeeSelect').value;
+  // Обработка выбора инструмента
+  selectTool.onchange = () => {
+    currentTool = selectTool.value;
+    savedToolSelection = currentTool; // сохраняем выбранный инструмент
     updateChart();
   };
 
+  // Обработка выбора сотрудника
+  selectEmp.onchange = () => {
+    currentEmployee = selectEmp.value;
+    updateChart();
+  };
+
+  // Обработка режима
+  document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
+  // Устанавливаем режим по умолчанию
   document.getElementById('modeSelect').value = 'all';
   toggleEmployeeSelection();
 
+  // Устанавливаем текущий выбранный инструмент и сотрудника
   if (tools.length > 0) {
-    currentTool = tools[0];
-    currentEmployee = empArr[0];
+    // если есть сохраненный инструмент, он уже выбран
+    if (savedToolSelection && tools.includes(savedToolSelection)) {
+      currentTool = savedToolSelection;
+    } else {
+      currentTool = tools[0];
+    }
     document.getElementById('toolSelect').value = currentTool;
-    document.getElementById('employeeSelect').value = currentEmployee;
+
+    // выбираем первого сотрудника
+    if (empArr.length > 0) {
+      currentEmployee = empArr[0];
+      document.getElementById('employeeSelect').value = currentEmployee;
+    }
+
     updateChart();
     document.getElementById('chartTitle').innerHTML = '<i class="fas fa-layer-group"></i> ' + name + ' | ' + currentTool;
   } else {
@@ -894,14 +1077,12 @@ function selectBlock(name) {
   }
 }
 
-// Переключение режима
 function toggleEmployeeSelection() {
   const mode = document.getElementById('modeSelect').value;
   document.getElementById('employeeBox').style.display = (mode === 'individual') ? 'flex' : 'none';
   updateChart();
 }
 
-// Парсинг даты
 function parseDate(str) {
   const parts = str.trim().split('.');
   if (parts.length !== 3) return null;
@@ -910,7 +1091,6 @@ function parseDate(str) {
   return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
 }
 
-// Обработка CSV
 function processCSV(text) {
   dataBlocks = {
     SOT: { labels: [], data: {} },
@@ -968,6 +1148,7 @@ function processCSV(text) {
     dataBlocks[block].labels = labelsArr;
     dataBlocks[block].data = dataPerTool;
   });
+  showNotification('Файл успешно загружен, график построен');
   updateBlockOptions();
   const firstBlock = Object.keys(dataBlocks)[0];
   if (firstBlock) {
@@ -976,38 +1157,6 @@ function processCSV(text) {
     updateChart();
   }
 }
-
-// Изначально вызываем resetSelects() чтобы было "выберите CSV"
-resetSelects();
-
-// Обработка изменения выбора блока
-const selectBlockElem = document.getElementById('blockSelect');
-selectBlockElem.onchange = () => {
-  selectBlock(selectBlockElem.value);
-  toggleEmployeeSelection();
-  updateChart();
-};
-
-// Обработка изменения выбора инструмента
-const selectToolElem = document.getElementById('toolSelect');
-selectToolElem.onchange = () => {
-  currentTool = selectToolElem.value;
-  updateChart();
-};
-
-// Обработка изменения выбора сотрудника
-const selectEmpElem = document.getElementById('employeeSelect');
-selectEmpElem.onchange = () => {
-  currentEmployee = selectEmpElem.value;
-  updateChart();
-};
-
-// Обработка смены режима
-document.getElementById('modeSelect').onchange = toggleEmployeeSelection;
-
-// Остальной код как есть...
-// (Объявление getChartTextColor, updateChart, getColor, getGridColor, showNotification, и прочие функции, как в вашем оригинале)
-// ... (оставьте их без изменений, только убедитесь, что они есть в конце скрипта)
 
 function getChartTextColor() {
   return darkMode ? '#fff' : '#000';
@@ -1027,20 +1176,12 @@ function updateChart() {
 
   currentLabels = labels;
 
-  if (!blockData.data[tool]) {
-    if (chartInstance) {
-      chartInstance.data.labels = labels;
-      chartInstance.data.datasets = [];
-      // Обновляем заголовок
-      chartInstance.options.plugins.title = {
-        display: true,
-        text: document.getElementById('chartTitle').innerText || 'График',
-        color: getChartTextColor(),
-        font: { size: 16, weight: 'bold' }
-      };
-      chartInstance.update();
-    }
-    return;
+  // Обновляем заголовок графика
+  const titleElem = document.getElementById('chartTitle');
+  if (currentBlock && currentTool) {
+    titleElem.innerHTML = `<i class="fas fa-layer-group"></i>${currentBlock} | ${currentTool}`;
+  } else {
+    titleElem.innerHTML = 'Загрузите файл и выберите параметры';
   }
 
   if (mode === 'all') {
@@ -1206,7 +1347,9 @@ function getGridColor() {
   return getComputedStyle(document.body).getPropertyValue('--chart-text-color').trim();
 }
 
+// =====================
 // Обработчики
+// =====================
 document.getElementById('refreshBtn').addEventListener('click', () => { updateChart(); });
 document.getElementById('topBtn').addEventListener('click', showTopEmployees);
 document.getElementById('exportSOTBtn').onclick = () => {
@@ -1248,10 +1391,56 @@ const icons = [
   html += '</ol>';
   document.getElementById('averageResult').innerHTML = html;
 }
+document.getElementById('summaryBtn').addEventListener('click', () => {
+  // Получаем текущие параметры
+  const block = currentBlock;
+  const mode = document.getElementById('modeSelect').value;
+  const tool = document.getElementById('toolSelect').value;
+  const blockData = dataBlocks[block];
 
+  if (!blockData || !blockData.labels || !blockData.data || !blockData.data[tool]) {
+    alert('Нет данных для расчета итогов.');
+    return;
+  }
+
+  const labels = blockData.labels; // даты
+  const employeesData = blockData.data[tool]; // все сотрудники и их данные
+  let html = '<h3 style="font-weight: 800; font-size: 20px;">Итоги по сотрудникам за период</h3>';
+
+  // Проходим по сотрудникам и считаем суммы
+  let summaries = [];
+  for (const emp in employeesData) {
+    // Если режим "по сотруднику" или "общий" — считаем
+    let totalSum = 0;
+    employeesData[emp].forEach(value => {
+      totalSum += value;
+    });
+    summaries.push({ name: emp, sum: totalSum });
+  }
+
+  // Сортируем по сумме
+  summaries.sort((a, b) => b.sum - a.sum);
+
+  // Формируем таблицу
+  html += '<table style="width:100%; border-collapse: collapse; text-align: left;">';
+  html += '<tr><th style="border:1px solid #ccc; padding:8px; font-weight: 800; font-size: 20px;">Фамилия, Имя</th><th style="border:1px solid #ccc; padding:8px; font-weight: bold; font-size: 20px;">Сумма</th></tr>';
+
+  summaries.forEach(item => {
+    html += `<tr>
+      <td style="border:1px solid #ccc; padding:8px; font-weight: 500; font-size: 18px;">${item.name}</td>
+      <td style="border:1px solid #ccc; padding:8px; font-weight: 500; font-size: 18px;">${item.sum.toFixed(2)}</td>
+    </tr>`;
+  });
+  html += '</table>';
+
+  // Выводим
+  document.getElementById('averageResult').innerHTML = html;
+});
+// =====================
+// Загрузка истории изменений с гугл таблицы
+// =====================
 const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
 
-// Вариант 1: при загрузке страницы сразу загружаем историю
 function loadChangelogFromSheet() {
   fetch(sheetUrl)
     .then(response => response.text())
@@ -1261,43 +1450,31 @@ function loadChangelogFromSheet() {
       let entriesHtml = '';
 
       function formatDateToDDMMYY(dateStr) {
-  // Проверяем, есть ли строка вида Date(...)
-  const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
-  if (dateMatch) {
-    let year = parseInt(dateMatch[1], 10);
-    let month = parseInt(dateMatch[2], 10); // нумерация с 0
-    let day = parseInt(dateMatch[3], 10);
-
-    // Месяц +1, чтобы получить правильный календарный месяц
-    month += 1;
-
-    // Форматируем
-    const dd = day.toString().padStart(2, '0');
-    const mm = month.toString().padStart(2, '0');
-    const yy = (year % 100).toString().padStart(2, '0');
-
-    return `${dd}.${mm}.${yy}`;
-  }
-  // Если строка не соответствует формату, возвращаем исходную
-  return dateStr;
-}
+        const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+        if (dateMatch) {
+          let year = parseInt(dateMatch[1], 10);
+          let month = parseInt(dateMatch[2], 10);
+          let day = parseInt(dateMatch[3], 10);
+          month += 1;
+          const dd = day.toString().padStart(2, '0');
+          const mm = month.toString().padStart(2, '0');
+          const yy = (year % 100).toString().padStart(2, '0');
+          return `${dd}.${mm}.${yy}`;
+        }
+        return dateStr;
+      }
 
       rows.forEach(row => {
         const version = row.c[0].v;
-        const rawDate = row.c[1].v; // исходная дата
-        const date = formatDateToDDMMYY(rawDate); // преобразуем в дд.мм.гг
-        console.log('Исходная дата:', rawDate, 'Преобразованная:', date); // добавьте для проверки
+        const rawDate = row.c[1].v;
+        const date = formatDateToDDMMYY(rawDate);
         const type = row.c[2].v.trim();
         let description = row.c[3].v;
-
-        // обработка описания
         description = description.replace(/^•\s?/gm, '<li>•</li>');
-
         const descriptionHtml = description
           .split('\n')
           .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
           .join('');
-
         entriesHtml += `
           <div class="changelog-entry">
             <div class="changelog-header">
@@ -1310,25 +1487,53 @@ function loadChangelogFromSheet() {
             <ul style="margin:0; padding-left:20px;">${descriptionHtml}</ul>
           </div>`;
       });
-
-      const container = document.getElementById('changelogContainer');
-      container.innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
+      document.getElementById('changelogContainer').innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
     })
     .catch(() => {
       document.getElementById('changelogContainer').innerHTML = 'Не удалось загрузить историю изменений.';
     });
 }
 
-// Вариант 1: при загрузке страницы сразу загружаем историю
+// =====================
+// Загрузка истории при старте
+// =====================
 window.addEventListener('load', () => {
+    document.getElementById('instructionModal').style.display = 'flex';
+    const savedCsv = localStorage.getItem('csvData');
+  if (savedCsv) {
+    processCSV(savedCsv);
+    document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
+    document.getElementById('averageResult').innerHTML = '';
+    document.getElementById('modeSelect').value = 'all';
+    toggleEmployeeSelection();
+    updateChart();
+  }
   loadChangelogFromSheet();
-  // также инициализация темы и сохранение из localStorage
-  const savedChangelog = localStorage.getItem('changelog') || '';
-  document.getElementById('changelogText').value = savedChangelog;
-  // Инициализация темы
-  // можно добавить сюда, если нужно
+  // Восстановление темы из localStorage
+  const savedTheme = localStorage.getItem('theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (savedTheme === 'dark') {
+    darkMode = true;
+    document.body.classList.add('dark');
+    themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #111, #222)'
+    );
+  } else {
+    darkMode = false; 
+    document.body.classList.remove('dark');
+    themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    document.documentElement.style.setProperty(
+      '--background-gradient',
+      'linear-gradient(135deg, #f0f2f5, #d9e2ef)'
+    );
+  }
+  // Также можно обновить график, если нужно
+  updateChart();
 });
 
+// =====================
 // Обработчик для кнопки "Changelog"
 const changelogBtn = document.getElementById('changelogToggle');
 const changelogContainer = document.getElementById('changelogContainer');
@@ -1337,76 +1542,198 @@ changelogBtn.addEventListener('click', () => {
   if (changelogContainer.classList.contains('show')) {
     changelogContainer.classList.remove('show');
   } else {
-    // Загружаем историю, если еще не загружали, или обновляем
     loadChangelogFromSheet();
     changelogContainer.classList.add('show');
   }
 });
 
-// Инициализация при загрузке
-window.addEventListener('load', () => {
-  const savedChangelog = localStorage.getItem('changelog') || '';
-  document.getElementById('changelogText').value = savedChangelog;
-});
-// Обработчик открытия окна баг-репорта
+// =====================
+// Обработчик окна баг-репорта
+// =====================
 document.getElementById('bugReportBtn').addEventListener('click', () => {
   document.getElementById('bugModal').style.display = 'flex';
 });
-
-// Обработчик закрытия окна
 document.getElementById('closeBugModal').addEventListener('click', () => {
   document.getElementById('bugModal').style.display = 'none';
 });
-
-// Обработка отправки бага
-const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+// Отправка бага
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/';
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
-
-  // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
-    contentType: 'application/json',
-    body: JSON.stringify({description: description})
-  })
-  .then(response => response.json())
-  .then(data => {
-  console.log('Ответ сервера:', data);
-  if (data.result === 'success') {
-    console.log('Уведомление появится');
-    showNotification('Баг успешно отправлен!');
-  } else {
-    showNotification('Ошибка при отправке бага.');
-  }
-})
-
-  // Очистка поля
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description: description })
+  }).then(response => response.json())
+    .then(data => {
+      if (data.result === 'success') {
+        showNotification('Баг успешно отправлен!');
+      } else {
+        showNotification('Ошибка при отправке бага.');
+      }
+    });
   document.getElementById('bugDescription').value = '';
   document.getElementById('bugModal').style.display = 'none';
 });
-// Обработчик прокрутки для изменения прозрачности обеих кнопок
+// =====================
+// Прозрачность кнопок при прокрутке
+// =====================
 window.addEventListener('scroll', () => {
   const themeBtn = document.getElementById('themeToggle');
   const changelogBtn = document.getElementById('changelogToggle');
   if (!themeBtn || !changelogBtn) return;
 
   const scrollY = window.scrollY || window.pageYOffset;
-
-  const maxScroll = 300; // Максимальная прокрутка для изменения прозрачности
-  const minOpacity = 0.3; // Минимальный уровень прозрачности
-  const maxOpacity = 1;   // Максимальный уровень прозрачности
-
+  const maxScroll = 300;
+  const minOpacity = 0.3;
+  const maxOpacity = 1;
   let opacityValue = maxOpacity - (scrollY / maxScroll) * (maxOpacity - minOpacity);
   if (opacityValue < minOpacity) opacityValue = minOpacity;
   if (opacityValue > maxOpacity) opacityValue = maxOpacity;
-
   themeBtn.style.opacity = opacityValue;
   changelogBtn.style.opacity = opacityValue;
 });
+// Обработка второго файла
+const fileInput2 = document.getElementById('csvFileInput2');
+
+fileInput2.addEventListener('change', () => {
+  const file = fileInput2.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    dataBlocksSecond = { SOT: { labels: [], data: {} }, PMK: { labels: [], data: {} }, TORUDA: { labels: [], data: {} } };
+    processCSVSecond(e.target.result);
+    showNotification('Второй файл загружен. Можно произвести сравнение.');
+  };
+  reader.readAsText(file);
+});
+
+// Функция для обработки второго файла
+function processCSVSecond(text) {
+  // Аналогично processCSV, только для второго файла
+  dataBlocksSecond = { SOT: { labels: [], data: {} }, PMK: { labels: [], data: {} }, TORUDA: { labels: [], data: {} } };
+  const lines = text.trim().split(/\r?\n/);
+  const pmkIdx = lines.findIndex(l => l.includes("PMK"));
+  const torIdx = lines.findIndex(l => l.includes("TORUDA"));
+
+  const SOTLines = lines.slice(0, pmkIdx);
+  const PMKLines = lines.slice(pmkIdx, torIdx);
+  const TORUDALines = lines.slice(torIdx);
+
+  ['SOT', 'PMK', 'TORUDA'].forEach(block => {
+    let blockLines;
+    if (block === 'SOT') blockLines = SOTLines;
+    else if (block === 'PMK') blockLines = PMKLines;
+    else blockLines = TORUDALines;
+
+    const parsedData = {};
+    const dateSet = new Set();
+
+    for (const line of blockLines) {
+      const cols = line.split(';').map(c => c.trim());
+      if (cols.length < 7) continue;
+      const [person, tool, , , , , dateStr] = cols;
+      const dateLabel = parseDate(dateStr);
+      if (!dateLabel) continue;
+      dateSet.add(dateLabel);
+      const values = [];
+      for (let i = 2; i <= 5; i++) {
+        const v = parseFloat(cols[i].replace(',', '.')) || 0;
+        values.push(v);
+      }
+      const total = values.reduce((a, b) => a + b, 0);
+      if (!parsedData[tool]) parsedData[tool] = {};
+      if (!parsedData[tool][person]) parsedData[tool][person] = {};
+      if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
+      parsedData[tool][person][dateLabel] += total;
+    }
+    const labelsArr = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+    const dataPerTool = {};
+    for (const t in parsedData) {
+      dataPerTool[t] = {};
+      for (const p in parsedData[t]) {
+        dataPerTool[t][p] = Array(labelsArr.length).fill(0);
+        labelsArr.forEach((d, i) => {
+          if (parsedData[t][p][d] !== undefined) {
+            dataPerTool[t][p][i] = parsedData[t][p][d];
+          }
+        });
+      }
+    }
+    dataBlocksSecond[block].labels = labelsArr;
+    dataBlocksSecond[block].data = dataPerTool;
+  });
+}
+
+function compareCSVData() {
+  if (!dataBlocks || !dataBlocksSecond) {
+    showNotification('Загрузите оба файла для сравнения.');
+    return;
+  }
+
+  const container = document.getElementById('comparisonContent');
+  container.innerHTML = ''; // очищаем перед выводом
+
+  for (const blockName in dataBlocks) {
+    const block1 = dataBlocks[blockName];
+    const block2 = dataBlocksSecond[blockName];
+    if (!block1 || !block2) continue;
+
+    // Внутри каждого блока выводим таблицу
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Сайт</th>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Инструмент</th>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Сотрудник</th>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Файл 1</th>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Файл 2</th>
+          <th style="border:1px solid #ccc; padding:8px; background:var(--hover-bg-color);">Изменение (%)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector('tbody');
+
+    const tools = Object.keys(block1.data);
+    tools.forEach(tool => {
+      const employees1 = Object.keys(block1.data[tool] || {});
+      const employees2 = Object.keys(block2.data[tool] || {});
+      const allEmployees = new Set([...employees1, ...employees2]);
+      
+      allEmployees.forEach(employee => {
+        const data1 = (block1.data[tool][employee] || Array(block1.labels.length).fill(0));
+        const data2 = (block2.data[tool][employee] || Array(block2.labels.length).fill(0));
+        const sum1 = data1.reduce((a, b) => a + b, 0);
+        const sum2 = data2.reduce((a, b) => a + b, 0);
+        const percentChange = sum1 === 0 ? (sum2 === 0 ? 0 : 100) : ((sum2 - sum1) / sum1) * 100;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="border:1px solid #ccc; padding:8px;">${blockName}</td>
+          <td style="border:1px solid #ccc; padding:8px;">${tool}</td>
+          <td style="border:1px solid #ccc; padding:8px;">${employee}</td>
+          <td style="border:1px solid #ccc; padding:8px; text-align:right;">${sum1.toFixed(2)}</td>
+          <td style="border:1px solid #ccc; padding:8px; text-align:right;">${sum2.toFixed(2)}</td>
+          <td style="border:1px solid #ccc; padding:8px; text-align:right;">${percentChange.toFixed(2)}%</td>
+        `;
+        tbody.appendChild(row);
+      });
+    });
+
+    container.appendChild(table);
+  }
+  showNotification('Сравнение завершено.');
+}
+document.getElementById('compareBtn')?.addEventListener('click', compareCSVData);
 </script>
 </body>
 </html>
