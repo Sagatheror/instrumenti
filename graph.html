@@ -1556,26 +1556,33 @@ document.getElementById('bugReportBtn').addEventListener('click', () => {
 document.getElementById('closeBugModal').addEventListener('click', () => {
   document.getElementById('bugModal').style.display = 'none';
 });
-// Отправка бага
-const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/';
+// Обработка отправки бага
+const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
+
+  // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ description: description })
-  }).then(response => response.json())
-    .then(data => {
-      if (data.result === 'success') {
-        showNotification('Баг успешно отправлен!');
-      } else {
-        showNotification('Ошибка при отправке бага.');
-      }
-    });
+    contentType: 'application/json',
+    body: JSON.stringify({description: description})
+  })
+  .then(response => response.json())
+  .then(data => {
+  console.log('Ответ сервера:', data);
+  if (data.result === 'success') {
+    console.log('Уведомление появится');
+    showNotification('Баг успешно отправлен!');
+  } else {
+    showNotification('Ошибка при отправке бага.');
+  }
+})
+
+  // Очистка поля
   document.getElementById('bugDescription').value = '';
   document.getElementById('bugModal').style.display = 'none';
 });
@@ -1734,6 +1741,66 @@ function compareCSVData() {
   showNotification('Сравнение завершено.');
 }
 document.getElementById('compareBtn')?.addEventListener('click', compareCSVData);
+// Обработки перетаскивания для первого файла
+const dropZoneCSV = document.querySelector('.file-zone');
+const inputCSV = document.getElementById('csvFileInput');
+
+dropZoneCSV.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV.style.border = '2px dashed #333'; // визуальный эффект
+});
+dropZoneCSV.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV.style.border = ''; // убрать эффект
+});
+dropZoneCSV.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV.style.border = '';
+
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      inputCSV.files = e.dataTransfer.files; // присвоить файлы
+      // триггерим change событие, чтобы обработать файл
+      inputCSV.dispatchEvent(new Event('change'));
+    } else {
+      alert('Пожалуйста, перетащите CSV-файл.');
+    }
+  }
+});
+
+// Аналогично для второго файла
+const inputCSV2 = document.getElementById('csvFileInput2');
+const dropZoneCSV2 = document.querySelector('label[for="csvFileInput2"]');
+
+dropZoneCSV2.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV2.style.border = '2px dashed #333';
+});
+dropZoneCSV2.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV2.style.border = '';
+});
+dropZoneCSV2.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZoneCSV2.style.border = '';
+
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      inputCSV2.files = e.dataTransfer.files;
+      inputCSV2.dispatchEvent(new Event('change'));
+    } else {
+      alert('Пожалуйста, перетащите CSV-файл.');
+    }
+  }
+});
 </script>
 </body>
 </html>
