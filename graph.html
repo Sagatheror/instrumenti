@@ -1497,7 +1497,7 @@ document.getElementById('summaryBtn').addEventListener('click', () => {
   const blockData = dataBlocks[block];
 
   if (!blockData || !blockData.labels || !blockData.data || !blockData.data[tool]) {
-    showToast('нет данных для расчёта итогов.', 'error');
+    showToast('Нет данных для расчёта итогов.', 'error');
     return;
   }
 
@@ -1674,7 +1674,7 @@ document.getElementById('sendBug').addEventListener('click', () => {
   console.log('Ответ сервера:', data);
   if (data.result === 'success') {
     console.log('Уведомление появится');
-    showToast('<Баг успешно отправлен>', 'success');
+    showToast('Баг успешно отправлен', 'success');
   } else {
     showToast('Произошла ошибка при отправке бага', 'error');
   }
@@ -1999,3 +1999,4 @@ function updateGraphSwitchButtons() {
 </script>
 </body>
 </html>
+
