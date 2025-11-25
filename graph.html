@@ -118,11 +118,11 @@ body {
   flex: 1; /* занимает всё оставшееся пространство */
   display: flex;
   flex-direction: column;
-  padding: 30px;
+  padding: 0px;
   max-width: 1300px;
   margin: 0 auto;
   box-sizing: border-box;
-  gap: 40px;
+  gap: 10px;
   /* добавлено для растяжения */
   width: 100%;
 }
@@ -133,7 +133,7 @@ body {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 10px;
 }
 
 /* Загрузка файла + кнопка */
@@ -141,7 +141,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .file-label {
   display: inline-flex;
@@ -206,7 +206,7 @@ body {
 .settings {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
   justify-content: center;
   flex: 1;
 }
@@ -266,9 +266,9 @@ body {
 #chartContainer {
   flex: 1; /* растягиваться по высоте */
   min-height: 300px; /* минимальная высота */
-  width: 100%;
+  width: 100vh;
   background: var(--chart-bg-color);
-  padding: 20px;
+  padding: 10px;
   border-radius: calc(var(--border-radius));
   box-shadow: inset 0 8px 16px rgba(0,0,0,0.05);
   box-sizing: border-box;
@@ -276,8 +276,8 @@ body {
   /* добавлено для растяжения внутри */
 }
 #chartContainer canvas {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
 }
 .buttons {
   display: flex;
@@ -595,73 +595,144 @@ body.dark #comparisonResult {
 </style>
 </head>
 <body>
-  <!-- Инструкция в виде модального окна -->
-<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
-  <div style="background: var(--hover-bg-color); padding:20px; max-width:700px; max-height:90%; overflow-y:auto; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position:relative;">
-    <h2 style="margin-top:0; font-size: 20px;">Инструкция как пользоваться инструментом</h2>
-    <p><strong>Добро пожаловать!</strong></p>
-    <p>Этот сайт позволяет вам загружать CSV-файлы, настраивать параметры и просматривать графики и отчеты. Ниже — пошаговая инструкция, чтобы быстро начать работу:</p>
-    <hr>
-    <h3>Шаг 1: Выгрузка СОТ</h3>
-    <ul>
-      <li>Нажмите кнопку <strong>"Выгрузить СОТ"</strong>.</li>
-      <li>В новой вкладке откроется страница, где вам нужно войти (если вы еще не авторизованы).</li>
-      <li>После входа укажите диапазон дат — с какой по какую дату вам нужна выгрузка.</li>
-      <li>После выбора дат нажмите кнопку для получения файла.</li>
-      <li>Когда файл скачается, вернитесь на сайт.</li>
-    </ul>
-    <h3>Шаг 2: Загрузка файла</h3>
-    <ul>
-      <li>Нажмите кнопку <strong>"Выберите CSV".</strong></li>
-      <li>Выберите CSV-файл на компьютере.</li>
-      <li>После загрузки данных появится сообщение о успешной загрузке.</li>
-    </ul>
-    <h3>Шаг 3: Выбор параметров</h3>
-    <ul>
-      <li>В верхней части страницы вы найдете блоки для выбора:
-        <ul>
-          <li><strong>Сайт</strong> — выберите нужную категорию данных.</li>
-          <li><strong>Инструмент</strong> — выберите интересующий инструмент или подразделение.</li>
-          <li><strong>Режим</strong> — выберите, показывать ли данные по всему объекту или по сотруднику.</li>
-          <li><strong>Сотрудник</strong> — если выбран режим "по сотруднику", выберите конкретного человека.</li>
-        </ul>
-      </li>
-      <li>Эти параметры позволяют фильтровать данные для анализа.</li>
-    </ul>
-    <h3>Шаг 4: Просмотр графика</h3>
-    <ul>
-      <li>После выбора параметров график автоматически обновится.</li>
-      <li>На графике вы увидите динамику выбранных данных по датам.</li>
-      <li>Используйте кнопку <strong>"Обновить"</strong> для ручного обновления графика.</li>
-      <li>Если хотите увидеть лучших сотрудников, нажмите <strong>"ТОП"</strong> — вам покажут тройку лучших по показателям.</li>
-      <li>Если хотите увидеть общие итоги за период, нажмите <strong>"Итоги"</strong> — вам покажут сводную таблицу с суммой всех действий по выбранным параметрам.</li>
-    </ul>
-     <h3>Шаг 5: Сравнение выгрузок  <span style="
-    font-weight: bold; 
-    font-size: 24px; 
-    display: inline-block; 
-    color: red; 
+<div id="toastContainer" style="
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  pointer-events: none;
+"></div>
+<!-- Инструкция в виде модального окна -->
+<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999;">
+  <div style="
+    background: #fff;
+    padding: 30px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+  ">
+    <h2 style="margin-top:0; font-size: 2em; text-align: center; color: #333;">
+      <i class="fas fa-info-circle" style="color:#4CAF50; margin-right:10px;"></i> Как использовать этот инструмент
+    </h2>
+    <p style="font-size: 1.1em; color:#555; line-height:1.6; text-align: center;">
+      Добро пожаловать! Этот сайт — ваш помощник для анализа и визуализации данных. Ниже — краткая, но яркая инструкция, чтобы вы могли быстро начать работать и получать максимум пользы.
+    </p>
+    <hr style="margin:20px 0; border: none; border-top: 2px solid #eee;">
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+        <i class="fas fa-cloud-download-alt" style="margin-right:10px; color:#3498db;"></i> Шаг 1: Получение файла СОТ
+      </h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;"><strong>Нажмите "Выгрузить СОТ"</strong>.</li>
+        <li style="margin-bottom:10px;">Откроется новая вкладка — входите, если нужно авторизоваться.</li>
+        <li style="margin-bottom:10px;">Выберите диапазон дат для выгрузки.</li>
+        <li style="margin-bottom:10px;">Нажмите кнопку для скачивания файла и вернитесь сюда.</li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+        <i class="fas fa-upload" style="margin-right:10px; color:#e67e22;"></i> Шаг 2: Загрузка CSV
+      </h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;">Кликните "Выберите CSV" и выберите файл с компьютера.</li>
+        <li style="margin-bottom:10px;">После загрузки появится подтверждение — можно продолжать.</li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+        <i class="fas fa-cogs" style="margin-right:10px; color:#1abc9c;"></i> Шаг 3: Настройка параметров
+      </h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;">Выберите сайт, инструмент, режим и сотрудника (если нужно).</li>
+        <li style="margin-bottom:10px;">Фильтруйте данные для точного анализа.</li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+        <i class="fas fa-chart-line" style="margin-right:10px; color:#9b59b6;"></i> Шаг 4: Визуализация данных
+      </h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;">График обновится автоматически — наблюдайте за динамикой.</li>
+        <li style="margin-bottom:10px;">Нажмите "Обновить" для ручной перерисовки.</li>
+        <li style="margin-bottom:10px;">"ТОП" — покажет лучших сотрудников.</li>
+        <li style="margin-bottom:10px;">"Итоги" — даст сводную таблицу за выбранный период.</li>
+      </ul>
+      <span style="
+      background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
+      background-size: 600% 600%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 0 10px;
+      animation: colorShift 3s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    ">- NEW -</span> 
+    <span style="font-size: 1.1em; color:#555;">Есть возможность построить несколько графиков по разным CSV-файлам одновременно.</br>
+    Загрузите необходимое количество файлов CSV в поле "Выберите CSV".</br>
+    После загрузки нескольких файлов появится возможность перелистывать графики с помощью кнопок "Предыдущий" и "Следующий".</span>
+ 
+    </section>
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+  <i class="fas fa-sync-alt" style="margin-right:10px; color:#e74c3c;"></i> 
+  <span style="
     background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
     background-size: 600% 600%;
-    -webkit-background-clip: text; 
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-size: 1.8em;
+    font-weight: bold;
+    padding: 0 10px;
     animation: colorShift 3s linear infinite;
-  ">
-    - NEW
-  </span></h3>  
-    <ul>
-      <li>Если вы хотите увидеть сравнене показателей за два разных периода, то сначала подготовьте выгрузки CSV за нужный период.</li>
-      <li>Первый файл загрузите в поле <strong>"Выберите CSV"</strong>, а второй файл в поле <strong>"Загрузите второй CSV"</strong>.</li>
-      <li>Используйте кнопку <strong>"Сравнить файлы"</strong>, чтобы появилась сравнительная таблица. В таблице будет дана информация с данными по первому файлу, по второму файлу и их процентное сравнение </li>
-    </ul>
-     <h3>Шаг 6: Дополнительные функции</h3>
-    <ul>
-      <li><strong>Changelog</strong> — просмотрите историю обновлений сайта.</li>
-      <li><strong>Тёмная тема</strong> — нажав на кнопку луны в верхнем правом углу тема сменится на тёмную, при повторном вернётся светлая тема.</li>
-      <li><strong>Обратная связь</strong> — сообщите о баге или оставьте отзыв, нажав на кнопку с жучком.</li>
-      <li><strong>Инструкция</strong> — открывается автоматически при загрузке страницы, дополнительно открыть можно в любой момент, нажав на иконку со знаком вопроса.</li>
-    </ul>
-       <button onclick="document.getElementById('instructionModal').style.display='none'" style="margin-top:10px; font-size: 14px; padding:8px 16px; border:none; background:#007bff; color:#fff; border-radius:4px; cursor:pointer;">Понятно, спасибо</button>
+    display: inline-block;
+    margin-right: 10px;
+  ">- NEW -</span>
+  <span>Шаг 5: Сравнение выгрузок</span>
+</h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;">Подготовьте два CSV файла за разные периоды.</li>
+        <li style="margin-bottom:10px;">Загрузите их и нажмите "Сравнить файлы".</li>
+        <li style="margin-bottom:10px;">Вам покажут таблицу с процентными изменениями и разницей.</li>
+      </ul>
+   
+
+    <section style="margin-bottom:20px;">
+      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+        <i class="fas fa-tools" style="margin-right:10px; color:#f39c12;"></i> Дополнительные функции
+      </h3>
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+        <li style="margin-bottom:10px;"><strong>Changelog</strong> — следите за обновлениями сайта.</li>
+        <li style="margin-bottom:10px;"><strong>Тёмная тема</strong> — переключайте стиль для комфортной работы вечером.</li>
+        <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте отзыв, нажав на жучка.</li>
+        <li style="margin-bottom:10px;"><strong>Инструкция</strong> — всегда можно открыть заново, нажав на иконку вопросика.</li>
+      </ul>
+    </section>
+
+    <div style="text-align:center; margin-top:30px;">
+      <button onclick="document.getElementById('instructionModal').style.display='none'" style="
+        font-size:14px; padding:10px 20px; border:none; background:#4CAF50; color:#fff; border-radius:4px; cursor:pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: background 0.3s, transform 0.2s;
+      " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)';">
+        Понятно, спасибо!
+      </button>
+    </div>
   </div>
 </div>
   <!-- Новый футер -->
@@ -703,7 +774,7 @@ body.dark #comparisonResult {
     justify-content: center;
     padding: 0;
   ">
-  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i> 
+  <i class="fas fa-info-circle" style="margin-right: 0px; font-size: 28px;"></i> 
   <!-- Кнопка баг-репорта -->
   <button id="bugReportBtn" style="
     background:#f44336; 
@@ -740,12 +811,12 @@ body.dark #comparisonResult {
     <!-- Загрузка файла -->
     <div class="file-zone">
       <label class="file-label" id="exportSOTBtn">
-        <i class="fas fa-file-upload"></i> Выгрузить СОТ
+        <i class="fas fa-cloud-upload-alt"></i> Выгрузить СОТ
       </label>
       <label class="file-label" for="csvFileInput">
-        <i class="fas fa-upload"></i> Выберите CSV
+        <i class="fas fa-file-csv"></i> Выберите CSV
       </label>
-      <input type="file" id="csvFileInput" accept=".csv" />
+      <input type="file" id="csvFileInput" accept=".csv" multiple />
     </div>
     <!-- Настройки -->
     <div class="settings">
@@ -781,6 +852,10 @@ body.dark #comparisonResult {
     <div id="chartContainer">
       <canvas id="myChart"></canvas>
     </div>
+    <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+  <button id="prevGraph" class="btn"><i class="fas fa-chevron-left"></i> Предыдущий</button>
+  <button id="nextGraph" class="btn"><i class="fas fa-chevron-right"></i> Следующий</button>
+</div>
     <div class="buttons">
       <button class="btn" id="refreshBtn"><i class="fas fa-rotate"></i> Обновить</button>
       <button class="btn" id="topBtn"><i class="fas fa-star"></i> ТОП</button>
@@ -799,7 +874,7 @@ body.dark #comparisonResult {
   </div>
 </div>
 <label class="file-label" for="csvFileInput2" style="margin-left:20px; width: 200px;">
-  <i class="fas fa-upload"></i> Загрузить второй CSV
+  <i class="fas fa-file-csv"></i> Загрузите второй CSV
 </label>
 <input type="file" id="csvFileInput2" accept=".csv" style="display:none;" />
 <button id="compareBtn" style="
@@ -849,6 +924,8 @@ let currentEmployee = null;
 let chartInstance = null;
 let currentLabels = [];
 let currentDatasets = [];
+let csvFilesData = [];
+let currentCsvIndex = -1; // индекс текущего файла
 function showNotification(message) {
   // Создаем элемент уведомления
   const notification = document.createElement('div');
@@ -948,23 +1025,44 @@ let fileChosen = false;
 let savedToolSelection = ''; // переменная для хранения выбранного инструмента
 
 fileInput.addEventListener('change', () => {
-  
-  const file = fileInput.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    localStorage.setItem('csvData', e.target.result);
-    processCSV(e.target.result);
-    document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
-    document.getElementById('averageResult').innerHTML = '';
-    document.getElementById('modeSelect').value = 'all';
-    toggleEmployeeSelection();
-    updateChart();
-  };
-  reader.readAsText(file);
-  // После выбора файла заменяем опции
+  const files = fileInput.files;
+  if (!files || files.length === 0) return;
+
+  // Очищаем старые данные
+  csvFilesData = [];
+  let loadedCount = 0;
+
+  // Загружаем все выбранные файлы
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (!file.name.endsWith('.csv')) continue;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      // Добавляем содержимое файла в массив
+      csvFilesData.push(e.target.result);
+      loadedCount++;
+      
+      // Когда все файлы загружены
+      if (loadedCount === files.length) {
+        currentCsvIndex = 0; // начинаем с первого файла
+        processCSV(csvFilesData[currentCsvIndex]);
+        updateGraphSwitchButtons();
+        updateChart();
+
+        // Обновляем UI
+        document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
+        document.getElementById('averageResult').innerHTML = '';
+        document.getElementById('modeSelect').value = 'all';
+        toggleEmployeeSelection();
+        showToast(`Загружено ${csvFilesData.length} файла(ов)`, 'success');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // После выбора файлов очищаем опции, если нужно
   if (!fileChosen) {
-    // Удаляем начальные опции
     blockSelect.innerHTML = '';
     toolSelect.innerHTML = '';
   }
@@ -1148,7 +1246,7 @@ function processCSV(text) {
     dataBlocks[block].labels = labelsArr;
     dataBlocks[block].data = dataPerTool;
   });
-  showNotification('Файл успешно загружен, график построен');
+  showToast('Данные успешно загружены!', 'success');
   updateBlockOptions();
   const firstBlock = Object.keys(dataBlocks)[0];
   if (firstBlock) {
@@ -1399,7 +1497,7 @@ document.getElementById('summaryBtn').addEventListener('click', () => {
   const blockData = dataBlocks[block];
 
   if (!blockData || !blockData.labels || !blockData.data || !blockData.data[tool]) {
-    alert('Нет данных для расчета итогов.');
+    showToast('нет данных для расчёта итогов.', 'error');
     return;
   }
 
@@ -1561,7 +1659,7 @@ const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmyd
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
-    alert('Пожалуйста, опишите проблему.');
+    showToast('Пожалуйста, опишите проблему.', 'info');
     return;
   }
 
@@ -1576,9 +1674,9 @@ document.getElementById('sendBug').addEventListener('click', () => {
   console.log('Ответ сервера:', data);
   if (data.result === 'success') {
     console.log('Уведомление появится');
-    showNotification('Баг успешно отправлен!');
+    showToast('<Баг успешно отправлен>', 'success');
   } else {
-    showNotification('Ошибка при отправке бага.');
+    showToast('Произошла ошибка при отправке бага', 'error');
   }
 })
 
@@ -1614,7 +1712,7 @@ fileInput2.addEventListener('change', () => {
   reader.onload = e => {
     dataBlocksSecond = { SOT: { labels: [], data: {} }, PMK: { labels: [], data: {} }, TORUDA: { labels: [], data: {} } };
     processCSVSecond(e.target.result);
-    showNotification('Второй файл загружен. Можно произвести сравнение.');
+    showToast('Второй файл загруже. Можно произвести сравнение', 'info');
   };
   reader.readAsText(file);
 });
@@ -1678,7 +1776,7 @@ function processCSVSecond(text) {
 
 function compareCSVData() {
   if (!dataBlocks || !dataBlocksSecond) {
-    showNotification('Загрузите оба файла для сравнения.');
+    showToast('Загрузите оба файла для сравнения', 'info');
     return;
   }
 
@@ -1738,7 +1836,7 @@ function compareCSVData() {
 
     container.appendChild(table);
   }
-  showNotification('Сравнение завершено.');
+  showToast('Сравнение завершено', 'success');
 }
 document.getElementById('compareBtn')?.addEventListener('click', compareCSVData);
 // Обработки перетаскивания для первого файла
@@ -1767,7 +1865,7 @@ dropZoneCSV.addEventListener('drop', (e) => {
       // триггерим change событие, чтобы обработать файл
       inputCSV.dispatchEvent(new Event('change'));
     } else {
-      alert('Пожалуйста, перетащите CSV-файл.');
+      showToast('Пожалуйста, перетщите CSV-файл.', 'info');
     }
   }
 });
@@ -1797,10 +1895,107 @@ dropZoneCSV2.addEventListener('drop', (e) => {
       inputCSV2.files = e.dataTransfer.files;
       inputCSV2.dispatchEvent(new Event('change'));
     } else {
-      alert('Пожалуйста, перетащите CSV-файл.');
+      showToast('Пожалуйста, перетащите CSV-файл', 'info');
     }
   }
 });
+function showToast(message, type='info') {
+  const container = document.getElementById('toastContainer');
+
+  const toast = document.createElement('div');
+  toast.style.minWidth = '350px';
+  toast.style.maxWidth = '400px';
+  toast.style.padding = '16px 24px';
+  toast.style.borderRadius = '12px';
+  toast.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+  toast.style.display = 'flex';
+  toast.style.alignItems = 'center';
+  toast.style.justifyContent = 'space-between';
+  toast.style.background = 'linear-gradient(135deg, #667eea, #764ba2)'; // градиент
+  toast.style.color = '#fff';
+  toast.style.fontSize = '1.2em';
+  toast.style.fontWeight = '600';
+  toast.style.transition = 'opacity 0.4s, transform 0.4s, box-shadow 0.4s';
+  toast.style.pointerEvents = 'auto';
+  toast.style.transform = 'translateY(-30px)';
+  toast.style.opacity = '0';
+
+  // Иконки и цвета для разных типов
+  let iconHTML = '';
+  let bgColor = '';
+  switch (type) {
+    case 'success':
+      bgColor = 'linear-gradient(135deg, #00b09b, #96c93d)';
+      iconHTML = '<i class="fas fa-check-circle" style="margin-right:10px; font-size:1.4em; color:#fff;"></i>';
+      break;
+    case 'error':
+      bgColor = 'linear-gradient(135deg, #f85032, #e73827)';
+      iconHTML = '<i class="fas fa-exclamation-triangle" style="margin-right:10px; font-size:1.4em; color:#fff;"></i>';
+      break;
+    case 'info':
+    default:
+      bgColor = 'linear-gradient(135deg, #36d1dc, #5b86b5)';
+      iconHTML = '<i class="fas fa-info-circle" style="margin-right:10px; font-size:1.4em; color:#fff;"></i>';
+      break;
+  }
+
+  toast.style.background = bgColor;
+
+  toast.innerHTML = `
+    <div style="display:flex; align-items:center;">
+      ${iconHTML}
+      <div style="flex:1;">${message}</div>
+    </div>
+    <button style="
+      margin-left:15px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size:1.6em;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    " aria-label="Закрыть" onmouseover="this.style.color='#ff0'" onmouseout="this.style.color='#fff'" onclick="this.parentElement.style.opacity='0'; this.parentElement.style.transform='translateY(-20px)'; setTimeout(() => { if (this.parentElement.parentNode) this.parentElement.parentNode.removeChild(this.parentElement); }, 400);">&times;</button>
+  `;
+
+  container.appendChild(toast);
+
+  // Анимация появления
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(-20px)';
+    toast.style.boxShadow = '0 12px 24px rgba(0,0,0,0.4)';
+  }, 10);
+
+  // Автоматическое исчезновение
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-20px)';
+    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 400);
+  }, 5000);
+}
+document.getElementById('prevGraph').addEventListener('click', () => {
+  if (csvFilesData.length <= 1) return;
+  currentCsvIndex = (currentCsvIndex - 1 + csvFilesData.length) % csvFilesData.length;
+  processCSV(csvFilesData[currentCsvIndex]);
+  updateChart();
+  showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
+});
+
+document.getElementById('nextGraph').addEventListener('click', () => {
+  if (csvFilesData.length <= 1) return;
+  currentCsvIndex = (currentCsvIndex + 1) % csvFilesData.length;
+  processCSV(csvFilesData[currentCsvIndex]);
+  updateChart();
+  showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
+});
+function updateGraphSwitchButtons() {
+  document.getElementById('prevGraph').disabled = csvFilesData.length <= 1;
+  document.getElementById('nextGraph').disabled = csvFilesData.length <= 1;
+}
 </script>
 </body>
 </html>
