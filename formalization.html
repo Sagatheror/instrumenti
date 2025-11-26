@@ -659,6 +659,7 @@ function addColumn() {
   const headerRow = document.querySelector('#interactiveTable thead tr');
   const colIndex = headerRow.children.length;
   const newHeader = document.createElement('th');
+  newHeader.contentEditable = true;
   newHeader.innerText = `Заголовок ${colIndex + 1}`;
   newHeader.onclick = () => selectCell(newHeader);
   headerRow.appendChild(newHeader);
