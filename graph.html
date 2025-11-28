@@ -597,7 +597,7 @@ body.dark #comparisonResult {
 <body>
 <div id="toastContainer" style="
   position: fixed;
-  top: 5%;
+  top: 10%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9999;
@@ -607,9 +607,9 @@ body.dark #comparisonResult {
   pointer-events: none;
 "></div>
 <!-- Инструкция в виде модального окна -->
-<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999;">
+<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999;">
   <div style="
-    background: #fff;
+    background: var(--hover-bg-color);
     padding: 30px;
     max-width: 800px;
     width: 90%;
@@ -618,21 +618,22 @@ body.dark #comparisonResult {
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     font-family: 'Inter', sans-serif;
+    color: var(--text-color);
     position: relative;
   ">
-    <h2 style="margin-top:0; font-size: 2em; text-align: center; color: #333;">
-      <i class="fas fa-info-circle" style="color:#4CAF50; margin-right:10px;"></i> Как использовать этот инструмент
+    <h2 style="margin-top:0; font-size: 2em; text-align: center; color: var (--text-color);">
+      <i class="fas fa-info-circle" style="color: var; margin-right:10px;"></i> Как использовать этот инструмент
     </h2>
-    <p style="font-size: 1.1em; color:#555; line-height:1.6; text-align: center;">
+    <p style="font-size: 1.1em; color: var(--text-color); line-height:1.6; text-align: center;">
       Добро пожаловать! Этот сайт — ваш помощник для анализа и визуализации данных. Ниже — краткая, но яркая инструкция, чтобы вы могли быстро начать работать и получать максимум пользы.
     </p>
     <hr style="margin:20px 0; border: none; border-top: 2px solid #eee;">
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color: var(--text-color); display:flex; align-items:center;">
         <i class="fas fa-cloud-download-alt" style="margin-right:10px; color:#3498db;"></i> Шаг 1: Получение файла СОТ
       </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;"><strong>Нажмите "Выгрузить СОТ"</strong>.</li>
         <li style="margin-bottom:10px;">Откроется новая вкладка — входите, если нужно авторизоваться.</li>
         <li style="margin-bottom:10px;">Выберите диапазон дат для выгрузки.</li>
@@ -641,30 +642,30 @@ body.dark #comparisonResult {
     </section>
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color:var(--text-color); display:flex; align-items:center;">
         <i class="fas fa-upload" style="margin-right:10px; color:#e67e22;"></i> Шаг 2: Загрузка CSV
       </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; var(--text-color);">
         <li style="margin-bottom:10px;">Кликните "Выберите CSV" и выберите файл с компьютера.</li>
         <li style="margin-bottom:10px;">После загрузки появится подтверждение — можно продолжать.</li>
       </ul>
     </section>
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color:var(--text-color); display:flex; align-items:center;">
         <i class="fas fa-cogs" style="margin-right:10px; color:#1abc9c;"></i> Шаг 3: Настройка параметров
       </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;">Выберите сайт, инструмент, режим и сотрудника (если нужно).</li>
         <li style="margin-bottom:10px;">Фильтруйте данные для точного анализа.</li>
       </ul>
     </section>
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color:var(--text-color); display:flex; align-items:center;">
         <i class="fas fa-chart-line" style="margin-right:10px; color:#9b59b6;"></i> Шаг 4: Визуализация данных
       </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;">График обновится автоматически — наблюдайте за динамикой.</li>
         <li style="margin-bottom:10px;">Нажмите "Обновить" для ручной перерисовки.</li>
         <li style="margin-bottom:10px;">"ТОП" — покажет лучших сотрудников.</li>
@@ -682,16 +683,17 @@ body.dark #comparisonResult {
       display: inline-block;
       margin-right: 10px;
     ">- NEW -</span> 
-    <span style="font-size: 1.1em; color:#555;">Есть возможность построить несколько графиков по разным CSV-файлам одновременно.</br>
+    <span style="font-size: 1.1em; color:var(--text-color);">Есть возможность построить несколько графиков по разным CSV-файлам одновременно.</br>
     Загрузите необходимое количество файлов CSV в поле "Выберите CSV".</br>
     После загрузки нескольких файлов появится возможность перелистывать графики с помощью кнопок "Предыдущий" и "Следующий".</span>
  
     </section>
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color:var(--text-color); display:flex; align-items:center;">
   <i class="fas fa-sync-alt" style="margin-right:10px; color:#e74c3c;"></i> 
-  <span style="
+    <span>Шаг 5: Сравнение выгрузок</span>
+    <span style="
     background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
     background-size: 600% 600%;
     -webkit-background-clip: text;
@@ -703,9 +705,8 @@ body.dark #comparisonResult {
     display: inline-block;
     margin-right: 10px;
   ">- NEW -</span>
-  <span>Шаг 5: Сравнение выгрузок</span>
 </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;">Подготовьте два CSV файла за разные периоды.</li>
         <li style="margin-bottom:10px;">Загрузите их и нажмите "Сравнить файлы".</li>
         <li style="margin-bottom:10px;">Вам покажут таблицу с процентными изменениями и разницей.</li>
@@ -713,10 +714,10 @@ body.dark #comparisonResult {
    
 
     <section style="margin-bottom:20px;">
-      <h3 style="font-size:1.4em; color:#2c3e50; display:flex; align-items:center;">
+      <h3 style="font-size:1.4em; color:var(--text-color); display:flex; align-items:center;">
         <i class="fas fa-tools" style="margin-right:10px; color:#f39c12;"></i> Дополнительные функции
       </h3>
-      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:#555;">
+      <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;"><strong>Changelog</strong> — следите за обновлениями сайта.</li>
         <li style="margin-bottom:10px;"><strong>Тёмная тема</strong> — переключайте стиль для комфортной работы вечером.</li>
         <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте отзыв, нажав на жучка.</li>
@@ -1013,6 +1014,7 @@ themeBtn.onclick = () => {
     localStorage.setItem('theme', 'light');
   }
   updateChart();
+  showToast('Тема изменена');
 };
 
 // =====================
@@ -1642,6 +1644,7 @@ changelogBtn.addEventListener('click', () => {
   } else {
     loadChangelogFromSheet();
     changelogContainer.classList.add('show');
+    showToast('Спасибо за прочтение истории изменений');
   }
 });
 
@@ -1999,4 +2002,3 @@ function updateGraphSwitchButtons() {
 </script>
 </body>
 </html>
-
