@@ -846,7 +846,10 @@ body.dark #comparisonResult {
       </div>
     </div>
   </div>
-
+<div id="fileNamesContainer" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+  <!-- Названия файлов будут добавляться сюда -->
+  <div id="fileList"></div>
+</div>
   <!-- График и итог -->
   <div class="chart-section">
     <div id="chartTitle"><i class="fas fa-search"></i> Загрузите файл и выберите параметры</div>
@@ -927,6 +930,7 @@ let currentLabels = [];
 let currentDatasets = [];
 let csvFilesData = [];
 let currentCsvIndex = -1; // индекс текущего файла
+let fileNames = [];
 function showNotification(message) {
   // Создаем элемент уведомления
   const notification = document.createElement('div');
@@ -1026,18 +1030,23 @@ const toolSelect = document.getElementById('toolSelect');
 let fileChosen = false;
 let savedToolSelection = ''; // переменная для хранения выбранного инструмента
 
+// Обработчик выбора файлов
 fileInput.addEventListener('change', () => {
   const files = fileInput.files;
   if (!files || files.length === 0) return;
 
   // Очищаем старые данные
   csvFilesData = [];
+  fileNames = [];
+  document.getElementById('fileNamesContainer').innerHTML = '';
   let loadedCount = 0;
 
   // Загружаем все выбранные файлы
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     if (!file.name.endsWith('.csv')) continue;
+
+    fileNames.push(file.name); // сохраняем имя файла
 
     const reader = new FileReader();
     reader.onload = e => {
@@ -1052,6 +1061,9 @@ fileInput.addEventListener('change', () => {
         updateGraphSwitchButtons();
         updateChart();
 
+        // Обновляем список названий файлов
+        renderFileNames();
+
         // Обновляем UI
         document.getElementById('chartTitle').innerHTML = '<i class="fas fa-check-circle"></i> Данные загружены. Выберите параметры';
         document.getElementById('averageResult').innerHTML = '';
@@ -1062,7 +1074,6 @@ fileInput.addEventListener('change', () => {
     };
     reader.readAsText(file);
   }
-
   // После выбора файлов очищаем опции, если нужно
   if (!fileChosen) {
     blockSelect.innerHTML = '';
@@ -1985,6 +1996,7 @@ document.getElementById('prevGraph').addEventListener('click', () => {
   currentCsvIndex = (currentCsvIndex - 1 + csvFilesData.length) % csvFilesData.length;
   processCSV(csvFilesData[currentCsvIndex]);
   updateChart();
+  renderFileNames(); // Обновляем подсветку имени файла
   showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
 });
 
@@ -1993,11 +2005,37 @@ document.getElementById('nextGraph').addEventListener('click', () => {
   currentCsvIndex = (currentCsvIndex + 1) % csvFilesData.length;
   processCSV(csvFilesData[currentCsvIndex]);
   updateChart();
+  renderFileNames(); // Обновляем подсветку имени файла
   showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
 });
 function updateGraphSwitchButtons() {
   document.getElementById('prevGraph').disabled = csvFilesData.length <= 1;
   document.getElementById('nextGraph').disabled = csvFilesData.length <= 1;
+}
+function renderFileNames() {
+  const container = document.getElementById('fileNamesContainer');
+  container.innerHTML = '';
+
+  fileNames.forEach((name, index) => {
+    const span = document.createElement('span');
+    span.textContent = name;
+    span.style.cursor = 'pointer';
+    span.style.padding = '6px 12px';
+    span.style.borderRadius = '8px';
+    span.style.backgroundColor = index === currentCsvIndex ? 'rgba(102, 126, 234, 0.3)' : 'transparent';
+    span.style.border = '1px solid #ccc';
+
+    span.onclick = () => {
+      if (index !== currentCsvIndex) {
+        currentCsvIndex = index;
+        processCSV(csvFilesData[currentCsvIndex]);
+        updateChart();
+        renderFileNames(); // Обновим выделение
+      }
+    };
+
+    container.appendChild(span);
+  });
 }
 </script>
 </body>
