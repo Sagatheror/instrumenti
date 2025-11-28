@@ -720,7 +720,7 @@ body.dark #comparisonResult {
       <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;"><strong>Changelog</strong> — следите за обновлениями сайта.</li>
         <li style="margin-bottom:10px;"><strong>Тёмная тема</strong> — переключайте стиль для комфортной работы вечером.</li>
-        <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте отзыв, нажав на жучка.</li>
+        <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте пожелание, нажав на жучка.</li>
         <li style="margin-bottom:10px;"><strong>Инструкция</strong> — всегда можно открыть заново, нажав на иконку вопросика.</li>
       </ul>
     </section>
@@ -791,14 +791,14 @@ body.dark #comparisonResult {
     justify-content: center;
     padding: 0;
   ">
-    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
+    <i class="fas fa-comment" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
   </button>
 </div>
 
 <!-- Модальное окно для описания бага -->
 <div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
   <div style="background: var(--hover-bg-color); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
-    <h3>Сообщить о баге</h3>
+    <h3>Сообщить о баге или оставить пожелание</h3>
     <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);"></textarea>
     <div style="margin-top:10px; display:flex; justify-content:flex-end;">
       <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
@@ -1673,7 +1673,7 @@ const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmyd
 document.getElementById('sendBug').addEventListener('click', () => {
   const description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
-    showToast('Пожалуйста, опишите проблему.', 'info');
+    showToast('Пожалуйста, опишите проблему или пожелание.', 'info');
     return;
   }
 
@@ -1688,9 +1688,9 @@ document.getElementById('sendBug').addEventListener('click', () => {
   console.log('Ответ сервера:', data);
   if (data.result === 'success') {
     console.log('Уведомление появится');
-    showToast('Баг успешно отправлен', 'success');
+    showToast('Сообщение успешно отправлен', 'success');
   } else {
-    showToast('Произошла ошибка при отправке бага', 'error');
+    showToast('Произошла ошибка при отправке сообщения', 'error');
   }
 })
 
