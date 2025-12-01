@@ -597,7 +597,7 @@ body.dark #comparisonResult {
 
 /* Внутренний блок */
 #bugModal > div {
-  background: #fff;
+  background: var(--bg-color);
   padding: 30px;
   border-radius: 16px;
   max-width: 500px;
@@ -632,7 +632,9 @@ body.dark #comparisonResult {
   height: 150px;
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid #ccc;
+  background: var(--hover-bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   font-family: 'Inter', sans-serif;
   font-size: 1em;
   resize: vertical;
@@ -1796,7 +1798,7 @@ document.getElementById('sendBug').addEventListener('click', () => {
 
   // Очистка поля
   document.getElementById('bugDescription').value = '';
-  document.getElementById('bugModal').style.display = 'none';
+  document.getElementById('bugModal').classList.remove('show');
 });
 // =====================
 // Прозрачность кнопок при прокрутке
