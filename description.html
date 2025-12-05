@@ -497,48 +497,126 @@ body.dark-theme .spinner-inner {
 #custom-theme-toggle:hover i {
   color: #ffd700; /* или любой цвет по вашему вкусу */
 }
+/* Стиль для модального окна инструкции */
+#instructionModal .content {
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  padding: 30px;
+  max-width: 800px;
+  max-height: 90%;
+  overflow-y: auto;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+}
+
+/* Заголовки */
+#instructionModal h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Подзаголовки */
+#instructionModal h3 {
+  font-size: 22px;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #4CAF50;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Списки */
+#instructionModal ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Элементы списка */
+#instructionModal li {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #555;
+}
+
+/* Выделение важных слов */
+#instructionModal strong {
+  color: #222;
+}
+
+/* Кнопка "Понятно, спасибо" */
+#instructionModal button {
+  display: block;
+  margin: 30px auto 0 auto;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: background-color 0.3s, transform 0.2s;
+}
+#instructionModal button:hover {
+  background-color: #0069d9;
+  transform: translateY(-2px);
+}
+p {
+  font-size: 18px;
+}
 </style>
 </head>
 <body>
     <!-- Инструкция в виде модального окна -->
 <div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
-  <div style="background: var(--section-bg); padding:20px; max-width:700px; max-height:90%; overflow-y:auto; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position:relative; font-size: 18px">
-    <h2 style="margin-top:0; font-size: 20px;">Инструкция как пользоваться инструментом</h2>
+  <div class="content">
+    <h2>Инструкция как пользоваться инструментом</h2>
     <p><strong>Добро пожаловать!</strong></p>
     <p>Этот сайт позволяет вам загружать CSV-файлы, работать с основным и расширенным описанием, а также осуществлять поиск по кодам 1С. Ниже — пошаговая инструкция, чтобы быстро начать работу:</p>
     <hr>
-    <h3>Шаг 1: Выгрузка СОТ</h3>
+    <h3><i class="fas fa-step-forward"></i> Шаг 1: Выгрузка СОТ</h3>
     <ul>
-      <li>В поле выбора колонки для работы выберите  <strong>"Details"</strong> для работы с основным описанием  или  <strong>"Description" </strong>для работы с расширенным описанием. Выбор можно изменить в любой момент работы (до сохранения). </li>
+      <li>В поле выбора колонки для работы выберите  <strong>"Details"</strong> для работы с основным описанием  или  <strong>"Description"</strong> для работы с расширенным описанием. Выбор можно изменить в любой момент работы (до сохранения).</li>
       <li>Загрузите CSV-файл, с которым хотите работать, с помощью кнопки <strong>Выберите файл</strong> или перетащив нужный документ в это поле.</li>
-      <li>После загрузки файла у Вас внизу появится таблица с предпросмотром, где будет колонка с описанием и колонка с кодом 1С.</li>
+      <li>После загрузки файла у вас появится таблица с предпросмотром, где будет колонка с описанием и колонка с кодом 1С.</li>
     </ul>
-    <h2 style="margin-top:0; margin-bottom:4px; font-size: 20px;">Режим замены</h2>
-    <h3>Шаг 2: Режим замены</h3>
+    <h3><i class="fas fa-step-forward"></i> Шаг 2: Режим замены</h3>
     <ul>
-      <li>Выбереите, с чем Вы будете работать: <strong>"Заменить HTML"</strong> или <strong>"Заменить текст"</strong>.</li>
-      <li>В поле <strong>"Искомое значение"</strong> вставьте простой или html текст, который Вы хотите заменить.</li>
-      <li>В поле <strong>"Новое значение"</strong> вставьте простой или html текст, на который нужно заменить старый вариант текста.</li>
-      <li>Нажмите на кнопку <strong>"Заменить"</strong>. И после обработки у Вас высветится поле с количеством обработанных элементов. Все изменения можно увидеть в таблице предросмотра</li>
-          </ul>
+      <li>Выберите, с чем вы будете работать: <strong>"Заменить HTML"</strong> или <strong>"Заменить текст"</strong>.</li>
+      <li>Введите искомое значение и новое значение для замены.</li>
+      <li>Нажмите "Заменить" — и вы увидите обновленные данные.</li>
+    </ul>
     <h2 style="margin-top:0; margin-bottom:4px; font-size: 20px;">Поиск по кодам 1С</h2>
-    <h3>Шаг 2: Введите коды</h3>
+    <h3><i class="fas fa-step-forward"></i>Шаг 3: Введите коды</h3>
     <ul>
       <li>В поле поиска введите искомые коды 1С через запятую или пробел. Нажмите кнопку <strong>"Искать по кодам 1С"</strong>.</li>
       <li>Нужные коды 1С с соответствубщем описанием будут показаны в таблице предпросмотра.</li>
       <li>Чтобы снова отобразить весь список из CSV-файла, очистите строку поиска и заново нажмите кнопку <strong>"Искать по кодам 1С"</strong>.</li>
      </ul>
      <h2 style="margin-top:0; margin-bottom:4px; font-size: 20px;">Добавить текст/html</h2>
-      <h3>Шаг 2: Добавить новое значение</h3>
+    <h3><i class="fas fa-step-forward"></i>Шаг 4: Добавить новое значение</h3>
     <ul>
-      <li>Выбереите в поле <strong>"Тип вставляемого содержимого"</strong> , с чем Вы будете работать: <strong>"Текст"</strong> или <strong>"HTML"</strong>.</li>
+      <li>Выберите в поле <strong>"Тип вставляемого содержимого"</strong> , с чем Вы будете работать: <strong>"Текст"</strong> или <strong>"HTML"</strong>.</li>
       <li>В поле <strong>"Что вставлять"</strong> вставьте простой или html текст, который вы хотите добавить.</li>
       <li>В поле <strong>"Вставлять"</strong> выберите место для вставки нового текста: в начало или в конец.</li>
       <li>Нажмите на кнопку <strong>"Добавить"</strong>. И после обработки у Вас высветится поле с количеством обработанных элементов. Все изменения можно увидеть в таблице предросмотра</li>
           </ul>
-      <h3>Шаг 3 для всех режимов: Сохранение</h3>
-    <ul> <il>Нажмите на кнопку <strong>"Сохранить изменения"</strong>, чтобы скачать файл CSV с внесёнными изменениями (файл будет сохранён с двумя столбцами: код 1С и описание)</il></ul>
-     <h3>Шаг 4: Дополнительные функции</h3>
+    <h3><i class="fas fa-step-forward"></i>Шаг 5 для всех режимов: Сохранение</h3>
+    <ul> 
+      <li>Нажмите на кнопку <strong>"Сохранить изменения"</strong>, чтобы скачать файл CSV с внесёнными изменениями (файл будет сохранён с двумя столбцами: код 1С и описание)</il>
+      </ul>
+    <h3><i class="fas fa-step-forward"></i>Шаг 6: Дополнительные функции</h3>
     <ul>
       <li><strong>"Changelog"</strong> — просмотрите историю обновлений сайта.</li>
       <li><strong>Тёмная тема</strong> — нажав на кнопку солнца в верхнем правом углу тема сменится на тёмную, при повторном вернётся светлая тема.</li>
@@ -1139,6 +1217,7 @@ function loadChangelogFromSheet() {
 // Вариант 1: при загрузке страницы сразу загружаем историю
 window.addEventListener('load', () => {
   loadChangelogFromSheet();
+  document.getElementById('instructionModal').style.display = 'flex';
   // также инициализация темы и сохранение из localStorage
   const savedChangelog = localStorage.getItem('changelog') || '';
   document.getElementById('changelogText').value = savedChangelog;
