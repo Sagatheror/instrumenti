@@ -812,7 +812,7 @@ body.dark-theme td:hover {
   <div id="changelogContent"></div>
 </div>
 <!-- Переключатель темы -->
-<div class="custom-theme-switcher" style="top: 20px; right: 20px;">
+<div class="custom-theme-switcher">
   <div id="custom-theme-toggle" style="width: 60px; height: 35px; background: #FFA500; border-radius: 25px; cursor: pointer; display: flex; align-items: center; padding: 0 5px; transition: background 0.5s; position: fixed; top: 20px; right: 20px; z-index: 999;">
     <!-- Иконка луны -->
     <div class="icon-moon" style="position: absolute; left: 10px; font-size: 18px; color: #fff;">
@@ -2409,11 +2409,14 @@ const knob = customToggle.querySelector('.knob');
 // Функция для загрузки сохраненной темы
 function loadTheme() {
   const savedTheme = localStorage.getItem('theme');
+  // По умолчанию светлая тема
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-theme');
     customToggle.style.background = '#555';
     knob.style.transform = 'translateX(30px)';
   } else {
+    // Светлая тема по умолчанию
+    document.body.classList.remove('dark-theme');
     customToggle.style.background = '#FFA500';
     knob.style.transform = 'translateX(0)';
   }
@@ -2430,9 +2433,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 customToggle.addEventListener('click', () => {
+  const isDark = !document.body.classList.contains('dark-theme');
   document.body.classList.toggle('dark-theme');
 
-  // Меняем цвет фона переключателя сразу при клике
+  // Обновляем внешний вид переключателя
+  if (isDark) {
+    customToggle.style.background = '#555';
+    knob.style.transform = 'translateX(30px)';
+  } else {
+    customToggle.style.background = '#FFA500';
+    knob.style.transform = 'translateX(0)';
+  }
+  
+  // Сохраняем выбор пользователя
+  saveTheme(isDark);
+});
+
+// Убедитесь, что переключатель правильно отображает текущее состояние
+// Добавьте этот код в DOMContentLoaded для синхронизации
+document.addEventListener('DOMContentLoaded', () => {
+  // Проверяем начальное состояние
   if (document.body.classList.contains('dark-theme')) {
     customToggle.style.background = '#555';
     knob.style.transform = 'translateX(30px)';
