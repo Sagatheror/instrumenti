@@ -136,6 +136,21 @@ body.dark-theme .ql-snow .ql-picker-options {
   background-color: #e64a19;
   transform: translateY(-2px);
 }
+/* Подсказка при наведении (сокращенная) */
+.back-btn-top:hover::before {
+  content: "На главную";
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+}
 /* Контейнеры для редакторов */
 .editor-block {
   margin-bottom: 20px;
