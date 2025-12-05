@@ -2349,7 +2349,7 @@ function showComparisonChart() {
 function startSnow() {
   if (snowActive) return;
   snowActive = true;
-
+  showToast('Зима в разгаре!', 'info');
   snowContainer = document.createElement('div');
   snowContainer.className = 'snow';
   document.body.appendChild(snowContainer);
@@ -2393,6 +2393,7 @@ function startSnow() {
 function stopSnow() {
   if (!snowActive) return;
   snowActive = false;
+  showToast('Снег остановлен', 'info');
   clearInterval(snowInterval);
   if (snowContainer) {
     document.body.removeChild(snowContainer);
@@ -2437,5 +2438,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
