@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Расширенный CSV редактор</title>
+<!-- Стиль остаётся прежним -->
+<link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 20px;
+  }
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  .top-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+  .file-controls {
+    display: flex;
+    gap: 10px;
+  }
+  #csvFileInput {
+    display: none;
+  }
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #2196f3;
+    color: #fff;
+    font-size: 0.95em;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background-color: #0b7dda;
+  }
+  #tabs {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  .tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    background: #e0f7fa;
+    border: 1px solid #0097a7;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    margin-right: 4px;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+  .tab.active {
+    background: #0097a7;
+    color: #fff;
+  }
+  #tabContent {
+    border: 1px solid #0097a7;
+    border-radius: 0 4px 4px 4px;
+    padding: 15px;
+    background: #fff;
+  }
+  .tab-pane {
+    display: none;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  #columnCheckboxes {
+    max-height: 180px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  label {
+    background: #e0f7fa;
+    border: 1px solid #0097a7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+  }
+  #tableContainer {
+    width: 100%;
+    height: 800px;
+    margin-top: 20px;
+  }
+  #info {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 10px;
+  }
+  /* Отдельный стиль для блока поиска и замены */
+  #search-replace {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e0f7fa;
+    border: 1px solid #0097a7;
+    border-radius: 4px;
+  }
+  #search-replace input {
+    margin-right: 8px;
+    padding: 6px;
+    font-size: 0.9em;
+  }
+  #search-replace button {
+    padding: 6px 10px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Расширенный CSV редактор</h1>
+
+<!-- Верхняя панель -->
+<div class="top-panel">
+  <div class="file-controls">
+    <button id="loadBtn">Загрузить CSV</button>
+    <input type="file" id="csvFileInput" accept=".csv" />
+  </div>
+</div>
+
+<!-- Вкладки -->
+<div id="tabs">
+  <div class="tab active" data-tab="columns">Колонки</div>
+  <div class="tab" data-tab="filters">Фильтры</div>
+  <div class="tab" data-tab="search">Поиск</div>
+  <div class="tab" data-tab="actions">Действия</div>
+</div>
+
+<!-- Контент вкладок -->
+<div id="tabContent">
+  <!-- Колонки -->
+  <div id="section-columns" class="tab-pane active">
+    <h3>Выбор колонок для отображения</h3>
+    <div id="columnCheckboxes"></div>
+    <div style="margin-top:10px;">
+      <button id="selectAllCols">Выбрать все</button>
+      <button id="deselectAllCols">Снять все</button>
+      <button id="resetCols">По умолчанию</button>
+    </div>
+  </div>
+  <!-- Фильтры -->
+  <div id="section-filters" class="tab-pane" style="display:none;">
+    <h3>Фильтр по ItemID</h3>
+    <input type="text" id="itemIdFilter" placeholder="Фильтр по ItemID" />
+    <div style="margin-top:10px;">
+      <button id="applyFilter">Применить</button>
+      <button id="resetFilter">Сбросить</button>
+    </div>
+  </div>
+  <!-- Поиск -->
+  <div id="section-search" class="tab-pane" style="display:none;">
+    <h3>Поиск по значениям</h3>
+    <input type="text" id="valueSearch" placeholder="Поиск в таблице" />
+    <div style="margin-top:10px;">
+      <button id="searchBtn">Найти</button>
+      <button id="clearSearchBtn">Очистить</button>
+    </div>
+    <!-- Блок поиска и замены -->
+    <div id="search-replace" style="margin-top:15px;">
+      <h4>Поиск и замена</h4>
+      <input type="text" id="findValue" placeholder="Значение для поиска" />
+      <input type="text" id="replaceValue" placeholder="Заменить на" />
+      <button id="findReplaceBtn">Найти и заменить</button>
+    </div>
+  </div>
+  <!-- Действия -->
+  <div id="section-actions" class="tab-pane" style="display:none;">
+    <h3>Действия с таблицей</h3>
+    <div class="actions-panel">
+      <button id="saveFullBtn">Скачать все</button>
+      <button id="saveSelectedColsBtn">Скачать выбранные</button>
+      <button id="copyTableBtn">Копировать таблицу</button>
+      <button id="refreshTableBtn">Обновить</button>
+      <button id="selectAllRows">Выделить все строки</button>
+      <button id="deselectAllRows">Снять выделение</button>
+      <button id="deleteSelectedRows" style="background-color:#e53935;">Удалить выделенные</button>
+    </div>
+    <div id="info"></div>
+  </div>
+</div>
+
+<!-- Таблица -->
+<div id="tableContainer"></div>
+
+<!-- Скрипты -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+<script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
+<script>
+let rawData = [];
+let headers = [];
+let displayedHeaders = [];
+let filteredData = [];
+let currentSort = {column: null, asc: true};
+let currentFilterItemID = '';
+let currentSearchQuery = '';
+let selectedRowIndices = new Set();
+let table = null; // глобальная переменная для Tabulator
+
+// История изменений
+const historyStack = [];
+const redoStack = [];
+
+function saveHistory() {
+  historyStack.push(JSON.stringify(rawData));
+  redoStack.length = 0;
+}
+function undo() {
+  if (historyStack.length === 0) return;
+  redoStack.push(JSON.stringify(rawData));
+  const prevState = JSON.parse(historyStack.pop());
+  rawData = prevState;
+  filteredData = [...rawData];
+  updateTableAndFilters();
+}
+function redo() {
+  if (redoStack.length === 0) return;
+  historyStack.push(JSON.stringify(rawData));
+  const nextState = JSON.parse(redoStack.pop());
+  rawData = nextState;
+  filteredData = [...rawData];
+  updateTableAndFilters();
+}
+
+// Вкладки
+const tabs = document.querySelectorAll('.tab');
+const tabPanes = document.querySelectorAll('.tab-pane');
+tabs.forEach(tab => {
+  tab.onclick = () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    tabPanes.forEach(pane => {
+      pane.style.display = (pane.id === 'section-' + target) ? 'block' : 'none';
+    });
+  };
+});
+
+// Загрузка файла
+document.getElementById('loadBtn').onclick = () => document.getElementById('csvFileInput').click();
+document.getElementById('csvFileInput').onchange = e => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      parseCSV(reader.result);
+    };
+    reader.readAsText(file);
+  }
+};
+
+function parseCSV(csvText) {
+  const result = Papa.parse(csvText, {header:true, skipEmptyLines:true});
+  rawData = result.data;
+  headers = result.meta.fields;
+  filteredData = [...rawData];
+  createColumnCheckboxes();
+  setDefaultCheckboxes();
+  currentFilterItemID = '';
+  currentSearchQuery = '';
+  document.getElementById('itemIdFilter').value = '';
+  document.getElementById('valueSearch').value = '';
+  document.getElementById('findValue').value = '';
+  document.getElementById('replaceValue').value = '';
+  selectedRowIndices.clear();
+
+  initializeTabulator();
+
+  updateStatus('Файл загружен успешно.');
+  updateInfo();
+
+  saveHistory();
+}
+
+function createColumnCheckboxes() {
+  const container = document.getElementById('columnCheckboxes');
+  container.innerHTML = '';
+  headers.forEach((h, index) => {
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = true;
+    checkbox.dataset.index = index;
+    checkbox.onchange = () => updateDisplayedHeaders();
+    const span = document.createElement('span');
+    span.innerText = h;
+    label.appendChild(checkbox);
+    label.appendChild(span);
+    container.appendChild(label);
+  });
+}
+
+function setDefaultCheckboxes() {
+  document.querySelectorAll('#columnCheckboxes input[type="checkbox"]').forEach((cb, index) => {
+    if (headers[index] === 'MessageID' || headers[index] === 'ItemID') {
+      cb.checked = true;
+    } else {
+      cb.checked = false;
+    }
+  });
+  updateDisplayedHeaders();
+}
+
+function updateDisplayedHeaders() {
+  const checkboxes = document.querySelectorAll('#columnCheckboxes input[type="checkbox"]');
+  displayedHeaders = [];
+  checkboxes.forEach((cb, index) => {
+    if (cb.checked) {
+      displayedHeaders.push(headers[index]);
+    }
+  });
+  updateTableColumns();
+}
+
+function initializeTabulator() {
+  if (table) {
+    table.destroy();
+  }
+  const columns = [
+    {title: "Выделено", formatter: "rowSelection", headerSort: false, width: 50},
+  ];
+  headers.forEach((h, index) => {
+    if (displayedHeaders.includes(h)) {
+      columns.push({
+        title: h,
+        field: h,
+        editor: "input",
+        hozAlign: "left",
+        headerSort: true,
+      });
+    }
+  });
+  table = new Tabulator("#tableContainer", {
+    data: [...filteredData],
+    layout: "fitDataStretch",
+    height: "600px",
+    selectable: true,
+    pagination: "local",
+    paginationSize: 100,
+    columns: columns,
+  });
+
+  table.on("rowSelected", (row) => {
+    const data = row.getData();
+    const index = rawData.findIndex(r => JSON.stringify(r) === JSON.stringify(data));
+    if (index !== -1) {
+      selectedRowIndices.add(index);
+    }
+    updateInfo();
+  });
+  table.on("rowDeselected", (row) => {
+    const data = row.getData();
+    const index = rawData.findIndex(r => JSON.stringify(r) === JSON.stringify(data));
+    if (index !== -1) {
+      selectedRowIndices.delete(index);
+    }
+    updateInfo();
+  });
+  table.on("cellEdited", (cell) => {
+    const rowData = cell.getRow().getData();
+    const index = rawData.findIndex(r => JSON.stringify(r) === JSON.stringify(rowData));
+    if (index !== -1) {
+      rawData[index][cell.getField()] = cell.getValue();
+      saveHistory();
+    }
+  });
+  table.on("columnHeaderMouseClick", (e, column) => {
+    showColumnFilterWithAutocomplete(column.getField());
+  });
+}
+
+function updateTableAndFilters() {
+  if (table) {
+    table.replaceData(filteredData);
+  }
+  updateInfo();
+}
+
+function updateTableColumns() {
+  if (!table) return;
+  const columns = [
+    {title: "Выделено", formatter: "rowSelection", headerSort: false, width: 50},
+  ];
+  headers.forEach((h, index) => {
+    if (displayedHeaders.includes(h)) {
+      columns.push({
+        title: h,
+        field: h,
+        editor: "input",
+        hozAlign: "left",
+        headerSort: true,
+      });
+    }
+  });
+  table.setColumns(columns);
+}
+
+function renderTable() {
+  updateTableAndFilters();
+}
+
+function updateInfo() {
+  document.getElementById('info').innerText = `Отображено строк: ${filteredData.length}. Выделено строк: ${selectedRowIndices.size}.`;
+}
+
+// Фильтр по ItemID
+document.getElementById('applyFilter').onclick = () => {
+  currentFilterItemID = document.getElementById('itemIdFilter').value.trim();
+  if (currentFilterItemID === '') {
+    filteredData = [...rawData];
+  } else {
+    filteredData = rawData.filter(row => row['ItemID'] && row['ItemID'].toString() === currentFilterItemID);
+  }
+  selectedRowIndices.clear();
+  updateInfo();
+  renderTable();
+};
+document.getElementById('resetFilter').onclick = () => {
+  document.getElementById('itemIdFilter').value = '';
+  currentFilterItemID = '';
+  filteredData = [...rawData];
+  selectedRowIndices.clear();
+  updateInfo();
+  renderTable();
+};
+
+// Выделение/снятие всех колонок
+document.getElementById('selectAllCols').onclick = () => {
+  document.querySelectorAll('#columnCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = true);
+  updateDisplayedHeaders();
+};
+document.getElementById('deselectAllCols').onclick = () => {
+  document.querySelectorAll('#columnCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+  updateDisplayedHeaders();
+};
+document.getElementById('resetCols').onclick = () => {
+  setDefaultCheckboxes();
+};
+
+// Выделить/снять выделение всех строк
+document.getElementById('selectAllRows').onclick = () => {
+  if (table) {
+    table.getRows().forEach(row => row.select());
+  }
+};
+document.getElementById('deselectAllRows').onclick = () => {
+  if (table) {
+    table.deselectRow();
+  }
+};
+// Удалить выделенные строки
+document.getElementById('deleteSelectedRows').onclick = () => {
+  if (!table) return;
+  const selectedRows = table.getSelectedRows();
+  if (selectedRows.length === 0) {
+    alert('Нет выбранных строк.');
+    return;
+  }
+  selectedRows.forEach(row => {
+    const data = row.getData();
+    const idx = rawData.indexOf(data);
+    if (idx !== -1) rawData.splice(idx, 1);
+  });
+  filteredData = [...rawData];
+  selectedRowIndices.clear();
+  updateInfo();
+  renderTable();
+};
+
+// Скачать весь файл
+document.getElementById('saveFullBtn').onclick = () => {
+  const csv = Papa.unparse(filteredData, {columns: headers});
+  downloadCSV(csv, 'full_data.csv');
+};
+
+// Скачать выбранные колонки
+document.getElementById('saveSelectedColsBtn').onclick = () => {
+  if (displayedHeaders.length === 0) {
+    alert('Нет выбранных колонок.');
+    return;
+  }
+  const dataToSave = filteredData.map(row => {
+    return displayedHeaders.map(h => {
+      const value = row[h] || '';
+      if (value.toString().includes(',') || value.toString().includes('"') || value.toString().includes('\n')) {
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      }
+      return value;
+    });
+  });
+  const csvRows = [];
+  csvRows.push(displayedHeaders.join(','));
+  dataToSave.forEach(r => csvRows.push(r.join(',')));
+  downloadCSV(csvRows.join('\n'), 'selected_columns.csv');
+};
+
+// Копировать таблицу
+document.getElementById('copyTableBtn').onclick = () => {
+  if (!table) {
+    alert('Нет таблицы для копирования.');
+    return;
+  }
+  table.copyToClipboard();
+  alert('Таблица скопирована.');
+};
+
+// Обновление таблицы
+document.getElementById('refreshTableBtn').onclick = () => {
+  renderTable();
+};
+
+// Поиск по значениям
+document.getElementById('searchBtn').onclick = () => {
+  const query = document.getElementById('valueSearch').value.trim().toLowerCase();
+  currentSearchQuery = query;
+  if (query === '') {
+    filteredData = [...rawData];
+  } else {
+    // ищем только по выбранным колонкам
+    const activeHeaders = displayedHeaders;
+    filteredData = rawData.filter(row => {
+      return Object.keys(row).some(key => 
+        activeHeaders.includes(key) && row[key] && row[key].toString().toLowerCase().includes(query)
+      );
+    });
+  }
+  selectedRowIndices.clear();
+  updateInfo();
+  renderTable();
+};
+document.getElementById('clearSearchBtn').onclick = () => {
+  document.getElementById('valueSearch').value = '';
+  currentSearchQuery = '';
+  if (currentFilterItemID) {
+    filteredData = rawData.filter(row => row['ItemID'] && row['ItemID'].toString() === currentFilterItemID);
+  } else {
+    filteredData = [...rawData];
+  }
+  selectedRowIndices.clear();
+  updateInfo();
+  renderTable();
+};
+
+// Найти и заменить
+document.getElementById('findReplaceBtn').onclick = () => {
+  const findVal = document.getElementById('findValue').value.trim();
+  const replaceVal = document.getElementById('replaceValue').value;
+  if (findVal === '') {
+    alert('Введите значение для поиска.');
+    return;
+  }
+
+  let countReplaced = 0;
+  rawData.forEach((row) => {
+    let rowModified = false;
+    displayedHeaders.forEach(h => {
+      if (row[h] && row[h].toString().includes(findVal)) {
+        row[h] = row[h].toString().replace(new RegExp(findVal, 'g'), replaceVal);
+        rowModified = true;
+        countReplaced++;
+      }
+    });
+  });
+  // Обновляем фильтрованные данные
+  filteredData = [...rawData];
+  updateTableAndFilters();
+  alert(`Заменено ${countReplaced} значений.`);
+};
+
+// Функция скачивания CSV файла
+function downloadCSV(content, filename) {
+  const blob = new Blob([content], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+</script>
+</body>
+</html>
