@@ -82,10 +82,10 @@ body.dark-theme .ql-snow .ql-picker-options {
 .instruction-btn {
   position: fixed;
   top: 8px;
-  left: 250px;
+  left: 75px;
   z-index: 999;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   color: #fff;
   background-color: #f44336 !important;
@@ -100,7 +100,7 @@ body.dark-theme .ql-snow .ql-picker-options {
 }
 
 .instruction-btn::before {
-  content: "\f059";/* Unicode для fa-book */
+  content: "\f059";
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   font-size: 26px;
@@ -112,21 +112,23 @@ body.dark-theme .ql-snow .ql-picker-options {
 }
 /* Стиль для кнопки "Назад" вверху */
 .back-btn-top {
+   width: 40px;
+  height: 40px;
   position: fixed;
   top: 80px; /* под переключателем темы */
   left: 20px;
-  z-index: 999;
-  padding: 12px 20px;
+   z-index: 999;
+  padding: 10px 8px;
   font-size: 16px;
   font-weight: 600;
   color: #fff;
   background-color: #ff5722;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: background-color 0.3s, transform 0.2s;
-  display: inline-flex;
+  display: block;
   align-items: center;
   gap: 8px;
 }
@@ -812,9 +814,8 @@ body.dark-theme td:hover {
 <!-- назад на главную - ВЕРХ -->
 <div style="position: fixed; top: 10px; left: 20px; z-index: 999;">
   <button class="back-btn-top" onclick="window.open('index.html', '_self')" style="top: 10px;">
-    <i class="fas fa-arrow-left"></i>
-    Назад на главную
-  </button>
+     <i class="fas fa-home"></i>
+    </button>
 </div>
 <!-- Кнопка инструкции -->
 <button class="instruction-btn" id="instructionBtn" style="background: #f44336 !important;"></button>
@@ -990,14 +991,14 @@ body.dark-theme td:hover {
 <button id="feedbackBtn" style="
   position: fixed;
   top: 8px;
-  left: 310px; /* 250px (инструкция) + 60px (расстояние) */
+  left: 130px; /* 250px (инструкция) + 60px (расстояние) */
   z-index: 999;
   background: #f44336; 
   color: #fff; 
   border: none; 
   border-radius: 50%; 
-  width: 50px; 
-  height: 50px; 
+  width: 40px; 
+  height: 40px; 
   cursor: pointer; 
   box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
   display: flex; 
