@@ -1879,12 +1879,17 @@ document.getElementById('closeBugModal').addEventListener('click', () => {
 });
 // Обработка отправки бага
 const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+
 document.getElementById('sendBug').addEventListener('click', () => {
-  const description = document.getElementById('bugDescription').value.trim();
+  let description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
     showToast('Пожалуйста, опишите проблему или пожелание.', 'info');
     return;
   }
+
+  // Добавляем конкретную ссылку в описание
+  const sourceLink = 'https://sagatheror.github.io/instrumenti/graph.html';
+  description += `\nИсточник: ${sourceLink}`;
 
   // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
@@ -1894,14 +1899,14 @@ document.getElementById('sendBug').addEventListener('click', () => {
   })
   .then(response => response.json())
   .then(data => {
-  console.log('Ответ сервера:', data);
-  if (data.result === 'success') {
-    console.log('Уведомление появится');
-    showToast('Сообщение успешно отправлен', 'success');
-  } else {
-    showToast('Произошла ошибка при отправке сообщения', 'error');
-  }
-})
+    console.log('Ответ сервера:', data);
+    if (data.result === 'success') {
+      console.log('Уведомление появится');
+      showToast('Сообщение успешно отправлен', 'success');
+    } else {
+      showToast('Произошла ошибка при отправке сообщения', 'error');
+    }
+  });
 
   // Очистка поля
   document.getElementById('bugDescription').value = '';
@@ -2438,6 +2443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
