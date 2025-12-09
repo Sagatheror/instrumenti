@@ -2485,17 +2485,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function showEaster() {
     showToast('Три клика — тебе что делать нечего?', 'success');
-    startSnow();
+    startConfetti();
   }
 })();
+  function startConfetti() {
+  for (let i=0; i<250; i++) {
+    const confetti = document.createElement('div');
+    confetti.style.position = 'fixed';
+    confetti.style.top = Math.random() * window.innerHeight + 'px';
+    confetti.style.left = Math.random() * window.innerWidth + 'px';
+    confetti.style.width = confetti.style.height = '4px';
+    confetti.style.backgroundColor = `hsl(${Math.random()*360}, 70%, 60%)`;
+    confetti.style.borderRadius = '50%';
+    confetti.style.zIndex = '9999';
+    document.body.appendChild(confetti);
+    confetti.animate([
+      { transform: `translateY(0)`, opacity: 1 },
+      { transform: `translateY(${window.innerHeight + 10}px)`, opacity: 0 }
+    ], {
+      duration: 6000 + Math.random()*2000,
+      easing: 'ease-out'
+    }).onfinish = () => {
+      confetti.remove();
+    };
+  }
+}
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
