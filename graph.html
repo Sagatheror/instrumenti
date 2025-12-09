@@ -2440,7 +2440,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.opacity = '1';
   }, 50);
 });
-  
+  (function(){
+  const secret = 'hello';
+  let buf = '';
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key.length === 1 && /[a-z]/i.test(e.key)) {
+      buf += e.key.toLowerCase();
+      if (buf.endsWith(secret)) {
+        showHelloEaster();
+        buf = '';
+      }
+      // хранить только последние N символов
+      if (buf.length > secret.length) buf = buf.slice(-secret.length);
+    } else {
+      // не буквы — обнулять прогресс
+      buf = '';
+    }
+  });
   function showHelloEaster() {
     showToast('Привет! Это же надо было додуматься', 'success');
     // пример: плавный переход цвета графика или мини-анимация
@@ -2473,6 +2490,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
