@@ -2531,7 +2531,270 @@ function showPingwinAnimation() {
     if (penguin.parentNode) penguin.remove();
   }, 3000);
 }
+  
+const hiddenBtn = document.createElement('button');
+hiddenBtn.style.position = 'fixed';
+hiddenBtn.style.top = '150px';
+hiddenBtn.style.left = '5%';
+hiddenBtn.style.transform = 'translateX(-50%)';
+hiddenBtn.style.width = '120px';
+hiddenBtn.style.height = '50px';
+hiddenBtn.style.opacity = '0';
+hiddenBtn.style.border = 'none';
+hiddenBtn.style.background = '#ff6f61';
+hiddenBtn.style.color = '#fff';
+hiddenBtn.style.fontSize = '14px';
+hiddenBtn.style.borderRadius = '25px';
+hiddenBtn.style.cursor = 'pointer';
+hiddenBtn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+hiddenBtn.title = 'Запустить сложный новогодний квест';
+document.body.appendChild(hiddenBtn);
+
+hiddenBtn.onclick = () => {
+  // Удаляем предыдущие элементы
+  document.querySelectorAll('.game-container').forEach(el => el.remove());
+
+  const steps = [
+    {
+      description: 'Найдите спрятанное слово в этом тексте: "Зима приходит, и снежинки танцуют".',
+      type: 'searchWord',
+      answer: 'снег',
+    },
+    {
+      description: 'Расшифруйте шифр: "Едз оморд".',
+      type: 'cipher',
+      answer: 'дед мороз',
+    },
+    {
+      description: 'Ответьте на вопрос: "Какой следующий год?"',
+      type: 'code',
+      answer: '2026',
+    },
+    {
+      description: 'Выберите правильный ответ: "Что символизирует елка?"',
+      type: 'multipleChoice',
+      options: ['Праздничное настроение', 'Рождество', 'Новый год', 'Все вышеперечисленное'],
+      answer: 'Все вышеперечисленное',
+    },
+    {
+      description: 'Дополнительный вопрос: "Назовите 3 новогодних символа."',
+      type: 'textAnswer',
+      answer: ['елка', 'снег', 'шары'],
+    }
+  ];
+
+  let currentStepIndex = 0;
+
+  // Создаем фоновый эффект
+  const bg = document.createElement('div');
+  bg.className = 'game-container';
+  bg.style.position = 'fixed';
+  bg.style.top = '0';
+  bg.style.left = '0';
+  bg.style.width = '100%';
+  bg.style.height = '100%';
+  bg.style.backgroundImage = 'var(--bg-color)';
+  bg.style.backgroundSize = 'cover';
+  bg.style.display = 'flex';
+  bg.style.justifyContent = 'center';
+  bg.style.alignItems = 'center';
+  bg.style.zIndex = '9999';
+  bg.style.backdropFilter = 'blur(4px)';
+  document.body.appendChild(bg);
+
+  // Создаем окно с вопросом
+  const windowEl = document.createElement('div');
+  windowEl.style.backgroundColor = 'var(--hover-bg-color)';
+  windowEl.style.borderRadius = '20px';
+  windowEl.style.padding = '30px';
+  windowEl.style.maxWidth = '700px';
+  windowEl.style.width = '90%';
+  windowEl.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+  windowEl.style.position = 'relative';
+  windowEl.className = 'game-window';
+
+  bg.appendChild(windowEl);
+
+  // Заголовок
+  const title = document.createElement('h2');
+  title.innerHTML = '🎄 <span style="color:#d6336c;">Новогодний Квест</span> 🎄';
+  title.style.textAlign = 'center';
+  title.style.marginBottom = '20px';
+  title.style.fontFamily = 'Arial, sans-serif';
+  title.style.fontSize = '24px';
+  windowEl.appendChild(title);
+
+  // Описание вопроса
+  const descriptionEl = document.createElement('p');
+  descriptionEl.style.fontSize = '18px';
+  descriptionEl.style.fontFamily = 'Arial, sans-serif';
+  descriptionEl.style.color = 'var(--text-color)';
+  descriptionEl.style.marginBottom = '20px';
+  windowEl.appendChild(descriptionEl);
+
+  // Ввод
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.style.width = '100%';
+  input.style.padding = '15px';
+  input.style.fontSize = '16px';
+  input.style.borderRadius = '10px';
+  input.style.border = '2px solid #ccc';
+  input.style.outline = 'none';
+  input.style.transition = 'border-color 0.3s';
+  windowEl.appendChild(input);
+
+  // Кнопка
+  const btn = document.createElement('button');
+  btn.innerText = 'Проверить';
+  btn.style.marginTop = '20px';
+  btn.style.padding = '15px 30px';
+  btn.style.fontSize = '16px';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '10px';
+  btn.style.backgroundColor = '#28a745';
+  btn.style.color = '#fff';
+  btn.style.cursor = 'pointer';
+  btn.style.transition = 'background-color 0.3s';
+  btn.onmouseover = () => { btn.style.backgroundColor = '#218838'; };
+  btn.onmouseout = () => { btn.style.backgroundColor = '#28a745'; };
+  windowEl.appendChild(btn);
+
+  // Сообщение
+  const message = document.createElement('div');
+  message.style.marginTop = '15px';
+  message.style.fontSize = '16px';
+  message.style.color = '#555';
+  message.style.minHeight = '20px';
+  windowEl.appendChild(message);
+
+  function updateStep() {
+    const step = steps[currentStepIndex];
+    descriptionEl.innerHTML = step.type === 'multipleChoice' ? step.description : step.description;
+    input.value = '';
+    message.innerText = '';
+
+    if (step.type === 'multipleChoice') {
+      // Создаем варианты
+      createOptions(step.options);
+    } else {
+      // Удаляем все варианты, если есть
+      removeOptions();
+    }
+  }
+
+  function createOptions(options) {
+    // Удаляем старые опции
+    removeOptions();
+    const optionsContainer = document.createElement('div');
+    optionsContainer.id = 'optionsContainer';
+    options.forEach(opt => {
+      const btnOption = document.createElement('button');
+      btnOption.innerText = opt;
+      btnOption.style.display = 'block';
+      btnOption.style.width = '100%';
+      btnOption.style.marginTop = '10px';
+      btnOption.style.padding = '12px';
+      btnOption.style.border = 'none';
+      btnOption.style.borderRadius = '8px';
+      btnOption.style.backgroundColor = '#007bff';
+      btnOption.style.color = '#fff';
+      btnOption.style.cursor = 'pointer';
+      btnOption.style.transition = 'background-color 0.3s';
+      btnOption.onmouseover = () => { btnOption.style.backgroundColor = '#0069d9'; };
+      btnOption.onmouseout = () => { btnOption.style.backgroundColor = '#007bff'; };
+      btnOption.onclick = () => {
+        checkMultipleChoice(opt);
+      };
+      optionsContainer.appendChild(btnOption);
+    });
+    windowEl.appendChild(optionsContainer);
+  }
+
+  function removeOptions() {
+    const oldOptions = document.getElementById('optionsContainer');
+    if (oldOptions) oldOptions.remove();
+  }
+
+  function checkMultipleChoice(selectedOption) {
+    const step = steps[currentStepIndex];
+    if (selectedOption.toLowerCase() === step.answer.toLowerCase()) {
+      message.innerText = '✅ Правильно!';
+      proceedNext();
+    } else {
+      message.innerText = '❌ Неправильно, попробуйте снова.';
+    }
+  }
+
+  function proceedNext() {
+    currentStepIndex++;
+    if (currentStepIndex >= steps.length) {
+      showFinalPrize();
+    } else {
+      setTimeout(() => {
+        updateStep();
+      }, 1000);
+    }
+  }
+
+  function checkAnswer() {
+    const step = steps[currentStepIndex];
+
+    if (step.type === 'searchWord' || step.type === 'cipher' || step.type === 'code' || step.type === 'textAnswer') {
+      const userAnswer = input.value.trim().toLowerCase();
+
+      if (step.type === 'textAnswer') {
+        // Можно проверить, есть ли ответ в массиве
+        const answers = step.answer;
+        const match = answers.some(a => userAnswer.includes(a.toLowerCase()));
+        if (match) {
+          message.innerText = '✅ Правильно!';
+          proceedNext();
+        } else {
+          message.innerText = '❌ Неправильно, попробуйте еще раз.';
+        }
+      } else {
+        if (userAnswer === step.answer.toLowerCase()) {
+          message.innerText = '✅ Правильно!';
+          proceedNext();
+        } else {
+          message.innerText = '❌ Неправильно, попробуйте еще раз.';
+        }
+      }
+    }
+  }
+
+  btn.onclick = checkAnswer;
+  input.focus();
+  updateStep();
+
+  function showFinalPrize() {
+    bg.remove();
+
+    // Поздравление
+    const finalMsg = document.createElement('div');
+finalMsg.innerHTML = `<h2 style="text-align:center; color:#d6336c;">🎉 Поздравляем! Вы прошли квест! 🎉</h2>`;
+finalMsg.style.position = 'fixed';
+finalMsg.style.top = '50%';
+finalMsg.style.left = '50%';
+finalMsg.style.transform = 'translate(-50%, -50%)';
+finalMsg.style.backgroundColor = 'rgba(255,255,255,0.95)';
+finalMsg.style.padding = '40px';
+finalMsg.style.borderRadius = '20px';
+finalMsg.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+finalMsg.style.zIndex = '999999';
+finalMsg.style.transition = 'opacity 0.6s ease';
+finalMsg.style.opacity = '1';
+document.body.appendChild(finalMsg);
+
+// Через 5 секунд плавно исчезнуть и удалить
+setTimeout(() => {
+  finalMsg.style.opacity = '0';
+  setTimeout(() => finalMsg.remove(), 600); // ждем завершения анимации
+}, 5000)}
+  // Изначально
+  updateStep();
+};
 </script>
 </body>
 </html>
-
