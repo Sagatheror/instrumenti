@@ -2440,9 +2440,40 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.opacity = '1';
   }, 50);
 });
+  
+  function showHelloEaster() {
+    showToast('Привет! Это же надо было додуматься', 'success');
+    // пример: плавный переход цвета графика или мини-анимация
+    document.body.style.transition = 'background 2.5s';
+    document.body.style.background = "url('https://i.ytimg.com/vi/Q-hVSrthyVY/oar2.jpg?sqp=-oaymwEYCKoFENAFSFqQAgHyq4qpAwcIARUAAIhC&rs=AOn4CLA1ojBwnxvV35DtxAIV-R82z-9bhA') no-repeat center/cover";
+    setTimeout(() => document.body.style.background = '', 800);
+  }
+})();
+(function(){
+  const el = document.getElementById('footer') || document.body;
+  let clicks = 0;
+  let timer = null;
+
+  el.addEventListener('click', () => {
+    clicks++;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => { clicks = 0; }, 500);
+
+    if (clicks >= 3) {
+      clicks = 0;
+      showEaster();
+    }
+  });
+
+  function showEaster() {
+    showToast('Три клика — тебе что делать нечего?', 'success');
+    startSnow();
+  }
+})();
 </script>
 </body>
 </html>
+
 
 
 
