@@ -90,6 +90,20 @@
     background-color: #e64a19; /* чуть темнее при наведении */
     transform: translateY(-2px);
   }
+  
+  /* Заголовок с иконкой */
+#bugModal m {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  font-weight: 600;}
+
+  #bugModal  m h3 {
+  margin-right: 10px;
+  color: #f39c12;
+  font-size: 1.8em;
+}
   /* Переключатель темы */
   .theme-switcher {
     position: fixed;
@@ -652,8 +666,8 @@ p {
 </div>
 
 <!-- Блок changelog -->
-<div style="position: fixed; top: 20px; left: 20px; z-index: 9999;">
-  <button id="changelogToggle" style="padding:10px 15px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
+<div style="position: fixed; top: 20px; left: 30px; z-index: 9999;">
+  <button id="changelogToggle" style="padding:15px 20px; border:none; border-radius:8px; background:var(--primary-gradient); color:#fff; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
     Changelog
   </button>
 </div>
@@ -767,7 +781,7 @@ p {
     justify-content: center;
     padding: 0;
   ">
-  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i> 
+  <i class="fas fa-info-circle" style="margin-right: 0px; font-size: 28px;"></i> 
   <button id="bugReportBtn" style="
     background:#f44336; 
     color:#fff; 
@@ -782,18 +796,21 @@ p {
     justify-content: center;
     padding: 0;
   ">
-    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
+    <i class="fas fa-comment" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
   </button>
 </div>
 
 <!-- Модальное окно для описания бага -->
 <div id="bugModal" class="bug-modal-hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background: var(--section-bg); padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
-    <h3>Сообщить о баге</h3>
+     <m style="margin-top:0; display: flex; align-items: center; gap: 10px;">
+      <h3 class="fas fa-comment"></h3>
+      Сообщить о баге или оставить пожелание</m>
     <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: var(--text-color); background: var(--section-bg);" placeholder="Опишите проблему..."></textarea>
     <div style="margin-top:10px; display:flex; justify-content:flex-end;">
       <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
       <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
+    
     </div>
   </div>
 </div>
@@ -1104,19 +1121,25 @@ function hideBugModal() {
 // Привязываем функции к кнопкам
 document.getElementById('bugReportBtn').addEventListener('click', showBugModal);
 document.getElementById('closeBugModal').addEventListener('click', hideBugModal);
-
-// Обработка отправки бага
 const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+const sourceLink = 'https://sagatheror.github.io/instrumenti/description.html';
+
 document.getElementById('sendBug').addEventListener('click', () => {
-  const description = document.getElementById('bugDescription').value.trim();
+  let description = document.getElementById('bugDescription').value.trim();
   const spinner = document.querySelector('.spinner');
+
   if (description === '') {
     alert('Пожалуйста, опишите проблему.');
     return;
   }
-spinnerTimeout = setTimeout(() => {
+
+  // Добавляем источник к описанию
+  description += `\nИсточник: ${sourceLink}`;
+
+  spinnerTimeout = setTimeout(() => {
     spinner.style.display = 'block';
   }, 300);
+
   // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
@@ -1126,7 +1149,7 @@ spinnerTimeout = setTimeout(() => {
   .then(response => response.json())
   .then(data => {
     clearTimeout(spinnerTimeout);
-      spinner.style.display = 'none';
+    spinner.style.display = 'none';
     if (data.result === 'success') {
       showNotification('Баг успешно отправлен!');
     } else {
@@ -1135,17 +1158,17 @@ spinnerTimeout = setTimeout(() => {
   })
   .catch(() => {
     clearTimeout(spinnerTimeout);
-      spinner.style.display = 'none';
+    spinner.style.display = 'none';
     showNotification('Ошибка сети или сервера.');
   });
 
   // Очистка поля
   document.getElementById('bugDescription').value = '';
-  // ПРАВИЛЬНОЕ СКРЫТИЕ МОДАЛЬНОГО ОКНА
-  hideBugModal(); // Используем существующую функцию для анимации
-});
-const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист1';
 
+  // Скрытие модального окна
+  hideBugModal();
+});
+ 
 // Обновленная часть loadChangelogFromSheet
 function loadChangelogFromSheet() {
   fetch(sheetUrl)
