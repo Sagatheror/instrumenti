@@ -589,6 +589,69 @@ body.dark-theme .spinner-inner {
 p {
   font-size: 18px;
 }
+/* Стили для снега */
+.snow {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 998; /* чуть ниже кнопки или другого контента */
+  overflow: hidden;
+}
+
+/* Создаем множество снежинок с разными параметрами */
+.snow div {
+  position: absolute;
+  top: -10px; /* начинаем чуть выше, чтобы плавно появлялись */
+  opacity: 0.8;
+  background: #fff;
+  border-radius: 50%;
+  width: var(--size);
+  height: var(--size);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  /* Анимации */
+  animation: fall var(--duration) linear forwards, drift var(--drift-duration) ease-in-out infinite;
+  /* Центр вращения */
+  transform-origin: center;
+  /* Начальное вращение */
+  transform: rotate(var(--initial-rotation));
+}
+.snowflake {
+  position: absolute;
+  top: -10px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.8;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  z-index: 9998;
+}
+/* Анимация падения */
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(var(--initial-rotation));
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(calc(var(--initial-rotation) + 360deg));
+    opacity: 0;
+  }
+}
+
+/* Легкое колебание снежинки для реалистичности */
+@keyframes drift {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(var(--drift-x));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
 </style>
 </head>
 <body>
@@ -798,6 +861,22 @@ p {
   ">
     <i class="fas fa-comment" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
   </button>
+   <button id="snowToggleBtn" style="
+    background:#00d2d2; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  " title="Остановить снег">
+    <i class="fas fa-snowflake" style="margin-right: 0px; font-size: 28px;"></i>
+  </button>
 </div>
 
 <!-- Модальное окно для описания бага -->
@@ -819,6 +898,9 @@ p {
 <script>
 let csvData = [];
 let headers = [];
+let snowContainer = null;
+let snowInterval = null;
+let snowActive = false;
 let selectedColumnIndex = 15; // по умолчанию 16-й столбец
 // Показывать спиннер
 function showLoader() {
@@ -1246,6 +1328,14 @@ window.addEventListener('load', () => {
   document.getElementById('changelogText').value = savedChangelog;
 });
 
+ window.addEventListener('load', () => {
+  loadChangelogFromSheet();
+  document.getElementById('instructionModal').style.display = 'flex';
+  if (isSnowPeriod()) {
+    startSnow();
+  }
+ })
+
 // Обработчик для кнопки "Changelog"
 const changelogBtn = document.getElementById('changelogToggle');
 const changelogContainer = document.getElementById('changelogContainer');
@@ -1291,6 +1381,84 @@ if (changelogBtn) {
   changelogBtn.style.opacity = opacity;
 }
   toggle.style.opacity = opacity;
+});
+function startSnow() {
+  if (snowActive) return;
+  snowActive = true;
+  snowContainer = document.createElement('div');
+  snowContainer.className = 'snow';
+  document.body.appendChild(snowContainer);
+  showNotification('Снегопад');
+
+  // Создаем 15 снежинок каждые 200ms
+  snowInterval = setInterval(() => {
+    for (let i = 0; i < 5; i++) {
+      const snowflake = document.createElement('div');
+      const size = Math.random() * 6 + 2; // размер от 2px до 6px
+      
+      // Определяем цвет снежинки в зависимости от темы
+      const isDark = document.body.classList.contains('dark');
+      const snowColor = isDark ? '#fff' : '#ace5ee'; // белый или голубой
+      
+      snowflake.style.backgroundColor = snowColor;
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      snowflake.style.left = `${Math.random() * 100}%`;
+      snowflake.style.opacity = Math.random();
+
+      // Продолжительность падения
+      const fallDuration = 8000 + Math.random() * 7000;
+      const driftX = Math.random() * 100 - 50;
+
+      snowflake.animate([
+        { transform: `translateY(-10px) translateX(0)` },
+        { transform: `translateY(${window.innerHeight + 20}px) translateX(${driftX}px)` }
+      ], {
+        duration: fallDuration,
+        iterations: 1,
+        easing: 'linear'
+      }).onfinish = () => {
+        if (snowflake.parentNode) snowflake.parentNode.removeChild(snowflake);
+      };
+      
+      snowContainer.appendChild(snowflake);
+    }
+  }, 400);
+}
+
+function stopSnow() {
+  if (!snowActive) return;
+  snowActive = false;
+  clearInterval(snowInterval);
+  if (snowContainer) {
+    document.body.removeChild(snowContainer);
+    snowContainer = null;
+     showNotification('Снег остановлен');
+  }
+}
+document.getElementById('snowToggleBtn').addEventListener('click', () => {
+  if (snowActive) {
+    stopSnow();
+    } else {
+    startSnow();
+    }
+});
+function isSnowPeriod() {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  const start = new Date(year, 11, 1); // 1 декабря текущего года
+  const end = new Date(year + (now < new Date(year, 2, 1) ? 1 : 0), 2, 28, 23, 59, 59); // 28 февраля следующего года, если сейчас после марта
+  // Для корректности, лучше сделать так:
+  const startDate = new Date(year, 11, 1); // 1 декабря
+  const endDate = new Date(year + (now.getMonth() >= 11 ? 1 : 0), 2, 28, 23, 59, 59);
+
+  return now >= startDate && now <= endDate;
+}
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal')) {
+    e.target.classList.remove('show');
+  }
 });
 </script>
 </body>
