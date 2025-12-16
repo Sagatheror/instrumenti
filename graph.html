@@ -892,18 +892,7 @@ body.dark #comparisonResult {
         <li style="margin-bottom:10px;">Подготовьте два CSV файла за разные периоды.</li>
         <li style="margin-bottom:10px;">Загрузите первый нажатием или переносом файла на кнопку "Выберите CSV" и нажмите "Сравнить файлы".</li>
         <li style="margin-bottom:10px;">Вам покажут таблицу с процентными изменениями и разницей.</li>
-        <li style="margin-bottom:10px;">Нажав кнопку "Показать сравнение графиков" можно увидеть на графике разницу.      <span style="
-      background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
-      background-size: 600% 600%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 20px;
-      font-weight: bold;
-      padding: 0 10px;
-      animation: colorShift 3s linear infinite;
-      display: inline-block;
-      margin-right: 10px;
-    ">- NEW -</span> </li>
+        <li style="margin-bottom:10px;">Нажав кнопку "Показать сравнение графиков" можно увидеть на графике разницу.</li>
       </ul>
    
 
@@ -914,8 +903,20 @@ body.dark #comparisonResult {
       <ul style="list-style: none; padding:0; margin-left:0; font-size:1.1em; color:var(--text-color);">
         <li style="margin-bottom:10px;"><strong>Changelog</strong> — следите за обновлениями сайта.</li>
         <li style="margin-bottom:10px;"><strong>Тёмная тема</strong> — переключайте стиль для комфортной работы вечером.</li>
-        <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте пожелание, нажав на жучка.</li>
-        <li style="margin-bottom:10px;"><strong>Инструкция</strong> — всегда можно открыть заново, нажав на иконку вопросика.</li>
+        <li style="margin-bottom:10px;"><strong>Обратная связь</strong> — сообщите о баге или оставьте пожелание, нажав на "сообщение" <i class="fas fa-comment" style="font-size:16px; line-height: 1;"></i>.</li>
+        <li style="margin-bottom:10px;"><strong>Инструкция</strong> — всегда можно открыть заново, нажав на иконку "инфо" <i class="fas fa-info-circle" style="font-size: 16px;"></i> .</li>
+         <li style="margin-bottom:10px;"><strong>Статус</strong> — следите за статусом сообщения (Bug ID указывается в уведомлении после отправки сообщения).<span style="
+      background: linear-gradient(270deg, #ff0000, #ffa500, #ff0000);
+      background-size: 600% 600%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 0 10px;
+      animation: colorShift 3s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    ">- NEW -</span></li>
       </ul>
     </section>
 
@@ -1013,6 +1014,7 @@ body.dark #comparisonResult {
 </h3>
 <textarea id="bugDescription" placeholder="Опишите проблему или пожелание..."></textarea>
 <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:15px;">
+<button id="chckst" class="btn">Статус</button>
 <button id="sendBug" class="btn">Отправить</button>
 <button id="closeBugModal" class="btn" style="background: #999;">Отмена</button>
 </div>
@@ -1082,6 +1084,18 @@ body.dark #comparisonResult {
     <div id="averageResult"></div>
   </div>
 
+</div>
+<!-- Модальное окно для поиска Bug ID -->
+<div id="bugIdModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
+  <div style="background: var(--hover-bg-color); padding: 20px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+    <h3 style="margin-top:0;">Поиск Bug ID</h3>
+    <input type="text" id="bugIdInput" placeholder="Введите Bug ID" style="color: var(--text-color); background: var(--hover-bg-color); width:98%; padding:10px; font-size:1em; border-radius:8px; border:1px solid #ccc;"/>
+    <div id="bugStatusResult" style="margin-top: 15px; font-weight: 600; font-size: 16px; color: #333;"></div>
+    <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+      <button id="searchBugId" style="padding:10px 20px; border:none; border-radius:8px; font-size: 20px; background:#4CAF50; cursor:pointer; color:#fff;">Поиск</button>
+      <button id="closeBugIdModal" style="padding:10px 20px; border:none; font-size: 20px; border-radius:8px; background:#999; color:#fff; cursor:pointer;">Закрыть</button>
+    </div>
+  </div>
 </div>
 
 <!-- Модальное окно -->
@@ -1286,6 +1300,7 @@ fileInput.addEventListener('change', () => {
   }
   fileChosen = true;
 });
+
 
 // =====================
 // Функции для выбора и обработки CSV
@@ -1880,7 +1895,7 @@ document.getElementById('closeBugModal').addEventListener('click', () => {
 });
 // Обработка отправки бага
 const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
-
+const bugId = 'BUG-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 document.getElementById('sendBug').addEventListener('click', () => {
   let description = document.getElementById('bugDescription').value.trim();
   if (description === '') {
@@ -1888,22 +1903,22 @@ document.getElementById('sendBug').addEventListener('click', () => {
     return;
   }
 
-  // Добавляем конкретную ссылку в описание
+  // Добавляем конкретную ссылку и bugId в описание
   const sourceLink = 'https://sagatheror.github.io/instrumenti/graph.html';
-  description += `\nИсточник: ${sourceLink}`;
+  description += `\nИсточник: ${sourceLink}\nBug ID: ${bugId}`;
 
   // Отправляем POST-запрос
   fetch(BUG_REPORT_URL, {
     method: 'POST',
     contentType: 'application/json',
-    body: JSON.stringify({description: description})
+    body: JSON.stringify({description: description, bugId: bugId})
   })
   .then(response => response.json())
   .then(data => {
     console.log('Ответ сервера:', data);
     if (data.result === 'success') {
       console.log('Уведомление появится');
-      showToast('Сообщение успешно отправлен', 'success');
+      showToast('Сообщение отправлено. Bug ID: ' + bugId, 'success');
     } else {
       showToast('Произошла ошибка при отправке сообщения', 'error');
     }
@@ -1912,6 +1927,7 @@ document.getElementById('sendBug').addEventListener('click', () => {
   // Очистка поля
   document.getElementById('bugDescription').value = '';
   document.getElementById('bugModal').classList.remove('show');
+
 });
 // =====================
 // Прозрачность кнопок при прокрутке
@@ -2826,7 +2842,84 @@ setTimeout(() => {
   // Изначально
   updateStep();
 };
+// Обработчик для кнопки "Статус"
+document.getElementById('chckst').addEventListener('click', () => {
+  document.getElementById('bugIdModal').style.display = 'flex';
+  document.getElementById('bugModal').classList.remove('show');
+});
+// Обработчик для закрытия окна поиска Bug ID
+document.getElementById('closeBugIdModal').addEventListener('click', () => {
+  document.getElementById('bugIdModal').style.display = 'none';
+});
+// Обработчик поиска Bug ID
+document.getElementById('searchBugId').addEventListener('click', () => {
+  const bugId = document.getElementById('bugIdInput').value.trim();
+  if (!bugId) {
+    showToast('Пожалуйста, введите Bug ID.', 'info');
+    return;
+  }
+  fetchBugStatus(bugId);
+});
+function fetchBugStatus(bugId) {
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/1IGnuwozgAb-cwD-pr7aeMHTX80J06mV8F0IJ9KLmTSk/gviz/tq?sheet=Лист2';
+
+  fetch(sheetUrl)
+    .then(res => res.text())
+    .then(text => {
+      const jsonText = text.substring(47).slice(0, -2);
+      const jsonData = JSON.parse(jsonText);
+      const rows = jsonData.table.rows;
+      
+      let found = false;
+      let status = '';
+      
+      for (const row of rows) {
+        const cols = row.c;
+        if (cols && cols.length >= 5) {
+          const currentBugId = cols[4].v.trim(); // колонка 4 — Bug ID
+          if (currentBugId === bugId) {
+            // колонка 2 — статус
+            status = cols[2] ? cols[2].v : 'Нет статуса';
+            found = true;
+            break;
+          }
+        }
+      }
+      const resultDiv = document.getElementById('bugStatusResult');
+if (found) {
+    resultDiv.innerHTML = `
+        <div style="
+            padding: 10px 15px;
+            background-color: var(--hover-bg-color);
+            border: 2px solid #4dd0e1;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        ">
+            <strong>Статус для Bug ID ${bugId}:</strong> <em>${status}</em>
+        </div>`;
+} else {
+    resultDiv.innerHTML = `
+        <div style="
+            padding: 10px 15px;
+            background-color: #ffebee;
+            border: 2px solid #e57373;
+            border-radius: 8px;
+            color: #c62828;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        ">
+            <span style="font-weight: bold;">Bug ID ${bugId} не найден.</span>
+        </div>`;
+}
+    })
+    .catch(() => {
+      showToast('Ошибка при получении данных.', 'error');
+    });
+}
 </script>
 </body>
 </html>
-
