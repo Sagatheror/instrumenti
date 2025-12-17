@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <!-- Font Awesome для иконок -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <!-- Стиль -->
@@ -1597,7 +1598,7 @@ function updateChart() {
   } else {
     // Создаем новый график
     chartInstance = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: labels,
         datasets: currentDatasets
@@ -1610,34 +1611,24 @@ function updateChart() {
           easing: 'easeOutQuart'
         },
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: {
-              color: getChartTextColor(),
-              font: { size: 14, weight: '600' }
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#ccc',
-            borderWidth: 1,
-            padding: 10,
-            caretSize: 8,
-            cornerRadius: 4
-          },
-          title: {
-            display: true,
-            text: document.getElementById('chartTitle').innerText || 'График',
-            color: getChartTextColor(),
-            font: {
-              size: 16,
-              weight: 'bold'
-            }
-          }
+          legend: { position: 'top', labels: { color: getChartTextColor() } },
+      title: { display: true, text: 'График', color: getChartTextColor() },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'xy'
         },
+        zoom: {
+          wheel: {
+            enabled: true
+          },
+          pinch: {
+            enabled: true
+          },
+          mode: 'x'
+        }
+      }
+    },
         scales: {
           x: {
             ticks: {
