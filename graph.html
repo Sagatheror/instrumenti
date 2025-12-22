@@ -802,34 +802,99 @@ body.dark #comparisonResult {
 }
 .control-panel {
   position: fixed;
-  right: 20px;            
-  top: 10px;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 12px;
   z-index: 9999;
+  background: var(--bg-color);
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(100px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.control-panel:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.02);
 }
 .control-btn {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: var(--button-bg);
   color: #fff;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1.6em;
+  font-size: 1.8em;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--card-shadow);
-  transition: all var(--transition);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 1s ease forwards;
+  animation-delay: calc(var(--index) * 0.1s);
+  opacity: 0;
 }
 body.dark .control-btn {
   background: linear-gradient(135deg, #444, #222);
 }
+.control-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 .control-btn:hover {
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.1);
   box-shadow: 0 8px 25px var(--shadow);
+}
+.control-btn:hover::before {
+  opacity: 1;
+}
+/* Индикатор активного состояния */
+.control-btn.active {
+  background: linear-gradient(135deg, #4CAF50, #45A049);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Тултипы */
+.control-btn::after {
+  content: attr(title);
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.control-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  right: 65px;
 }
 #changelogToggle,
 #snowToggleBtn,
@@ -854,6 +919,22 @@ body.dark .control-btn {
   align-items: center; 
   justify-content: center;
   padding: 0;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 </style>
 </head>
