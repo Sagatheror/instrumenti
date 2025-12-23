@@ -1,0 +1,2849 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DataViz Pro - Анализ данных</title>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  /* Light theme */
+  --primary: #4361ee;
+  --primary-light: #4895ef;
+  --secondary: #3f37c9;
+  --accent: #4cc9f0;
+  --success: #4ade80;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --dark: #1e293b;
+  --light: #f8fafc;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 12px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+  
+  --radius-sm: 0.375rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+  --primary: #60a5fa;
+  --primary-light: #93c5fd;
+  --secondary: #818cf8;
+  --accent: #38bdf8;
+  --dark: #f8fafc;
+  --light: #0f172a;
+  --gray-50: #1e293b;
+  --gray-100: #334155;
+  --gray-200: #475569;
+  --gray-300: #64748b;
+  --gray-400: #94a3b8;
+  --gray-500: #cbd5e1;
+  --gray-600: #e2e8f0;
+  --gray-700: #f1f5f9;
+  --gray-800: #f8fafc;
+  --gray-900: #ffffff;
+}
+
+/* ===== Reset & Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--light);
+  color: var(--dark);
+  min-height: 100vh;
+  transition: var(--transition);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--dark);
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--dark);
+}
+
+/* ===== Layout ===== */
+.app-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  gap: 0;
+}
+
+/* ===== Header ===== */
+.header {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.logo-text {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.logo-subtext {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Убираем header-actions так как кнопки перенесены в control-panel */
+.header-actions {
+  display: none;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  background: var(--gray-50);
+  padding: 2rem 1.5rem;
+  border-right: 1px solid var(--gray-200);
+  height: calc(100vh - 80px);
+  position: sticky;
+  top: 80px;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: 2.5rem;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===== Main Content ===== */
+.main-content {
+  padding: 2rem;
+  background: var(--light);
+  overflow-y: auto;
+}
+
+.content-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  color: var(--gray-500);
+  font-size: 1rem;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--gray-200);
+  transition: var(--transition);
+}
+
+.card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-200);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ===== Forms ===== */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '⌄';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--gray-500);
+  font-size: 0.875rem;
+}
+
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  appearance: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== File Upload ===== */
+.file-upload {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+  background: var(--light);
+}
+
+.file-upload:hover {
+  border-color: var(--primary);
+  background: var(--gray-50);
+}
+
+.file-upload.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  font-size: 1rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.upload-subtext {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.file-input {
+  display: none;
+}
+
+/* ===== Chart Container ===== */
+.chart-container {
+  background: var(--light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--gray-200);
+  height: 500px;
+  position: relative;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* ===== File List ===== */
+.file-list {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gray-100);
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+  transition: var(--transition);
+}
+
+.file-chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.file-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.file-chip-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.file-chip-remove:hover {
+  opacity: 1;
+}
+
+/* ===== Navigation ===== */
+.nav-list {
+  list-style: none;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  color: var(--gray-700);
+  text-decoration: none;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: var(--gray-100);
+  color: var(--primary);
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.nav-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* ===== Control Panel ===== */
+.control-panel {
+  position: fixed;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 1000;
+}
+
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gray-50);
+  color: var(--gray-700);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.control-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* Специальный стиль для кнопки снега когда он активен */
+.control-btn.snow-active {
+  background: var(--gray-50);
+  color: var(--gray-700);
+}
+
+.control-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.control-btn:hover::before {
+  left: 100%;
+}
+
+/* ===== Toast Notifications ===== */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-300);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 350px;
+  animation: slideInRight 0.3s ease;
+  pointer-events: auto;
+}
+
+.toast.success {
+  background: var(--success);
+  color: white;
+  border: none;
+}
+
+.toast.error {
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+
+.toast.info {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.toast-message {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* ===== Modals ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  backdrop-filter: blur(4px);
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: var(--light);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.25rem;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--danger);
+  transform: rotate(90deg);
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== Loading States ===== */
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--gray-300);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  .app-container {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+  
+  .sidebar {
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  
+  .control-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .chart-container {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .btn {
+    padding: 0.625rem 1.25rem;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+
+/* ===== Utility Classes ===== */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-500 {
+  color: var(--gray-500);
+}
+
+.text-gray-600 {
+  color: var(--gray-600);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ===== Snow Effect ===== */
+.snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9997;
+}
+
+.snowflake {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* ===== Chart Customization ===== */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+/* ===== Progress Bar ===== */
+.progress-bar {
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gray-900);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--gray-900) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ===== Action Buttons ===== */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ===== Comparison Result ===== */
+.comparison-result {
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border: 1px solid var(--gray-200);
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* ===== Table Styles ===== */
+.table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+th {
+  background: var(--gray-100);
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+tr:hover {
+  background: var(--gray-50);
+}
+
+/* ===== Navigation Buttons ===== */
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* ===== Results Container ===== */
+.results-container {
+  margin-top: 2rem;
+}
+
+.result-card {
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid var(--gray-200);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ===== Grid Layout ===== */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2,
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-database"></i>
+        <span>Данные</span>
+      </h3>
+      <div class="file-upload" id="fileUploadZone">
+        <div class="upload-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <div class="upload-text">Перетащите CSV файлы сюда</div>
+        <div class="upload-subtext">или нажмите для выбора</div>
+        <input type="file" id="csvFileInput" class="file-input" accept=".csv" multiple>
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label">
+          <i class="fas fa-layer-group"></i>
+          <span>Сайт</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="blockSelect">
+            <option value="" disabled selected>Выберите сайт</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label">
+          <i class="fas fa-tools"></i>
+          <span>Инструмент</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="toolSelect">
+            <option value="" disabled selected>Выберите инструмент</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label">
+          <i class="fas fa-sliders-h"></i>
+          <span>Режим</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="modeSelect">
+            <option value="all">Общий</option>
+            <option value="individual">По сотруднику</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mb-4" id="employeeSection" style="display: none;">
+        <label class="form-label">
+          <i class="fas fa-user"></i>
+          <span>Сотрудник</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="employeeSelect">
+            <option value="" disabled selected>Выберите сотрудника</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-history"></i>
+        <span>Файлы</span>
+      </h3>
+      <div class="file-list" id="fileList">
+        <!-- Файлы будут добавляться здесь -->
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-bolt"></i>
+        <span>Быстрые действия</span>
+      </h3>
+      <div class="flex flex-col gap-2">
+        <button class="btn btn-secondary" id="exportSOTBtn">
+          <i class="fas fa-download"></i>
+          <span>Выгрузить СОТ</span>
+        </button>
+       </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <h1 class="page-title">Анализ данных</h1>
+      <p class="page-subtitle">Визуализация и анализ CSV данных в реальном времени</p>
+    </div>
+    
+    <div class="card mb-6">
+      <div class="card-header">
+        <h2 class="card-title">
+          <i class="fas fa-chart-line"></i>
+          <span id="chartTitle">Загрузите данные для отображения графика</span>
+        </h2>
+        <div class="flex gap-2">
+          <button class="btn btn-icon btn-secondary" id="zoomInBtn" title="Приблизить">
+            <i class="fas fa-search-plus"></i>
+          </button>
+          <button class="btn btn-icon btn-secondary" id="zoomOutBtn" title="Отдалить">
+            <i class="fas fa-search-minus"></i>
+          </button>
+          <button class="btn btn-icon btn-secondary" id="resetZoomBtn" title="Сбросить масштаб">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <div class="chart-wrapper">
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="chart-legend" id="chartLegend"></div>
+      
+      <!-- Навигация по графикам -->
+      <div class="nav-buttons" id="graphNavButtons" style="display: none;">
+        <button class="btn btn-secondary" id="prevGraph">
+          <i class="fas fa-chevron-left"></i>
+          Предыдущий
+        </button>
+        <button class="btn btn-secondary" id="nextGraph">
+          <i class="fas fa-chevron-right"></i>
+          Следующий
+        </button>
+      </div>
+    </div>
+    
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+      <button class="btn btn-primary" id="refreshBtn">
+        <i class="fas fa-rotate"></i>
+        Обновить
+      </button>
+      <button class="btn btn-primary" id="topBtn">
+        <i class="fas fa-star"></i>
+        ТОП
+      </button>
+      <button class="btn btn-primary" id="summaryBtn">
+        <i class="fas fa-chart-pie"></i>
+        Итоги
+      </button>
+     </div>
+    
+    <!-- Результаты -->
+    <div class="results-container">
+      <div class="result-card" id="averageResult">
+        <!-- Результаты будут отображаться здесь -->
+      </div>
+      
+      <!-- Результат сравнения -->
+      <div class="comparison-result" id="comparisonResult" style="display: none;">
+        <h3 class="card-title">
+          <i class="fas fa-code-compare"></i>
+          <span>Результаты сравнения</span>
+        </h3>
+        <div id="comparisonContent"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Control Panel -->
+<div class="control-panel">
+  <button class="control-btn" id="themeToggleBtn" title="Сменить тему">
+    <i class="fas fa-moon"></i>
+  </button>
+  <button class="control-btn" id="changelogToggle" title="История изменений">
+    <i class="fas fa-history"></i>
+  </button>
+  <button class="control-btn" id="instructionToggle" title="Инструкция">
+    <i class="fas fa-info-circle"></i>
+  </button>
+  <button class="control-btn" id="bugReportBtn" title="Сообщить о проблеме">
+    <i class="fas fa-bug"></i>
+  </button>
+  <button class="control-btn" id="snowToggleBtn" title="Снегопад">
+    <i class="fas fa-snowflake"></i>
+  </button>
+  <button class="control-btn" id="fullscreenBtn" title="Полный экран">
+    <i class="fas fa-expand"></i>
+  </button>
+  <button class="control-btn" id="toggleInterfaceBtn" title="Переключить интерфейс">
+  <i class="fas fa-exchange-alt"></i>
+</button>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modals -->
+<div class="modal" id="instructionModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-info-circle"></i>
+        <span>Инструкция</span>
+      </h2>
+      <button class="modal-close" id="closeInstructionModal">&times;</button>
+    </div>
+    <div id="instructionContent">
+      <!-- Контент инструкции будет загружен динамически -->
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="bugModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-bug"></i>
+        <span>Сообщить о проблеме</span>
+      </h2>
+      <button class="modal-close" id="closeBugModal">&times;</button>
+    </div>
+    <div class="mb-4">
+      <label class="form-label">Опишите проблему или предложение</label>
+      <textarea id="bugDescription" rows="4" class="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Опишите подробно проблему или ваше предложение..."></textarea>
+    </div>
+    <div class="flex gap-2 justify-end">
+      <button class="btn btn-secondary" id="checkStatusBtn">Статус</button>
+      <button class="btn btn-secondary" id="cancelBugBtn">Отмена</button>
+      <button class="btn btn-primary" id="sendBugBtn">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="changelogModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-history"></i>
+        <span>История изменений</span>
+      </h2>
+      <button class="modal-close" id="closeChangelogModal">&times;</button>
+    </div>
+    <div id="changelogContent">
+      <!-- Контент истории изменений будет загружен динамически -->
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="sotModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-download"></i>
+        <span>Выгрузка СОТ</span>
+      </h2>
+      <button class="modal-close" id="closeSOTModal">&times;</button>
+    </div>
+    <iframe id="sotIframe" src="https://s-o-t.ru/netcat/?catalogue=1&sub=1891833" style="width:100%; height:500px; border:none; border-radius:var(--radius);"></iframe>
+  </div>
+</div>
+
+<!-- Модальное окно для поиска Bug ID -->
+<div class="modal" id="bugIdModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-search"></i>
+        <span>Поиск Bug ID</span>
+      </h2>
+      <button class="modal-close" id="closeBugIdModal">&times;</button>
+    </div>
+    <div class="mb-4">
+      <input type="text" id="bugIdInput" placeholder="Введите Bug ID" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+    </div>
+    <div class="mb-4" id="recentBugIds"></div>
+    <div class="mb-4" id="bugStatusResult"></div>
+    <div class="flex gap-2 justify-end">
+      <button class="btn btn-secondary" id="searchBugId">Поиск</button>
+      <button class="btn btn-primary" id="closeBugIdModalBtn">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- Snow Container -->
+<div class="snow-container" id="snowContainer"></div>
+
+<script>
+// ===== Глобальные переменные =====
+let dataBlocks = {
+    SOT: { labels: [], data: {} },
+    PMK: { labels: [], data: {} },
+    TORUDA: { labels: [], data: {} }
+};
+let dataBlocksSecond = null;
+let currentBlock = null;
+let currentTool = null;
+let currentEmployee = null;
+let chartInstance = null;
+let csvFilesData = [];
+let currentCsvIndex = -1;
+let fileNames = [];
+let snowActive = false;
+let darkMode = false;
+let bugIdHistory = [];
+let savedToolSelection = '';
+let fileChosen = false;
+
+// ===== Инициализация =====
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    initEventListeners();
+    loadChangelog();
+    loadInstruction();
+    
+    // Загружаем историю Bug ID
+    const stored = localStorage.getItem('bugIdHistory');
+    if (stored) {
+        try {
+            bugIdHistory = JSON.parse(stored);
+            bugIdHistory = bugIdHistory.map(entry => ({
+                id: entry.id,
+                timestamp: new Date(entry.timestamp)
+            }));
+        } catch(e) {
+            bugIdHistory = [];
+        }
+    }
+    
+    // Загружаем сохраненные данные CSV
+    const savedCsv = localStorage.getItem('csvData');
+    if (savedCsv) {
+        processCSV(savedCsv);
+        showToast('Данные восстановлены из сохранения', 'info');
+    }
+    
+    if (isSnowPeriod()) {
+        toggleSnow();
+    }
+});
+
+// ===== Тема =====
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    darkMode = savedTheme === 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.innerHTML = darkMode 
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+}
+
+// ===== Обработчики событий =====
+function initEventListeners() {
+    // Загрузка файлов
+    const fileInput = document.getElementById('csvFileInput');
+    const uploadZone = document.getElementById('fileUploadZone');
+    
+    uploadZone.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    // Drag & drop
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('drag-over');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    });
+    
+    // Селекторы
+    document.getElementById('modeSelect').addEventListener('change', toggleEmployeeSection);
+    document.getElementById('blockSelect').addEventListener('change', handleBlockChange);
+    document.getElementById('toolSelect').addEventListener('change', handleToolChange);
+    document.getElementById('employeeSelect').addEventListener('change', handleEmployeeChange);
+    
+    // Кнопки действий
+    document.getElementById('refreshBtn').addEventListener('click', updateChart);
+    document.getElementById('topBtn').addEventListener('click', showTopEmployees);
+    document.getElementById('summaryBtn').addEventListener('click', showSummary);
+    document.getElementById('exportSOTBtn').addEventListener('click', () => {
+        document.getElementById('sotModal').classList.add('show');
+    });
+    document.getElementById('compareBtn').addEventListener('click', showComparisonModal);
+    document.getElementById('compareGraphsBtn').addEventListener('click', showComparisonChart);
+    
+    // Навигация по графикам
+    document.getElementById('prevGraph').addEventListener('click', showPrevGraph);
+    document.getElementById('nextGraph').addEventListener('click', showNextGraph);
+    
+    // Zoom кнопки
+    document.getElementById('zoomInBtn').addEventListener('click', () => {
+        if (chartInstance) {
+            chartInstance.zoom(1.1);
+        }
+    });
+    
+    document.getElementById('zoomOutBtn').addEventListener('click', () => {
+        if (chartInstance) {
+            chartInstance.zoom(0.9);
+        }
+    });
+    
+    document.getElementById('resetZoomBtn').addEventListener('click', () => {
+        if (chartInstance) {
+            chartInstance.resetZoom();
+        }
+    });
+    
+    // Модальные окна (оставили только из control-panel)
+    document.getElementById('instructionToggle').addEventListener('click', () => {
+        document.getElementById('instructionModal').classList.add('show');
+    });
+    
+    document.getElementById('bugReportBtn').addEventListener('click', () => {
+        document.getElementById('bugModal').classList.add('show');
+    });
+    
+    document.getElementById('changelogToggle').addEventListener('click', () => {
+        document.getElementById('changelogModal').classList.add('show');
+    });
+    
+    // Тема (теперь в control-panel)
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+    
+    // Баг-репорт
+    document.getElementById('sendBugBtn').addEventListener('click', sendBugReport);
+    document.getElementById('checkStatusBtn').addEventListener('click', () => {
+        document.getElementById('bugModal').classList.remove('show');
+        document.getElementById('bugIdModal').classList.add('show');
+        showLastBugIds();
+    });
+    document.getElementById('searchBugId').addEventListener('click', searchBugStatus);
+    document.getElementById('cancelBugBtn').addEventListener('click', () => {
+        document.getElementById('bugModal').classList.remove('show');
+    });
+    
+    // Закрытие модальных окон
+    document.querySelectorAll('.modal-close, .modal').forEach(el => {
+        el.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal') || e.target.classList.contains('modal-close')) {
+                document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('show'));
+            }
+        });
+    });
+    
+    document.getElementById('closeBugIdModalBtn').addEventListener('click', () => {
+        document.getElementById('bugIdModal').classList.remove('show');
+    });
+    
+    // Enter для поиска Bug ID
+    document.getElementById('bugIdInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchBugStatus();
+        }
+    });
+    
+    // Снег
+    document.getElementById('snowToggleBtn').addEventListener('click', toggleSnow);
+    
+    // Полный экран
+    document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+    
+    // Easter eggs
+    initEasterEggs();
+}
+
+// ===== Переключение темы =====
+function toggleTheme() {
+    darkMode = !darkMode;
+    const theme = darkMode ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.innerHTML = darkMode 
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+    
+    updateChartTheme();
+    showToast('Тема изменена', 'success');
+}
+
+// ===== Обработка файлов =====
+function handleFileSelect() {
+    const files = document.getElementById('csvFileInput').files;
+    if (!files.length) return;
+    
+    csvFilesData = [];
+    fileNames = [];
+    currentCsvIndex = 0;
+    
+    Array.from(files).forEach((file, index) => {
+        if (file.name.endsWith('.csv')) {
+            fileNames.push(file.name);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                csvFilesData.push(e.target.result);
+                if (csvFilesData.length === fileNames.length) {
+                    processCSV(csvFilesData[0]);
+                    updateFileList();
+                    updateGraphNavigation();
+                    showToast(`Загружено ${files.length} файл(ов)`, 'success');
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+    
+    if (!fileChosen) {
+        document.getElementById('blockSelect').innerHTML = '';
+        document.getElementById('toolSelect').innerHTML = '';
+    }
+    fileChosen = true;
+}
+
+function updateFileList() {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = '';
+    
+    fileNames.forEach((fileName, index) => {
+        const chip = document.createElement('div');
+        chip.className = `file-chip ${index === currentCsvIndex ? 'active' : ''}`;
+        chip.innerHTML = `
+            <i class="fas fa-file-csv"></i>
+            <span>${fileName}</span>
+            <button class="file-chip-remove" data-index="${index}">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        chip.addEventListener('click', () => {
+            if (index !== currentCsvIndex) {
+                currentCsvIndex = index;
+                processCSV(csvFilesData[index]);
+                updateFileList();
+                showToast(`Переключено на файл: ${fileName}`, 'info');
+            }
+        });
+        
+        const removeBtn = chip.querySelector('.file-chip-remove');
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeFile(index);
+        });
+        
+        fileList.appendChild(chip);
+    });
+}
+
+function updateGraphNavigation() {
+    const navButtons = document.getElementById('graphNavButtons');
+    if (csvFilesData.length > 1) {
+        navButtons.style.display = 'flex';
+    } else {
+        navButtons.style.display = 'none';
+    }
+}
+
+function showPrevGraph() {
+    if (csvFilesData.length <= 1) return;
+    currentCsvIndex = (currentCsvIndex - 1 + csvFilesData.length) % csvFilesData.length;
+    processCSV(csvFilesData[currentCsvIndex]);
+    updateFileList();
+    showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
+}
+
+function showNextGraph() {
+    if (csvFilesData.length <= 1) return;
+    currentCsvIndex = (currentCsvIndex + 1) % csvFilesData.length;
+    processCSV(csvFilesData[currentCsvIndex]);
+    updateFileList();
+    showToast(`График ${currentCsvIndex + 1} из ${csvFilesData.length}`, 'info');
+}
+
+function removeFile(index) {
+    csvFilesData.splice(index, 1);
+    fileNames.splice(index, 1);
+    
+    if (csvFilesData.length === 0) {
+        currentCsvIndex = -1;
+        resetUI();
+    } else {
+        currentCsvIndex = Math.min(currentCsvIndex, csvFilesData.length - 1);
+        processCSV(csvFilesData[currentCsvIndex]);
+    }
+    
+    updateFileList();
+    updateGraphNavigation();
+}
+
+// ===== Обработка CSV =====
+function processCSV(text) {
+    dataBlocks = {
+        SOT: { labels: [], data: {} },
+        PMK: { labels: [], data: {} },
+        TORUDA: { labels: [], data: {} }
+    };
+    
+    const lines = text.trim().split(/\r?\n/);
+    const pmkIdx = lines.findIndex(l => l.includes("PMK"));
+    const torIdx = lines.findIndex(l => l.includes("TORUDA"));
+
+    const SOTLines = lines.slice(0, pmkIdx);
+    const PMKLines = lines.slice(pmkIdx, torIdx);
+    const TORUDALines = lines.slice(torIdx);
+
+    ['SOT', 'PMK', 'TORUDA'].forEach(block => {
+        let blockLines;
+        if (block === 'SOT') blockLines = SOTLines;
+        else if (block === 'PMK') blockLines = PMKLines;
+        else blockLines = TORUDALines;
+
+        const parsedData = {};
+        const dateSet = new Set();
+
+        for (const line of blockLines) {
+            const cols = line.split(';').map(c => c.trim());
+            if (cols.length < 7) continue;
+            const [person, tool, , , , , dateStr] = cols;
+            const dateLabel = parseDate(dateStr);
+            if (!dateLabel) continue;
+            dateSet.add(dateLabel);
+            const values = [];
+            for (let i = 2; i <= 5; i++) {
+                const v = parseFloat(cols[i].replace(',', '.')) || 0;
+                values.push(v);
+            }
+            const total = values.reduce((a, b) => a + b, 0);
+            if (!parsedData[tool]) parsedData[tool] = {};
+            if (!parsedData[tool][person]) parsedData[tool][person] = {};
+            if (!parsedData[tool][person][dateLabel]) parsedData[tool][person][dateLabel] = 0;
+            parsedData[tool][person][dateLabel] += total;
+        }
+        const labelsArr = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+        const dataPerTool = {};
+        for (const t in parsedData) {
+            dataPerTool[t] = {};
+            for (const p in parsedData[t]) {
+                dataPerTool[t][p] = Array(labelsArr.length).fill(0);
+                labelsArr.forEach((d, i) => {
+                    if (parsedData[t][p][d] !== undefined) {
+                        dataPerTool[t][p][i] = parsedData[t][p][d];
+                    }
+                });
+            }
+        }
+        dataBlocks[block].labels = labelsArr;
+        dataBlocks[block].data = dataPerTool;
+    });
+    
+    updateBlockSelect();
+    updateUI();
+    showToast('Данные успешно загружены', 'success');
+}
+
+function parseDate(str) {
+    const parts = str.trim().split('.');
+    if (parts.length !== 3) return null;
+    let [d, m, y] = parts;
+    if (y.length === 2) y = '20' + y;
+    return `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+// ===== UI Обновления =====
+function updateBlockSelect() {
+    const blockSelect = document.getElementById('blockSelect');
+    blockSelect.innerHTML = '<option value="" disabled selected>Выберите сайт</option>';
+    
+    Object.keys(dataBlocks).forEach(block => {
+        const option = document.createElement('option');
+        option.value = block;
+        option.textContent = block;
+        blockSelect.appendChild(option);
+    });
+    
+    if (Object.keys(dataBlocks).length > 0) {
+        blockSelect.value = Object.keys(dataBlocks)[0];
+        handleBlockChange();
+    }
+}
+
+function handleBlockChange() {
+    currentBlock = document.getElementById('blockSelect').value;
+    const blockData = dataBlocks[currentBlock];
+    
+    const toolSelect = document.getElementById('toolSelect');
+    const selectEmp = document.getElementById('employeeSelect');
+
+    const previousTool = savedToolSelection;
+
+    toolSelect.innerHTML = '<option value="" disabled selected>Выберите инструмент</option>';
+    selectEmp.innerHTML = '';
+
+    const tools = Object.keys(blockData.data);
+    tools.forEach(tool => {
+        const option = document.createElement('option');
+        option.value = tool;
+        option.textContent = tool;
+        if (tool === previousTool) {
+            option.selected = true;
+        }
+        toolSelect.appendChild(option);
+    });
+
+    const employees = new Set();
+    tools.forEach(t => {
+        Object.keys(blockData.data[t] || {}).forEach(e => employees.add(e));
+    });
+    const empArr = Array.from(employees).sort();
+
+    empArr.forEach(e => {
+        const option = document.createElement('option');
+        option.value = e;
+        option.textContent = e;
+        selectEmp.appendChild(option);
+    });
+
+    if (tools.length > 0) {
+        if (savedToolSelection && tools.includes(savedToolSelection)) {
+            currentTool = savedToolSelection;
+        } else {
+            currentTool = tools[0];
+        }
+        toolSelect.value = currentTool;
+
+        if (empArr.length > 0) {
+            currentEmployee = empArr[0];
+            selectEmp.value = currentEmployee;
+        }
+
+        updateChart();
+        document.getElementById('chartTitle').textContent = `${currentBlock} | ${currentTool}`;
+    } else {
+        if (chartInstance) chartInstance.destroy();
+    }
+}
+
+function handleToolChange() {
+    currentTool = document.getElementById('toolSelect').value;
+    savedToolSelection = currentTool;
+    updateChart();
+}
+
+function handleEmployeeChange() {
+    currentEmployee = document.getElementById('employeeSelect').value;
+    updateChart();
+}
+
+function toggleEmployeeSection() {
+    const mode = document.getElementById('modeSelect').value;
+    const employeeSection = document.getElementById('employeeSection');
+    employeeSection.style.display = mode === 'individual' ? 'block' : 'none';
+    updateChart();
+}
+
+function updateUI() {
+    document.getElementById('chartTitle').textContent = currentBlock && currentTool 
+        ? `${currentBlock} | ${currentTool}`
+        : 'Загрузите данные для отображения графика';
+}
+
+// ===== График =====
+function updateChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const mode = document.getElementById('modeSelect').value;
+    const blockData = dataBlocks[currentBlock];
+    
+    if (!blockData || !currentTool) return;
+    
+    const labels = blockData.labels;
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--dark').trim();
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--gray-300').trim();
+    
+    let datasets = [];
+    
+    if (mode === 'all') {
+        const persons = Object.keys(blockData.data[currentTool] || {});
+        datasets = persons.map((person, index) => ({
+            label: person,
+            data: blockData.data[currentTool][person],
+            borderColor: getColor(index),
+            backgroundColor: getColor(index, 0.1),
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: getColor(index),
+            pointBorderColor: '#fff',
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }));
+    } else {
+        if (currentEmployee && blockData.data[currentTool][currentEmployee]) {
+            datasets = [{
+                label: currentEmployee,
+                data: blockData.data[currentTool][currentEmployee],
+                borderColor: getColor(0),
+                backgroundColor: getColor(0, 0.1),
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: getColor(0),
+                pointBorderColor: '#fff',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }];
+        }
+    }
+    
+    if (chartInstance) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets = datasets;
+        
+        chartInstance.options.plugins.title = {
+            display: true,
+            text: document.getElementById('chartTitle').textContent || 'График',
+            color: textColor,
+            font: { size: 16, weight: 'bold' }
+        };
+
+        chartInstance.options.plugins.legend.labels.color = textColor;
+        chartInstance.options.scales.x.ticks.color = textColor;
+        chartInstance.options.scales.y.ticks.color = textColor;
+        chartInstance.options.scales.x.title.color = textColor;
+        chartInstance.options.scales.y.title.color = textColor;
+
+        chartInstance.update();
+    } else {
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: { 
+                        position: 'top', 
+                        labels: { 
+                            color: textColor,
+                            font: {
+                                size: 12
+                            }
+                        } 
+                    },
+                    title: { 
+                        display: true, 
+                        text: document.getElementById('chartTitle').textContent || 'График', 
+                        color: textColor,
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'xy'
+                        },
+                        zoom: {
+                            wheel: {
+                                enabled: true
+                            },
+                            pinch: {
+                                enabled: true
+                            },
+                            mode: 'xy'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: textColor,
+                            font: { size: 12 }
+                        },
+                        grid: {
+                            color: gridColor,
+                            drawBorder: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Дата',
+                            color: textColor,
+                            font: { size: 14, weight: '600' }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: textColor,
+                            font: { size: 12 }
+                        },
+                        grid: {
+                            color: gridColor,
+                            drawBorder: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Значение',
+                            color: textColor,
+                            font: { size: 14, weight: '600' }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 20,
+                        bottom: 20,
+                        left: 20,
+                        right: 20
+                    }
+                }
+            }
+        });
+    }
+    
+    updateChartLegend(datasets);
+}
+
+function updateChartTheme() {
+    if (!chartInstance) return;
+    
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--dark').trim();
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--gray-300').trim();
+    
+    chartInstance.options.scales.x.ticks.color = textColor;
+    chartInstance.options.scales.y.ticks.color = textColor;
+    chartInstance.options.scales.x.grid.color = gridColor;
+    chartInstance.options.scales.y.grid.color = gridColor;
+    chartInstance.options.scales.x.title.color = textColor;
+    chartInstance.options.scales.y.title.color = textColor;
+    chartInstance.options.plugins.title.color = textColor;
+    chartInstance.options.plugins.legend.labels.color = textColor;
+    
+    chartInstance.update();
+}
+
+function updateChartLegend(datasets) {
+    const legend = document.getElementById('chartLegend');
+    legend.innerHTML = '';
+    
+    datasets.forEach(dataset => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `
+            <div class="legend-color" style="background-color: ${dataset.borderColor}"></div>
+            <span>${dataset.label}</span>
+        `;
+        legend.appendChild(item);
+    });
+}
+
+function getColor(index, alpha = 1) {
+    const colors = [
+        `rgba(67, 97, 238, ${alpha})`,
+        `rgba(63, 55, 201, ${alpha})`,
+        `rgba(76, 201, 240, ${alpha})`,
+        `rgba(74, 222, 128, ${alpha})`,
+        `rgba(245, 158, 11, ${alpha})`,
+        `rgba(239, 68, 68, ${alpha})`,
+        `rgba(147, 51, 234, ${alpha})`,
+        `rgba(236, 72, 153, ${alpha})`
+    ];
+    return colors[index % colors.length];
+}
+
+// ===== ТОП сотрудников =====
+function showTopEmployees() {
+    if (!dataBlocks[currentBlock]) return;
+    const blockData = dataBlocks[currentBlock];
+    const tool = document.getElementById('toolSelect').value;
+    const mode = document.getElementById('modeSelect').value;
+
+    const sums = {};
+    for (const emp in blockData.data[tool]) {
+        sums[emp] = blockData.data[tool][emp].reduce((a, b) => a + b, 0);
+    }
+
+    const sorted = Object.entries(sums).sort((a, b) => b[1] - a[1]);
+    const top3 = sorted.slice(0, 3);
+    
+    let html = `<h3 style="margin-bottom: 1rem;">🏆 ТОП сотрудников по инструменту: ${tool}</h3><ol style="list-style:none; padding-left:0;">`;
+    const icons = ['🥇', '🥈', '🥉'];
+    top3.forEach((item, i) => {
+        html += `<li style="margin:1rem 0; padding:1rem; background:var(--gray-100); border-radius:var(--radius);">
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <span style="font-size:1.5rem;">${icons[i]}</span>
+                        <div>
+                            <div style="font-weight:600;">${item[0]}</div>
+                            <div style="color:var(--gray-600);">${item[1].toFixed(2)}</div>
+                        </div>
+                    </div>
+                 </li>`;
+    });
+    html += '</ol>';
+    document.getElementById('averageResult').innerHTML = html;
+}
+
+// ===== Итоги =====
+function showSummary() {
+    const block = currentBlock;
+    const mode = document.getElementById('modeSelect').value;
+    const tool = document.getElementById('toolSelect').value;
+    const blockData = dataBlocks[block];
+
+    if (!blockData || !blockData.labels || !blockData.data || !blockData.data[tool]) {
+        showToast('Нет данных для расчёта итогов.', 'error');
+        return;
+    }
+
+    const labels = blockData.labels;
+    const employeesData = blockData.data[tool];
+    let html = '<h3 style="margin-bottom: 1rem;">📊 Итоги по сотрудникам за период</h3>';
+
+    let summaries = [];
+    for (const emp in employeesData) {
+        let totalSum = 0;
+        employeesData[emp].forEach(value => {
+            totalSum += value;
+        });
+        summaries.push({ name: emp, sum: totalSum });
+    }
+
+    summaries.sort((a, b) => b.sum - a.sum);
+
+    html += '<div class="table-container"><table>';
+    html += '<thead><tr><th>Фамилия, Имя</th><th>Сумма</th></tr></thead><tbody>';
+
+    summaries.forEach(item => {
+        html += `<tr>
+                    <td style="padding:0.75rem 1rem; border-bottom:1px solid var(--gray-200);">${item.name}</td>
+                    <td style="padding:0.75rem 1rem; border-bottom:1px solid var(--gray-200); text-align:right;">${item.sum.toFixed(2)}</td>
+                </tr>`;
+    });
+    html += '</tbody></table></div>';
+
+    document.getElementById('averageResult').innerHTML = html;
+}
+
+// ===== Уведомления =====
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="toast-icon">
+            ${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}
+        </div>
+        <div class="toast-content">
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close">&times;</button>
+    `;
+    
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        toast.style.animation = 'slideInRight 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    });
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.animation = 'slideInRight 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5000);
+}
+
+// ===== Снегопад =====
+function toggleSnow() {
+    const snowContainer = document.getElementById('snowContainer');
+    const snowBtn = document.getElementById('snowToggleBtn');
+    
+    if (snowActive) {
+        snowContainer.innerHTML = '';
+        snowBtn.classList.remove('snow-active');
+        showToast('Снегопад остановлен', 'info');
+    } else {
+        createSnowflakes();
+        snowBtn.classList.add('snow-active');
+        showToast('Снегопад запущен', 'info');
+    }
+    
+    snowActive = !snowActive;
+}
+
+function createSnowflakes() {
+    const snowContainer = document.getElementById('snowContainer');
+    snowContainer.innerHTML = '';
+    
+    for (let i = 0; i < 50; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        
+        const size = Math.random() * 5 + 2;
+        const left = Math.random() * 100;
+        const duration = Math.random() * 5 + 5;
+        const delay = Math.random() * 5;
+        
+        snowflake.style.width = `${size}px`;
+        snowflake.style.height = `${size}px`;
+        snowflake.style.left = `${left}%`;
+        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+        snowflake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+        
+        snowContainer.appendChild(snowflake);
+    }
+}
+
+function isSnowPeriod() {
+    const now = new Date();
+    const month = now.getMonth();
+    const day = now.getDate();
+    
+    return (month === 11 && day >= 15) || (month === 0 && day <= 15);
+}
+
+// ===== Полный экран =====
+function toggleFullscreen() {
+    const elem = document.documentElement;
+    const btn = document.getElementById('fullscreenBtn');
+    
+    if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+            showToast(`Ошибка полноэкранного режима: ${err.message}`, 'error');
+        });
+        btn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+        document.exitFullscreen();
+        btn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+}
+
+// ===== Баг-репорт =====
+function sendBugReport() {
+    const description = document.getElementById('bugDescription').value.trim();
+    
+    if (!description) {
+        showToast('Пожалуйста, опишите проблему', 'error');
+        return;
+    }
+    
+    const bugId = 'BUG-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    const sourceLink = window.location.href;
+    const fullDescription = `${description}\nИсточник: ${sourceLink}\nBug ID: ${bugId}`;
+    
+    const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+    
+    fetch(BUG_REPORT_URL, {
+        method: 'POST',
+        contentType: 'application/json',
+        body: JSON.stringify({description: fullDescription, bugId: bugId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result === 'success') {
+            bugIdHistory.unshift({
+                id: bugId,
+                timestamp: new Date()
+            });
+            if (bugIdHistory.length > 20) bugIdHistory.pop();
+            localStorage.setItem('bugIdHistory', JSON.stringify(bugIdHistory));
+            
+            showToast(`Сообщение отправлено. Bug ID: ${bugId}`, 'success');
+        } else {
+            showToast('Произошла ошибка при отправке сообщения', 'error');
+        }
+    })
+    .catch(() => {
+        showToast('Ошибка сети при отправке сообщения', 'error');
+    });
+
+    document.getElementById('bugDescription').value = '';
+    document.getElementById('bugModal').classList.remove('show');
+}
+
+function showLastBugIds() {
+    const recentBugs = bugIdHistory.slice(0, 5);
+    let html = '<h4 style="margin-bottom: 0.5rem;">Последние 5 Bug ID:</h4>';
+    if (recentBugs.length === 0) {
+        html += '<p style="color: var(--gray-500);">Нет истории Bug ID</p>';
+    } else {
+        recentBugs.forEach(entry => {
+            const dateStr = entry.timestamp.toLocaleString();
+            html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: var(--gray-100); border-radius: var(--radius);">
+                        <div style="font-weight: 600;">${entry.id}</div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">${dateStr}</div>
+                    </div>`;
+        });
+    }
+    document.getElementById('recentBugIds').innerHTML = html;
+}
+
+function searchBugStatus() {
+    const bugId = document.getElementById('bugIdInput').value.trim();
+    if (!bugId) {
+        showToast('Пожалуйста, введите Bug ID.', 'info');
+        return;
+    }
+    fetchBugStatus(bugId);
+}
+
+function fetchBugStatus(bugId) {
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1IGnuwozgAb-cwD-pr7aeMHTX80J06mV8F0IJ9KLmTSk/gviz/tq?sheet=Лист2';
+
+    fetch(sheetUrl)
+        .then(res => res.text())
+        .then(text => {
+            const jsonText = text.substring(47).slice(0, -2);
+            const jsonData = JSON.parse(jsonText);
+            const rows = jsonData.table.rows;
+            
+            let found = false;
+            let status = '';
+            
+            for (const row of rows) {
+                const cols = row.c;
+                if (cols && cols.length >= 5) {
+                    const currentBugId = cols[4].v.trim();
+                    if (currentBugId === bugId) {
+                        status = cols[2] ? cols[2].v : 'Нет статуса';
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            const resultDiv = document.getElementById('bugStatusResult');
+            if (found) {
+                resultDiv.innerHTML = `
+                    <div style="padding: 1rem; background: var(--success); color: white; border-radius: var(--radius);">
+                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                        <strong>Статус для Bug ID ${bugId}:</strong> ${status}
+                    </div>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="padding: 1rem; background: var(--danger); color: white; border-radius: var(--radius);">
+                        <i class="fas fa-times-circle" style="margin-right: 0.5rem;"></i>
+                        <strong>Bug ID ${bugId} не найден.</strong>
+                    </div>`;
+            }
+        })
+        .catch(() => {
+            showToast('Ошибка при получении данных.', 'error');
+        });
+}
+
+// ===== Загрузка контента =====
+function loadChangelog() {
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
+
+    fetch(sheetUrl)
+        .then(response => response.text())
+        .then(text => {
+            const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = jsonData.table.rows;
+            let entriesHtml = '';
+
+            function formatDateToDDMMYY(dateStr) {
+                const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+                if (dateMatch) {
+                    let year = parseInt(dateMatch[1], 10);
+                    let month = parseInt(dateMatch[2], 10);
+                    let day = parseInt(dateMatch[3], 10);
+                    month += 1;
+                    const dd = day.toString().padStart(2, '0');
+                    const mm = month.toString().padStart(2, '0');
+                    const yy = (year % 100).toString().padStart(2, '0');
+                    return `${dd}.${mm}.${yy}`;
+                }
+                return dateStr;
+            }
+
+            rows.forEach(row => {
+                const version = row.c[0].v;
+                const rawDate = row.c[1].v;
+                const date = formatDateToDDMMYY(rawDate);
+                const type = row.c[2].v.trim();
+                let description = row.c[3].v;
+                description = description.replace(/^•\s?/gm, '<li>•</li>');
+                const descriptionHtml = description
+                    .split('\n')
+                    .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
+                    .join('');
+                
+                let typeClass = '';
+                if (type === 'Добавлено') typeClass = 'success';
+                else if (type === 'Исправлено') typeClass = 'warning';
+                else if (type === 'Общее') typeClass = 'info';
+                
+                entriesHtml += `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: var(--gray-100); border-radius: var(--radius);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div>
+                                <span style="font-weight: 600; color: var(--primary);">Версия ${version}</span>
+                                <span style="color: var(--gray-500); margin-left: 0.5rem;">[${date}]</span>
+                            </div>
+                            <span style="padding: 0.25rem 0.5rem; background: var(--${typeClass}); color: white; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
+                                ${type}
+                            </span>
+                        </div>
+                        <div>${descriptionHtml}</div>
+                    </div>`;
+            });
+            
+            document.getElementById('changelogContent').innerHTML = entriesHtml;
+        })
+        .catch(() => {
+            document.getElementById('changelogContent').innerHTML = 
+                '<p style="color: var(--gray-500); text-align: center; padding: 2rem;">Не удалось загрузить историю изменений.</p>';
+        });
+}
+
+function loadInstruction() {
+    const instructionContent = document.getElementById('instructionContent');
+    instructionContent.innerHTML = `
+        <div style="max-height: 60vh; overflow-y: auto; padding-right: 1rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-cloud-download-alt" style="color: var(--primary);"></i>
+                    Шаг 1: Получение файла СОТ
+                </h3>
+                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
+                    <li>Нажмите "Выгрузить СОТ"</li>
+                    <li>Откроется новая вкладка — авторизуйтесь если нужно</li>
+                    <li>Выберите диапазон дат для выгрузки</li>
+                    <li>Скачайте файл и вернитесь на сайт</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-upload" style="color: var(--primary);"></i>
+                    Шаг 2: Загрузка CSV
+                </h3>
+                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
+                    <li>Перетащите CSV файлы в зону загрузки или нажмите для выбора</li>
+                    <li>Можно загрузить несколько файлов одновременно</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-cogs" style="color: var(--primary);"></i>
+                    Шаг 3: Настройка параметров
+                </h3>
+                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
+                    <li>Выберите сайт, инструмент и режим отображения</li>
+                    <li>Для режима "По сотруднику" выберите конкретного сотрудника</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                    Шаг 4: Визуализация данных
+                </h3>
+                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
+                    <li>График обновляется автоматически при изменении параметров</li>
+                    <li>Используйте кнопки для приближения/отдаления графика</li>
+                    <li>При загрузке нескольких файлов используйте навигацию</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-star" style="color: var(--primary);"></i>
+                    Шаг 5: Анализ данных
+                </h3>
+                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
+                    <li>Используйте кнопку "ТОП" для просмотра лучших сотрудников</li>
+                    <li>Кнопка "Итоги" показывает сводную таблицу за период</li>
+                    <li>Кнопка "Сравнить графики" позволяет сравнивать данные</li>
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+// ===== Сравнение файлов =====
+function showComparisonModal() {
+    if (csvFilesData.length < 2) {
+        showToast('Загрузите минимум 2 файла для сравнения', 'warning');
+        return;
+    }
+    
+    // Здесь можно реализовать модальное окно для сравнения
+    // Временно показываем уведомление
+    showToast('Для сравнения загрузите второй файл через основную загрузку', 'info');
+}
+
+function showComparisonChart() {
+    if (!dataBlocks || !dataBlocksSecond) {
+        showToast('Загрузите второй файл для сравнения графиков', 'info');
+        return;
+    }
+
+    const blockName = currentBlock;
+    const tool = document.getElementById('toolSelect').value;
+    const mode = document.getElementById('modeSelect').value;
+
+    const block1 = dataBlocks[blockName];
+    const block2 = dataBlocksSecond[blockName];
+
+    if (!block1 || !block2) {
+        showToast('Недостаточно данных для сравнения', 'error');
+        return;
+    }
+
+    const labels = block1.labels;
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--dark').trim();
+    
+    let datasets = [];
+
+    if (mode === 'all') {
+        const persons = Object.keys(block1.data[tool] || {});
+        persons.forEach((person, index) => {
+            const data1 = block1.data[tool][person] || Array(labels.length).fill(0);
+            const data2 = block2.data[tool][person] || Array(labels.length).fill(0);
+            datasets.push({
+                label: `${person} (файл 1)`,
+                data: data1,
+                borderColor: getColor(index),
+                backgroundColor: getColor(index, 0.1),
+                fill: false,
+                tension: 0.3
+            });
+            datasets.push({
+                label: `${person} (файл 2)`,
+                data: data2,
+                borderColor: getColor(index, 0.7),
+                backgroundColor: getColor(index, 0.4),
+                fill: false,
+                borderDash: [5, 5],
+                tension: 0.3
+            });
+        });
+    } else {
+        const employee = document.getElementById('employeeSelect').value;
+        if (employee && block1.data[tool][employee] && block2.data[tool][employee]) {
+            datasets.push({
+                label: `${employee} (файл 1)`,
+                data: block1.data[tool][employee],
+                borderColor: getColor(0),
+                fill: false
+            });
+            datasets.push({
+                label: `${employee} (файл 2)`,
+                data: block2.data[tool][employee],
+                borderColor: getColor(1),
+                borderDash: [5, 5],
+                fill: false
+            });
+        } else {
+            showToast('Нет данных для выбранного сотрудника', 'error');
+            return;
+        }
+    }
+
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { color: textColor } },
+                title: { 
+                    display: true, 
+                    text: 'Сравнение файлов', 
+                    color: textColor 
+                }
+            },
+            scales: {
+                x: { ticks: { color: textColor } },
+                y: { ticks: { color: textColor } }
+            }
+        }
+    });
+    
+    showToast('График сравнения отображен', 'success');
+}
+
+// ===== Easter Eggs =====
+function initEasterEggs() {
+    // Секретная кнопка
+    const secretBtn = document.createElement('button');
+    secretBtn.style.position = 'fixed';
+    secretBtn.style.top = '150px';
+    secretBtn.style.left = '5%';
+    secretBtn.style.transform = 'translateX(-50%)';
+    secretBtn.style.width = '120px';
+    secretBtn.style.height = '50px';
+    secretBtn.style.opacity = '0';
+    secretBtn.style.border = 'none';
+    secretBtn.style.background = 'var(--primary)';
+    secretBtn.style.color = 'white';
+    secretBtn.style.fontSize = '14px';
+    secretBtn.style.borderRadius = '25px';
+    secretBtn.style.cursor = 'pointer';
+    secretBtn.style.boxShadow = 'var(--shadow)';
+    secretBtn.title = 'Секретная функция';
+    secretBtn.textContent = '🎮 Квест';
+    document.body.appendChild(secretBtn);
+
+    secretBtn.addEventListener('click', () => {
+        showToast('🎉 Пасхалка активирована!', 'success');
+        startConfetti();
+    });
+
+    // Тройной клик по футеру
+    let clicks = 0;
+    let timer = null;
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.header')) {
+            clicks++;
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => { clicks = 0; }, 500);
+
+            if (clicks >= 3) {
+                clicks = 0;
+                showToast('🎉 Пасхалка! Тройной клик!', 'success');
+                startConfetti();
+            }
+        }
+    });
+
+    // Секретная комбинация клавиш
+    const secret = 'hello';
+    let buf = '';
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key.length === 1 && /[a-z]/i.test(e.key)) {
+            buf += e.key.toLowerCase();
+            if (buf.endsWith(secret)) {
+                showToast('👋 Привет! Вы нашли секрет!', 'success');
+                buf = '';
+            }
+            if (buf.length > secret.length) buf = buf.slice(-secret.length);
+        } else {
+            buf = '';
+        }
+    });
+
+    // Клавиша P для пингвина
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'p') {
+            showPingwinAnimation();
+        }
+    });
+}
+
+function startConfetti() {
+    for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.top = Math.random() * window.innerHeight + 'px';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.width = confetti.style.height = '8px';
+        confetti.style.backgroundColor = `hsl(${Math.random()*360}, 70%, 60%)`;
+        confetti.style.borderRadius = '50%';
+        confetti.style.zIndex = '9999';
+        document.body.appendChild(confetti);
+        
+        confetti.animate([
+            { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+            { transform: `translateY(${window.innerHeight + 10}px) rotate(${Math.random()*360}deg)`, opacity: 0 }
+        ], {
+            duration: 3000 + Math.random()*2000,
+            easing: 'ease-out'
+        }).onfinish = () => {
+            confetti.remove();
+        };
+    }
+}
+
+function showPingwinAnimation() {
+    showToast('🐧 Пингвин активирован!', 'success');
+    const penguin = document.createElement('div');
+    penguin.style.position = 'fixed';
+    penguin.style.bottom = '20px';
+    penguin.style.right = '20px';
+    penguin.style.fontSize = '3rem';
+    penguin.style.zIndex = '10000';
+    penguin.textContent = '🐧';
+    document.body.appendChild(penguin);
+    
+    penguin.animate([
+        { transform: 'translateX(0) rotate(0deg)' },
+        { transform: 'translateX(-100px) rotate(360deg)' },
+        { transform: 'translateX(0) rotate(720deg)' }
+    ], {
+        duration: 2000,
+        iterations: 1,
+        easing: 'ease-in-out'
+    }).onfinish = () => {
+        setTimeout(() => penguin.remove(), 1000);
+    };
+}
+
+// ===== Сброс UI =====
+function resetUI() {
+    document.getElementById('chartTitle').textContent = 'Загрузите данные для отображения графика';
+    document.getElementById('averageResult').innerHTML = '';
+    document.getElementById('comparisonResult').style.display = 'none';
+    document.getElementById('comparisonContent').innerHTML = '';
+    document.getElementById('chartLegend').innerHTML = '';
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
+}
+
+// ===== Утилиты =====
+function getChartTextColor() {
+    return darkMode ? '#fff' : '#000';
+}
+
+function getGridColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue('--gray-300').trim();
+}
+// ===== Переключение интерфейсов =====
+document.getElementById('toggleInterfaceBtn').addEventListener('click', toggleInterface);
+
+function toggleInterface() {
+  const currentPage = window.location.pathname;
+  
+  if (currentPage.includes('graph.html') || currentPage.includes('index.html')) {
+    // Если мы на старом интерфейсе, переключаемся на новый
+    localStorage.setItem('preferredInterface', 'new');
+    window.open('new-interface.html', '_self');
+  } else if (currentPage.includes('new-interface.html')) {
+    // Если мы на новом интерфейсе, переключаемся на старый
+    localStorage.setItem('preferredInterface', 'old');
+    window.open('graph.html', '_self');
+  }
+  
+  showToast('Интерфейс переключен', 'success');
+}
+
+// При загрузке страницы проверяем предпочтения
+window.addEventListener('load', () => {
+  const preferredInterface = localStorage.getItem('preferredInterface');
+  const currentPage = window.location.pathname;
+  });
+</script>
+</body>
+</html>
