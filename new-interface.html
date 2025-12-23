@@ -1160,6 +1160,238 @@ tr:hover {
     grid-template-columns: 1fr;
   }
 }
+#sotModal .modal-content {
+  max-width: 90vw; /* 90% ширины экрана */
+  max-height: 120vh; /* 90% высоты экрана */
+  width: 1200px; /* Фиксированная ширина */
+  padding: 0; /* Убираем padding */
+}
+
+/* Улучшаем iframe */
+#sotIframe {
+  width: 100%;
+  height: calc(120vh - 70px); /* Высота минус заголовок */
+  border: none;
+}
+/* Улучшаем окно баг-репорта */
+#bugModal .modal-content {
+  max-width: 600px;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Красивое текстовое поле */
+#bugDescription {
+  width: 100%;
+  padding: 1.25rem;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 150px;
+  max-height: 300px;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+#bugDescription:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+  background: var(--gray-50);
+}
+
+/* Placeholder стилизация */
+#bugDescription::placeholder {
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+/* Счетчик символов */
+.char-counter {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.char-counter.warning {
+  color: var(--warning);
+}
+
+.char-counter.error {
+  color: var(--danger);
+}
+
+/* Улучшаем заголовок */
+#bugModal .modal-title {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Анимация при фокусе */
+@keyframes pulse-border {
+  0%, 100% { border-color: var(--gray-300); }
+  50% { border-color: var(--primary); }
+}
+
+#bugDescription:focus {
+  animation: pulse-border 2s infinite;
+}
+#bugIdModal .modal-content {
+  max-width: 500px;
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Красивое поле ввода */
+#bugIdInput {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  letter-spacing: 0.5px;
+}
+
+#bugIdInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 
+    0 0 0 4px rgba(67, 97, 238, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Placeholder стилизация */
+#bugIdInput::placeholder {
+  color: var(--gray-400);
+  font-weight: 400;
+  font-family: var(--font-sans);
+}
+
+/* Автозаполнение */
+#bugIdInput:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--light) inset;
+  -webkit-text-fill-color: var(--dark);
+}
+
+/* Список последних Bug ID */
+#recentBugIds {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: var(--gray-50);
+}
+
+/* Элементы истории */
+.bug-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--light);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.bug-history-item:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  transform: translateX(5px);
+}
+
+.bug-history-item:active {
+  transform: translateX(5px) scale(0.98);
+}
+
+.bug-history-id {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.bug-history-date {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+/* Результаты поиска */
+#bugStatusResult {
+  padding: 1rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+  border-left: 4px solid var(--primary);
+  animation: fadeIn 0.3s ease;
+}
+
+.status-success {
+  border-left-color: var(--success) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), var(--gray-50)) !important;
+}
+
+.status-error {
+  border-left-color: var(--danger) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), var(--gray-50)) !important;
+}
+
+/* Анимация поиска */
+@keyframes searching {
+  0% { transform: translateX(-10px); opacity: 0.5; }
+  100% { transform: translateX(10px); opacity: 1; }
+}
+
+.searching {
+  animation: searching 0.5s ease-in-out infinite alternate;
+}
+
+/* Иконка поиска */
+.search-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+.modal-content {
+  animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+#searchBugId:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+#searchBugId:active {
+  transform: translateY(0);
+}
 </style>
 </head>
 <body>
@@ -1420,11 +1652,19 @@ tr:hover {
     <div class="modal-header">
       <h2 class="modal-title">
         <i class="fas fa-download"></i>
-        <span>Выгрузка СОТ</span>
+        <span>Выгрузка СОТ - Полный экран</span>
       </h2>
       <button class="modal-close" id="closeSOTModal">&times;</button>
     </div>
-    <iframe id="sotIframe" src="https://s-o-t.ru/netcat/?catalogue=1&sub=1891833" style="width:100%; height:500px; border:none; border-radius:var(--radius);"></iframe>
+    <div class="modal-body" style="padding: 1rem;">
+      <div class="iframe-container" style="position: relative; height: 100%;">
+        <iframe id="sotIframe" 
+                src="https://s-o-t.ru/netcat/?catalogue=1&sub=1891833" 
+                style="width:100%; height:700px; border:none; box-shadow: var(--shadow-md);">
+        </iframe>
+       </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2365,17 +2605,30 @@ function sendBugReport() {
 
 function showLastBugIds() {
     const recentBugs = bugIdHistory.slice(0, 5);
-    let html = '<h4 style="margin-bottom: 0.5rem;">Последние 5 Bug ID:</h4>';
+    let html = '<h4 style="margin-bottom: 1rem; color: var(--gray-700);">Недавние Bug ID:</h4>';
+    
     if (recentBugs.length === 0) {
-        html += '<p style="color: var(--gray-500);">Нет истории Bug ID</p>';
+        html += '<p style="color: var(--gray-500); text-align: center; padding: 1rem; background: var(--gray-100); border-radius: var(--radius);">Нет истории Bug ID</p>';
     } else {
+        html += '<div class="bug-history-list">';
         recentBugs.forEach(entry => {
-            const dateStr = entry.timestamp.toLocaleString();
-            html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: var(--gray-100); border-radius: var(--radius);">
-                        <div style="font-weight: 600;">${entry.id}</div>
-                        <div style="font-size: 0.875rem; color: var(--gray-600);">${dateStr}</div>
-                    </div>`;
+            const dateStr = entry.timestamp.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            html += `
+                <div class="bug-history-item" onclick="document.getElementById('bugIdInput').value='${entry.id}'; searchBugStatus()">
+                    <div>
+                        <div class="bug-history-id">${entry.id}</div>
+                        <div class="bug-history-date">${dateStr}</div>
+                    </div>
+                    <i class="fas fa-arrow-right" style="color: var(--gray-400);"></i>
+                </div>`;
         });
+        html += '</div>';
     }
     document.getElementById('recentBugIds').innerHTML = html;
 }
@@ -2390,6 +2643,16 @@ function searchBugStatus() {
 }
 
 function fetchBugStatus(bugId) {
+    const resultDiv = document.getElementById('bugStatusResult');
+    resultDiv.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+            <div class="searching" style="font-size: 2rem; margin-bottom: 1rem;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div style="color: var(--gray-600);">Ищем статус для ${bugId}...</div>
+        </div>
+    `;
+    
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/1IGnuwozgAb-cwD-pr7aeMHTX80J06mV8F0IJ9KLmTSk/gviz/tq?sheet=Лист2';
 
     fetch(sheetUrl)
@@ -2401,6 +2664,8 @@ function fetchBugStatus(bugId) {
             
             let found = false;
             let status = '';
+            let date = '';
+            let description = '';
             
             for (const row of rows) {
                 const cols = row.c;
@@ -2408,29 +2673,58 @@ function fetchBugStatus(bugId) {
                     const currentBugId = cols[4].v.trim();
                     if (currentBugId === bugId) {
                         status = cols[2] ? cols[2].v : 'Нет статуса';
+                        date = cols[1] ? cols[1].v : '';
+                        description = cols[3] ? cols[3].v : '';
                         found = true;
                         break;
                     }
                 }
             }
             
-            const resultDiv = document.getElementById('bugStatusResult');
             if (found) {
                 resultDiv.innerHTML = `
-                    <div style="padding: 1rem; background: var(--success); color: white; border-radius: var(--radius);">
-                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
-                        <strong>Статус для Bug ID ${bugId}:</strong> ${status}
+                    <div class="status-success">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: var(--success); font-size: 1.5rem;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: var(--success);">Bug ID найден</div>
+                                <div style="font-family: var(--font-mono); color: var(--gray-700);">${bugId}</div>
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 1rem; border-radius: var(--radius); margin-top: 1rem;">
+                            <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem;">
+                                <div style="color: var(--gray-600);">Статус:</div>
+                                <div style="font-weight: 600; color: var(--success);">${status}</div>
+                            </div>
+                        </div>
                     </div>`;
             } else {
                 resultDiv.innerHTML = `
-                    <div style="padding: 1rem; background: var(--danger); color: white; border-radius: var(--radius);">
-                        <i class="fas fa-times-circle" style="margin-right: 0.5rem;"></i>
-                        <strong>Bug ID ${bugId} не найден.</strong>
+                    <div class="status-error">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <i class="fas fa-times-circle" style="color: var(--danger); font-size: 1.5rem;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: var(--danger);">Bug ID не найден</div>
+                                <div style="font-family: var(--font-mono); color: var(--gray-700);">${bugId}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--gray-600); font-size: 0.875rem;">
+                            Проверьте правильность введенного ID или обратитесь к администратору.
+                        </div>
                     </div>`;
             }
         })
         .catch(() => {
-            showToast('Ошибка при получении данных.', 'error');
+            resultDiv.innerHTML = `
+                <div class="status-error">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--warning); font-size: 1.5rem;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: var(--warning);">Ошибка соединения</div>
+                            <div style="color: var(--gray-700);">Не удалось получить данные</div>
+                        </div>
+                    </div>
+                </div>`;
         });
 }
 
@@ -2844,4 +3138,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
