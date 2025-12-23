@@ -962,8 +962,11 @@ body.dark .control-btn {
   </button>
   <!-- Кнопка «Назад на главную» -->
   <button class="control-btn back-btn" id="backHomeBtn" title="Назад на главную">
-    <i class="fas fa-arrow-left"></i>
+    <i class="fas fa-home"></i>
   </button>
+  <button class="control-btn" id="toggleInterfaceBtn" title="Переключить интерфейс">
+  <i class="fas fa-exchange-alt"></i>
+</button>
 </div>
 <div id="toastContainer" style="
   position: fixed;
@@ -3145,6 +3148,36 @@ document.getElementById('instructionToggle')
 document.getElementById('backHomeBtn')
         .addEventListener('click', () => {
   window.open('index.html', '_self');
+});
+// ===== Переключение интерфейсов =====
+document.getElementById('toggleInterfaceBtn').addEventListener('click', toggleInterface);
+
+function toggleInterface() {
+  const currentPage = window.location.pathname;
+  
+  if (currentPage.includes('graph.html') || currentPage.includes('index.html')) {
+    // Если мы на старом интерфейсе, переключаемся на новый
+    localStorage.setItem('preferredInterface', 'new');
+    window.open('new-interface.html', '_self');
+  } else if (currentPage.includes('new-interface.html')) {
+    // Если мы на новом интерфейсе, переключаемся на старый
+    localStorage.setItem('preferredInterface', 'old');
+    window.open('graph.html', '_self');
+  }
+  
+  showToast('Интерфейс переключен', 'success');
+}
+
+// При загрузке страницы проверяем предпочтения
+window.addEventListener('load', () => {
+  const preferredInterface = localStorage.getItem('preferredInterface');
+  const currentPage = window.location.pathname;
+  
+  // Можно добавить автоматическое перенаправление при первом посещении
+  if (!preferredInterface && !currentPage.includes('new-interface')) {
+    // По умолчанию используем новый интерфейс
+    localStorage.setItem('preferredInterface', 'new');
+  }
 });
 </script>
 </body>
