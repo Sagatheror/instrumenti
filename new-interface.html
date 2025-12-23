@@ -1563,10 +1563,7 @@ function initEventListeners() {
     document.getElementById('exportSOTBtn').addEventListener('click', () => {
         document.getElementById('sotModal').classList.add('show');
     });
-    document.getElementById('compareBtn').addEventListener('click', showComparisonModal);
-    document.getElementById('compareGraphsBtn').addEventListener('click', showComparisonChart);
-    
-    // Навигация по графикам
+       // Навигация по графикам
     document.getElementById('prevGraph').addEventListener('click', showPrevGraph);
     document.getElementById('nextGraph').addEventListener('click', showNextGraph);
     
@@ -2290,6 +2287,7 @@ function createSnowflakes() {
         const delay = Math.random() * 5;
         
         snowflake.style.width = `${size}px`;
+        snowflake.style.top= `-10px`;
         snowflake.style.height = `${size}px`;
         snowflake.style.left = `${left}%`;
         snowflake.style.opacity = Math.random() * 0.5 + 0.3;
