@@ -401,7 +401,7 @@
                 });
             }
 
-            return results;
+            return results.filter(item => item.сумма > 0);
         }
 
         function renderCharts(data) {
