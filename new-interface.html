@@ -2802,63 +2802,69 @@ function loadChangelog() {
 function loadInstruction() {
     const instructionContent = document.getElementById('instructionContent');
     instructionContent.innerHTML = `
-        <div style="max-height: 60vh; overflow-y: auto; padding-right: 1rem;">
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-cloud-download-alt" style="color: var(--primary);"></i>
-                    Шаг 1: Получение файла СОТ
+        <div style="max-height: 60vh; overflow-y: auto; padding: 1.5rem; font-family: var(--font-sans); color: var(--gray-700); line-height: 1.6;">
+            <h2 style="text-align: center; margin-bottom: 1.5rem; font-weight: 700; color: var(--primary); font-size: 2rem;">
+                Как использовать этот инструмент
+            </h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">
+                Добро пожаловать! Этот сайт — ваш помощник для анализа и визуализации данных. Ниже — краткая, но яркая инструкция, чтобы вы могли быстро начать работать и получать максимум пользы.
+            </p>
+            <!-- Шаг 1 -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
+                    <i class="fas fa-cloud-download-alt"></i> Шаг 1: Получение файла СОТ
                 </h3>
-                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
-                    <li>Нажмите "Выгрузить СОТ"</li>
-                    <li>Откроется новая вкладка — авторизуйтесь если нужно</li>
-                    <li>Выберите диапазон дат для выгрузки</li>
-                    <li>Скачайте файл и вернитесь на сайт</li>
+                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
+                    <li>Нажмите "Выгрузить СОТ".</li>
+                    <li>Откроется новая вкладка — входите, если нужно авторизоваться.</li>
+                    <li>Выберите диапазон дат для выгрузки.</li>
+                    <li>Нажмите кнопку для скачивания файла и вернитесь сюда.</li>
                 </ul>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-upload" style="color: var(--primary);"></i>
-                    Шаг 2: Загрузка CSV
+            <!-- Шаг 2 -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
+                    <i class="fas fa-upload"></i> Шаг 2: Загрузка CSV
                 </h3>
-                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
-                    <li>Перетащите CSV файлы в зону загрузки или нажмите для выбора</li>
-                    <li>Можно загрузить несколько файлов одновременно</li>
+                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
+                    <li>Кликните "Выберите CSV" и выберите файл с компьютера.</li>
+                    <li>После загрузки появится подтверждение — можно продолжать.</li>
                 </ul>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-cogs" style="color: var(--primary);"></i>
-                    Шаг 3: Настройка параметров
+            <!-- Шаг 3 -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
+                    <i class="fas fa-sliders-h"></i> Шаг 3: Настройка параметров
                 </h3>
-                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
-                    <li>Выберите сайт, инструмент и режим отображения</li>
-                    <li>Для режима "По сотруднику" выберите конкретного сотрудника</li>
+                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
+                    <li>Выберите сайт, инструмент, режим и сотрудника (если нужно).</li>
+                    <li>Фильтруйте данные для точного анализа.</li>
                 </ul>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-chart-line" style="color: var(--primary);"></i>
-                    Шаг 4: Визуализация данных
+            <!-- Шаг 4 -->
+            <div style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
+                    <i class="fas fa-chart-line"></i> Шаг 4: Визуализация данных
                 </h3>
-                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
-                    <li>График обновляется автоматически при изменении параметров</li>
-                    <li>Используйте кнопки для приближения/отдаления графика</li>
-                    <li>При загрузке нескольких файлов используйте навигацию</li>
+                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
+                    <li>График обновится автоматически — наблюдайте за динамикой.</li>
+                    <li>Нажмите "Обновить" для ручной перерисовки.</li>
+                    <li>"ТОП" — покажет лучших сотрудников.</li>
+                    <li>"Итоги" — даст сводную таблицу за выбранный период.</li>
+                    <li>Можно построить несколько графиков по разным CSV одновременно. Загрузите нужное число файлов и используйте навигацию ("Предыдущий" и "Следующий").</li>
                 </ul>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-star" style="color: var(--primary);"></i>
-                    Шаг 5: Анализ данных
-                </h3>
-                <ul style="padding-left: 1.5rem; color: var(--gray-600);">
-                    <li>Используйте кнопку "ТОП" для просмотра лучших сотрудников</li>
-                    <li>Кнопка "Итоги" показывает сводную таблицу за период</li>
-                    <li>Кнопка "Сравнить графики" позволяет сравнивать данные</li>
+            <!-- Заключение -->
+            <p style="text-align: center; margin-top: 2rem; font-size: 1.2rem; font-weight: 600;">Готовы к работе? Начинайте анализировать ваши данные!</p>
+            <!-- Дополнительные функции -->
+            <div style="margin-top: 3rem; font-size: 0.95rem; color: var(--gray-600);">
+                <h3 style="margin-bottom: 1rem;">Дополнительные функции</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><strong>Changelog</strong> — следите за обновлениями сайта.</li>
+                    <li><strong>Тёмная тема</strong> — переключайте стиль для вечерней работы.</li>
+                    <li><strong>Обратная связь</strong> — сообщите о баге или оставьте пожелание, нажав "сообщение".</li>
+                    <li><strong>Инструкция</strong> — всегда можно открыть заново, нажав иконку "инфо".</li>
+                    <li><strong>Статус</strong> — следите за статусом сообщения (Bug ID указывается в уведомлении).</li>
                 </ul>
             </div>
         </div>
