@@ -2190,7 +2190,7 @@ function updateChart() {
     const ctx = document.getElementById('myChart').getContext('2d');
     const mode = document.getElementById('modeSelect').value;
     const blockData = dataBlocks[currentBlock];
-    
+    document.getElementById('chartTitle').textContent = `${currentBlock} | ${currentTool}`;
     if (!blockData || !currentTool) return;
     
     const labels = blockData.labels;
