@@ -1587,6 +1587,9 @@ tr:hover {
   <button class="control-btn" id="fullscreenBtn" title="Полный экран">
     <i class="fas fa-expand"></i>
   </button>
+  <button class="control-btn" id="backHomeBtn" title="Назад на главную">
+  <i class="fas fa-home"></i>
+</button>
   <button class="control-btn" id="toggleInterfaceBtn" title="Переключить интерфейс">
   <i class="fas fa-exchange-alt"></i>
 </button>
@@ -1883,7 +1886,9 @@ function initEventListeners() {
     // Easter eggs
     initEasterEggs();
 }
-
+document.getElementById('backHomeBtn').addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
 // ===== Переключение темы =====
 function toggleTheme() {
     darkMode = !darkMode;
