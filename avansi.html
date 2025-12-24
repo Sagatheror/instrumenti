@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Визуализация данных поставщиков</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            color: #667eea;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card h3 {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .deposit-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .deposit-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .deposit-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Визуализация данных поставщиков</h1>
+            <p class="subtitle">Интерактивная аналитика депозитов и остатков</p>
+            
+            <div class="controls">
+                <button id="loadData" class="btn btn-primary">
+                    📥 Загрузить данные
+                </button>
+                <button id="toggleCharts" class="btn btn-secondary">
+                    🔄 Сменить графики
+                </button>
+            </div>
+        </header>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Загрузка данных...</p>
+        </div>
+
+        <div class="content" id="content" style="display: none;">
+            <div class="card">
+                <h2><i>📈</i> Сумма депозитов по поставщикам</h2>
+                <div class="chart-container">
+                    <canvas id="depositsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i>💰</i> Остатки по поставщикам</h2>
+                <div class="chart-container">
+                    <canvas id="balanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-cards" id="summaryCards" style="display: none;">
+            <!-- Summary cards will be generated here -->
+        </div>
+
+        <div class="card" id="tableSection" style="display: none;">
+            <h2><i>📋</i> Детальная таблица данных</h2>
+            <div class="table-container">
+                <div id="tableContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL вашей таблицы
+        const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
+
+        const depositRanges = [
+            { name: 'Парк Развлечений', valuesRange: 'A3:A23', depositsRange: 'B3:B23', restCell: 'B25' },
+            { name: '7 скамеек', valuesRange: 'C3:C23', depositsRange: 'D3:D23', restCell: 'D25' },
+            { name: 'Рельеф', valuesRange: 'E3:E23', depositsRange: 'F3:F23', restCell: 'F25' },
+            { name: 'Мой двор', valuesRange: 'G3:G23', depositsRange: 'H3:H23', restCell: 'H25' },
+            { name: 'САВУШКА', valuesRange: 'I3:I23', depositsRange: 'J3:J23', restCell: 'J25' },
+            { name: 'АВИАТОР', valuesRange: 'A29:A49', depositsRange: 'B29:B49', restCell: 'B51' },
+            { name: 'ПАПА Карло', valuesRange: 'C29:C49', depositsRange: 'D29:D49', restCell: 'D51' },
+            { name: 'СКИФ-Про', valuesRange: 'E29:E49', depositsRange: 'F29:F49', restCell: 'F51' },
+            { name: 'КОМПАК', valuesRange: 'G29:G49', depositsRange: 'H29:H49', restCell: 'H51' },
+            { name: 'Абрис', valuesRange: 'I29:I49', depositsRange: 'J29:J49', restCell: 'J51' },
+            { name: 'ГРОС', valuesRange: 'K29:K49', depositsRange: 'L29:L49', restCell: 'L51' }
+        ];
+
+        let currentChartType = 'bar';
+        let depositsChart = null;
+        let balanceChart = null;
+        let currentData = [];
+
+        document.getElementById('loadData').addEventListener('click', () => {
+            loadData();
+        });
+
+        document.getElementById('toggleCharts').addEventListener('click', () => {
+            currentChartType = currentChartType === 'bar' ? 'pie' : 'bar';
+            updateCharts();
+        });
+
+        async function loadData() {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('content');
+            const tableSection = document.getElementById('tableSection');
+            const summaryCards = document.getElementById('summaryCards');
+            
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            tableSection.style.display = 'none';
+            summaryCards.style.display = 'none';
+
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                currentData = await parseData(text);
+                
+                renderTable(currentData);
+                renderCharts(currentData);
+                renderSummaryCards(currentData);
+                
+                loading.style.display = 'none';
+                content.style.display = 'grid';
+                tableSection.style.display = 'block';
+                summaryCards.style.display = 'grid';
+            } catch (e) {
+                loading.style.display = 'none';
+                alert('Ошибка при загрузке данных: ' + e.message);
+            }
+        }
+
+        function parseNumber(str) {
+            if (!str) return null;
+            const cleaned = str.replace(/[^\d.,-]/g, '').replace(',', '.');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? null : num;
+        }
+
+        async function parseData(csvText) {
+            const lines = csvText.split('\n');
+            const results = [];
+
+            for (const supplier of depositRanges) {
+                const deposits = [];
+                
+                // Парсим депозиты
+                const [depStart, depEnd] = supplier.depositsRange.split(':');
+                const depStartCol = depStart.match(/[A-Z]+/)[0];
+                const depStartRow = parseInt(depStart.match(/\d+/)[0]);
+                const depEndRow = parseInt(depEnd.match(/\d+/)[0]);
+                const depColIdx = depStartCol.charCodeAt(0) - 'A'.charCodeAt(0);
+
+                for (let i = depStartRow - 1; i < depEndRow; i++) {
+                    if (i < lines.length) {
+                        const cells = lines[i].split(',');
+                        const depositStr = cells[depColIdx]?.trim();
+                        const depositValue = parseNumber(depositStr);
+                        if (depositValue !== null) {
+                            deposits.push(depositValue);
+                        }
+                    }
+                }
+
+                // Парсим остаток
+                const restRow = parseInt(supplier.restCell.match(/\d+/)[0]) - 1;
+                const restCol = supplier.restCell.match(/[A-Z]+/)[0];
+                const restColIdx = restCol.charCodeAt(0) - 'A'.charCodeAt(0);
+                
+                let rest = null;
+                if (restRow < lines.length) {
+                    const cells = lines[restRow].split(',');
+                    const restStr = cells[restColIdx]?.trim();
+                    rest = parseNumber(restStr);
+                }
+
+                const totalDeposit = deposits.reduce((sum, val) => sum + val, 0);
+
+                results.push({
+                    поставщик: supplier.name,
+                    депозиты: deposits,
+                    сумма: totalDeposit,
+                    остаток: rest,
+                    среднийДепозит: deposits.length > 0 ? totalDeposit / deposits.length : 0,
+                    количествоДепозитов: deposits.length
+                });
+            }
+
+            return results;
+        }
+
+        function renderCharts(data) {
+            // Уничтожаем старые графики если они есть
+            if (depositsChart) depositsChart.destroy();
+            if (balanceChart) balanceChart.destroy();
+
+            const labels = data.map(item => item.поставщик);
+            const deposits = data.map(item => item.сумма);
+            const balances = data.map(item => item.остаток || 0);
+
+            // График депозитов
+            const depositsCtx = document.getElementById('depositsChart').getContext('2d');
+            depositsChart = new Chart(depositsCtx, {
+                type: currentChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Сумма депозитов',
+                        data: deposits,
+                        backgroundColor: generateColors(deposits.length, 0.7),
+                        borderColor: generateColors(deposits.length, 1),
+                        borderWidth: 2,
+                        borderRadius: currentChartType === 'bar' ? 8 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toLocaleString('ru-RU')} ₽`;
+                                }
+                            }
+                        }
+                    },
+                    scales: currentChartType === 'bar' ? {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ru-RU') + ' ₽';
+                                }
+                            }
+                        }
+                    } : {}
+                }
+            });
+
+            // График остатков
+            const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+            balanceChart = new Chart(balanceCtx, {
+                type: currentChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Остаток',
+                        data: balances,
+                        backgroundColor: generateColors(balances.length, 0.7, true),
+                        borderColor: generateColors(balances.length, 1, true),
+                        borderWidth: 2,
+                        borderRadius: currentChartType === 'bar' ? 8 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toLocaleString('ru-RU')} ₽`;
+                                }
+                            }
+                        }
+                    },
+                    scales: currentChartType === 'bar' ? {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ru-RU') + ' ₽';
+                                }
+                            }
+                        }
+                    } : {}
+                }
+            });
+        }
+
+        function updateCharts() {
+            if (currentData.length > 0) {
+                renderCharts(currentData);
+            }
+        }
+
+        function generateColors(count, opacity = 1, isBalance = false) {
+            const colors = [];
+            const hueStep = 360 / count;
+            
+            for (let i = 0; i < count; i++) {
+                if (isBalance) {
+                    // Для остатков используем оттенки синего/зеленого
+                    const hue = 200 + (i * 30) % 160;
+                    colors.push(`hsla(${hue}, 70%, 50%, ${opacity})`);
+                } else {
+                    // Для депозитов используем более теплые цвета
+                    const hue = 30 + (i * 50) % 330;
+                    colors.push(`hsla(${hue}, 80%, 60%, ${opacity})`);
+                }
+            }
+            return colors;
+        }
+
+        function renderTable(data) {
+            const container = document.getElementById('tableContainer');
+            
+            let html = '<table>';
+            html += '<thead><tr><th>Поставщик</th><th>Депозиты</th><th>Количество</th><th>Сумма депозитов</th><th>Средний депозит</th><th>Остаток</th></tr></thead><tbody>';
+            
+            data.forEach(item => {
+                html += `<tr>
+                    <td><strong>${item.поставщик}</strong></td>
+                    <td>
+                        <div class="deposit-list">
+                            ${item.депозиты.map((dep, idx) => `
+                                <div class="deposit-item">
+                                    <span>Депозит ${idx + 1}:</span>
+                                    <span>${dep.toLocaleString('ru-RU')} ₽</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>${item.количествоДепозитов}</td>
+                    <td><strong>${item.сумма.toLocaleString('ru-RU')} ₽</strong></td>
+                    <td>${item.среднийДепозит.toLocaleString('ru-RU')} ₽</td>
+                    <td>${item.остаток !== null ? `<strong>${item.остаток.toLocaleString('ru-RU')} ₽</strong>` : 'нет данных'}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function renderSummaryCards(data) {
+            const container = document.getElementById('summaryCards');
+            
+            const totalDeposits = data.reduce((sum, item) => sum + item.сумма, 0);
+            const totalBalance = data.reduce((sum, item) => sum + (item.остаток || 0), 0);
+            const avgDeposit = totalDeposits / data.reduce((sum, item) => sum + item.количествоДепозитов, 0);
+            const supplierCount = data.length;
+            
+            const maxDeposit = Math.max(...data.map(item => item.сумма));
+            const maxSupplier = data.find(item => item.сумма === maxDeposit)?.поставщик || '';
+            
+            const minDeposit = Math.min(...data.map(item => item.сумма));
+            const minSupplier = data.find(item => item.сумма === minDeposit)?.поставщик || '';
+            
+            container.innerHTML = `
+                <div class="summary-card">
+                    <h3>Общая сумма депозитов</h3>
+                    <div class="value">${totalDeposits.toLocaleString('ru-RU')} ₽</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Общий остаток</h3>
+                    <div class="value">${totalBalance.toLocaleString('ru-RU')} ₽</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Средний депозит</h3>
+                    <div class="value">${avgDeposit.toFixed(0).toLocaleString('ru-RU')} ₽</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Количество поставщиков</h3>
+                    <div class="value">${supplierCount}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Макс. депозит (${maxSupplier})</h3>
+                    <div class="value">${maxDeposit.toLocaleString('ru-RU')} ₽</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Мин. депозит (${minSupplier})</h3>
+                    <div class="value">${minDeposit.toLocaleString('ru-RU')} ₽</div>
+                </div>
+            `;
+        }
+        // Автоматическая загрузка данных при открытии страницы
+window.addEventListener('DOMContentLoaded', () => {
+    loadData(); // Теперь данные загрузятся автоматически
+});
+    </script>
+</body>
+</html>
