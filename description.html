@@ -877,6 +877,22 @@ p {
   " title="Остановить снег">
     <i class="fas fa-snowflake" style="margin-right: 0px; font-size: 28px;"></i>
   </button>
+  <button id="toggleInterfaceBtn" style="
+    background:#f44336; 
+    color:#fff; 
+    border:none; 
+    border-radius:50%; 
+    width:50px; 
+    height:50px; 
+    cursor:pointer; 
+    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 0;
+  " title="Сменить интерфейс">
+    <i class="fas fa-exchange-alt" style="margin-right: 0px; font-size: 28px;"></i>
+  </button>
 </div>
 
 <!-- Модальное окно для описания бага -->
@@ -1460,6 +1476,24 @@ document.addEventListener('click', function(e) {
     e.target.classList.remove('show');
   }
 });
+// ===== Переключение интерфейсов =====
+document.getElementById('toggleInterfaceBtn').addEventListener('click', toggleInterface);
+
+function toggleInterface() {
+  const currentPage = window.location.pathname;
+  
+  if (currentPage.includes('description.html') || currentPage.includes('index.html')) {
+    // Если мы на старом интерфейсе, переключаемся на новый
+    localStorage.setItem('preferredInterface', 'new');
+    window.open('description-new.html', '_self');
+  } else if (currentPage.includes('new-interface.html')) {
+    // Если мы на новом интерфейсе, переключаемся на старый
+    localStorage.setItem('preferredInterface', 'old');
+    window.open('description.html', '_self');
+  }
+  
+ showNotification('Интерфейс переключен', 'success');
+}
 </script>
 </body>
 </html>
