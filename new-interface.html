@@ -1392,6 +1392,76 @@ tr:hover {
 #searchBugId:active {
   transform: translateY(0);
 }
+/* Анимация загрузки файла */
+@keyframes fileUpload {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.file-upload.drag-over {
+  animation: fileUpload 0.3s ease;
+}
+
+/* Эффект пульсации для активного файла */
+.file-chip.active {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+}
+/* Анимации переходов */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Анимация загрузки графика */
+.chart-loading {
+  position: relative;
+}
+
+.chart-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 </style>
 </head>
 <body>
@@ -3146,6 +3216,7 @@ window.addEventListener('load', () => {
   const preferredInterface = localStorage.getItem('preferredInterface');
   const currentPage = window.location.pathname;
   });
+  
 </script>
 </body>
 </html>
