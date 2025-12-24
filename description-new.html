@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Шрифты Google -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<!-- Иконки Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  :root {
+    /* Светлая тема */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --accent-primary: #3b82f6;
+    --accent-secondary: #8b5cf6;
+    --accent-success: #10b981;
+    --accent-warning: #f59e0b;
+    --accent-danger: #ef4444;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 350ms;
+  }
+
+  .dark-theme {
+    /* Тёмная тема */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --accent-primary: #60a5fa;
+    --accent-secondary: #a78bfa;
+    --accent-success: #34d399;
+    --accent-warning: #fbbf24;
+    --accent-danger: #f87171;
+    --border-color: #475569;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: all var(--transition-normal);
+  }
+
+  /* Основной контейнер */
+  .app-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* Боковая панель */
+  .sidebar {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    height: fit-content;
+    position: sticky;
+    top: 24px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-section {
+    margin-bottom: 28px;
+  }
+
+  .nav-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-bottom: 4px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-item i {
+    width: 20px;
+    font-size: 16px;
+  }
+
+  /* Основной контент */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Верхняя панель */
+  .top-bar {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Карточки функций */
+  .function-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .card-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Формы */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  /* Кнопки */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-success {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+ .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  .btn-warning {
+    background: var(--accent-warning);
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+  .btn-warning:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  .btn-danger {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  .btn-info {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+.btn-info:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  .btn-sm {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .btn-full {
+    width: 100%;
+  }
+
+  /* Таблица */
+  .table-container {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin-top: 24px;
+  }
+
+  .table-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+  }
+
+  .data-table th {
+    background: var(--bg-tertiary);
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .data-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+  }
+
+  .data-table tr:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .data-table .editable-cell {
+    position: relative;
+  }
+
+  .data-table .editable-cell:focus {
+    outline: 2px solid var(--accent-primary);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Переключатель темы */
+  .theme-toggle {
+    position: relative;
+    width: 60px;
+    height: 32px;
+  }
+
+  .theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .theme-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-tertiary);
+    border-radius: 50px;
+    transition: all var(--transition-normal);
+  }
+
+  .theme-slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background: white;
+    border-radius: 50%;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--accent-warning);
+  }
+
+  input:checked + .theme-slider {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  }
+
+  input:checked + .theme-slider:before {
+    transform: translateX(28px);
+    content: "\f185";
+  }
+
+  input:not(:checked) + .theme-slider:before {
+    content: "\f186";
+  }
+
+  /* Уведомления */
+  .notification {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(120%);
+    transition: transform var(--transition-normal);
+    z-index: 1000;
+    border-left: 4px solid var(--accent-success);
+  }
+
+  .notification.show {
+    transform: translateX(0);
+  }
+
+  .notification-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--accent-success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+  }
+
+  .notification-error {
+    border-left-color: var(--accent-danger);
+  }
+
+  .notification-error .notification-icon {
+    background: var(--accent-danger);
+  }
+
+  /* Модальные окна */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal.show {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px;
+  }
+
+  /* Спиннер */
+  .spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(4px);
+  }
+
+  .spinner.show {
+    display: flex;
+  }
+
+  .spinner-circle {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Снег */
+  .snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .snowflake {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+
+  /* Адаптивность */
+  @media (max-width: 1024px) {
+    .app-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+      position: static;
+    }
+    
+    .actions {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .app-container {
+      padding: 16px;
+    }
+    
+    .function-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .top-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .actions {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .actions {
+      gap: 4px;
+    }
+    
+    .btn {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  /* Стили для футера */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* Стили для changelog */
+  .changelog-entry {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--accent-primary);
+  }
+
+  .changelog-version {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+  }
+
+  .changelog-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 8px;
+  }
+
+  .changelog-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+    background: var(--accent-primary);
+    color: white;
+  }
+
+  .changelog-type.added {
+    background: var(--accent-success);
+  }
+
+  .changelog-type.fixed {
+    background: var(--accent-warning);
+  }
+
+  .changelog-type.changed {
+    background: var(--accent-secondary);
+  }
+
+  /* Стили для инструкции */
+  .instruction-step {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    margin-right: 12px;
+  }
+
+  .step-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .step-content {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Стили для загрузки файла */
+  .file-upload {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+  }
+
+  .file-upload:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .file-upload-icon {
+    font-size: 48px;
+    color: var(--accent-primary);
+    margin-bottom: 16px;
+  }
+
+  .file-upload-text {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .file-upload-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Стили для статистики */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .stat-card {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+  <!-- Уведомления -->
+  <div id="notification" class="notification">
+    <div class="notification-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <span id="notification-message"></span>
+  </div>
+
+  <!-- Спиннер -->
+  <div id="spinner" class="spinner">
+    <div class="spinner-circle"></div>
+  </div>
+
+  <!-- Модальное окно баг-репорта -->
+  <div id="bugModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="card-icon">
+          <i class="fas fa-bug"></i>
+        </div>
+        <h3 class="modal-title">Сообщить о проблеме</h3>
+        <button class="modal-close" onclick="hideBugModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Опишите проблему или предложение</label>
+        <textarea id="bugDescription" class="form-control form-textarea" placeholder="Подробно опишите проблему, с которой столкнулись..."></textarea>
+      </div>
+      <div class="form-group" style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="hideBugModal()">Отмена</button>
+        <button class="btn btn-primary" onclick="sendBugReport()">
+          <i class="fas fa-paper-plane"></i> Отправить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно инструкции -->
+  <div id="instructionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="card-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3 class="modal-title">Инструкция по работе</h3>
+        <button class="modal-close" onclick="hideInstructionModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="instruction-step">
+        <div class="step-title">
+          <span class="step-number">1</span>
+          Загрузка файла
+        </div>
+        <div class="step-content">
+          Выберите CSV-файл для работы. После загрузки данные автоматически отобразятся в таблице.
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-title">
+          <span class="step-number">2</span>
+          Выбор колонки
+        </div>
+        <div class="step-content">
+          Выберите колонку для работы: <strong>Details</strong> (основное описание) или <strong>Description</strong> (расширенное описание).
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-title">
+          <span class="step-number">3</span>
+          Редактирование данных
+        </div>
+        <div class="step-content">
+          Используйте режим замены для поиска и замены текста, или добавьте новый текст в начало/конец ячеек.
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-title">
+          <span class="step-number">4</span>
+          Поиск по кодам
+        </div>
+        <div class="step-content">
+          Введите коды 1С через запятую или пробел для фильтрации данных в таблице.
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-title">
+          <span class="step-number">5</span>
+          Сохранение
+        </div>
+        <div class="step-content">
+          Нажмите кнопку "Сохранить изменения" для экспорта обработанных данных в CSV-файл.
+        </div>
+      </div>
+      <div class="form-group" style="text-align: center; margin-top: 24px;">
+        <button class="btn btn-primary" onclick="hideInstructionModal()">
+          <i class="fas fa-check"></i> Понятно
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно changelog -->
+  <div id="changelogModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="card-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <h3 class="modal-title">История изменений</h3>
+        <button class="modal-close" onclick="hideChangelogModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="changelogContent"></div>
+    </div>
+  </div>
+
+  <!-- Основной контейнер -->
+  <div class="app-container">
+    <!-- Боковая панель -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-table"></i>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Основное</div>
+        <button class="nav-item active" onclick="showSection('file-section')">
+          <i class="fas fa-file-csv"></i>
+          Файл
+        </button>
+        <button class="nav-item" onclick="showSection('edit-section')">
+          <i class="fas fa-edit"></i>
+          Редактирование
+        </button>
+        <button class="nav-item" onclick="showSection('search-section')">
+          <i class="fas fa-search"></i>
+          Поиск
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Инструменты</div>
+        <button class="nav-item" onclick="showSection('insert-section')">
+          <i class="fas fa-plus-circle"></i>
+          Вставка
+        </button>
+        <button class="nav-item" onclick="showSection('stats-section')">
+          <i class="fas fa-chart-bar"></i>
+          Статистика
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Настройки</div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px;">
+          <i class="fas fa-palette"></i>
+          <span style="flex: 1;">Тема</span>
+          <label class="theme-toggle">
+            <input type="checkbox" id="themeToggle">
+            <span class="theme-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <button class="btn btn-primary btn-full" onclick="saveChanges()">
+          <i class="fas fa-save"></i>
+          Сохранить изменения
+        </button>
+      </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+      <!-- Верхняя панель -->
+      <header class="top-bar">
+        <div>
+          <h1 class="page-title" id="currentSectionTitle">Загрузка файла</h1>
+          <p class="page-subtitle" id="currentSectionDescription">Загрузите CSV-файл для начала работы</p>
+        </div>
+        <div class="actions">
+          <!-- Кнопка инструкции -->
+          <button class="btn btn-info btn-sm" onclick="showInstructionModal()" title="Инструкция">
+            <i class="fas fa-question-circle"></i>
+            <span class="btn-text">Помощь</span>
+          </button>
+          
+          <!-- Кнопка changelog -->
+          <button class="btn btn-secondary btn-sm" onclick="showChangelogModal()" title="История изменений">
+            <i class="fas fa-history"></i>
+            <span class="btn-text">Changelog</span>
+          </button>
+          
+          <!-- Кнопка баг-репорта -->
+          <button class="btn btn-danger btn-sm" onclick="showBugModal()" title="Сообщить о проблеме">
+            <i class="fas fa-bug"></i>
+            <span class="btn-text">Баг</span>
+          </button>
+          
+          <!-- Кнопка снега -->
+          <button class="btn btn-warning btn-sm" id="snowToggleBtn" onclick="toggleSnow()" title="Включить/выключить снег">
+            <i class="fas fa-snowflake"></i>
+            <span class="btn-text" id="snowText">Снег</span>
+          </button>
+          <button class="btn btn-secondary btn-sm" id="interfaceToggleBtn" onclick="toggleInterface()" title="Переключить интерфейс">
+      <i class="fas fa-exchange-alt"></i>
+      <span class="btn-text" id="interfaceText">Сменить интерфейс</span>
+    </button>
+          <!-- Кнопка на главную -->
+          <button class="btn btn-primary btn-sm" onclick="location.href='index.html'" title="На главную страницу">
+            <i class="fas fa-home"></i>
+            <span class="btn-text">Главная</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Секция файла -->
+      <section id="file-section" class="function-cards">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-columns"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Выбор колонки</h3>
+              <p class="card-description">Выберите колонку для работы с данными</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Колонка для редактирования</label>
+            <select id="columnSelect" class="form-control form-select">
+              <option value="15">Details - Основное описание</option>
+              <option value="16">Description - Расширенное описание</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-upload"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Загрузка файла</h3>
+              <p class="card-description">Загрузите CSV-файл для работы</p>
+            </div>
+          </div>
+          <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+            <div class="file-upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-upload-text">Нажмите для загрузки файла</div>
+            <div class="file-upload-hint">или перетащите файл сюда</div>
+          </div>
+          <input type="file" id="fileInput" accept=".csv" style="display: none;">
+        </div>
+      </section>
+
+      <!-- Секция редактирования -->
+      <section id="edit-section" class="function-cards" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Замена содержимого</h3>
+              <p class="card-description">Найдите и замените текст или HTML</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Режим замены</label>
+            <select id="modeSelect" class="form-control form-select">
+              <option value="html">Заменить HTML</option>
+              <option value="text">Заменить текст</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Искомое значение</label>
+            <input type="text" id="searchHtml" class="form-control" placeholder="Введите текст для поиска...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Новое значение</label>
+            <input type="text" id="replaceHtml" class="form-control" placeholder="Введите текст для замены...">
+          </div>
+          <button class="btn btn-primary btn-full" onclick="replaceContent()">
+            <i class="fas fa-sync-alt"></i>
+            Выполнить замену
+          </button>
+        </div>
+      </section>
+
+      <!-- Секция поиска -->
+      <section id="search-section" class="function-cards" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Поиск по кодам 1С</h3>
+              <p class="card-description">Фильтрация данных по кодам 1С</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Коды 1С для поиска</label>
+            <input type="text" id="codesSearch" class="form-control" placeholder="Введите коды через запятую или пробел...">
+          </div>
+          <button class="btn btn-primary btn-full" onclick="searchCodes()">
+            <i class="fas fa-search"></i>
+            Найти
+          </button>
+          <button class="btn btn-secondary btn-full" onclick="clearSearch()" style="margin-top: 8px;">
+            <i class="fas fa-times"></i>
+            Сбросить фильтр
+          </button>
+        </div>
+      </section>
+
+      <!-- Секция вставки -->
+      <section id="insert-section" class="function-cards" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Добавление текста</h3>
+              <p class="card-description">Добавьте текст или HTML в ячейки</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Текст для вставки</label>
+            <input type="text" id="insertText" class="form-control" placeholder="Введите текст для добавления...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Тип содержимого</label>
+            <select id="insertType" class="form-control form-select">
+              <option value="text">Текст</option>
+              <option value="html">HTML</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Позиция вставки</label>
+            <select id="insertPosition" class="form-control form-select">
+              <option value="start">В начало</option>
+              <option value="end">В конец</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="insertContent()">
+            <i class="fas fa-plus-circle"></i>
+            Добавить
+          </button>
+        </div>
+      </section>
+
+      <!-- Секция статистики -->
+      <section id="stats-section" class="function-cards" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div>
+              <h3 class="card-title">Статистика данных</h3>
+              <p class="card-description">Общая информация о загруженных данных</p>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="statTotalRows">0</div>
+              <div class="stat-label">Всего строк</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statVisibleRows">0</div>
+              <div class="stat-label">Отображается</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statEditedRows">0</div>
+              <div class="stat-label">Изменено</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statFileSize">0 KB</div>
+              <div class="stat-label">Размер файла</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Таблица данных -->
+      <div class="table-container" id="tableContainer" style="display: none;">
+        <div class="table-header">
+          <h3 class="table-title">Предпросмотр данных</h3>
+          <div class="table-actions">
+            <button class="btn btn-sm btn-secondary" onclick="exportTableToCSV()">
+              <i class="fas fa-download"></i>
+              Экспорт
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="refreshTable()">
+              <i class="fas fa-redo"></i>
+              Обновить
+            </button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="dataTable">
+            <thead>
+              <tr>
+                <th>Код 1С</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Данные будут вставлены сюда -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Футер -->
+      <footer class="footer">
+        <p>Создатель: EmPsOn &copy; 2025</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Контейнер для снега -->
+  <div class="snow-container" id="snowContainer"></div>
+
+  <!-- Библиотеки -->
+  <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
+  
+  <script>
+    // Глобальные переменные
+    let csvData = [];
+    let headers = [];
+    let selectedColumnIndex = 15;
+    let editedRows = new Set();
+    let snowActive = false;
+    let snowInterval = null;
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+      // Настройка переключателя темы
+      const themeToggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('theme');
+      
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeToggle.checked = true;
+      }
+      
+      themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.body.classList.remove('dark-theme');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+
+      // Загрузка changelog
+      loadChangelogFromSheet();
+      
+      // Показать инструкцию при первом посещении
+      if (!localStorage.getItem('instructionShown')) {
+        setTimeout(() => {
+          showInstructionModal();
+          localStorage.setItem('instructionShown', 'true');
+        }, 1000);
+      }
+
+      // Настройка загрузки файла
+      document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+      
+      // Настройка выбора колонки
+      document.getElementById('columnSelect').addEventListener('change', function(e) {
+        selectedColumnIndex = parseInt(e.target.value);
+        renderTable();
+        updateStats();
+      });
+
+      // Запустить снег, если сезон
+      if (isSnowPeriod()) {
+        startSnow();
+        updateSnowButton();
+      }
+    });
+
+    // Функции для отображения секций
+    const sections = {
+      'file-section': {
+        title: 'Загрузка файла',
+        description: 'Загрузите CSV-файл для начала работы'
+      },
+      'edit-section': {
+        title: 'Редактирование',
+        description: 'Найдите и замените текст в данных'
+      },
+      'search-section': {
+        title: 'Поиск',
+        description: 'Фильтрация данных по кодам 1С'
+      },
+      'insert-section': {
+        title: 'Вставка',
+        description: 'Добавление текста в ячейки'
+      },
+      'stats-section': {
+        title: 'Статистика',
+        description: 'Общая информация о данных'
+      }
+    };
+
+    function showSection(sectionId) {
+      // Скрыть все секции
+      document.querySelectorAll('.function-cards').forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Показать выбранную секцию
+      document.getElementById(sectionId).style.display = 'grid';
+      
+      // Обновить заголовок
+      const section = sections[sectionId];
+      document.getElementById('currentSectionTitle').textContent = section.title;
+      document.getElementById('currentSectionDescription').textContent = section.description;
+      
+      // Обновить активный элемент навигации
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+    }
+
+    // Функции для работы с файлами
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      showSpinner();
+      
+      Papa.parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        delimiter: ';',
+        complete: function(results) {
+          const rawHeaders = results.data[0];
+          const priorityPromoIndex = rawHeaders.indexOf('PriorityPromo');
+          
+          headers = rawHeaders.filter((_, idx) => idx !== priorityPromoIndex);
+          
+          csvData = results.data.slice(1).map(row => {
+            const obj = {};
+            headers.forEach(header => {
+              const originalIndex = rawHeaders.indexOf(header);
+              obj[header] = row[originalIndex] || '';
+            });
+            obj._visible = true;
+            obj._edited = false;
+            return obj;
+          });
+          
+          renderTable();
+          updateStats();
+          showNotification('Файл успешно загружен');
+          hideSpinner();
+          
+          // Показать таблицу
+          document.getElementById('tableContainer').style.display = 'block';
+        },
+        error: function(err) {
+          showNotification('Ошибка при загрузке файла', 'error');
+          hideSpinner();
+        }
+      });
+    }
+
+    // Функции для работы с таблицей
+    function renderTable() {
+      const tableBody = document.getElementById('tableBody');
+      if (!tableBody) return;
+      
+      tableBody.innerHTML = '';
+      
+      const colName = headers[selectedColumnIndex];
+      
+      csvData.forEach((row, index) => {
+        if (row._visible === false) return;
+        
+        const tr = document.createElement('tr');
+        
+        // Ячейка с кодом 1С
+        const tdCode = document.createElement('td');
+        tdCode.textContent = row['ItemID'] || '';
+        tdCode.style.fontFamily = "'JetBrains Mono', monospace";
+        tdCode.style.fontWeight = '500';
+        
+        // Ячейка с описанием (редактируемая)
+        const tdDesc = document.createElement('td');
+        tdDesc.className = 'editable-cell';
+        tdDesc.contentEditable = true;
+        tdDesc.innerHTML = row[colName] || '';
+        tdDesc.style.position = 'relative';
+        
+        // Добавить индикатор редактирования
+        if (row._edited) {
+          tdDesc.style.borderLeft = '3px solid var(--accent-success)';
+        }
+        
+        // Обработчик изменений
+        tdDesc.addEventListener('blur', function() {
+          const newValue = this.innerHTML;
+          if (newValue !== row[colName]) {
+            row[colName] = newValue;
+            row._edited = true;
+            editedRows.add(index);
+            updateStats();
+            this.style.borderLeft = '3px solid var(--accent-success)';
+          }
+        });
+        
+        tr.appendChild(tdCode);
+        tr.appendChild(tdDesc);
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Функции для операций с данными
+    function replaceContent() {
+      const mode = document.getElementById('modeSelect').value;
+      const searchVal = document.getElementById('searchHtml').value.trim();
+      const replaceVal = document.getElementById('replaceHtml').value;
+      
+      if (!headers.length || !csvData.length) {
+        showNotification('Загрузите файл перед выполнением операций', 'error');
+        return;
+      }
+      
+      if (!searchVal) {
+        showNotification('Введите значение для поиска', 'error');
+        return;
+      }
+      
+      let count = 0;
+      const colName = headers[selectedColumnIndex];
+      
+      csvData.forEach((row, index) => {
+        if (row._visible !== true) return;
+        
+        const cellContent = row[colName] || '';
+        if (cellContent.includes(searchVal)) {
+          const regex = new RegExp(searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+          row[colName] = cellContent.replace(regex, replaceVal);
+          row._edited = true;
+          editedRows.add(index);
+          count++;
+        }
+      });
+      
+      renderTable();
+      updateStats();
+      showNotification(`Заменено ${count} ячеек`);
+    }
+
+    function searchCodes() {
+      const input = document.getElementById('codesSearch').value.trim();
+      
+      if (!headers.length) {
+        showNotification('Загрузите файл перед поиском', 'error');
+        return;
+      }
+      
+      if (!input) {
+        csvData.forEach(row => row._visible = true);
+        renderTable();
+        updateStats();
+                showNotification('Показаны все строки');
+        return;
+      }
+      
+      const codes = input.split(/[\s,]+/).filter(c => c);
+      let count = 0;
+      
+      csvData.forEach(row => {
+        const cellVal = row[headers[11]] || '';
+        if (codes.some(code => cellVal.includes(code))) {
+          row._visible = true;
+          count++;
+        } else {
+          row._visible = false;
+        }
+      });
+      
+      renderTable();
+      updateStats();
+      showNotification(`Найдено ${count} строк`);
+    }
+
+    function clearSearch() {
+      document.getElementById('codesSearch').value = '';
+      csvData.forEach(row => row._visible = true);
+      renderTable();
+      updateStats();
+      showNotification('Фильтр сброшен');
+    }
+
+    function insertContent() {
+      const content = document.getElementById('insertText').value;
+      const type = document.getElementById('insertType').value;
+      const position = document.getElementById('insertPosition').value;
+      
+      if (!content) {
+        showNotification('Введите текст для вставки', 'error');
+        return;
+      }
+      
+      let count = 0;
+      const colName = headers[selectedColumnIndex];
+      
+      csvData.forEach((row, index) => {
+        if (row._visible !== true) return;
+        
+        if (position === 'start') {
+          row[colName] = content + (row[colName] || '');
+        } else {
+          row[colName] = (row[colName] || '') + content;
+        }
+        
+        row._edited = true;
+        editedRows.add(index);
+        count++;
+      });
+      
+      renderTable();
+      updateStats();
+      showNotification(`Добавлено в ${count} строк`);
+    }
+
+    // Функции для сохранения
+    function saveChanges() {
+      if (!headers.length || !csvData.length) {
+        showNotification('Нет данных для сохранения', 'error');
+        return;
+      }
+      
+      const columnIndex = selectedColumnIndex;
+      const itemIdIndex = 11;
+      const columnHeader = headers[columnIndex];
+      const itemIdHeader = headers[itemIdIndex];
+      
+      const csvRows = [];
+      csvRows.push(`${itemIdHeader};${columnHeader}`);
+      
+      csvData.forEach(row => {
+        if (row._visible === false) return;
+        
+        let cellItemID = row['ItemID'] || '';
+        let cellSelected = row[headers[selectedColumnIndex]] || '';
+        
+        if (typeof cellItemID === 'string' && /[;"\n]/.test(cellItemID)) {
+          cellItemID = `"${cellItemID.replace(/"/g, '""')}"`;
+        }
+        if (typeof cellSelected === 'string' && /[;"\n]/.test(cellSelected)) {
+          cellSelected = `"${cellSelected.replace(/"/g, '""')}"`;
+        }
+        
+        csvRows.push(`${cellItemID};${cellSelected}`);
+      });
+      
+      const csvString = csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'edited_data.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      showNotification('Файл успешно сохранен');
+    }
+
+    // Функции для модальных окон
+    function showBugModal() {
+      document.getElementById('bugModal').classList.add('show');
+    }
+
+    function hideBugModal() {
+      document.getElementById('bugModal').classList.remove('show');
+      document.getElementById('bugDescription').value = '';
+    }
+
+    function showInstructionModal() {
+      document.getElementById('instructionModal').classList.add('show');
+    }
+
+    function hideInstructionModal() {
+      document.getElementById('instructionModal').classList.remove('show');
+    }
+
+    function showChangelogModal() {
+      document.getElementById('changelogModal').classList.add('show');
+    }
+
+    function hideChangelogModal() {
+      document.getElementById('changelogModal').classList.remove('show');
+    }
+
+    // Функции для уведомлений
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const messageEl = document.getElementById('notification-message');
+      
+      messageEl.textContent = message;
+      notification.className = 'notification';
+      
+      if (type === 'error') {
+        notification.classList.add('notification-error');
+        notification.querySelector('.notification-icon').innerHTML = '<i class="fas fa-exclamation"></i>';
+      } else {
+        notification.querySelector('.notification-icon').innerHTML = '<i class="fas fa-check"></i>';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Функции для спиннера
+    function showSpinner() {
+      document.getElementById('spinner').classList.add('show');
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinner').classList.remove('show');
+    }
+
+    // Функции для статистики
+    function updateStats() {
+      const totalRows = csvData.length;
+      const visibleRows = csvData.filter(row => row._visible !== false).length;
+      const editedCount = editedRows.size;
+      
+      document.getElementById('statTotalRows').textContent = totalRows;
+      document.getElementById('statVisibleRows').textContent = visibleRows;
+      document.getElementById('statEditedRows').textContent = editedCount;
+      
+      // Обновление размера файла
+      if (csvData.length > 0) {
+        const fileSize = Math.round(JSON.stringify(csvData).length / 1024);
+        document.getElementById('statFileSize').textContent = `${fileSize} KB`;
+      }
+    }
+
+    // Функции для снега
+    function toggleSnow() {
+      if (snowActive) {
+        stopSnow();
+      } else {
+        startSnow();
+      }
+      updateSnowButton();
+    }
+
+    function startSnow() {
+      if (snowActive) return;
+      snowActive = true;
+      
+      const container = document.getElementById('snowContainer');
+      container.innerHTML = '';
+      
+      snowInterval = setInterval(() => {
+        for (let i = 0; i < 3; i++) {
+          createSnowflake();
+        }
+      }, 200);
+      
+      showNotification('Снегопад включен');
+    }
+
+    function stopSnow() {
+      if (!snowActive) return;
+      snowActive = false;
+      
+      clearInterval(snowInterval);
+      document.getElementById('snowContainer').innerHTML = '';
+      
+      showNotification('Снегопад выключен');
+    }
+
+    function updateSnowButton() {
+      const snowBtn = document.getElementById('snowToggleBtn');
+      const snowText = document.getElementById('snowText');
+      
+      if (snowActive) {
+        snowBtn.classList.remove('btn-warning');
+        snowBtn.classList.add('btn-success');
+        snowText.textContent = 'Выкл. снег';
+        snowBtn.title = 'Выключить снегопад';
+      } else {
+        snowBtn.classList.remove('btn-success');
+        snowBtn.classList.add('btn-warning');
+        snowText.textContent = 'Снег';
+        snowBtn.title = 'Включить снегопад';
+      }
+    }
+
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      
+      const size = Math.random() * 6 + 2;
+      const isDark = document.body.classList.contains('dark-theme');
+      
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      snowflake.style.left = `${Math.random() * 100}%`;
+      snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+      snowflake.style.backgroundColor = isDark ? '#e2e8f0' : '#ffffff';
+      
+      const duration = 5000 + Math.random() * 5000;
+      const drift = Math.random() * 100 - 50;
+      
+      snowflake.animate([
+        { transform: 'translateY(-10px) translateX(0)', opacity: snowflake.style.opacity },
+        { transform: `translateY(${window.innerHeight + 20}px) translateX(${drift}px)`, opacity: 0 }
+      ], {
+        duration: duration,
+        easing: 'linear'
+      }).onfinish = () => {
+        snowflake.remove();
+      };
+      
+      document.getElementById('snowContainer').appendChild(snowflake);
+    }
+
+    function isSnowPeriod() {
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      return month === 12 || month === 1 || month === 2;
+    }
+
+    // Функции для changelog
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист1';
+
+    function loadChangelogFromSheet() {
+      fetch(SHEET_URL)
+        .then(response => response.text())
+        .then(text => {
+          try {
+            const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = jsonData.table.rows;
+            let changelogHtml = '';
+            
+            rows.forEach(row => {
+              const version = row.c[0]?.v || '1.0';
+              const rawDate = row.c[1]?.v || '';
+              const type = row.c[2]?.v?.trim() || 'Общее';
+              const description = row.c[3]?.v || '';
+              
+              // Форматирование даты
+              let formattedDate = rawDate;
+              const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(rawDate);
+              if (dateMatch) {
+                const year = parseInt(dateMatch[1]);
+                const month = parseInt(dateMatch[2]) + 1;
+                const day = parseInt(dateMatch[3]);
+                formattedDate = `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${year.toString().slice(-2)}`;
+              }
+              
+              // Определение класса типа
+              let typeClass = 'changed';
+              if (type.includes('Добавлено')) typeClass = 'added';
+              if (type.includes('Исправлено')) typeClass = 'fixed';
+              
+              changelogHtml += `
+                <div class="changelog-entry">
+                  <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <span class="changelog-version">Версия ${version}</span>
+                    <span class="changelog-date">${formattedDate}</span>
+                    <span class="changelog-type ${typeClass}">${type}</span>
+                  </div>
+                  <div style="font-size: 14px; color: var(--text-secondary);">
+                    ${description.replace(/\n/g, '<br>')}
+                  </div>
+                </div>
+              `;
+            });
+            
+            document.getElementById('changelogContent').innerHTML = changelogHtml;
+          } catch (error) {
+            document.getElementById('changelogContent').innerHTML = 
+              '<p style="text-align: center; color: var(--text-secondary);">Не удалось загрузить историю изменений</p>';
+          }
+        })
+        .catch(() => {
+          document.getElementById('changelogContent').innerHTML = 
+            '<p style="text-align: center; color: var(--text-secondary);">Ошибка загрузки истории изменений</p>';
+        });
+    }
+
+    // Функция отправки баг-репорта
+    const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+
+    function sendBugReport() {
+      let description = document.getElementById('bugDescription').value.trim();
+      
+      if (!description) {
+        showNotification('Пожалуйста, опишите проблему', 'error');
+        return;
+      }
+      
+      description += `\n\nИсточник: ${window.location.href}`;
+      
+      showSpinner();
+      
+      fetch(BUG_REPORT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: description })
+      })
+      .then(response => response.json())
+      .then(data => {
+        hideSpinner();
+        if (data.result === 'success') {
+          showNotification('Сообщение успешно отправлено');
+          hideBugModal();
+        } else {
+          showNotification('Ошибка при отправке', 'error');
+        }
+      })
+      .catch(() => {
+        hideSpinner();
+        showNotification('Ошибка сети', 'error');
+      });
+    }
+
+    // Вспомогательные функции
+    function refreshTable() {
+      renderTable();
+      showNotification('Таблица обновлена');
+    }
+
+    function exportTableToCSV() {
+      if (!csvData.length) {
+        showNotification('Нет данных для экспорта', 'error');
+        return;
+      }
+      saveChanges();
+    }
+
+    // Добавляем обработку drag and drop для файла
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileUpload = document.querySelector('.file-upload');
+      
+      fileUpload.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--accent-primary)';
+        this.style.background = 'var(--bg-tertiary)';
+      });
+      
+      fileUpload.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = '';
+      });
+      
+      fileUpload.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = '';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+            // Создаем искусственное событие change для input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            document.getElementById('fileInput').files = dataTransfer.files;
+            
+            // Триггерим событие change
+            const event = new Event('change', { bubbles: true });
+            document.getElementById('fileInput').dispatchEvent(event);
+            
+            showNotification('Файл загружен через drag & drop');
+          } else {
+            showNotification('Пожалуйста, загрузите CSV файл', 'error');
+          }
+        }
+      });
+    });
+
+    // Добавляем горячие клавиши
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+S для сохранения
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveChanges();
+      }
+      
+      // Ctrl+F для поиска
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        showSection('search-section');
+        document.getElementById('codesSearch').focus();
+      }
+      
+      // Ctrl+H для замены
+      if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+        e.preventDefault();
+        showSection('edit-section');
+        document.getElementById('searchHtml').focus();
+      }
+      
+      // Ctrl+I для вставки
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+        e.preventDefault();
+        showSection('insert-section');
+        document.getElementById('insertText').focus();
+      }
+      
+      // Escape для закрытия модальных окон
+      if (e.key === 'Escape') {
+        hideBugModal();
+        hideInstructionModal();
+        hideChangelogModal();
+      }
+    });
+
+    // Добавляем информацию о горячих клавишах в инструкцию
+    document.addEventListener('DOMContentLoaded', function() {
+      const instructionModal = document.getElementById('instructionModal');
+      const instructionContent = instructionModal.querySelector('.modal-content');
+      
+      // Добавляем секцию с горячими клавишами в конец инструкции
+      const hotkeysSection = document.createElement('div');
+      hotkeysSection.className = 'instruction-step';
+      hotkeysSection.innerHTML = `
+        <div class="step-title">
+          <span class="step-number">6</span>
+          Горячие клавиши
+        </div>
+        <div class="step-content">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+            <div>
+              <strong>Ctrl+S</strong> - Сохранить файл
+            </div>
+            <div>
+              <strong>Ctrl+F</strong> - Поиск по кодам
+            </div>
+            <div>
+              <strong>Ctrl+H</strong> - Замена текста
+            </div>
+            <div>
+              <strong>Ctrl+I</strong> - Вставка текста
+            </div>
+            <div>
+              <strong>Escape</strong> - Закрыть окна
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Находим кнопку "Понятно" и вставляем перед ней
+      const understandBtn = instructionModal.querySelector('button[onclick="hideInstructionModal()"]');
+      if (understandBtn && understandBtn.parentElement) {
+        understandBtn.parentElement.parentElement.insertBefore(hotkeysSection, understandBtn.parentElement);
+      }
+    });
+    // ===== Переключение интерфейсов =====
+document.getElementById('interfaceToggleBtn').addEventListener('click', toggleInterface);
+
+function toggleInterface() {
+  const currentPage = window.location.pathname;
+  
+  if (currentPage.includes('description.html') || currentPage.includes('index.html')) {
+    // Если мы на старом интерфейсе, переключаемся на новый
+    localStorage.setItem('preferredInterface', 'new');
+    window.open('description-new.html', '_self');
+  } else if (currentPage.includes('description-new.html')) {
+    // Если мы на новом интерфейсе, переключаемся на старый
+    localStorage.setItem('preferredInterface', 'old');
+    window.open('description.html', '_self');
+  }
+  
+  showNotification('Интерфейс переключен', 'info');
+}
+  </script>
+</body>
+</html>
