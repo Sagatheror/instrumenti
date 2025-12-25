@@ -272,7 +272,6 @@
         </div>
 
         <div class="summary-cards" id="summaryCards" style="display: none;">
-            <!-- Summary cards will be generated here -->
         </div>
 
         <div class="card" id="tableSection" style="display: none;">
@@ -284,7 +283,6 @@
     </div>
 
     <script>
-        // URL вашей таблицы
         const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
 
         const depositRanges = [
@@ -522,11 +520,9 @@
             
             for (let i = 0; i < count; i++) {
                 if (isBalance) {
-                    // Для остатков используем оттенки синего/зеленого
                     const hue = 200 + (i * 30) % 160;
                     colors.push(`hsla(${hue}, 70%, 50%, ${opacity})`);
                 } else {
-                    // Для депозитов используем более теплые цвета
                     const hue = 30 + (i * 50) % 330;
                     colors.push(`hsla(${hue}, 80%, 60%, ${opacity})`);
                 }
@@ -607,7 +603,7 @@
         }
         // Автоматическая загрузка данных при открытии страницы
 window.addEventListener('DOMContentLoaded', () => {
-    loadData(); // Теперь данные загрузятся автоматически
+    loadData();
 });
     </script>
 </body>
