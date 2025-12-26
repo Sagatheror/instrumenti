@@ -308,6 +308,65 @@
     animation: spin 1s linear infinite;
   }
 
+  /* KPI Карточки */
+  .kpi-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .kpi-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    text-align: center;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .kpi-icon.suppliers {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  }
+
+  .kpi-icon.rows {
+    background: linear-gradient(135deg, #10b981, #34d399);
+  }
+
+  .kpi-icon.avg {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  }
+
+  .kpi-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    color: var(--accent-primary);
+  }
+
+  .kpi-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+  }
+
   /* Секции */
   .section {
     margin-top: 3rem;
@@ -354,7 +413,52 @@
     max-height: 100%;
   }
 
-  /* Таблица */
+  /* Таблица и фильтры */
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .search-box {
+    position: relative;
+    flex-grow: 1;
+    max-width: 400px;
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  .table-info {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
   .table-container {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
@@ -400,6 +504,42 @@
 
   tbody tr:hover {
     background: var(--bg-secondary);
+  }
+
+  /* Пагинация */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 40px;
+  }
+
+  .pagination button:hover:not(:disabled) {
+    background: var(--bg-secondary);
+  }
+
+  .pagination button.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+  }
+
+  .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* Кнопка скачивания */
@@ -456,7 +596,6 @@
 
   .download-options.show {
     display: block;
-   .download-options.show.
   }
 
   .download-option {
@@ -545,6 +684,11 @@
     }
   }
 
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   /* Адаптивность */
   @media (max-width: 768px) {
     .header h1 {
@@ -584,6 +728,15 @@
       left: 0;
       transform: none;
     }
+    
+    .table-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .search-box {
+      max-width: 100%;
+    }
   }
 
   @media (max-width: 480px) {
@@ -607,6 +760,10 @@
       width: 100%;
       justify-content: center;
     }
+    
+    .kpi-container {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -617,10 +774,12 @@
       <i class="fas fa-moon"></i>
     </button>
     <div class="header-content">
-      </p>
+      <h1>📊 Анализ данных поставщиков</h1>
+      <p class="header-subtitle">Мониторинг отключенных товаров и поставщиков в реальном времени. Данные автоматически загружаются из Google Sheets.</p>
     </div>
   </header>
-   <!-- Основной контент -->
+  
+  <!-- Основной контент -->
   <main class="container">
     <!-- Карточка с действиями -->
     <section class="action-card">
@@ -628,7 +787,7 @@
         <div class="action-icon">
           <i class="fas fa-chart-line"></i>
         </div>
-        <h2>Данные по кол-ву отключенных товаров и поставщиков</h2>
+        <h2>Данные по количеству отключенных товаров и поставщиков</h2>
       </div>
       
       <div class="action-buttons">
@@ -653,6 +812,33 @@
       </div>
     </section>
 
+    <!-- KPI Карточки -->
+    <div class="kpi-container" id="kpi-container" style="display: none;">
+      <div class="kpi-card">
+        <div class="kpi-icon suppliers">
+          <i class="fas fa-truck"></i>
+        </div>
+        <div class="kpi-value" id="kpi-suppliers">0</div>
+        <div class="kpi-label">Всего поставщиков</div>
+      </div>
+      
+      <div class="kpi-card">
+        <div class="kpi-icon rows">
+          <i class="fas fa-list-alt"></i>
+        </div>
+        <div class="kpi-value" id="kpi-total-rows">0</div>
+        <div class="kpi-label">Всего строк с кодом 1С</div>
+      </div>
+      
+      <div class="kpi-card">
+        <div class="kpi-icon avg">
+          <i class="fas fa-calculator"></i>
+        </div>
+        <div class="kpi-value" id="kpi-avg-rows">0</div>
+        <div class="kpi-label">Среднее на поставщика</div>
+      </div>
+    </div>
+
     <!-- График -->
     <section class="section">
       <div class="section-header">
@@ -667,19 +853,19 @@
     <section class="download-section">
       <div class="download-dropdown">
         <button class="download-btn" id="download-btn">
-          <i class="fas fa-download"></i>Скачать график
+          <i class="fas fa-download"></i>Скачать данные
           <i class="fas fa-chevron-down"></i>
         </button>
-       <div class="download-options" id="download-options">
-  <a href="#" class="download-option" id="download-png">
-    <i class="fas fa-file-image"></i>
-    <span>Скачать график (PNG)</span>
-  </a>
-  <a href="#" class="download-option" id="download-excel">
-    <i class="fas fa-file-excel"></i>
-    <span>Скачать данные (CSV)</span>
-  </a>
-</div>
+        <div class="download-options" id="download-options">
+          <a href="#" class="download-option" id="download-png">
+            <i class="fas fa-file-image"></i>
+            <span>Скачать график (PNG)</span>
+          </a>
+          <a href="#" class="download-option" id="download-excel">
+            <i class="fas fa-file-excel"></i>
+            <span>Скачать данные (CSV)</span>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -688,6 +874,17 @@
       <div class="section-header">
         <h2><i class="fas fa-table"></i>Результаты анализа</h2>
       </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-input" placeholder="Поиск поставщика...">
+        </div>
+        <div class="table-info">
+          Показано: <span id="shown-count">0</span> из <span id="total-count">0</span>
+        </div>
+      </div>
+      
       <div class="table-container">
         <table id="data-table">
           <thead>
@@ -705,6 +902,12 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <div class="pagination" id="pagination" style="display: none;">
+        <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
+        <div id="page-numbers"></div>
+        <button id="next-page" disabled><i class="fas fa-chevron-right"></i></button>
       </div>
     </section>
   </main>
@@ -730,8 +933,23 @@
       const downloadOptions = document.getElementById('download-options');
       const downloadPng = document.getElementById('download-png');
       const downloadExcel = document.getElementById('download-excel');
+      const kpiContainer = document.getElementById('kpi-container');
+      const searchInput = document.getElementById('search-input');
+      const shownCountEl = document.getElementById('shown-count');
+      const totalCountEl = document.getElementById('total-count');
+      const paginationEl = document.getElementById('pagination');
+      const prevPageBtn = document.getElementById('prev-page');
+      const nextPageBtn = document.getElementById('next-page');
+      const pageNumbersEl = document.getElementById('page-numbers');
       
       let dataChart = null;
+      let currentData = [];
+      let filteredData = [];
+      
+      // Настройки пагинации
+      const rowsPerPage = 10;
+      let currentPage = 1;
+      let totalPages = 1;
       
       // URL таблицы
       const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1h0aN6sMWmnGwWYGYLWLlSZxVHRU2YI4Qh0BEX_SVHQE/edit?gid=0';
@@ -751,9 +969,8 @@
         // Обновляем график при смене темы
         if (dataChart) {
           dataChart.destroy();
-          const data = getCurrentData();
-          if (data && data.length > 0) {
-            createChart(data);
+          if (currentData.length > 0) {
+            createChart(currentData);
           }
         }
       });
@@ -767,6 +984,31 @@
       document.addEventListener('click', (e) => {
         if (!downloadBtn.contains(e.target) && !downloadOptions.contains(e.target)) {
           downloadOptions.classList.remove('show');
+        }
+      });
+
+      // Поиск
+      searchInput.addEventListener('input', () => {
+        currentPage = 1;
+        filterData();
+        updateTable();
+        updatePagination();
+      });
+
+      // Пагинация
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+          updatePagination();
         }
       });
 
@@ -805,41 +1047,37 @@
         }
       }
 
-      // Заменяем функцию downloadDataAsExcel
-function downloadDataAsExcel() {
-  // ВАЖНО: Переименуем для ясности - это скачивание CSV с данными
-  const data = getCurrentData();
-  if (!data || data.length === 0) {
-    showStatus('Нет данных для скачивания. Сначала загрузите данные.', false);
-    return;
-  }
+      function downloadDataAsExcel() {
+        const data = currentData;
+        if (!data || data.length === 0) {
+          showStatus('Нет данных для скачивания. Сначала загрузите данные.', false);
+          return;
+        }
 
-  try {
-    // Создаем CSV содержимое
-    let csvContent = "Поставщик,Количество строк с Кодом 1С\n";
-    data.forEach(item => {
-      csvContent += `"${item.supplier}",${item.count}\n`;
-    });
+        try {
+          let csvContent = "Поставщик,Количество строк с Кодом 1С\n";
+          data.forEach(item => {
+            csvContent += `"${item.supplier}",${item.count}\n`;
+          });
 
-    // Создаем Blob и скачиваем
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute('href', url);
-    link.setAttribute('download', `данные_поставщиков_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    showStatus('Данные успешно скачаны в формате CSV!', true);
-  } catch (err) {
-    console.error('Ошибка скачивания CSV:', err);
-    showError('Не удалось скачать данные в формате CSV');
-  }
-}
+          const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          
+          link.setAttribute('href', url);
+          link.setAttribute('download', `данные_поставщиков_${new Date().toISOString().split('T')[0]}.csv`);
+          link.style.visibility = 'hidden';
+          
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          showStatus('Данные успешно скачаны в формате CSV!', true);
+        } catch (err) {
+          console.error('Ошибка скачивания CSV:', err);
+          showError('Не удалось скачать данные в формате CSV');
+        }
+      }
 
       // Функции для работы с UI
       function showLoading(show) {
@@ -872,21 +1110,79 @@ function downloadDataAsExcel() {
         });
       }
 
-      function updateTable(data) {
+      function updateKPI(data) {
         if (!data || data.length === 0) {
+          kpiContainer.style.display = 'none';
+          return;
+        }
+        
+        kpiContainer.style.display = 'grid';
+        
+        const totalSuppliers = data.length;
+        const totalRows = data.reduce((sum, item) => sum + item.count, 0);
+        const avgRows = totalSuppliers > 0 ? (totalRows / totalSuppliers).toFixed(1) : 0;
+        
+        // Анимируем счетчики
+        animateCounter('kpi-suppliers', totalSuppliers);
+        animateCounter('kpi-total-rows', totalRows);
+        animateCounter('kpi-avg-rows', avgRows);
+      }
+
+      function animateCounter(elementId, targetValue) {
+        const element = document.getElementById(elementId);
+        const currentValue = parseInt(element.textContent) || 0;
+        const duration = 1000; // 1 секунда
+        const stepTime = 20; // каждые 20мс
+        const steps = duration / stepTime;
+        const increment = (targetValue - currentValue) / steps;
+        let currentStep = 0;
+        
+        const timer = setInterval(() => {
+          currentStep++;
+          const newValue = Math.round(currentValue + (increment * currentStep));
+          element.textContent = newValue;
+          
+          if (currentStep >= steps) {
+            element.textContent = targetValue;
+            clearInterval(timer);
+          }
+        }, stepTime);
+      }
+
+      function filterData() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        
+        if (!searchTerm) {
+          filteredData = [...currentData];
+        } else {
+          filteredData = currentData.filter(item => 
+            item.supplier.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        shownCountEl.textContent = filteredData.length;
+      }
+
+      function updateTable() {
+        if (!filteredData || filteredData.length === 0) {
           tableBody.innerHTML = `
             <tr>
               <td colspan="2" style="text-align: center; padding: 2rem;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; color: var(--warning); margin-bottom: 0.5rem; display: block;"></i>
-                <p>Нет данных для отображения</p>
+                <i class="fas fa-search" style="font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;"></i>
+                <p>${currentData.length === 0 ? 'Данные не загружены' : 'По вашему запросу ничего не найдено'}</p>
               </td>
             </tr>
           `;
           return;
         }
         
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        const pageData = filteredData.slice(startIndex, endIndex);
+        
         tableBody.innerHTML = '';
-        data.forEach(item => {
+        pageData.forEach(item => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td><strong>${item.supplier}</strong></td>
@@ -908,17 +1204,50 @@ function downloadDataAsExcel() {
               border-radius: 20px;
               font-weight: 600;
               font-size: 0.9rem;
+              animation: countUp 0.5s ease-out;
             }
           `;
           document.head.appendChild(style);
         }
       }
 
-      // Храним текущие данные для повторного использования
-      let currentData = [];
-
-      function getCurrentData() {
-        return currentData;
+      function updatePagination() {
+        if (filteredData.length <= rowsPerPage) {
+          paginationEl.style.display = 'none';
+          return;
+        }
+        
+        paginationEl.style.display = 'flex';
+        
+        // Обновляем кнопки "Назад"/"Вперед"
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+        
+        // Обновляем номера страниц
+        pageNumbersEl.innerHTML = '';
+        
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        
+        if (currentPage <= 3) {
+          endPage = Math.min(5, totalPages);
+        }
+        
+        if (currentPage >= totalPages - 2) {
+          startPage = Math.max(1, totalPages - 4);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.textContent = i;
+          pageBtn.className = i === currentPage ? 'active' : '';
+          pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            updateTable();
+            updatePagination();
+          });
+          pageNumbersEl.appendChild(pageBtn);
+        }
       }
 
       function convertToCsvUrl(url) {
@@ -1019,14 +1348,19 @@ function downloadDataAsExcel() {
                 display: false 
               },
               tooltip: {
-                backgroundColor: isDark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                 titleColor: isDark ? '#f1f5f9' : '#1e293b',
                 bodyColor: isDark ? '#94a3b8' : '#64748b',
                 borderColor: isDark ? '#475569' : '#e2e8f0',
                 borderWidth: 1,
+                padding: 12,
                 callbacks: {
-                  label: function(ctx) {
-                    return `${ctx.dataset.label}: ${ctx.parsed.y}`;
+                  label: function(context) {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y;
+                    const total = values.reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                    return [`${label}: ${value}`, `Доля: ${percentage}%`];
                   }
                 }
               }
@@ -1096,8 +1430,12 @@ function downloadDataAsExcel() {
           
           const data = aggregateData(rows);
           currentData = data;
+          totalCountEl.textContent = data.length;
           
-          updateTable(data);
+          filterData();
+          updateTable();
+          updatePagination();
+          updateKPI(data);
           createChart(data);
           
           showStatus(`Обработано ${rows.length - 1} строк, ${data.length} поставщиков.`, true);
