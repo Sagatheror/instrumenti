@@ -4,963 +4,2083 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body {
-  margin: 10px;
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a56d4;
+  --secondary: #7209b7;
+  --success: #06d6a0;
+  --danger: #ef476f;
+  --warning: #ffd166;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --gray-light: #e9ecef;
+  --border-radius: 12px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --transition: all 0.3s ease;
 }
 
-/* Обертка для контейнера */
-.container {
-  display: flex;
-  flex-direction: row;
-  max-width: 1200px;
-  margin: 150px auto;
-  gap: 20px;
+/* Темная тема */
+[data-theme="dark"] {
+  --primary: #5a7cff;
+  --primary-dark: #4361ee;
+  --secondary: #9d4edd;
+  --success: #06d6a0;
+  --danger: #ff6b8b;
+  --warning: #ffd166;
+  --light: #2d3748;
+  --dark: #f8f9fa;
+  --gray: #a0aec0;
+  --gray-light: #4a5568;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* Левая панель */
-.sidebar {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-/* Основная часть */
-.main {
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  overflow-y: auto;
-  max-height: 90vh;
-}
-
-/* Заголовки */
-h2 {
-  margin-top: 0;
-  font-size: 1.4em;
-  margin-bottom: 10px;
-}
-
-/* Блоки внутри панели */
-.section {
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 6px;
-}
-
-.section h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 1.2em;
-}
-
-/* Поля и кнопки */
-label {
-  display: block;
-  margin-top: 8px;
-  font-weight: bold;
-}
-
-input[type="text"], input[type="number"], input[type="color"], select {
-  width: 100%;
-  padding: 6px 8px;
-  margin-top: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.3s;
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: var(--dark);
+  min-height: 100vh;
+  min-width: 100vh;
+  padding: 20px;
+  transition: var(--transition);
+  position: relative;
+  overflow-x: hidden;
 }
 
-button:hover {
-  background-color: #0056b3;
+/* Темная тема для body */
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
-/* Палитра элементов */
-#palette {
+/* Снежинки */
+.snowflake {
+  position: fixed;
+  top: -20px;
+  color: #f1effb;
+  font-size: 1.5rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.8;
+  animation: fall linear infinite;
+}
+
+[data-theme="dark"] .snowflake {
+  color: #e0f7ff;
+  text-shadow: 0 0 8px rgba(224, 247, 255, 0.6);
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 15px 30px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 15px;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transition: var(--transition);
 }
 
-.item-card {
-  background: #fafafa;
-  border-radius: 8px;
-  width: 150px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+[data-theme="dark"] .header {
+  background: rgba(45, 55, 72, 0.95);
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.logo i {
+  font-size: 1.8rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gray-light);
+  border-radius: 20px;
+  padding: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover {
+  background: var(--gray);
+}
+
+.theme-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+  transition: var(--transition);
+}
+
+[data-theme="dark"] .theme-icon {
+  background: var(--light);
+  color: var(--dark);
+}
+
+.theme-icon i {
+  font-size: 1.1rem;
+}
+
+/* Snow Toggle */
+.snow-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gray-light);
+  border-radius: 20px;
+  padding: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.snow-toggle:hover {
+  background: var(--gray);
+}
+
+.snow-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-light);
+  color: #4dabf7;
+  transition: var(--transition);
+}
+
+[data-theme="dark"] .snow-icon {
+  background: var(--light);
+  color: #74c0fc;
+}
+
+.snow-icon i {
+  font-size: 1.1rem;
+}
+
+.snow-toggle.active .snow-icon {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+[data-theme="dark"] .snow-toggle.active .snow-icon {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+/* Main Container */
+.container {
+  max-width: 2000px;
+  margin: 100px auto 30px;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 25px;
+  min-height: calc(100vh - 150px);
+}
+
+/* Sidebar */
+.sidebar {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  cursor: grab;
-  transition: box-shadow 0.2s, transform 0.2s;
+  gap: 25px;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+  transition: var(--transition);
 }
 
-.item-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transform: translateY(-2px);
+[data-theme="dark"] .sidebar {
+  background: var(--light);
+  border: 1px solid var(--gray-light);
+}
+
+.sidebar-section {
+  background: var(--light);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  border: 1px solid var(--gray-light);
+  transition: var(--transition);
+}
+
+[data-theme="dark"] .sidebar-section {
+  background: #1a202c;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--dark);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.section-title i {
+  color: var(--primary);
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: white;
+  color: var(--dark);
+}
+
+[data-theme="dark"] .form-control {
+  background: #2d3748;
+  border-color: var(--gray);
+  color: var(--dark);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+[data-theme="dark"] .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(90, 124, 255, 0.2);
+}
+
+.form-control[type="color"] {
+  height: 45px;
+  padding: 5px;
+}
+
+.form-control[type="range"] {
+  padding: 10px 0;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  max-width: 120px;
+  max-height: 40px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--gray-light);
+  color: var(--dark);
+  max-width: 120px;
+}
+
+.btn-primary:hover {
+  background: var(--gray);
+}
+
+.btn-secondary {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+.btn-secondary:hover {
+  background: var(--gray);
+}
+
+.btn-success {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+.btn-success:hover {
+  background: var(--gray);
+}
+.btn-danger {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+.btn-danger:hover {
+  background: var(--gray);
+}
+.btn-block {
+  width: 100%;
+}
+
+.btn-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Main Content */
+.main-content {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+  min-height: 600px;
+  transition: var(--transition);
+}
+
+[data-theme="dark"] .main-content {
+  background: var(--light);
+  border: 1px solid var(--gray-light);
+}
+
+.palette-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--gray-light);
+}
+
+.palette-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.palette-count {
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Palette Grid */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  min-height: 400px;
+}
+
+.palette-item {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: var(--transition);
+  cursor: move;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .palette-item {
+  background: #1a202c;
+  border: 1px solid var(--gray-light);
+}
+
+.palette-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.palette-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
 }
 
 .item-preview {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--border-radius, 10px);
-  border: 2px solid #999;
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.item-preview img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin-bottom: 8px;
+}
+
+.item-info {
+  text-align: center;
+}
+
+.item-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--dark);
+  font-size: 0.95rem;
+}
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-top: 10px;
 }
 
 .item-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 8px;
+  gap: 5px;
+  opacity: 0;
+  transition: var(--transition);
 }
 
-.item-actions button {
-  padding: 4px 8px;
-  font-size: 0.8em;
+.palette-item:hover .item-actions {
+  opacity: 1;
 }
-#changelogToggle {
-  padding: 15px 30px;
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   border: none;
-  max-width: 200px;
-  border-radius: 8px;
-  background: #007bff;
-  color: #fff;
+  background: white;
+  color: var(--dark);
   cursor: pointer;
-  font-weight: 600;
-  font-size: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  transition: background 0.3s;
-  position: fixed;
-  top: 10px;
-  left: 20px;
-  z-index: 10000; /* выше, чтобы не налезали */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: var(--transition);
 }
-/* =================== Changelog =================== */
-#changelogContainer {
-  display: none; /* по умолчанию скрыт */
-  position: fixed; top: 85px; left: 20px;
-  width: 420px;
+
+[data-theme="dark"] .action-btn {
+  background: var(--light);
+  color: var(--dark);
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn.edit {
+  color: var(--primary);
+}
+
+.action-btn.delete {
+  color: var(--danger);
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: var(--gray-light);
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--dark);
+}
+
+/* Modals */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+  transition: var(--transition);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--light);
+  border: 1px solid var(--gray-light);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--gray);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+/* Instruction Modal */
+.instruction-modal .modal-content {
+  max-width: 800px;
+  max-height: 85vh;
+}
+
+.instruction-content {
+  line-height: 1.6;
+}
+
+.instruction-step {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.instruction-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.step-title i {
+  color: var(--primary);
+}
+
+.step-content {
+  padding-left: 30px;
+}
+
+.step-content ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.step-content li {
+  margin-bottom: 8px;
+}
+
+.step-content code {
+  background: var(--gray-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: var(--dark);
+}
+
+.warning-box {
+  background: rgba(255, 209, 102, 0.1);
+  border-left: 4px solid var(--warning);
+  padding: 15px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+.warning-box strong {
+  color: #e6b400;
+}
+
+/* Bug Report Modal */
+.bug-modal .modal-content {
+  max-width: 500px;
+}
+
+.bug-category {
+  margin-bottom: 20px;
+}
+
+.bug-category label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.bug-category select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  background: white;
+  color: var(--dark);
+}
+
+[data-theme="dark"] .bug-category select {
+  background: #2d3748;
+  border-color: var(--gray);
+}
+
+.bug-description {
+  margin-bottom: 20px;
+}
+
+.bug-description label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.bug-description textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  resize: vertical;
+  background: white;
+  color: var(--dark);
+}
+
+[data-theme="dark"] .bug-description textarea {
+  background: #2d3748;
+  border-color: var(--gray);
+}
+
+.bug-description textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.bug-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Changelog */
+.changelog-container {
+  position: fixed;
+  top: 80px;
+  right: 30px;
+  width: 400px;
   max-height: 500px;
   overflow-y: auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  z-index: 9999;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #222;
-  transition: opacity 0.3s, transform 0.3s;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--shadow-lg);
+  z-index: 999;
+  display: none;
+  transition: var(--transition);
 }
-#changelogContainer.show {
+
+[data-theme="dark"] .changelog-container {
+  background: var(--light);
+  border: 1px solid var(--gray-light);
+}
+
+.changelog-container.show {
   display: block;
-  opacity: 1;
-  transform: translateY(0);
 }
+
+.changelog-entry {
+  padding: 15px;
+  margin-bottom: 15px;
+  background: var(--light);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  transition: var(--transition);
+}
+
 .changelog-version {
-  font-weight: 600;
-  font-size: 15px;
-  color: #222;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 5px;
 }
+
 .changelog-date {
-  font-size: 13px;
-  color: #222;
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 10px;
 }
+
 .changelog-type {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background-color: var(--changelog-type-bg);
-}
-.changelog-entry {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
   margin-bottom: 10px;
-  padding: 12px 15px;
-  background-color: var(--changelog-entry-bg);
-  border-radius: 8px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  transition: background 0.2s, transform 0.2s;
 }
-.changelog-entry:hover {
-  background-color: var(--hover-bg-color);
-  transform: translateY(-2px);
+
+.changelog-type.added {
+  background: rgba(6, 214, 160, 0.1);
+  color: var(--success);
 }
-#changelogText {
-  width: 100%;
-  height: 200px;
-  resize: vertical;
+
+.changelog-type.fixed {
+  background: rgba(255, 209, 102, 0.1);
+  color: #e6b400;
 }
-.changelog-type.Добавлено { background-color: #27ae60; }
-.changelog-type.Исправлено { background-color: #f39c12; }
-.changelog-type.Общее { background-color: #8e44ad; }
-/* =================== Баг-репорт =================== */
-#bugModal {
-  display: none; 
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: rgba(0,0,0,0.6);
-  justify-content: center; align-items: center; 
-  z-index: 10000;
+
+.changelog-type.changed {
+  background: rgba(67, 97, 238, 0.1);
+  color: var(--primary);
 }
-#bugModal > div {
-  background: var(--hover-bg-color);
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-}
-#bugModal h3 {
-  margin-top: 0;
-}
-#bugDescription {
-  width: 100%;
-  height: 150px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-#sendBug, #closeBugModal {
-  margin-top: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-#sendBug {
-  background-color: #4CAF50;
-  color: #fff;
-}
-#closeBugModal {
-  background-color: #ccc;
-  color: #000;
-}
-/* Стиль для кнопки "Назад" */
-  .back-btn {
-    display: inline-block;
-    margin: 65px 20px;
-    padding: 15px 20px;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #fff;
-    background-color: ##007bff; /* яркий цвет для выделения */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  .back-btn:hover {
-    background-color: #0077ff; /* чуть темнее при наведении */
-    transform: translateY(-2px);
-  }
-  #footer {
+
+/* Notification */
+.notification {
   position: fixed;
-  bottom: 10px;
-  width: 100%;
+  top: 30px;
+  right: 30px;
+  padding: 15px 25px;
+  background: var(--success);
+  color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.notification.error {
+  background: var(--danger);
+}
+
+.notification.warning {
+  background: var(--warning);
+  color: var(--dark);
+}
+
+/* Floating Actions */
+.floating-actions {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.floating-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gray);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.floating-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.floating-btn.help {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+.floating-btn.bug {
+  background: var(--gray-light);
+  color: var(--dark);
+}
+
+/* Footer */
+.footer {
   text-align: center;
-  font-family: 'Arial', sans-serif;
-  font-size: 14px;
-  color: var(--text-color);
-  padding: 12px 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 16px 16px 0 0;
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
+  margin-top: 40px;
+  padding: 20px;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: static;
+  }
+  
+  .changelog-container {
+    width: 90%;
+    left: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .container {
+    margin-top: 140px;
+  }
+  
+  .palette-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .floating-actions {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .instruction-modal .modal-content {
+    padding: 20px;
+  }
+  
+  .step-content {
+    padding-left: 15px;
+  }
+  
+  .bug-actions {
+    flex-direction: column;
+  }
+  
+  .bug-actions .btn {
+    width: 100%;
+  }
+  
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 </style>
 </head>
 <body>
 
+<!-- Header -->
+<header class="header">
+  <div class="logo">
+    <i class="fas fa-palette"></i>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-secondary" onclick="window.open('index.html', '_self')">
+      <i class="fas fa-home"></i> Главная
+    </button>
+    <button id="changelogToggle" class="btn btn-primary">
+      <i class="fas fa-history"></i> История изменений
+    </button>
+    <div class="snow-toggle" id="snowToggle" onclick="toggleSnow()">
+      <div class="snow-icon" id="snowIcon">
+        <i class="fas fa-snowflake"></i>
+      </div>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="theme-icon" id="themeIcon">
+        <i class="fas fa-sun"></i>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Container -->
 <div class="container">
-  <!-- Левая панель -->
-  <div class="sidebar">
-    <h2>Редактор</h2>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Add Element Section -->
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-plus-circle"></i>
+        Добавить элемент
+      </h3>
+      
+      <div class="form-group">
+        <label class="form-label">Тип элемента</label>
+        <select class="form-control" id="addType" onchange="toggleMediaInput()">
+          <option value="color">Цвет</option>
+          <option value="image">Изображение</option>
+        </select>
+      </div>
+      
+      <div id="colorInputContainer" class="form-group">
+        <label class="form-label">Выберите цвет</label>
+        <input type="color" class="form-control" id="newColor" value="#4361ee">
+      </div>
+      
+      <div id="imageInputContainer" class="form-group" style="display:none;">
+        <label class="form-label">Загрузите изображение</label>
+        <input type="file" class="form-control" id="newImage" accept="image/*">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Название</label>
+        <input type="text" class="form-control" id="newName" placeholder="Мой элемент">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Размер: <span id="sizeValue">80</span>px</label>
+        <input type="range" class="form-control" id="newSize" min="10" max="300" value="80" oninput="document.getElementById('sizeValue').textContent = this.value">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Закругление: <span id="radiusValue">10</span>px</label>
+        <input type="range" class="form-control" id="newBorderRadius" min="0" max="50" value="10" oninput="document.getElementById('radiusValue').textContent = this.value">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Масштаб: <span id="scaleValue">1.0</span>x</label>
+        <input type="range" class="form-control" id="newScale" min="0.1" max="2" step="0.1" value="1" oninput="document.getElementById('scaleValue').textContent = this.value">
+      </div>
+      
+      <button class="btn btn-primary btn-block" onclick="addItem()">
+        <i class="fas fa-plus"></i> Добавить в палитру
+      </button>
+    </div>
+    
+    <!-- Global Settings -->
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-sliders-h"></i>
+        Общие настройки
+      </h3>
+      
+      <div class="form-group">
+        <label class="form-label">Закругление для всех</label>
+        <input type="number" class="form-control" id="applyBorderRadius" value="10" min="0" max="50">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Размер для всех</label>
+        <input type="number" class="form-control" id="applySize" value="80" min="10" max="300">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Масштаб для всех</label>
+        <input type="range" class="form-control" id="applyScale" min="0.1" max="2" step="0.1" value="1">
+      </div>
+      
+      <button class="btn btn-secondary btn-block" onclick="applySettingsToAll()">
+        <i class="fas fa-sync-alt"></i> Применить ко всем
+      </button>
+    </div>
+    
+    <!-- Actions -->
+    <div class="sidebar-section">
+      <h3 class="section-title">
+        <i class="fas fa-tools"></i>
+        Действия с палитрой
+      </h3>
+      
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="savePalette()">
+          <i class="fas fa-save"></i> Сохранить
+        </button>
+        <button class="btn btn-secondary" onclick="loadPalette()">
+          <i class="fas fa-folder-open"></i> Загрузить
+        </button>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="importFromHTML()">
+          <i class="fas fa-file-import"></i> Импорт
+        </button>
+        <button class="btn btn-danger" onclick="clearPalette()">
+          <i class="fas fa-trash"></i> Очистить
+        </button>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="sortPalette()">
+          <i class="fas fa-sort-alpha-down"></i> Сортировать
+        </button>
+        <button class="btn btn-primary" onclick="copyPaletteHTML()">
+          <i class="fas fa-code"></i> Копировать HTML
+        </button>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="palette-header">
+      <div>
+        <h2 class="palette-title">Моя палитра</h2>
+        <p style="color: var(--gray); font-size: 0.9rem; margin-top: 5px;">Перетаскивайте элементы для изменения порядка</p>
+      </div>
+      <div class="palette-count" id="paletteCount">0 элементов</div>
+    </div>
+    
+    <div class="palette-grid" id="palette">
+      <!-- Elements will be rendered here -->
+      <div class="empty-state">
+        <i class="fas fa-palette"></i>
+        <h3>Палитра пуста</h3>
+        <p>Добавьте первый элемент, используя форму слева</p>
+      </div>
+    </div>
+  </main>
+</div>
 
-    <!-- Добавление элемента -->
-    <div class="section">
-      <h3>Добавить элемент</h3>
-      <label>Тип:</label>
-      <select id="addType" onchange="toggleMediaInput()">
-        <option value="color">Цвет</option>
-        <option value="image">Изображение</option>
+<!-- Quick Edit Modal -->
+<div class="modal" id="quickEditModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Редактировать элемент</h3>
+      <button class="modal-close" onclick="closeQuickEdit()">&times;</button>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Название</label>
+      <input type="text" class="form-control" id="editName">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Цвет</label>
+      <input type="color" class="form-control" id="editColor">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Размер (px)</label>
+      <input type="number" class="form-control" id="editSize" min="10" max="300">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Закругление (px)</label>
+      <input type="number" class="form-control" id="editBorderRadius" min="0" max="50">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Масштаб</label>
+      <input type="range" class="form-control" id="editScale" min="0.1" max="2" step="0.1">
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin-top: 25px;">
+      <button class="btn btn-primary" style="flex: 1;" onclick="saveEdit()">
+        <i class="fas fa-check"></i> Сохранить
+      </button>
+      <button class="btn btn-secondary" style="flex: 1;" onclick="closeQuickEdit()">
+        <i class="fas fa-times"></i> Отмена
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Instruction Modal -->
+<div class="modal instruction-modal" id="instructionModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="fas fa-book"></i> Инструкция по использованию
+      </h3>
+      <button class="modal-close" onclick="closeInstruction()">&times;</button>
+    </div>
+    
+    <div class="instruction-content">
+      <div class="instruction-step">
+        <div class="step-title">
+          <i class="fas fa-plus-circle"></i>
+          <span>Добавление элементов</span>
+        </div>
+        <div class="step-content">
+          <ul>
+            <li><strong>Выберите тип элемента</strong> - цвет или изображение</li>
+            <li><strong>Для цвета</strong>: выберите цвет с помощью палитры</li>
+            <li><strong>Для изображения</strong>: загрузите файл с компьютера</li>
+            <li><strong>Укажите название</strong> (не обязательно)</li>
+            <li><strong>Настройте параметры</strong>:
+              <ul>
+                <li>Размер - от 10 до 300 пикселей</li>
+                <li>Закругление - радиус скругления углов</li>
+                <li>Масштаб - коэффициент увеличения/уменьшения</li>
+              </ul>
+            </li>
+            <li>Нажмите <strong>"Добавить в палитру"</strong></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="step-title">
+          <i class="fas fa-mouse-pointer"></i>
+          <span>Управление элементами</span>
+        </div>
+        <div class="step-content">
+          <ul>
+            <li><strong>Перетаскивание</strong>: кликните и перетащите элемент для изменения порядка</li>
+            <li><strong>Редактирование</strong>: нажмите кнопку <i class="fas fa-edit"></i> или кликните на элемент</li>
+            <li><strong>Удаление</strong>: нажмите кнопку <i class="fas fa-trash"></i> на карточке элемента</li>
+            <li><strong>Просмотр</strong>: все элементы отображаются в правой панели</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="step-title">
+          <i class="fas fa-sliders-h"></i>
+          <span>Глобальные настройки</span>
+        </div>
+        <div class="step-content">
+          <p>Измените параметры для всех элементов одновременно:</p>
+          <ul>
+            <li>Установите общее закругление</li>
+            <li>Задайте единый размер</li>
+            <li>Настройте масштаб</li>
+            <li>Нажмите <strong>"Применить ко всем"</strong></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="step-title">
+          <i class="fas fa-tools"></i>
+          <span>Действия с палитрой</span>
+        </div>
+        <div class="step-content">
+          <ul>
+            <li><strong>Сохранить</strong> - экспорт палитры в JSON файл</li>
+            <li><strong>Загрузить</strong> - импорт палитры из JSON файла</li>
+            <li><strong>Импорт</strong> - добавление элементов из HTML кода</li>
+            <li><strong>Очистить</strong> - удаление всех элементов из палитры</li>
+            <li><strong>Сортировать</strong> - сортировка элементов по названию</li>
+            <li><strong>Копировать HTML</strong> - копирование HTML кода элементов в буфер обмена</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="step-title">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Важная информация</span>
+        </div>
+        <div class="step-content">
+          <div class="warning-box">
+            <p><strong>Внимание!</strong> При работе с изображениями:</p>
+            <ul>
+              <li>Перед копированием HTML кода убедитесь, что изображения загружены на сервер</li>
+              <li>После копирования замените <code>img src="data:image...</code> на <code>img src="//netcat_files...</code></li>
+              <li>Это необходимо для корректного отображения изображений на сайте</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 25px; text-align: center;">
+      <button class="btn btn-primary" onclick="closeInstruction()">
+        <i class="fas fa-check"></i> Понятно, спасибо!
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bug Report Modal -->
+<div class="modal bug-modal" id="bugReportModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="fas fa-bug"></i> Сообщить о проблеме
+      </h3>
+      <button class="modal-close" onclick="closeBugReport()">&times;</button>
+    </div>
+    
+    <div class="bug-category">
+      <label>Тип проблемы:</label>
+      <select id="bugCategory" class="form-control">
+        <option value="bug">Ошибка/Баг</option>
+        <option value="suggestion">Предложение по улучшению</option>
+        <option value="feature">Запрос новой функции</option>
+        <option value="other">Другое</option>
       </select>
-
-      <div id="colorInputContainer">
-        <label>Цвет:</label>
-        <input type="color" id="newColor" value="#ff0000" />
-      </div>
-      <div id="imageInputContainer" style="display:none;">
-        <label>Изображение:</label>
-        <input type="file" id="newImage" accept="image/*" />
-      </div>
-
-      <label>Название:</label>
-      <input type="text" id="newName" placeholder="Название" />
-
-      <label>Размер (px):</label>
-      <input type="number" id="newSize" value="80" min="10" max="300" />
-
-      <label>Закругление (px):</label>
-      <input type="number" id="newBorderRadius" value="10" min="0" max="50" />
-
-      <label>Масштаб:</label>
-      <input type="range" id="newScale" min="0" max="2" step="0.1" value="1" />
-
-      <button onclick="addItem()">Добавить</button>
     </div>
-
-    <!-- Общие настройки -->
-    <div class="section" style="margin-top:20px;">
-      <h3>Общие настройки</h3>
-      <label>Закругление (px):</label>
-      <input type="number" id="applyBorderRadius" value="10" min="0" max="50" />
-
-      <label>Размер (px):</label>
-      <input type="number" id="applySize" value="80" min="10" max="300" />
-
-      <label>Масштаб:</label>
-      <input type="range" id="applyScale" min="0" max="2" step="0.1" value="1" />
-
-      <button onclick="applySettingsToAll()">Применить ко всем</button>
+    
+    <div class="bug-description">
+      <label>Опишите проблему или предложение:</label>
+      <textarea id="bugDescription" placeholder="Опишите подробно, что произошло или что вы предлагаете..."></textarea>
     </div>
-
-    <!-- Действия -->
-    <div style="margin-top:20px;">
-      <h3>Действия</h3>
-      <button onclick="savePalette()">Сохранить</button>
-      <button onclick="loadPalette()">Загрузить</button>
-      <button onclick="importFromHTML()">Импорт из HTML</button>
-      <button onclick="clearPalette()">Удалить все</button>
-      <button onclick="sortPalette()">Сортировать</button>
-      <button onclick="copyPaletteHTML()">Копировать HTML</button>
+    
+    <div class="bug-actions">
+      <button class="btn btn-secondary" onclick="closeBugReport()">
+        <i class="fas fa-times"></i> Отмена
+      </button>
+      <button class="btn btn-danger" onclick="sendBugReport()">
+        <i class="fas fa-paper-plane"></i> Отправить
+      </button>
     </div>
-  </div>
-
-  <!-- Основная часть -->
-  <div class="main">
-    <h2>Палитра</h2>
-    <div id="palette"></div>
   </div>
 </div>
 
-<!-- Быстрый редактор -->
-<div id="quickEdit" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
-background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2); max-width:400px; z-index:100;">
-  <h3>Редактировать элемент</h3>
-  <label>Название:</label>
-  <input type="text" id="editName" />
-
-  <label>Цвет:</label>
-  <input type="color" id="editColor" />
-
-  <label>Размер (px):</label>
-  <input type="number" id="editSize" min="10" max="300" />
-
-  <label>Закругление (px):</label>
-  <input type="number" id="editBorderRadius" min="0" max="50" />
-
-  <label>Масштаб:</label>
-  <input type="range" id="editScale" min="0" max="2" step="0.1" />
-
-  <div style="margin-top:15px; display:flex; gap:10px; justify-content:space-between;">
-    <button onclick="saveEdit()">Сохранить</button>
-    <button onclick="closeQuickEdit()">Отмена</button>
+<!-- Changelog -->
+<div class="changelog-container" id="changelogContainer">
+  <h3 style="margin-bottom: 20px; color: var(--dark);">
+    <i class="fas fa-history"></i> История изменений
+  </h3>
+  <div id="changelogContent">
+    <!-- Changelog entries will be loaded here -->
   </div>
 </div>
+
+<!-- Floating Actions -->
+<div class="floating-actions">
+  <button class="floating-btn help" onclick="showInstruction()">
+    <i class="fas fa-question"></i>
+  </button>
+  <button class="floating-btn bug" onclick="showBugReport()">
+    <i class="fas fa-bug"></i>
+  </button>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>Создатель сайта: EmPsOn © 2025</p>
+</footer>
+
+<!-- Hidden textarea for HTML code -->
 <textarea id="htmlCode" style="display:none;"></textarea>
-<!-- Инструкция как модальное окно -->
-<div id="instructionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
-  <div style="background: #fff; padding:20px; max-width:700px; max-height:90%; overflow-y:auto; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position:relative;">
-<h2 style="margin-top:0; font-size: 20px;">Инструкция как пользоваться инструментом</h2>
-<p><strong>Добро пожаловать!</strong></p>
-<p>Этот сайт позволяет вам создавать и настраивать палитру элементов — цветов и изображений. Ниже — пошаговая инструкция, чтобы быстро начать работу:</p>
-<h2 style="font-size: 20px;">Шаг 7 обязателен к прочтению</h2>
-<hr>
-<h3>Шаг 1: Добавление элемента</h3>
-<ul>
-  <li>В левой панели выберите тип элемента:
-    <ul>
-      <li><strong>"Цвет"</strong> — выберите цвет с помощью цветового пикера.</li>
-      <li><strong>"Изображение"</strong> — загрузите изображение с компьютера.</li>
-    </ul>
-  </li>
-  <li>Введите название элемента (не обязательно).</li>
-  <li>Настройте параметры:
-    <ul>
-      <li>Размер — укажите, насколько большой будет элемент (в пикселях).</li>
-      <li>Закругление — укажите радиус скругления углов.</li>
-      <li>Масштаб — выберите коэффициент увеличения/уменьшения.</li>
-    </ul>
-  </li>
-  <li>Нажмите кнопку <strong>"Добавить"</strong>, чтобы добавить элемент в палитру.</li>
-</ul>
-<h3>Шаг 2: Просмотр палитры</h3>
-<ul>
-  <li>В правой части отображается ваша палитра — все добавленные элементы.</li>
-  <li>Каждый элемент можно перетащить — менять порядок, перетаскивая его.</li>
-  <li>Для редактирования элемента нажмите на кнопку <strong>"Редактировать"</strong> или кликните на изображение/цвет.</li>
-  <li>Чтобы удалить элемент — нажмите кнопку <strong>"Удалить"</strong> на карточке элемента.</li>
-</ul>
-<h3>Шаг 3: Быстрое редактирование элемента</h3>
-<ul>
-  <li>Нажмите кнопку <strong>"Редактировать"</strong> на карточке элемента или кликните на изображение — откроется окно редактирования.</li>
-  <li>Измените название, цвет, размер, закругление или масштаб и нажмите <strong>"Сохранить"</strong>.</li>
-  <li>Чтобы отменить — нажмите <strong>"Отмена"</strong>.</li>
-</ul>
-<h3>Шаг 4: Настройка глобальных параметров</h3>
-<ul>
-  <li>В левой панели есть блок "Общие настройки". Здесь можно изменить радиус, размер или масштаб для всех элементов сразу.</li>
-  <li>После изменения нажмите кнопку <strong>"Применить ко всем"</strong>, чтобы применить настройки ко всей палитре.</li>
-</ul>
-<h3>Шаг 5: Управление палитрой</h3>
-<ul>
-  <li>Для сохранения вашей текущей палитры — нажмите кнопку <strong>"Сохранить"</strong>. Файл JSON сохранится на компьютере.</li>
-  <li>Чтобы загрузить ранее сохранённую палитру — нажмите <strong>"Загрузить"</strong> и выберите файл.</li>
-  <li>Для очистки всей палитры — нажмите <strong>"Удалить все"</strong>.</li>
-  <li>Чтобы отсортировать элементы по названию — нажмите <strong>"Сортировать"</strong>.</li>
-  <li>Для копирования HTML-кода элементов в буфер — нажмите <strong>"Копировать HTML"</strong>.</li>
-</ul>
-<h3>Шаг 6: Импорт из HTML</h3>
-<ul>
-  <li>Если у вас есть HTML-код элементов, вставьте его в появившееся окно по кнопке <strong>"Импорт из HTML"</strong>.</li>
-  <li>Нажмите <strong>"ОК"</strong> — элементы добавятся в палитру.</li>
-</ul>
-<h3>Шаг 7: Копирование палитры на наши компоненты (если добавляли Изображение)</h3>
-<ul>
-  <li>Перед копированием необходимо залить фото на сервер чтобы файл начинался с //netcat_files</li>
-  <li><strong>После того как скопировали необходимо заменить img src="data:image..... на img src=//netcat_files.....</li></strong>
-</ul>
-<h3>Дополнительные функции</h3>
-<ul>
-  <li><strong>"Changelog"</strong> — просмотрите историю обновлений сайта.</li>
-  <li><strong>"Обратная связь"</strong>: нажмите на кнопку с жучком, чтобы оставить отзыв или сообщить о проблеме.</li>
-</ul>
-       <button onclick="document.getElementById('instructionModal').style.display='none'" style="margin-top:10px; font-size: 14px; padding:8px 16px; border:none; background:#007bff; color:#fff; border-radius:4px; cursor:pointer;">Понятно, спасибо</button>
-  </div>
-</div>
 
-<!-- Кнопка для вызова changelog -->
-<div style="position: fixed; top: 10px; left: 20px; z-index: 9999;">
-  <button id="changelogToggle" style="padding:15px 30px; border:none; border-radius:8px; background:#007bff; color:#fff; cursor:pointer; font-weight:600; font-size:20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: background 0.3s;">
-    Changelog
-  </button>
-</div>
-<!-- Changelog container -->
-<div id="changelogContainer">
-  <h4 style="margin-top:0;">История изменений</h4>
-  <textarea id="changelogText" placeholder="Введите или редактируйте историю изменений..."></textarea>
-  <button id="saveChangelog"><i class="fas fa-save"></i> Сохранить</button>
-</div>
-<div style="position: fixed; top: 10px; left: 0px; z-index: 9998;">
-  <button class="back-btn" onclick="window.open('index.html', '_self')">← Назад на главную</button>
-</div>
-<!-- Контейнер с кнопками, позиционированный фиксировано -->
-<div style="position: fixed; bottom: 70px; right: 10px; font-size: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center;">
-  <!-- Кнопка показать инструкцию с иконкой Font Awesome -->
-  <button onclick="document.getElementById('instructionModal').style.display='flex'" style="
-    background:#f44336; 
-    color:#fff; 
-    border:none; 
-    border-radius:50%; 
-    width:50px; 
-    height:50px; 
-    cursor:pointer; 
-    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
-    display: block; 
-    align-items: center; 
-    justify-content: center;
-    padding: 0;
-  ">
-  <i class="fas fa-question-circle" style="margin-right: 0px; font-size: 28px;"></i> 
-  <!-- Кнопка баг-репорта -->
-  <button id="bugReportBtn" style="
-    background:#f44336; 
-    color:#fff; 
-    border:none; 
-    border-radius:50%; 
-    width:50px; 
-    height:50px; 
-    cursor:pointer; 
-    box-shadow:0 4px 8px rgba(0,0,0,0.2); 
-    display: block; 
-    align-items: center; 
-    justify-content: center;
-    padding: 0;
-  ">
-    <i class="fas fa-bug" style="font-size:24px; display: block; line-height: 1; text-align: center;"></i>
-  </button>
-</div>
-
-<!-- Модальное окно для описания бага -->
-<div id="bugModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10000;">
-  <div style="background: #fff; padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
-    <h3>Сообщить о баге</h3>
-    <textarea id="bugDescription" style="width:99%; height:150px; padding:10px; border-radius:6px; border:1px solid #ccc; color: #222; background: #fff;"></textarea>
-    <div style="margin-top:10px; display:flex; justify-content:flex-end;">
-      <button id="sendBug" style="background:#4CAF50; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-right:10px;">Отправить</button>
-      <button id="closeBugModal" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
-    </div>
-  </div>
-</div>
-<div id="footer">
-  <span>Создатель сайта: EmPsOn &copy; 2025</span>
-</div>
 <script>
 let palette = [];
 let editingIndex = null;
+let currentTheme = 'light';
+let snowEnabled = false;
+let snowflakes = [];
+let snowInterval = null;
 
-function toggleMediaInput() {
-  const type = document.getElementById('addType').value;
-  document.getElementById('colorInputContainer').style.display = (type === 'color') ? 'block' : 'none';
-  document.getElementById('imageInputContainer').style.display = (type === 'image') ? 'block' : 'none';
-}
-function showNotification(message) {
-  // Создаем элемент уведомления
-  const notification = document.createElement('div');
-  notification.innerText = message;
-  notification.style.position = 'fixed';
-  notification.style.top = '20px';
-  notification.style.left = '50%';
-  notification.style.transform = 'translateX(-50%)';
-  notification.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  notification.style.color = '#fff';
-  notification.style.padding = '15px 20px';
-  notification.style.borderRadius = '8px';
-  notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-  notification.style.zIndex = '10000';
-  notification.style.fontSize = '14px';
-  notification.style.opacity = '0';
-  notification.style.transition = 'opacity 0.3s';
-
-  document.body.appendChild(notification);
-
-  // Анимация появления
-  setTimeout(() => {
-    notification.style.opacity = '1';
-  }, 10);
-
-  // Удаление через 3 секунды
-  setTimeout(() => {
-    notification.style.opacity = '0';
-    setTimeout(() => {
-      if (notification.parentNode) {
-        document.body.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
-}
-function renderPalette() {
-  const container = document.getElementById('palette');
-  container.innerHTML = '';
-
-  palette.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
-
-    // Перетаскивание
-    card.draggable = true;
-    card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', index); };
-    card.ondragover = (e) => { e.preventDefault(); };
-    card.ondrop = (e) => {
-      e.preventDefault();
-      const fromIdx = e.dataTransfer.getData('text/plain');
-      const toIdx = index;
-      [palette[fromIdx], palette[toIdx]] = [palette[toIdx], palette[fromIdx]];
-      renderPalette();
-      updateHTMLCode();
-    };
-
-    // Предпросмотр
-    const preview = document.createElement('img');
-    preview.className = 'item-preview';
-
-    if (item.type === 'color') {
-      preview.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="' + encodeURIComponent(item.color) + '"/></svg>';
-      preview.style.borderRadius = item.borderRadius + 'px';
-    } else if (item.type === 'image' && item.src) {
-      preview.src = item.src;
-      preview.style.borderRadius = item.borderRadius + 'px';
-    } else {
-      preview.src = '';
-      preview.style.background = '#ddd';
+// Initialize
+function init() {
+  toggleMediaInput();
+  renderPalette();
+  loadChangelogFromSheet();
+  loadTheme();
+  checkWinterSeason();
+  
+  // Set up event listeners
+  document.getElementById('changelogToggle').addEventListener('click', toggleChangelog);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#changelogContainer') && !e.target.closest('#changelogToggle')) {
+      document.getElementById('changelogContainer').classList.remove('show');
     }
-    preview.style.width = (item.size || 80) + 'px';
-    preview.style.height = (item.size || 80) + 'px';
-
-    // Клик для быстрого редактирования
-    preview.onclick = () => { openQuickEdit(index); };
-
-    // Информация и кнопки
-    const infoDiv = document.createElement('div');
-
-    const nameDiv = document.createElement('div');
-    nameDiv.innerText = item.name || 'Без названия';
-    nameDiv.style.fontSize = '0.9em';
-
-    const btnEdit = document.createElement('button');
-    btnEdit.innerText = 'Редактировать';
-    btnEdit.style.fontSize = '0.8em';
-    btnEdit.onclick = () => { openQuickEdit(index); };
-
-    const btnDel = document.createElement('button');
-    btnDel.innerText = 'Удалить';
-    btnDel.style.fontSize = '0.8em';
-    btnDel.onclick = () => { palette.splice(index,1); renderPalette(); updateHTMLCode(); };
-
-    infoDiv.appendChild(nameDiv);
-    infoDiv.appendChild(btnEdit);
-    infoDiv.appendChild(btnDel);
-
-    card.appendChild(preview);
-    card.appendChild(infoDiv);
-    container.appendChild(card);
   });
 }
 
+// Theme functions
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  
+  const themeIcon = document.getElementById('themeIcon');
+  if (theme === 'dark') {
+    themeIcon.innerHTML = '<i class="fas fa-moon"></i>';
+  } else {
+    themeIcon.innerHTML = '<i class="fas fa-sun"></i>';
+  }
+}
+
+function toggleTheme() {
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  setTheme(newTheme);
+  showNotification(`Тема изменена на ${newTheme === 'light' ? 'светлую' : 'темную'}`);
+}
+
+// Snow functions
+function checkWinterSeason() {
+  const now = new Date();
+  const month = now.getMonth() + 1; // 1-12
+  const isWinter = month === 12 || month === 1 || month === 2;
+  
+  // Загружаем сохраненное состояние снега или используем зимний сезон
+  const savedSnowState = localStorage.getItem('snowEnabled');
+  snowEnabled = savedSnowState !== null ? savedSnowState === 'true' : isWinter;
+  
+  updateSnowToggle();
+  
+  if (snowEnabled) {
+    startSnowfall();
+    if (isWinter) {
+      showNotification('Снегопад включен - сейчас зимний сезон! ❄️', 'success');
+    } else {
+      showNotification('Снегопад включен вручную ❄️', 'success');
+    }
+  }
+}
+
+function toggleSnow() {
+  snowEnabled = !snowEnabled;
+  localStorage.setItem('snowEnabled', snowEnabled);
+  
+  updateSnowToggle();
+  
+  if (snowEnabled) {
+    startSnowfall();
+    showNotification('Снегопад включен ❄️', 'success');
+  } else {
+    stopSnowfall();
+    showNotification('Снегопад выключен', 'warning');
+  }
+}
+
+function updateSnowToggle() {
+  const snowToggle = document.getElementById('snowToggle');
+  const snowIcon = document.getElementById('snowIcon');
+  
+  if (snowEnabled) {
+    snowToggle.classList.add('active');
+    snowIcon.innerHTML = '<i class="fas fa-snowflake"></i>';
+  } else {
+    snowToggle.classList.remove('active');
+    snowIcon.innerHTML = '<i class="fas fa-snowflake"></i>';
+  }
+}
+
+function startSnowfall() {
+  if (snowInterval) return;
+  
+  // Создаем снежинки
+  const snowflakeCount = 30;
+  const snowflakeIcons = ['❄', '❅', '❆', '✻', '✼', '✽'];
+  
+  for (let i = 0; i < snowflakeCount; i++) {
+    createSnowflake(i, snowflakeIcons);
+  }
+  
+  // Запускаем интервал для обновления снежинок
+  snowInterval = setInterval(() => {
+    snowflakes.forEach(flake => {
+      if (flake.y > window.innerHeight + 20) {
+        flake.y = -20;
+        flake.x = Math.random() * window.innerWidth;
+      }
+      flake.y += flake.speed;
+      flake.x += Math.sin(flake.y * 0.01) * 0.5;
+      flake.element.style.transform = `translate(${flake.x}px, ${flake.y}px) rotate(${flake.rotation}deg)`;
+      flake.rotation += flake.rotationSpeed;
+    });
+  }, 50);
+}
+
+function createSnowflake(index, icons) {
+  const snowflake = document.createElement('div');
+  snowflake.className = 'snowflake';
+  snowflake.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+  
+  const size = Math.random() * 20 + 10;
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  const speed = Math.random() * 2 + 1;
+  const rotation = Math.random() * 360;
+  const rotationSpeed = Math.random() * 2 - 1;
+  const opacity = Math.random() * 0.5 + 0.3;
+  
+  snowflake.style.fontSize = `${size}px`;
+  snowflake.style.left = `${x}px`;
+  snowflake.style.top = `-40px`;
+  snowflake.style.opacity = opacity;
+  snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
+  snowflake.style.animationDelay = `${Math.random() * 5}s`;
+  
+  document.body.appendChild(snowflake);
+  
+  snowflakes.push({
+    element: snowflake,
+    x,
+    speed,
+    rotation,
+    rotationSpeed
+  });
+}
+
+function stopSnowfall() {
+  if (snowInterval) {
+    clearInterval(snowInterval);
+    snowInterval = null;
+  }
+  
+  // Удаляем все снежинки
+  snowflakes.forEach(flake => {
+    if (flake.element.parentNode) {
+      flake.element.parentNode.removeChild(flake.element);
+    }
+  });
+  
+  snowflakes = [];
+}
+
+// Очистка снежинок при изменении размера окна
+window.addEventListener('resize', () => {
+  if (snowEnabled) {
+    stopSnowfall();
+    startSnowfall();
+  }
+});
+
+// Toggle media input based on type
+function toggleMediaInput() {
+  const type = document.getElementById('addType').value;
+  document.getElementById('colorInputContainer').style.display = type === 'color' ? 'block' : 'none';
+  document.getElementById('imageInputContainer').style.display = type === 'image' ? 'block' : 'none';
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+    ${message}
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Render palette
+function renderPalette() {
+  const container = document.getElementById('palette');
+  const countElement = document.getElementById('paletteCount');
+  
+  if (palette.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-palette"></i>
+        <h3>Палитра пуста</h3>
+        <p>Добавьте первый элемент, используя форму слева</p>
+      </div>
+    `;
+    countElement.textContent = '0 элементов';
+    return;
+  }
+  
+  countElement.textContent = `${palette.length} ${getRussianPlural(palette.length, 'элемент', 'элемента', 'элементов')}`;
+  
+  container.innerHTML = '';
+  
+  palette.forEach((item, index) => {
+    const itemElement = document.createElement('div');
+    itemElement.className = 'palette-item';
+    itemElement.draggable = true;
+    itemElement.dataset.index = index;
+    
+    // Drag and drop events
+    itemElement.addEventListener('dragstart', handleDragStart);
+    itemElement.addEventListener('dragover', handleDragOver);
+    itemElement.addEventListener('drop', handleDrop);
+    itemElement.addEventListener('dragend', handleDragEnd);
+    
+    // Preview based on type
+    let preview = '';
+    if (item.type === 'color') {
+      preview = `<div style="width: 100%; height: 100%; background-color: ${item.color}; border-radius: ${item.borderRadius}px;"></div>`;
+    } else if (item.type === 'image' && item.src) {
+      preview = `<img src="${item.src}" style="width: 100%; height: 100%; object-fit: cover; border-radius: ${item.borderRadius}px;">`;
+    }
+    
+    itemElement.innerHTML = `
+      <div class="item-preview" style="width: ${item.size}px; height: ${item.size}px;">
+        ${preview}
+      </div>
+      <div class="item-info">
+        <div class="item-name">${item.name || 'Без названия'}</div>
+        <div class="item-meta">
+          <span>${item.size}px</span>
+          <span>${item.borderRadius}px</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="action-btn edit" onclick="openQuickEdit(${index})">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="action-btn delete" onclick="deleteItem(${index})">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(itemElement);
+  });
+  
+  updateHTMLCode();
+}
+
+// Drag and drop handlers
+let draggedItem = null;
+
+function handleDragStart(e) {
+  draggedItem = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.index);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+  const toIndex = parseInt(this.dataset.index);
+  
+  if (fromIndex !== toIndex) {
+    [palette[fromIndex], palette[toIndex]] = [palette[toIndex], palette[fromIndex]];
+    renderPalette();
+  }
+}
+
+function handleDragEnd() {
+  this.classList.remove('dragging');
+  draggedItem = null;
+}
+
+// Add item to palette
 function addItem() {
   const type = document.getElementById('addType').value;
-  const name = document.getElementById('newName').value.trim();
+  const name = document.getElementById('newName').value.trim() || 'Без названия';
   const size = parseInt(document.getElementById('newSize').value);
   const borderRadius = parseInt(document.getElementById('newBorderRadius').value);
   const scale = parseFloat(document.getElementById('newScale').value);
-
+  
   if (type === 'color') {
     const color = document.getElementById('newColor').value;
-    palette.push({ type:'color', color, name, size, borderRadius, scale });
-    renderPalette();
-    updateHTMLCode();
+    palette.push({ type, color, name, size, borderRadius, scale });
+    showNotification('Цвет добавлен в палитру');
   } else if (type === 'image') {
     const file = document.getElementById('newImage').files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        palette.push({ type:'image', src: reader.result, name, size, borderRadius, scale });
-        renderPalette();
-        updateHTMLCode();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert('Выберите изображение!');
+    if (!file) {
+      showNotification('Выберите изображение', 'error');
       return;
     }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      palette.push({ type, src: e.target.result, name, size, borderRadius, scale });
+      renderPalette();
+      showNotification('Изображение добавлено в палитру');
+    };
+    reader.readAsDataURL(file);
   }
-  // Очистка полей
+  
+  renderPalette();
+  
+  // Reset form
   document.getElementById('newName').value = '';
-  toggleMediaInput();
+  document.getElementById('newImage').value = '';
 }
-function clearPalette() {
-  if (confirm('Удалить все элементы?')) {
-    palette = [];
+
+// Delete item
+function deleteItem(index) {
+  if (confirm('Удалить этот элемент?')) {
+    palette.splice(index, 1);
     renderPalette();
-    updateHTMLCode();
+    showNotification('Элемент удален');
   }
 }
+
+// Open quick edit modal
+function openQuickEdit(index) {
+  editingIndex = index;
+  const item = palette[index];
+  
+  document.getElementById('editName').value = item.name || '';
+  document.getElementById('editColor').value = item.color || '#4361ee';
+  document.getElementById('editSize').value = item.size || 80;
+  document.getElementById('editBorderRadius').value = item.borderRadius || 10;
+  document.getElementById('editScale').value = item.scale || 1;
+  
+  document.getElementById('quickEditModal').classList.add('show');
+}
+
+// Close quick edit modal
+function closeQuickEdit() {
+  document.getElementById('quickEditModal').classList.remove('show');
+  editingIndex = null;
+}
+
+// Save edit
+function saveEdit() {
+  if (editingIndex !== null) {
+    const item = palette[editingIndex];
+    item.name = document.getElementById('editName').value;
+    item.color = document.getElementById('editColor').value;
+    item.size = parseInt(document.getElementById('editSize').value);
+    item.borderRadius = parseInt(document.getElementById('editBorderRadius').value);
+    item.scale = parseFloat(document.getElementById('editScale').value);
+    
+    renderPalette();
+    closeQuickEdit();
+    showNotification('Изменения сохранены');
+  }
+}
+
+// Apply settings to all items
 function applySettingsToAll() {
-  // Получаем значения из полей
   const borderRadius = parseInt(document.getElementById('applyBorderRadius').value);
   const size = parseInt(document.getElementById('applySize').value);
   const scale = parseFloat(document.getElementById('applyScale').value);
-
-  // Проходим по всем элементам палитры и обновляем параметры
+  
   palette.forEach(item => {
-    if (typeof borderRadius === 'number' && !isNaN(borderRadius)) {
-      item.borderRadius = borderRadius;
-    }
-    if (typeof size === 'number' && !isNaN(size)) {
-      item.size = size;
-    }
-    if (typeof scale === 'number' && !isNaN(scale)) {
-      item.scale = scale;
+    if (!isNaN(borderRadius)) item.borderRadius = borderRadius;
+    if (!isNaN(size)) item.size = size;
+    if (!isNaN(scale)) item.scale = scale;
+  });
+  
+  renderPalette();
+  showNotification('Настройки применены ко всем элементам');
+}
+
+// Sort palette
+function sortPalette() {
+  palette.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  renderPalette();
+  showNotification('Палитра отсортирована');
+}
+
+// Clear palette
+function clearPalette() {
+  if (palette.length === 0) {
+    showNotification('Палитра уже пуста', 'warning');
+    return;
+  }
+  
+  if (confirm('Удалить все элементы из палитры?')) {
+    palette = [];
+    renderPalette();
+    showNotification('Палитра очищена');
+  }
+}
+
+// Save palette to JSON
+function savePalette() {
+  const dataStr = JSON.stringify(palette, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `palette-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  showNotification('Палитра сохранена в файл');
+}
+
+// Load palette from JSON
+function loadPalette() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data)) {
+          palette = data;
+          renderPalette();
+          showNotification('Палитра загружена');
+        } else {
+          showNotification('Неверный формат файла', 'error');
+        }
+      } catch (error) {
+        showNotification('Ошибка при чтении файла', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+// Import from HTML
+function importFromHTML() {
+  const html = prompt('Вставьте HTML-код элементов:');
+  if (!html) return;
+  
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  const newItems = [];
+  
+  Array.from(tempDiv.children).forEach(el => {
+    if (el.tagName === 'DIV' && el.style.backgroundColor) {
+      newItems.push({
+        type: 'color',
+        color: el.style.backgroundColor,
+        name: '',
+        size: 80,
+        borderRadius: 10,
+        scale: 1
+      });
+    } else if (el.tagName === 'IMG' && el.src) {
+      newItems.push({
+        type: 'image',
+        src: el.src,
+        name: '',
+        size: 80,
+        borderRadius: 10,
+        scale: 1
+      });
     }
   });
-
-  // Обновляем отображение и HTML код
-  renderPalette();
-  updateHTMLCode();
-  showNotification('Настройки применены ко всем элементам!');
+  
+  if (newItems.length > 0) {
+    palette = palette.concat(newItems);
+    renderPalette();
+    showNotification(`Импортировано ${newItems.length} элементов`);
+  } else {
+    showNotification('Не найдено элементов для импорта', 'warning');
+  }
 }
-function sortPalette() {
-  palette.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
-  renderPalette();
-}
 
+// Update HTML code
 function updateHTMLCode() {
   let html = '';
-  palette.forEach((item) => {
+  palette.forEach(item => {
     if (item.type === 'color') {
       html += `<div style="
-        width:${item.size || 80}px; 
-        height:${item.size || 80}px; 
-        background-color:${item.color}; 
-        border-radius:${item.borderRadius}px;
-        transform:scale(${item.scale || 1});
-        display:inline-block;
-        margin:4px;
+        width: ${item.size}px;
+        height: ${item.size}px;
+        background-color: ${item.color};
+        border-radius: ${item.borderRadius}px;
+        transform: scale(${item.scale || 1});
+        display: inline-block;
+        margin: 4px;
       "></div>\n`;
     } else if (item.type === 'image' && item.src) {
       html += `<img src="${item.src}" style="
-        width:${item.size || 80}px; 
-        height:${item.size || 80}px; 
-        border-radius:${item.borderRadius}px;
-        transform:scale(${item.scale || 1});
-        display:inline-block;
-        margin:4px;
-        object-fit:cover;
-      "/>\n`;
+        width: ${item.size}px;
+        height: ${item.size}px;
+        border-radius: ${item.borderRadius}px;
+        transform: scale(${item.scale || 1});
+        display: inline-block;
+        margin: 4px;
+        object-fit: cover;
+      " />\n`;
     }
   });
   document.getElementById('htmlCode').value = html;
 }
 
-function savePalette() {
-  const dataStr = JSON.stringify(palette);
-  const blob = new Blob([dataStr], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'palette.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function loadPalette() {
-  const input = document.createElement('input');
-  input.type='file';
-  input.accept='application/json';
-  input.onchange=()=> {
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload=()=> {
-      try {
-        const data=JSON.parse(reader.result);
-        if (Array.isArray(data)) { palette=data; renderPalette(); }
-      } catch(e){ alert('Ошибка загрузки'); }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-function importFromHTML() {
-  const html = prompt('Введите HTML код элементов');
-  if (!html) return;
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML=html;
-  const newItems=[];
-  for (let el of tempDiv.children) {
-    if (el.tagName==='DIV' && el.style.backgroundColor) {
-      newItems.push({ type:'color', color:el.style.backgroundColor, name:'', size:80, borderRadius:0, scale:1 });
-    } else if (el.tagName==='IMG' && el.src) {
-      newItems.push({ type:'image', src:el.src, name:'', size:80, borderRadius:0, scale:1 });
-    }
-  }
-  if (newItems.length) { palette=newItems; renderPalette(); }
-}
-
-function openQuickEdit(index) {
-  editingIndex=index;
-  const item=palette[index];
-  document.getElementById('editName').value = item.name || '';
-  document.getElementById('editColor').value = item.color || '#ffffff';
-  document.getElementById('editSize').value = item.size || 80;
-  document.getElementById('editBorderRadius').value = item.borderRadius || 10;
-  document.getElementById('editScale').value = item.scale || 1;
-  document.getElementById('quickEdit').style.display='block';
-}
-function closeQuickEdit() { document.getElementById('quickEdit').style.display='none'; }
-function saveEdit() {
-  if (editingIndex!==null) {
-    const item=palette[editingIndex];
-    item.name=document.getElementById('editName').value;
-    item.color=document.getElementById('editColor').value;
-    item.size=parseInt(document.getElementById('editSize').value);
-    item.borderRadius=parseInt(document.getElementById('editBorderRadius').value);
-    item.scale=parseFloat(document.getElementById('editScale').value);
-    renderPalette();
-    updateHTMLCode();
-    closeQuickEdit();
-  }
-}
+// Copy palette HTML
 function copyPaletteHTML() {
   const html = document.getElementById('htmlCode').value;
   if (!html.trim()) {
-    alert('Пожалуйста, добавьте элементы в палитру.');
+    showNotification('Палитра пуста', 'warning');
     return;
   }
+  
   navigator.clipboard.writeText(html).then(() => {
-  showNotification('HTML код скопирован в буфер обмена');
+    showNotification('HTML-код скопирован в буфер обмена');
+  }).catch(() => {
+    showNotification('Ошибка при копировании', 'error');
   });
 }
-// Инициализация
-toggleMediaInput();
-renderPalette();
-// =================== Changelog ===================
-const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист4';
+
+// Changelog functions
+function toggleChangelog() {
+  const container = document.getElementById('changelogContainer');
+  container.classList.toggle('show');
+}
 
 function loadChangelogFromSheet() {
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист4';
+  
   fetch(sheetUrl)
     .then(response => response.text())
     .then(text => {
       const jsonData = JSON.parse(text.substring(47).slice(0, -2));
       const rows = jsonData.table.rows;
       let entriesHtml = '';
-
-      function formatDateToDDMMYY(dateStr) {
-        const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
-        if (dateMatch) {
-          let year = parseInt(dateMatch[1], 10);
-          let month = parseInt(dateMatch[2], 10);
-          let day = parseInt(dateMatch[3], 10);
-          month += 1;
-          const dd = day.toString().padStart(2, '0');
-          const mm = month.toString().padStart(2, '0');
-          const yy = (year % 100).toString().padStart(2, '0');
-          return `${dd}.${mm}.${yy}`;
-        }
-        return dateStr;
-      }
-
+      
       rows.forEach(row => {
-        const version = row.c[0].v;
-        const rawDate = row.c[1].v;
-        const date = formatDateToDDMMYY(rawDate);
-        const type = row.c[2].v.trim();
-        let description = row.c[3].v;
-        // Обработка списка
-        description = description.replace(/^•\s?/gm, '<li>•</li>');
-        const descriptionHtml = description
-          .split('\n')
-          .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
-          .join('');
+        const version = row.c[0]?.v || '1.0';
+        const date = formatDate(row.c[1]?.v || '');
+        const type = row.c[2]?.v || 'Общее';
+        const description = row.c[3]?.v || '';
+        
+        const typeClass = type === 'Добавлено' ? 'added' : 
+                         type === 'Исправлено' ? 'fixed' : 'changed';
+        
         entriesHtml += `
           <div class="changelog-entry">
-            <div class="changelog-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div>
-                <span class="changelog-version">Версия ${version}</span>
-                <span class="changelog-date">[${date}]</span>
-              </div>
-              <div class="changelog-type ${type}">${type}</div>
-            </div>
-            <ul style="margin:0; padding-left:20px;">${descriptionHtml}</ul>
-          </div>`;
+            <div class="changelog-version">Версия ${version}</div>
+            <div class="changelog-date">${date}</div>
+            <div class="changelog-type ${typeClass}">${type}</div>
+            <div style="font-size: 0.9rem; line-height: 1.4;">${description.replace(/\n/g, '<br>')}</div>
+          </div>
+        `;
       });
-      document.getElementById('changelogContainer').innerHTML = '<h4 style="margin-top:0;">История изменений</h4>' + entriesHtml;
+      
+      document.getElementById('changelogContent').innerHTML = entriesHtml;
     })
     .catch(() => {
-      document.getElementById('changelogContainer').innerHTML = 'Не удалось загрузить историю изменений.';
+      document.getElementById('changelogContent').innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--gray);">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+          <p>Не удалось загрузить историю изменений</p>
+        </div>
+      `;
     });
 }
 
-// Автозагрузка при старте
-window.addEventListener('load', () => {
-  loadChangelogFromSheet();
-  const savedChangelog = localStorage.getItem('changelog') || '';
-  document.getElementById('changelogText').value = savedChangelog;
-});
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const match = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+    if (match) {
+      const year = parseInt(match[1]);
+      const month = parseInt(match[2]) + 1;
+      const day = parseInt(match[3]);
+      return `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${year}`;
+    }
+  } catch (e) {}
+  return dateStr;
+}
 
-// Обработчик для кнопки Changelog
-const changelogBtn = document.getElementById('changelogToggle');
-const changelogContainer = document.getElementById('changelogContainer');
-
-changelogBtn.addEventListener('click', () => {
-  if (changelogContainer.classList.contains('show')) {
-    changelogContainer.classList.remove('show');
-  } else {
-    loadChangelogFromSheet();
-    changelogContainer.classList.add('show');
+// Helper function for Russian plural
+function getRussianPlural(number, one, two, five) {
+  let n = Math.abs(number);
+  n %= 100;
+  if (n >= 5 && n <= 20) {
+    return five;
   }
-});
+  n %= 10;
+  if (n === 1) {
+    return one;
+  }
+  if (n >= 2 && n <= 4) {
+    return two;
+  }
+  return five;
+}
 
-document.getElementById('saveChangelog').addEventListener('click', () => {
-  const text = document.getElementById('changelogText').value;
-  localStorage.setItem('changelog', text);
-  alert('История изменений сохранена');
-});
+// Show instruction modal
+function showInstruction() {
+  document.getElementById('instructionModal').classList.add('show');
+}
 
-/// Обработчик открытия окна баг-репорта
-document.getElementById('bugReportBtn').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display = 'flex';
-});
+// Close instruction modal
+function closeInstruction() {
+  document.getElementById('instructionModal').classList.remove('show');
+}
 
-// Обработчик закрытия окна
-document.getElementById('closeBugModal').addEventListener('click', () => {
-  document.getElementById('bugModal').style.display = 'none';
-});
+// Show bug report modal
+function showBugReport() {
+  document.getElementById('bugReportModal').classList.add('show');
+  document.getElementById('bugDescription').focus();
+}
 
-// Обработка отправки бага
-const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
-document.getElementById('sendBug').addEventListener('click', () => {
+// Close bug report modal
+function closeBugReport() {
+  document.getElementById('bugReportModal').classList.remove('show');
+  document.getElementById('bugDescription').value = '';
+  document.getElementById('bugCategory').value = 'bug';
+}
+
+// Send bug report
+function sendBugReport() {
+  const category = document.getElementById('bugCategory').value;
   const description = document.getElementById('bugDescription').value.trim();
-  if (description === '') {
-    alert('Пожалуйста, опишите проблему.');
+  
+  if (!description) {
+    showNotification('Пожалуйста, опишите проблему', 'warning');
+    document.getElementById('bugDescription').focus();
     return;
   }
-
-  // Отправляем POST-запрос
+  
+  const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
+  
+  const bugData = {
+    category: category,
+    description: description,
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    theme: currentTheme,
+    snowEnabled: snowEnabled
+  };
+  
   fetch(BUG_REPORT_URL, {
     method: 'POST',
     contentType: 'application/json',
-    body: JSON.stringify({description: description})
+    body: JSON.stringify(bugData)
   })
   .then(response => response.json())
   .then(data => {
-  console.log('Ответ сервера:', data);
-  if (data.result === 'success') {
-    console.log('Уведомление появится');
-    showNotification('Баг успешно отправлен!');
-  } else {
-    showNotification('Ошибка при отправке бага.');
-  }
-})
-
-  // Очистка поля
-  document.getElementById('bugDescription').value = '';
-  document.getElementById('bugModal').style.display = 'none';
-});
-// =================== Инструкция ===================
-const instructionModal = document.getElementById('instructionModal');
-function closeInstruction() {
-  instructionModal.style.display='none';
+    if (data.result === 'success') {
+      showNotification('Спасибо за обратную связь! Проблема отправлена разработчикам.');
+      closeBugReport();
+    } else {
+      showNotification('Ошибка при отправке отчета', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error sending bug report:', error);
+    showNotification('Ошибка при отправке отчета', 'error');
+  });
 }
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY || window.pageYOffset;
-  const changelogBtn = document.getElementById('changelogToggle');
-  const backBtn = document.querySelector('.back-btn');
 
-  if (scrollY > 100) { // например, при скролле более 100px
-    if (changelogBtn) changelogBtn.style.display = 'none';
-    if (backBtn) backBtn.style.display = 'none';
-  } else {
-    if (changelogBtn) changelogBtn.style.display = '';
-    if (backBtn) backBtn.style.display = '';
+// Initialize on load
+window.addEventListener('DOMContentLoaded', init);
+
+// Close modals on escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeQuickEdit();
+    closeInstruction();
+    closeBugReport();
+    document.getElementById('changelogContainer').classList.remove('show');
   }
 });
 </script>
 </body>
 </html>
-
