@@ -739,7 +739,7 @@
                 });
             }
 
-            return results.filter(item => item.сумма > 0);
+            return results.filter(item => item.остаток !== 0);
         }
 
         function parseNumber(str) {
@@ -755,31 +755,36 @@
         }
 
         function filterData() {
-            const searchTerm = elements.searchInput.value.toLowerCase();
-            const sortBy = elements.sortSelect.value;
-            
-            filteredData = currentData.filter(item => 
-                item.поставщик.toLowerCase().includes(searchTerm)
-            );
-            
-            // Sorting
-            switch(sortBy) {
-                case 'name':
-                    filteredData.sort((a, b) => a.поставщик.localeCompare(b.поставщик));
-                    break;
-                case 'deposit_desc':
-                    filteredData.sort((a, b) => b.сумма - a.сумма);
-                    break;
-                case 'deposit_asc':
-                    filteredData.sort((a, b) => a.сумма - b.сумма);
-                    break;
-                case 'balance_desc':
-                    filteredData.sort((a, b) => (b.остаток || 0) - (a.остаток || 0));
-                    break;
-            }
-            
-            updateUI();
-        }
+    const searchTerm = elements.searchInput.value.toLowerCase();
+    const sortBy = elements.sortSelect.value;
+    
+    filteredData = currentData.filter(item => 
+        item.поставщик.toLowerCase().includes(searchTerm)
+    );
+    
+    // Sorting
+    switch(sortBy) {
+        case 'name':
+            filteredData.sort((a, b) => a.поставщик.localeCompare(b.поставщик));
+            break;
+        case 'deposit_desc':
+            filteredData.sort((a, b) => b.сумма - a.сумма);
+            break;
+        case 'deposit_asc':
+            filteredData.sort((a, b) => a.сумма - b.сумма);
+            break;
+        case 'balance_desc':
+            // Учитываем null значения при сортировке
+            filteredData.sort((a, b) => {
+                const aBalance = a.остаток === null ? -Infinity : a.остаток;
+                const bBalance = b.остаток === null ? -Infinity : b.остаток;
+                return bBalance - aBalance;
+            });
+            break;
+    }
+    
+    updateUI();
+}
 
         function resetFilters() {
             elements.searchInput.value = '';
