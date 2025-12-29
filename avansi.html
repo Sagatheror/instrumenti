@@ -830,18 +830,39 @@
                 const getColIndex = (range) => range.match(/[A-Z]+/)[0].charCodeAt(0) - 65;
                 const getRowIndex = (range) => parseInt(range.match(/\d+/)[0]) - 1; // 0-based for array
 
+                // Indices for the Label column (where year might be written)
+                const valStartIdx = getRowIndex(supplier.valuesRange);
+                const valEndIdx = getRowIndex(supplier.valuesRange.split(':')[1]);
+                const valColIdx = getColIndex(supplier.valuesRange);
+
+                // Indices for the Amount column
                 const depStartIdx = getRowIndex(supplier.depositsRange);
                 const depEndIdx = getRowIndex(supplier.depositsRange.split(':')[1]);
                 const depColIdx = getColIndex(supplier.depositsRange);
 
-                // Parse deposits column
-                for (let i = depStartIdx; i <= depEndIdx; i++) {
+                // Loop through rows
+                for (let i = valStartIdx; i <= valEndIdx; i++) {
                     if (i < lines.length) {
-                        // Simple CSV split (assumes no commas in numbers for this specific export)
                         const cells = lines[i].split(','); 
+                        
+                        // 1. Check Label for Year (Values Column)
+                        const label = cells[valColIdx] || '';
+                        let detectedYear = null;
+                        
+                        // Ищем число 2024, 2025 или 2026 в тексте
+                        const yearMatch = label.match(/(2024|2025|2026)/);
+                        if (yearMatch) {
+                            detectedYear = parseInt(yearMatch[0]);
+                        }
+
+                        // 2. Get Amount
                         const val = parseNumber(cells[depColIdx]);
+                        
                         if (val !== null) {
-                            deposits.push(val);
+                            deposits.push({
+                                amount: val,
+                                year: detectedYear
+                            });
                         }
                     }
                 }
@@ -856,14 +877,14 @@
                     rest = parseNumber(cells[restColIdx]);
                 }
 
-                const totalDeposit = deposits.reduce((sum, val) => sum + val, 0);
+                const totalDeposit = deposits.reduce((sum, item) => sum + item.amount, 0);
 
-                // Only add if we have data and it's not a zeroed out row (common in Google Sheets)
+                // Only add if we have data
                 if (deposits.length > 0 || rest !== null) {
                     results.push({
-                        id: supplier.name, // for unique keys
+                        id: supplier.name,
                         поставщик: supplier.name,
-                        депозиты: deposits,
+                        депозиты: deposits, // Now array of objects { amount, year }
                         сумма: totalDeposit,
                         остаток: rest,
                         среднийДепозит: deposits.length ? totalDeposit / deposits.length : 0,
@@ -1054,8 +1075,10 @@
                         <div id="details-${item.id}" class="deposit-details">
                             ${item.депозиты.map((dep, i) => `
                                 <div class="deposit-row">
-                                    <span class="deposit-label">Депозит #${i + 1}</span>
-                                    <span class="amount">${formatCurrency(dep)}</span>
+                                    <span class="deposit-label">
+                                        ${dep.year ? `Депозит за ${dep.year} год` : `Депозит #${i + 1}`}
+                                    </span>
+                                    <span class="amount">${formatCurrency(dep.amount)}</span>
                                 </div>
                             `).join('')}
                             <div class="total-row">
