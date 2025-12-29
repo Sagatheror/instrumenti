@@ -3,1182 +3,877 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- Variables & Reset --- */
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            
-            --text-dark: #1a202c;
-            --text-muted: #718096;
-            --text-light: #ffffff;
-            
-            --card-bg: #ffffff;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #e0e7ff;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
             --border-color: #e2e8f0;
-            
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --shadow-hover: 0 15px 35px rgba(0,0,0,0.15);
-            
-            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --radius-sm: 6px;
             --radius-md: 12px;
-            --radius-lg: 20px;
-            
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-lg: 16px;
+            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-gradient);
+            font-family: var(--font-family);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 24px;
             min-height: 100vh;
-            color: var(--text-dark);
-            line-height: 1.6;
-            padding: 20px;
         }
-
-        /* --- Layout --- */
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* --- Header --- */
-        .app-header {
-            background: var(--card-bg);
+        .container { max-width: 1400px; margin: 0 auto; }
+        .flex { display: flex; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .flex-between { display: flex; align-items: center; justify-content: space-between; }
+        .grid { display: grid; }
+        .gap-1 { gap: 8px; }
+        .gap-2 { gap: 16px; }
+        .gap-3 { gap: 24px; }
+        .w-full { width: 100%; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dashboard-header {
+            background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 40px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
         }
-
-        .app-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--primary-gradient);
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo {
-            display: inline-flex;
+        .brand {
+            display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-gradient);
-            border-radius: 16px;
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 28px;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            font-size: 20px;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .brand h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
         }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto 30px;
-        }
-
-        /* --- Controls --- */
-        .controls-panel {
+        .toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
         }
-
         .btn {
-            padding: 12px 24px;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
             border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid transparent;
+            font-family: inherit;
         }
-
         .btn-primary {
-            background: var(--primary-gradient);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
-        }
-
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
         .btn-secondary {
             background: white;
-            color: var(--text-dark);
-            border: 2px solid var(--border-color);
+            border-color: var(--border-color);
+            color: var(--text-main);
         }
-
-        .btn-secondary:hover {
-            background: #f8fafc;
-            border-color: #cbd5e0;
-            transform: translateY(-2px);
+        .btn-secondary:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
         }
-
-        .btn-success {
-            background: var(--success-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.6);
-        }
-
-        .btn i {
-            font-size: 1.1em;
-        }
-
-        /* --- Filter Section --- */
-        .filter-section {
-            background: white;
+        .btn-ghost:hover { background: #f1f5f9; color: var(--text-main); }
+        .filters-bar {
+            background: var(--bg-card);
+            padding: 20px;
             border-radius: var(--radius-lg);
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-md);
-            display: none; /* Hidden by default */
-            animation: slideDown 0.4s ease-out;
+            margin-bottom: 24px;
+            display: none;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            animation: slideDown 0.3s ease-out;
         }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .filter-controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-input {
-            padding: 12px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 15px;
+        .input-group {
+            position: relative;
+            flex: 1;
             min-width: 200px;
-            transition: var(--transition);
+        }
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
             outline: none;
+            transition: var(--transition);
+            background: #f8fafc;
         }
-
-        .filter-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px var(--primary-light); }
+        .form-select {
+            padding: 10px 32px 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            outline: none;
+            background: #f8fafc url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") right 12px center/16px no-repeat;
+            appearance: none;
+            cursor: pointer;
         }
-
-        /* --- Stats Grid --- */
+        .form-select:focus { border-color: var(--primary); background-color: white; }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
-
         .stat-card {
-            background: white;
+            background: var(--bg-card);
             border-radius: var(--radius-lg);
             padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
             transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
         }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
+        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #cbd5e1; }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
         }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .stat-info {
-            flex: 1;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            line-height: 1.2;
-        }
-
-        /* --- Charts Grid --- */
-        .content-grid {
+        .stat-card:hover::after { opacity: 1; }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.03em; }
+        .stat-trend { font-size: 0.8rem; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+        .trend-up { color: var(--success); }
+        .trend-neutral { color: var(--text-muted); }
+        .charts-wrapper {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
         }
-
-        @media (max-width: 1100px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .card {
-            background: white;
+            background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 25px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            height: 100%;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
         }
-
-        .card:hover {
-            box-shadow: var(--shadow-hover);
-        }
-
         .card-header {
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #f1f5f9;
         }
-
         .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
+            gap: 10px;
         }
-
-        .card-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--primary-gradient);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
+        .card-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-
         .chart-container {
             position: relative;
-            height: 400px;
+            height: 320px;
             width: 100%;
         }
-
-        /* --- Table Section --- */
-        .table-section {
-            background: white;
+        .table-wrapper {
+            background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 25px;
-            box-shadow: var(--shadow-md);
-            margin-top: 30px;
-            display: none;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .table-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
-
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            width: 100%;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             min-width: 900px;
         }
-
-        thead {
-            background: #f8fafc;
-        }
-
         th {
-            padding: 16px 20px;
             text-align: left;
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 0.85rem;
+            padding: 16px 24px;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border-color);
-            white-space: nowrap;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-
         td {
-            padding: 16px 20px;
-            color: var(--text-dark);
+            padding: 16px 24px;
             border-bottom: 1px solid #f1f5f9;
-            vertical-align: top;
+            vertical-align: middle;
+            font-size: 0.95rem;
+            color:#000000;
         }
-
-        .supplier-name {
-            font-weight: 700;
-            color: #2d3748;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        tr:last-child td { border-bottom: none; }
+        tbody tr { transition: var(--transition); }
+        tbody tr:hover { background: #f8fafc; }
+        .supplier-cell { font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .amount-cell { font-family: 'Roboto Mono', monospace; font-weight: 600; color:#000000;; }
+        .badge-cell { display: flex; align-items: center; gap: 8px; }
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
-
-        .expand-btn {
+        .details-toggle {
             background: none;
             border: none;
-            color: #667eea;
+            color: var(--primary);
             cursor: pointer;
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
             transition: var(--transition);
         }
-
-        .expand-btn:hover {
-            background: #ebf4ff;
-        }
-
-        .deposit-details {
+        .details-toggle:hover { background: var(--primary-light); }
+        .details-content {
             display: none;
-            padding: 15px;
+            padding: 16px 24px;
             background: #f8fafc;
-            border-radius: var(--radius-sm);
-            margin-top: 10px;
-            border: 1px solid #edf2f7;
-        }
-
-        .deposit-details.show {
-            display: block;
+            border-top: 1px solid var(--border-color);
             animation: slideDown 0.3s ease-out;
         }
-
-        .deposit-row {
+        .details-content.active { display: block; }
+        .detail-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid #e2e8f0;
             font-size: 0.9rem;
+            border-bottom: 1px dashed #e2e8f0;
         }
-
-        .deposit-row:last-child {
-            border-bottom: none;
-        }
-
-        .deposit-label {
-            color: var(--text-muted);
-        }
-
-        .amount {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .total-row {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid #e2e8f0;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* --- Loading Overlay --- */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(5px);
+        .detail-row:last-child { border-bottom: none; padding-top: 12px; margin-top: 4px; border-top: 2px solid #cbd5e1; font-weight: 700; }
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
             z-index: 9999;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-
-        .loader-content {
-            text-align: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+        .loader-spinner {
+            width: 48px; height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
         }
-
-        .loading-text {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        /* --- Toast Notifications --- */
         .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            position: fixed; bottom: 24px; right: 24px;
             z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: flex; flex-direction: column; gap: 12px;
         }
-
         .toast {
             background: white;
-            padding: 16px 20px;
+            padding: 14px 20px;
             border-radius: var(--radius-md);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 300px;
+            box-shadow: var(--shadow-lg);
+            display: flex; align-items: center; gap: 12px;
+            min-width: 320px;
             transform: translateX(120%);
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            border-left: 5px solid #667eea;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 4px solid var(--primary);
         }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success { border-left-color: #48bb78; }
-        .toast.error { border-left-color: #f56565; }
-
-        .toast-icon {
-            font-size: 1.2rem;
-        }
-        .toast.success .toast-icon { color: #48bb78; }
-        .toast.error .toast-icon { color: #f56565; }
-
-        .toast-message {
-            font-size: 0.95rem;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        /* --- Footer --- */
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: #ef4444; }
         .app-footer {
             text-align: center;
-            margin-top: 50px;
-            padding: 30px;
+            margin-top: 40px;
             color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            padding-bottom: 20px;
         }
-
-        /* --- Responsive --- */
         @media (max-width: 768px) {
-            .app-header { padding: 30px 20px; }
-            h1 { font-size: 2rem; }
-            .controls-panel { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
-            .filter-controls { flex-direction: column; align-items: stretch; }
-            .filter-input { width: 100%; }
-            .content-grid { grid-template-columns: 1fr; }
-            .stat-card { flex-direction: column; text-align: center; }
+            body { padding: 16px; }
+            .dashboard-header { padding: 20px; }
+            .toolbar { flex-direction: column; }
+            .toolbar .btn { width: 100%; justify-content: center; }
+            .charts-wrapper { grid-template-columns: 1fr; }
+            th, td { padding: 12px 16px; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loading">
-        <div class="loader-content">
-            <div class="spinner"></div>
-            <p class="loading-text">Загрузка данных из Google Sheets...</p>
-        </div>
+    <div class="loader-overlay" id="loader">
+        <div class="loader-spinner"></div>
+        <div style="font-weight: 500; color: var(--text-secondary);">Загрузка данных...</div>
     </div>
-
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
     <div class="container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-chart-simple"></i>
-                    </div>
+        <header class="dashboard-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div>
                     <h1>Аналитика поставщиков</h1>
-                </div>            
-                <div class="controls-panel">
-                    <button id="loadData" class="btn btn-primary">
-                        <i class="fas fa-sync-alt"></i> Обновить данные
-                    </button>
-                    <button id="toggleCharts" class="btn btn-secondary">
-                        <i class="fas fa-chart-pie"></i> Тип графиков
-                    </button>
-                    <button id="exportData" class="btn btn-success">
-                        <i class="fas fa-file-csv"></i> Экспорт CSV
-                    </button>
                 </div>
             </div>
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="loadData()">
+                    <i class="fas fa-sync-alt"></i> Обновить
+                </button>
+                <button class="btn btn-secondary" onclick="toggleChartsType()">
+                    <i class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Столбцы</span>
+                </button>
+                <button class="btn btn-secondary" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i> Экспорт
+                </button>
+                <button class="btn btn-ghost" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Фильтры
+                </button>
+            </div>
         </header>
-
-        <!-- Filter Section -->
-        <div class="filter-section" id="filterSection">
-            <div class="filter-controls">
-                <input type="text" id="searchInput" class="filter-input" placeholder="🔍 Поиск поставщика...">
-                
-                <select id="sortSelect" class="filter-input">
+        <div class="filters-bar" id="filtersPanel">
+            <div class="flex gap-2 w-full" style="flex-wrap: wrap;">
+                <div class="input-group">
+                    <i class="fas fa-search input-icon"></i>
+                    <input type="text" id="searchInput" class="form-input" placeholder="Поиск поставщика..." oninput="handleFilter()">
+                </div>
+                <select id="sortSelect" class="form-select" onchange="handleFilter()" style="min-width: 180px;">
                     <option value="name">Сортировка: А-Я</option>
                     <option value="deposit_desc">Сумма депозита ↓</option>
                     <option value="deposit_asc">Сумма депозита ↑</option>
                     <option value="balance_desc">Остаток ↓</option>
                 </select>
-                
-                <button id="resetFilters" class="btn btn-secondary">
-                    <i class="fas fa-undo"></i> Сброс
+                <button class="btn btn-ghost" onclick="resetFilters()">
+                    <i class="fas fa-times"></i> Сброс
                 </button>
             </div>
         </div>
-
-        <!-- Statistics Cards -->
-        <div class="stats-grid" id="summaryCards"></div>
-
-        <!-- Charts Section -->
-        <div class="content-grid" id="content">
+        <div class="stats-grid" id="statsGrid">
+        </div>
+        <div class="charts-wrapper">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="card-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <span>Сумма депозитов</span>
+                        <i class="fas fa-wallet" style="color: var(--primary);"></i>
+                        Общая сумма депозитов
                     </div>
+                    <span class="card-badge">По поставщикам</span>
                 </div>
                 <div class="chart-container">
-                    <canvas id="depositsChart"></canvas>
+                    <canvas id="depositChart"></canvas>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <div class="card-icon" style="background: var(--success-gradient);">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <span>Текущие остатки</span>
+                        <i class="fas fa-piggy-bank" style="color: var(--success);"></i>
+                        Текущие остатки
                     </div>
+                    <span class="card-badge">Расчеты</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="balanceChart"></canvas>
                 </div>
             </div>
         </div>
-
-        <!-- Data Table -->
-        <div class="table-section" id="tableSection">
+        <div class="table-wrapper">
             <div class="table-header">
-                <div class="card-title">
-                    <div class="card-icon" style="background: var(--secondary-gradient);">
-                        <i class="fas fa-list"></i>
-                    </div>
-                    <span>Детализация по поставщикам</span>
+                <div class="card-title" style="font-size: 1rem;">
+                    <i class="fas fa-table" style="color: var(--text-muted);"></i>
+                    Детализация
                 </div>
-                <div style="color: var(--text-muted); font-size: 0.9rem;">
-                    <i class="fas fa-database"></i> Записей: <strong id="totalRecords" style="color: var(--text-dark);">0</strong>
+                <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                    Всего записей: <strong id="totalCount" style="color: var(--text-main);">0</strong>
                 </div>
             </div>
-            <div class="table-container">
-                <table id="mainTable">
+            <div class="table-scroll">
+                <table id="dataTable">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">Поставщик</th>
-                            <th style="width: 15%;">Кол-во</th>
-                            <th style="width: 20%;">Сумма депозитов</th>
-                            <th style="width: 20%;">Средний депозит</th>
-                            <th style="width: 20%;">Остаток</th>
+                            <th>Поставщик</th>
+                            <th>Кол-во</th>
+                            <th>Сумма депозитов</th>
+                            <th>Средний депозит</th>
+                            <th>Остаток</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Rows generated by JS -->
                     </tbody>
                 </table>
             </div>
         </div>
-
-        <!-- Footer -->
         <footer class="app-footer">
-            <p style="margin-top: 8px; font-size: 0.85rem;">
-                <i class="fas fa-clock"></i> Обновлено: <span id="lastUpdate">-</span>
-            </p>
+            <p>Данные обновлены: <span id="lastUpdate" style="color: var(--text-main); font-weight: 500;">-</span></p>
         </footer>
     </div>
-
     <script>
-        // --- Configuration ---
-        // URL to your Google Sheet CSV export
-        const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
-
-        // Mapping of sheet columns to suppliers
-        const depositRanges = [
-            { name: 'Парк Развлечений', valuesRange: 'A3:A23', depositsRange: 'B3:B23', restCell: 'B25' },
-            { name: '7 скамеек', valuesRange: 'C3:C23', depositsRange: 'D3:D23', restCell: 'D25' },
-            { name: 'Рельеф', valuesRange: 'E3:E23', depositsRange: 'F3:F23', restCell: 'F25' },
-            { name: 'Мой двор', valuesRange: 'G3:G23', depositsRange: 'H3:H23', restCell: 'H25' },
-            { name: 'САВУШКА', valuesRange: 'I3:I23', depositsRange: 'J3:J23', restCell: 'J25' },
-            { name: 'АВИАТОР', valuesRange: 'A29:A49', depositsRange: 'B29:B49', restCell: 'B51' },
-            { name: 'ПАПА Карло', valuesRange: 'C29:C49', depositsRange: 'D29:D49', restCell: 'D51' },
-            { name: 'СКИФ-Про', valuesRange: 'E29:E49', depositsRange: 'F29:F49', restCell: 'F51' },
-            { name: 'КОМПАК', valuesRange: 'G29:G49', depositsRange: 'H29:H49', restCell: 'H51' },
-            { name: 'Абрис', valuesRange: 'I29:I49', depositsRange: 'J29:J49', restCell: 'J51' },
-            { name: 'ГРОС', valuesRange: 'K29:K49', depositsRange: 'L29:L49', restCell: 'L51' },
-            { name: 'СПОРТ-ФОРА', valuesRange: 'K3:K23', depositsRange: 'L3:L23', restCell: 'L25' }
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
+        const RANGES = [
+            { name: 'Парк Развлечений', val: 'A3:A23', dep: 'B3:B23', rest: 'B25' },
+            { name: '7 скамеек', val: 'C3:C23', dep: 'D3:D23', rest: 'D25' },
+            { name: 'Рельеф', val: 'E3:E23', dep: 'F3:F23', rest: 'F25' },
+            { name: 'Мой двор', val: 'G3:G23', dep: 'H3:H23', rest: 'H25' },
+            { name: 'САВУШКА', val: 'I3:I23', dep: 'J3:J23', rest: 'J25' },
+            { name: 'АВИАТОР', val: 'A29:A49', dep: 'B29:B49', rest: 'B51' },
+            { name: 'ПАПА Карло', val: 'C29:C49', dep: 'D29:D49', rest: 'D51' },
+            { name: 'СКИФ-Про', val: 'E29:E49', dep: 'F29:F49', rest: 'F51' },
+            { name: 'КОМПАК', val: 'G29:G49', dep: 'H29:H49', rest: 'H51' },
+            { name: 'Абрис', val: 'I29:I49', dep: 'J29:J49', rest: 'J51' },
+            { name: 'ГРОС', val: 'K29:K49', dep: 'L29:L49', rest: 'L51' },
+            { name: 'СПОРТ-ФОРА', val: 'K3:K23', dep: 'L3:L23', rest: 'L25' }
         ];
-
-        // --- State ---
-        let currentChartType = 'bar';
-        let depositsChart = null;
-        let balanceChart = null;
-        let currentData = [];
-        let filteredData = [];
-
-        // --- DOM Elements ---
-        const els = {
-            loading: document.getElementById('loading'),
-            content: document.getElementById('content'),
-            tableSection: document.getElementById('tableSection'),
-            summaryCards: document.getElementById('summaryCards'),
-            filterSection: document.getElementById('filterSection'),
-            searchInput: document.getElementById('searchInput'),
-            sortSelect: document.getElementById('sortSelect'),
-            totalRecords: document.getElementById('totalRecords'),
-            lastUpdate: document.getElementById('lastUpdate'),
-            tableBody: document.getElementById('tableBody')
-        };
-
-        // --- Event Listeners ---
-        document.getElementById('loadData').addEventListener('click', loadData);
-        document.getElementById('toggleCharts').addEventListener('click', toggleCharts);
-        document.getElementById('exportData').addEventListener('click', exportData);
-        document.getElementById('resetFilters').addEventListener('click', resetFilters);
-        els.searchInput.addEventListener('input', filterData);
-        els.sortSelect.addEventListener('change', filterData);
-
-        // --- Initialization ---
-        window.addEventListener('DOMContentLoaded', loadData);
-
-        // --- Core Functions ---
-
+        const SUPPLIER_COLORS = [
+            '#6366f1',
+            '#10b981',
+            '#f59e0b',
+            '#ef4444',
+            '#06b6d4',
+            '#8b5cf6',
+            '#f97316',
+            '#ec4899',
+            '#0ea5e9',
+            '#84cc16',
+            '#d946ef',
+            '#3b82f6',
+        ];
+        function getSupplierColor(index) {
+            return SUPPLIER_COLORS[index % SUPPLIER_COLORS.length];
+        }
+        function getSupplierColorRGBA(index, alpha = 1) {
+            const hex = getSupplierColor(index);
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+        let rawData = [];
+        let displayData = [];
+        let chartMode = 'bar';
+        let depositChartInst = null;
+        let balanceChartInst = null;
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
         async function loadData() {
-            showLoading();
-            
+            showLoader(true);
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Сеть ответила с ошибкой');
-                
-                const text = await response.text();
-                currentData = await parseData(text);
-                filteredData = [...currentData];
-                
-                // Initial Sort
-                sortData('name'); 
-                
-                updateUI();
-                updateLastUpdateTime();
-                
-                hideLoading();
+                const response = await fetch(SHEET_URL);
+                if (!response.ok) throw new Error('Ошибка сети');
+                const csvText = await response.text();
+                rawData = parseCSV(csvText);
+                displayData = [...rawData];
+                sortData('name');
+                updateDashboard();
+                updateTimestamp();
                 showToast('Данные успешно загружены', 'success');
-            } catch (error) {
-                hideLoading();
-                console.error(error);
-                showToast('Ошибка загрузки данных: ' + error.message, 'error');
+            } catch (e) {
+                console.error(e);
+                showToast('Не удалось загрузить данные: ' + e.message, 'error');
+            } finally {
+                showLoader(false);
             }
         }
-
-        function showLoading() {
-            els.loading.style.display = 'flex';
-            // Optional: Hide main content while loading
-            els.content.style.opacity = '0.5';
-            els.tableSection.style.opacity = '0.5';
-        }
-
-        function hideLoading() {
-            els.loading.style.display = 'none';
-            els.content.style.opacity = '1';
-            els.tableSection.style.opacity = '1';
-        }
-
-        function updateUI() {
-            renderSummaryCards(filteredData);
-            renderCharts(filteredData);
-            renderTable(filteredData);
-            
-            els.filterSection.style.display = 'block';
-            els.summaryCards.style.display = 'grid';
-            els.content.style.display = 'grid';
-            els.tableSection.style.display = 'block';
-            els.totalRecords.textContent = filteredData.length;
-        }
-
-        function updateLastUpdateTime() {
-            const now = new Date();
-            els.lastUpdate.textContent = now.toLocaleString('ru-RU', { 
-                hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' 
-            });
-        }
-
-        // --- Data Parsing ---
-        async function parseData(csvText) {
-            const lines = csvText.split('\n');
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
             const results = [];
-
-            for (const supplier of depositRanges) {
+            RANGES.forEach((range, index) => {
                 const deposits = [];
-                
-                // Helper to get column index from range (e.g., "B3" -> 1)
-                const getColIndex = (range) => range.match(/[A-Z]+/)[0].charCodeAt(0) - 65;
-                const getRowIndex = (range) => parseInt(range.match(/\d+/)[0]) - 1; // 0-based for array
-
-                // Indices for the Label column (where year might be written)
-                const valStartIdx = getRowIndex(supplier.valuesRange);
-                const valEndIdx = getRowIndex(supplier.valuesRange.split(':')[1]);
-                const valColIdx = getColIndex(supplier.valuesRange);
-
-                // Indices for the Amount column
-                const depStartIdx = getRowIndex(supplier.depositsRange);
-                const depEndIdx = getRowIndex(supplier.depositsRange.split(':')[1]);
-                const depColIdx = getColIndex(supplier.depositsRange);
-
-                // Loop through rows
-                for (let i = valStartIdx; i <= valEndIdx; i++) {
+                const getCol = (r) => r.match(/[A-Z]+/)[0].charCodeAt(0) - 65;
+                const getRow = (r) => parseInt(r.match(/\d+/)[0]) - 1;
+                const vCol = getCol(range.val);
+                const dCol = getCol(range.dep);
+                const rCol = getCol(range.rest);
+                const vStart = getRow(range.val);
+                const vEnd = getRow(range.val.split(':')[1]);
+                const rRow = getRow(range.rest);
+                for (let i = vStart; i <= vEnd; i++) {
                     if (i < lines.length) {
-                        const cells = lines[i].split(','); 
-                        
-                        // 1. Check Label for Year (Values Column)
-                        const label = cells[valColIdx] || '';
-                        let detectedYear = null;
-                        
-                        // Ищем число 2024, 2025 или 2026 в тексте
+                        const cols = lines[i].split(',');
+                        const amount = parseNum(cols[dCol]);
+                        const label = cols[vCol] || '';
                         const yearMatch = label.match(/(2024|2025|2026)/);
-                        if (yearMatch) {
-                            detectedYear = parseInt(yearMatch[0]);
-                        }
-
-                        // 2. Get Amount
-                        const val = parseNumber(cells[depColIdx]);
-                        
-                        if (val !== null) {
-                            deposits.push({
-                                amount: val,
-                                year: detectedYear
-                            });
+                        const year = yearMatch ? yearMatch[0] : null;
+                        if (amount !== null) {
+                            deposits.push({ amount, year });
                         }
                     }
                 }
-
-                // Parse balance cell
-                const restRowIdx = getRowIndex(supplier.restCell);
-                const restColIdx = getColIndex(supplier.restCell);
                 let rest = null;
-                
-                if (restRowIdx < lines.length) {
-                    const cells = lines[restRowIdx].split(',');
-                    rest = parseNumber(cells[restColIdx]);
+                if (rRow < lines.length) {
+                    rest = parseNum(lines[rRow].split(',')[rCol]);
                 }
-
-                const totalDeposit = deposits.reduce((sum, item) => sum + item.amount, 0);
-
-                // Only add if we have data
+                const total = deposits.reduce((s, d) => s + d.amount, 0);
                 if (deposits.length > 0 || rest !== null) {
                     results.push({
-                        id: supplier.name,
-                        поставщик: supplier.name,
-                        депозиты: deposits, // Now array of objects { amount, year }
-                        сумма: totalDeposit,
-                        остаток: rest,
-                        среднийДепозит: deposits.length ? totalDeposit / deposits.length : 0,
-                        количествоДепозитов: deposits.length
+                        id: range.name,
+                        name: range.name,
+                        deposits: deposits,
+                        total: total,
+                        avg: deposits.length ? total / deposits.length : 0,
+                        count: deposits.length,
+                        rest: rest,
+                        colorIndex: index
                     });
                 }
-            }
-
-            return results.filter(item => item.остаток !== 0);
+            });
+            return results.filter(r => r.rest !== 0 && r.rest !== null);
         }
-
-        function parseNumber(str) {
+        function parseNum(str) {
             if (!str) return null;
-            // Remove currency symbols, spaces, keep digits, dots and commas
-            const cleaned = str.replace(/[^\d.,-]/g, '').replace(',', '.');
-            const num = parseFloat(cleaned);
+            const clean = str.replace(/[^\d.,-]/g, '').replace(',', '.');
+            const num = parseFloat(clean);
             return isNaN(num) ? null : num;
         }
-
-        // --- Filtering & Sorting ---
-        function filterData() {
-            const searchTerm = els.searchInput.value.toLowerCase();
-            
-            filteredData = currentData.filter(item => 
-                item.поставщик.toLowerCase().includes(searchTerm)
-            );
-            
-            const sortBy = els.sortSelect.value;
-            sortData(sortBy);
-            
-            renderSummaryCards(filteredData);
-            renderCharts(filteredData);
-            renderTable(filteredData);
-            els.totalRecords.textContent = filteredData.length;
+        function updateDashboard() {
+            renderStats(displayData);
+            renderCharts(displayData);
+            renderTable(displayData);
+            document.getElementById('totalCount').innerText = displayData.length;
         }
-
-        function sortData(sortBy) {
-            switch(sortBy) {
-                case 'name':
-                    filteredData.sort((a, b) => a.поставщик.localeCompare(b.поставщик));
-                    break;
-                case 'deposit_desc':
-                    filteredData.sort((a, b) => b.сумма - a.сумма);
-                    break;
-                case 'deposit_asc':
-                    filteredData.sort((a, b) => a.сумма - b.сумма);
-                    break;
-                case 'balance_desc':
-                    filteredData.sort((a, b) => (b.остаток || 0) - (a.остаток || 0));
-                    break;
-            }
-        }
-
-        function resetFilters() {
-            els.searchInput.value = '';
-            els.sortSelect.value = 'name';
-            filteredData = [...currentData];
-            sortData('name');
-            renderSummaryCards(filteredData);
-            renderCharts(filteredData);
-            renderTable(filteredData);
-            els.totalRecords.textContent = filteredData.length;
-            showToast('Фильтры сброшены', 'success');
-        }
-
-        function toggleCharts() {
-            currentChartType = currentChartType === 'bar' ? 'pie' : 'bar';
-            const btn = document.getElementById('toggleCharts');
-            btn.innerHTML = currentChartType === 'bar' 
-                ? '<i class="fas fa-chart-pie"></i> Круговая диаграмма' 
-                : '<i class="fas fa-chart-bar"></i> Столбчатая диаграмма';
-            
-            renderCharts(filteredData);
-        }
-
-        // --- Rendering ---
-
-        function renderSummaryCards(data) {
-            const container = els.summaryCards;
-            
-            const totalDeposits = data.reduce((sum, item) => sum + item.сумма, 0);
-            const totalBalance = data.reduce((sum, item) => sum + (item.остаток || 0), 0);
-            const totalCount = data.reduce((sum, item) => sum + item.количествоДепозитов, 0);
-            const avg = totalCount ? (totalDeposits / data.length) : 0;
-            
-            const stats = [
-                { label: 'Всего поставщиков', value: data.length, icon: 'fa-users', color: '#667eea' },
-                { label: 'Сумма депозитов', value: formatCurrency(totalDeposits), icon: 'fa-wallet', color: '#764ba2' },
-                { label: 'Общий остаток', value: formatCurrency(totalBalance), icon: 'fa-piggy-bank', color: '#4facfe' },
-                { label: 'Средний депозит', value: formatCurrency(avg), icon: 'fa-calculator', color: '#f5576c' }
-            ];
-
-            container.innerHTML = stats.map(stat => `
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: ${stat.color}">
-                        <i class="fas ${stat.icon}"></i>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-label">${stat.label}</div>
-                        <div class="stat-value">${stat.value}</div>
-                    </div>
+        function renderStats(data) {
+            const totalDep = data.reduce((acc, i) => acc + i.total, 0);
+            const totalRest = data.reduce((acc, i) => acc + (i.rest || 0), 0);
+            const avgDep = data.length ? (totalDep / data.length) : 0;
+            const html = `
+                <div class="stat-card" style="--primary: #6366f1;">
+                    <div class="stat-label">Поставщиков</div>
+                    <div class="stat-value">${data.length}</div>
+                    <div class="stat-trend trend-neutral"><i class="fas fa-users"></i> Активных партнеров</div>
                 </div>
-            `).join('');
+                <div class="stat-card" style="--primary: #8b5cf6;">
+                    <div class="stat-label">Сумма депозитов</div>
+                    <div class="stat-value">${fmt(totalDep)}</div>
+                    <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> Всего вложено</div>
+                </div>
+                <div class="stat-card" style="--primary: #10b981;">
+                    <div class="stat-label">Общий остаток</div>
+                    <div class="stat-value">${fmt(totalRest)}</div>
+                    <div class="stat-trend trend-neutral"><i class="fas fa-wallet"></i> К возврату</div>
+                </div>
+                <div class="stat-card" style="--primary: #f59e0b;">
+                    <div class="stat-label">Средний депозит</div>
+                    <div class="stat-value">${fmt(avgDep)}</div>
+                    <div class="stat-trend trend-neutral"><i class="fas fa-calculator"></i> На одного поставщика</div>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = html;
         }
-
         function renderCharts(data) {
-            if (depositsChart) depositsChart.destroy();
-            if (balanceChart) balanceChart.destroy();
-
-            const labels = data.map(item => item.поставщик);
-            const deposits = data.map(item => item.сумма);
-            const balances = data.map(item => item.остаток || 0);
-
+            if (depositChartInst) depositChartInst.destroy();
+            if (balanceChartInst) balanceChartInst.destroy();
+            const labels = data.map(d => d.name);
+            const totals = data.map(d => d.total);
+            const rests = data.map(d => d.rest);
+            const bgColors = data.map((d, i) => getSupplierColorRGBA(i, 0.8));
+            const borderColors = data.map((d, i) => getSupplierColor(i));
             const commonOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            usePointStyle: true, 
+                            padding: 20, 
+                            font: { family: 'Inter', size: 11 },
+                            generateLabels: function(chart) {
+                                const datasets = chart.data.datasets;
+                                return chart.data.labels.map((label, i) => {
+                                    const color = borderColors[i];
+                                    return {
+                                        text: label,
+                                        fillStyle: color,
+                                        strokeStyle: color,
+                                        lineWidth: 0,
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
+                            }
+                        } 
+                    },
                     tooltip: {
-                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
                         padding: 12,
-                        titleFont: { size: 14 },
-                        bodyFont: { size: 14 },
+                        titleFont: { size: 14, family: 'Inter' },
+                        bodyFont: { size: 13, family: 'Inter' },
+                        cornerRadius: 8,
                         callbacks: {
-                            label: (ctx) => ` ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y || ctx.parsed)}`
+                            label: (ctx) => {
+                                const value = ctx.parsed.y !== undefined ? ctx.parsed.y : ctx.parsed;
+                                return ` ${ctx.dataset.label}: ${fmt(value)}`;
+                            }
                         }
                     }
                 }
             };
-
-            // Deposits Chart
-            depositsChart = new Chart(document.getElementById('depositsChart'), {
-                type: currentChartType,
+            depositChartInst = new Chart(document.getElementById('depositChart'), {
+                type: chartMode === 'bar' ? 'bar' : 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Сумма депозитов',
-                        data: deposits,
-                        backgroundColor: generateColors(deposits.length, 0.7),
-                        borderColor: generateColors(deposits.length, 1),
-                        borderWidth: 2,
-                        borderRadius: 6
+                        label: 'Сумма депозита',
+                        data: totals,
+                        backgroundColor: chartMode === 'bar' ? bgColors : bgColors,
+                        borderColor: chartMode === 'bar' ? borderColors : 'transparent',
+                        borderWidth: chartMode === 'bar' ? 2 : 0,
+                        borderRadius: chartMode === 'bar' ? 6 : 0,
+                        hoverOffset: 8
                     }]
                 },
                 options: {
                     ...commonOptions,
-                    scales: currentChartType === 'bar' ? {
-                        y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { callback: (v) => formatCurrency(v) } },
-                        x: { grid: { display: false } }
+                    cutout: chartMode === 'doughnut' ? '60%' : undefined,
+                    scales: chartMode === 'bar' ? {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: false }, 
+                            ticks: { callback: v => fmt(v), font: { family: 'Inter' } } 
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        }
                     } : {}
                 }
             });
-
-            // Balance Chart
-            balanceChart = new Chart(document.getElementById('balanceChart'), {
-                type: currentChartType,
+            balanceChartInst = new Chart(document.getElementById('balanceChart'), {
+                type: chartMode === 'bar' ? 'bar' : 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Текущий остаток',
-                        data: balances,
-                        backgroundColor: generateColors(balances.length, 0.7, true),
-                        borderColor: generateColors(balances.length, 1, true),
-                        borderWidth: 2,
-                        borderRadius: 6
+                        label: 'Остаток',
+                        data: rests,
+                        backgroundColor: chartMode === 'bar' ? bgColors : bgColors,
+                        borderColor: chartMode === 'bar' ? borderColors : 'transparent',
+                        borderWidth: chartMode === 'bar' ? 2 : 0,
+                        borderRadius: chartMode === 'bar' ? 6 : 0,
+                        hoverOffset: 8
                     }]
                 },
                 options: {
                     ...commonOptions,
-                    scales: currentChartType === 'bar' ? {
-                        y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { callback: (v) => formatCurrency(v) } },
-                        x: { grid: { display: false } }
+                    cutout: chartMode === 'doughnut' ? '60%' : undefined,
+                    scales: chartMode === 'bar' ? {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: false }, 
+                            ticks: { callback: v => fmt(v), font: { family: 'Inter' } } 
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        }
                     } : {}
                 }
             });
         }
-
         function renderTable(data) {
-            els.tableBody.innerHTML = data.map(item => `
+            const html = data.map(item => `
                 <tr>
                     <td>
-                        <div class="supplier-name">
-                            ${item.поставщик}
+                        <div class="supplier-cell">
+                            <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)};"></span>
+                            ${item.name}
                         </div>
-                        <button class="expand-btn" onclick="toggleDetails('${item.id}')">
-                            <i class="fas fa-chevron-down" id="icon-${item.id}"></i> Детали депозитов
+                        <button class="details-toggle" onclick="toggleDetails('${item.id}')">
+                            <i class="fas fa-chevron-down" id="icon-${item.id}"></i> Подробнее
                         </button>
-                        <div id="details-${item.id}" class="deposit-details">
-                            ${item.депозиты.map((dep, i) => `
-                                <div class="deposit-row">
-                                    <span class="deposit-label">
-                                        ${dep.year ? `Депозит за ${dep.year} год` : `Депозит #${i + 1}`}
-                                    </span>
-                                    <span class="amount">${formatCurrency(dep.amount)}</span>
+                        <div id="details-${item.id}" class="details-content">
+                            ${item.deposits.map((d, i) => `
+                                <div class="detail-row">
+                                    <span>${d.year ? `Год ${d.year}` : `Платеж #${i+1}`}</span>
+                                    <span>${fmt(d.amount)}</span>
                                 </div>
                             `).join('')}
-                            <div class="total-row">
-                                <span>Итого по поставщику:</span>
-                                <span>${formatCurrency(item.сумма)}</span>
+                            <div class="detail-row">
+                                <span>Итого:</span>
+                                <span>${fmt(item.total)}</span>
                             </div>
                         </div>
                     </td>
-                    <td><span style="background: #edf2f7; padding: 4px 10px; border-radius: 20px; font-size: 0.9em;">${item.количествоДепозитов}</span></td>
-                    <td style="font-weight: 700; color: #667eea;">${formatCurrency(item.сумма)}</td>
-                    <td>${formatCurrency(item.среднийДепозит)}</td>
-                    <td style="font-weight: 600; color: ${(item.остаток || 0) >= 0 ? '#38a169' : '#e53e3e'};">
-                        ${item.остаток !== null ? formatCurrency(item.остаток) : '<span style="color:#cbd5e0">-</span>'}
+                    <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.85em;">${item.count}</span></td>
+                    <td class="amount-cell" style="color:#000000;;">${fmt(item.total)}</td>
+                    <td class="amount-cell">${fmt(item.avg)}</td>
+                    <td class="amount-cell" style="color:#000000;' : '#ef4444'};">
+                        ${fmt(item.rest)}
                     </td>
                 </tr>
             `).join('');
+            document.getElementById('tableBody').innerHTML = html;
         }
-
-        // --- Helpers ---
-
         function toggleDetails(id) {
             const el = document.getElementById(`details-${id}`);
             const icon = document.getElementById(`icon-${id}`);
-            
-            if (el.classList.contains('show')) {
-                el.classList.remove('show');
+            const isOpen = el.classList.contains('active');
+            if (isOpen) {
+                el.classList.remove('active');
                 icon.classList.remove('fa-chevron-up');
                 icon.classList.add('fa-chevron-down');
             } else {
-                el.classList.add('show');
+                el.classList.add('active');
                 icon.classList.remove('fa-chevron-down');
                 icon.classList.add('fa-chevron-up');
             }
         }
-
-        function formatCurrency(num) {
+        function handleFilter() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.getElementById('sortSelect').value;
+            displayData = rawData.filter(d => d.name.toLowerCase().includes(term));
+            sortData(sort);
+            renderStats(displayData);
+            renderCharts(displayData);
+            renderTable(displayData);
+            document.getElementById('totalCount').innerText = displayData.length;
+        }
+        function sortData(key) {
+            const map = {
+                'name': (a,b) => a.name.localeCompare(b.name),
+                'deposit_desc': (a,b) => b.total - a.total,
+                'deposit_asc': (a,b) => a.total - b.total,
+                'balance_desc': (a,b) => (b.rest||0) - (a.rest||0)
+            };
+            displayData.sort(map[key]);
+        }
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'name';
+            displayData = [...rawData];
+            sortData('name');
+            renderStats(displayData);
+            renderCharts(displayData);
+            renderTable(displayData);
+            document.getElementById('totalCount').innerText = displayData.length;
+            showToast('Фильтры сброшены', 'success');
+        }
+        function toggleFilters() {
+            const el = document.getElementById('filtersPanel');
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+        function toggleChartsType() {
+            chartMode = chartMode === 'bar' ? 'doughnut' : 'bar';
+            document.getElementById('chartTypeLabel').innerText = chartMode === 'bar' ? 'Столбцы' : 'Круг';
+            renderCharts(displayData);
+        }
+        function exportToCSV() {
+            if (!displayData.length) return showToast('Нет данных', 'error');
+            let csv = 'Поставщик;Кол-во;Сумма;Остаток\n';
+            displayData.forEach(d => {
+                csv += `${d.name};${d.count};${d.total};${d.rest}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            showToast('Отчет скачан', 'success');
+        }
+        function fmt(num) {
             return new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
         }
-
-        function generateColors(count, opacity = 1, isBalance = false) {
-            const colors = [];
-            const step = 360 / Math.max(count, 1);
-            for (let i = 0; i < count; i++) {
-                // Use different hue ranges for deposits vs balances
-                const hue = isBalance 
-                    ? 180 + (i * 40) % 180 // Blues/Cyans
-                    : 30 + (i * 60) % 330; // Oranges/Reds/Purples
-                
-                colors.push(`hsla(${hue}, 80%, 60%, ${opacity})`);
-            }
-            return colors;
+        function showLoader(show) {
+            document.getElementById('loader').style.display = show ? 'flex' : 'none';
         }
-
-        function exportData() {
-            if (filteredData.length === 0) {
-                showToast('Нет данных для экспорта', 'error');
-                return;
-            }
-            
-            let csv = "Поставщик;Кол-во;Сумма депозитов;Средний депозит;Остаток\n";
-            
-            filteredData.forEach(item => {
-                csv += `"${item.поставщик}";${item.количествоДепозитов};${item.сумма};${item.среднийДепозит};${item.остаток || 0}\n`;
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdate').innerText = now.toLocaleString('ru-RU', { 
+                hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' 
             });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `analytics_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
-            
-            showToast('Отчет успешно скачан', 'success');
         }
-
-        // --- Toast Notification System ---
-        function showToast(message, type = 'info') {
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            
-            const iconMap = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
-            };
-
-            toast.innerHTML = `
-                <div class="toast-icon"><i class="fas ${iconMap[type]}"></i></div>
-                <div class="toast-message">${message}</div>
-            `;
-            
+            toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
             
-            // Trigger animation
             setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Remove after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 3500);
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>
