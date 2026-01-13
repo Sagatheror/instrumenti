@@ -410,6 +410,146 @@
             .charts-wrapper { grid-template-columns: 1fr; }
             th, td { padding: 12px 16px; }
         }
+        /* Стили для таблицы счетов */
+.bills-table-container {
+    margin-top: 16px;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.bills-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.bills-table th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    text-align: left;
+}
+
+.bills-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+}
+
+.bills-table tr:last-child td {
+    border-bottom: none;
+}
+
+.bills-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.bill-number-cell {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.bill-date-cell {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.bill-amount-cell {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    color: #000000;
+    text-align: right;
+}
+
+.bills-total-row {
+    background: var(--primary-light) !important;
+    font-weight: 600;
+}
+
+.bills-total-row td {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: 2px solid var(--primary);
+}
+
+.no-bills-container {
+    padding: 24px;
+    text-align: center;
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+}
+
+.no-bills-icon {
+    font-size: 2rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.no-bills-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Улучшения для детализации */
+.details-content {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.deposits-section {
+    margin-bottom: 24px;
+}
+
+.deposits-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.deposits-title i {
+    color: var(--primary);
+}
+
+.bills-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bills-title i {
+    color: var(--success);
+}
+
+/* Анимация для таблицы счетов */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bills-table-container {
+    animation: fadeInUp 0.3s ease-out;
+}
     </style>
 </head>
 <body>
@@ -505,7 +645,7 @@
                             <th>Поставщик</th>
                             <th>Кол-во</th>
                             <th>Сумма депозитов</th>
-                            <th>Средний депозит</th>
+                            <th style="display:none">Средний депозит</th>
                             <th>Остаток</th>
                         </tr>
                     </thead>
@@ -522,21 +662,68 @@
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
         const BILLS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1458472669&single=true&output=csv';
         
-        // Маппинг поставщиков и диапазонов счетов
         const BILLS_RANGES = {
-            'Парк Развлечений': { numbers: 'S28:S48', amounts: 'T28:T48' },
-            '7 скамеек': { numbers: 'U3:U23', amounts: 'V3:V23' },
-            'Рельеф': { numbers: 'M28:M48', amounts: 'N28:N48' },
-            'Мой двор': { numbers: 'U28:U48', amounts: 'V28:V48' },
-            'САВУШКА': { numbers: 'Q3:Q23', amounts: 'R3:R23' },
-            'АВИАТОР': { numbers: 'C28:C48', amounts: 'D28:D48' },
-            'ПАПА Карло': { numbers: 'C3:C23', amounts: 'D3:D23' },
-            'СКИФ-Про': { numbers: 'A3:A23', amounts: 'B3:B23' },
-            'КОМПАК': { numbers: 'E3:E23', amounts: 'F3:F23' },
-            'Абрис': { numbers: 'G3:G23', amounts: 'H3:H23' },
-            'ГРОС': { numbers: 'E28:E48', amounts: 'F28:F48' },
-            'СПОРТ-ФОРА': { numbers: 'Y28:Y48', amounts: 'Z28:Z48' }
-        };
+    'Парк Развлечений': { 
+        numbers: 'AB28:AB48', 
+        dates: 'AC28:AC48',
+        amounts: 'AD28:AD48' 
+    },
+    '7 скамеек': { 
+        numbers: 'AE3:AE23', 
+        dates: 'AF3:AF23',
+        amounts: 'AG3:AG23' 
+    },
+    'Рельеф': { 
+        numbers: 'S28:S48', 
+        dates: 'T28:T48',
+        amounts: 'U28:U48' 
+    },
+    'Мой двор': { 
+        numbers: 'AE28:AE48', 
+        dates: 'AF28:AF48',
+        amounts: 'AG28:AG48' 
+    },
+    'САВУШКА': { 
+        numbers: 'Y3:Y23', 
+        dates: 'Z3:Z23',
+        amounts: 'AA3:AA23' 
+    },
+    'АВИАТОР': { 
+        numbers: 'D28:D48', 
+        dates: 'E28:E48',
+        amounts: 'F28:F48' 
+    },
+    'ПАПА Карло': { 
+        numbers: 'D3:D23', 
+        dates: 'E3:E23',
+        amounts: 'F3:F23' 
+    },
+    'СКИФ-Про': { 
+        numbers: 'A3:A23', 
+        dates: 'B3:B23',
+        amounts: 'C3:C23' 
+    },
+    'КОМПАК': { 
+        numbers: 'G3:G23', 
+        dates: 'H3:H23',
+        amounts: 'I3:I23' 
+    },
+    'Абрис': { 
+        numbers: 'J3:J23', 
+        dates: 'K3:K23',
+        amounts: 'L3:L23' 
+    },
+    'ГРОС': { 
+        numbers: 'G28:G48', 
+        dates: 'H28:H48',
+        amounts: 'I28:I48' 
+    },
+    'СПОРТ-ФОРА': { 
+        numbers: 'AJ28:AJ48', 
+        dates: 'AK28:AK48',
+        amounts: 'AL28:AL48' 
+    }
+};
 
         const RANGES = [
             { name: 'Парк Развлечений', val: 'A3:A23', dep: 'B3:B23', rest: 'B25' },
@@ -594,13 +781,11 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Загружаем основные данные
                 const response = await fetch(SHEET_URL);
                 if (!response.ok) throw new Error('Ошибка сети при загрузке основных данных');
                 const csvText = await response.text();
                 rawData = parseCSV(csvText);
                 
-                // Загружаем данные счетов
                 const billsResponse = await fetch(BILLS_SHEET_URL);
                 if (!billsResponse.ok) throw new Error('Ошибка сети при загрузке счетов');
                 const billsCsvText = await billsResponse.text();
@@ -669,57 +854,65 @@
         }
 
         function parseBillsCSV(text) {
-            const lines = text.trim().split('\n');
-            const billsBySupplier = {};
-            
-            // Парсим данные для каждого поставщика
-            for (const [supplier, ranges] of Object.entries(BILLS_RANGES)) {
-                const bills = [];
+    const lines = text.trim().split('\n');
+    const billsBySupplier = {};
+    
+    function columnLetterToIndex(letter) {
+        let index = 0;
+        for (let i = 0; i < letter.length; i++) {
+            index = index * 26 + (letter.charCodeAt(i) - 65 + 1);
+        }
+        return index - 1;
+    }
+    
+    for (const [supplier, ranges] of Object.entries(BILLS_RANGES)) {
+        const bills = [];
+        
+        const getCol = (range) => {
+            const match = range.match(/^([A-Z]+)/);
+            return match ? columnLetterToIndex(match[1]) : 0;
+        };
+        
+        const getStartRow = (range) => {
+            const match = range.match(/(\d+):/);
+            return match ? parseInt(match[1]) - 1 : 0;
+        };
+        
+        const getEndRow = (range) => {
+            const match = range.match(/:([A-Z]+)(\d+)/);
+            return match ? parseInt(match[2]) - 1 : 0;
+        };
+        
+        const numbersCol = getCol(ranges.numbers);
+        const datesCol = getCol(ranges.dates);
+        const amountsCol = getCol(ranges.amounts);
+        const startRow = getStartRow(ranges.numbers);
+        const endRow = getEndRow(ranges.numbers);
+        
+        for (let i = startRow; i <= endRow; i++) {
+            if (i < lines.length) {
+                const cols = lines[i].split(',');
+                const billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
+                const date = cols[datesCol] ? cols[datesCol].trim() : '';
+                const amount = parseNum(cols[amountsCol]);
                 
-                // Получаем номера столбцов и строк
-                const getCol = (range) => {
-                    const match = range.match(/^([A-Z]+)/);
-                    return match ? match[1].charCodeAt(0) - 65 : 0;
-                };
-                
-                const getStartRow = (range) => {
-                    const match = range.match(/(\d+):/);
-                    return match ? parseInt(match[1]) - 1 : 0;
-                };
-                
-                const getEndRow = (range) => {
-                    const match = range.match(/:([A-Z]+)(\d+)/);
-                    return match ? parseInt(match[2]) - 1 : 0;
-                };
-                
-                const numbersCol = getCol(ranges.numbers);
-                const amountsCol = getCol(ranges.amounts);
-                const startRow = getStartRow(ranges.numbers);
-                const endRow = getEndRow(ranges.numbers);
-                
-                // Собираем счета
-                for (let i = startRow; i <= endRow; i++) {
-                    if (i < lines.length) {
-                        const cols = lines[i].split(',');
-                        const billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
-                        const amount = parseNum(cols[amountsCol]);
-                        
-                        if (billNumber && amount !== null) {
-                            bills.push({
-                                number: billNumber,
-                                amount: amount
-                            });
-                        }
-                    }
-                }
-                
-                if (bills.length > 0) {
-                    billsBySupplier[supplier] = bills;
+                if (billNumber && amount !== null) {
+                    bills.push({
+                        number: billNumber,
+                        date: date,
+                        amount: amount
+                    });
                 }
             }
-            
-            return billsBySupplier;
         }
+        
+        if (bills.length > 0) {
+            billsBySupplier[supplier] = bills;
+        }
+    }
+    
+    return billsBySupplier;
+}
 
         function parseNum(str) {
             if (!str) return null;
@@ -755,7 +948,7 @@
                     <div class="stat-value">${fmt(totalRest)}</div>
                     <div class="stat-trend trend-neutral"><i class="fas fa-wallet"></i> К возврату</div>
                 </div>
-                <div class="stat-card" style="--primary: #f59e0b;">
+                <div class="stat-card" style="--primary: #f59e0b; display:none">
                     <div class="stat-label">Средний депозит</div>
                     <div class="stat-value">${fmt(avgDep)}</div>
                     <div class="stat-trend trend-neutral"><i class="fas fa-calculator"></i> На одного поставщика</div>
@@ -881,78 +1074,237 @@
         }
 
         function renderTable(data) {
-            const html = data.map(item => `
-                <tr>
-                    <td>
-                        <div class="supplier-cell">
-                            <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)};"></span>
-                            ${item.name}
+    const html = data.map(item => `
+        <tr>
+            <td>
+                <div class="supplier-cell">
+                    <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)};"></span>
+                    ${item.name}
+                </div>
+                <button class="details-toggle" onclick="toggleDetails('${item.id}')">
+                    <i class="fas fa-chevron-down" id="icon-${item.id}"></i> Подробнее
+                </button>
+                <div id="details-${item.id}" class="details-content">
+                    <div class="deposits-section">
+                        <div class="deposits-title">
+                            <i class="fas fa-wallet"></i>
+                            Депозиты поставщика
                         </div>
-                        <button class="details-toggle" onclick="toggleDetails('${item.id}')">
-                            <i class="fas fa-chevron-down" id="icon-${item.id}"></i> Подробнее
-                        </button>
-                        <div id="details-${item.id}" class="details-content">
-                            ${item.deposits.map((d, i) => `
-                                <div class="detail-row">
-                                    <span>${d.year ? `Год ${d.year}` : `Платеж #${i+1}`}</span>
-                                    <span>${fmt(d.amount)}</span>
+                        ${item.deposits.length > 0 ? `
+                            <div class="bills-table-container">
+                                <table class="bills-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60%;">Описание</th>
+                                            <th style="width: 40%; text-align: right;">Сумма</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${item.deposits.map((d, i) => `
+                                            <tr>
+                                                <td>
+                                                    ${d.year ? `Депозит за ${d.year} год` : `Депозит #${i + 1}`}
+                                                </td>
+                                                <td class="bill-amount-cell">${fmt(d.amount)}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="bills-total-row">
+                                            <td>
+                                                <strong>Итого депозитов:</strong>
+                                                <span style="font-size: 0.8em; color: var(--text-muted); margin-left: 8px;">
+                                                    ${item.count} ${getRussianWordForm(item.count, ['платеж', 'платежа', 'платежей'])}
+                                                </span>
+                                            </td>
+                                            <td class="bill-amount-cell" style="font-size: 1.1em;">${fmt(item.total)}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="no-bills-container">
+                                <div class="no-bills-icon">
+                                    <i class="fas fa-wallet"></i>
                                 </div>
-                            `).join('')}
-                            <div class="detail-row">
-                                <span>Итого депозиты:</span>
-                                <span>${fmt(item.total)}</span>
+                                <div class="no-bills-text">Нет данных о депозитах</div>
                             </div>
-                            
-                            <div class="bills-section">
-                                <div class="bills-title">Счета из авансов/переплат:</div>
-                                ${getBillsForSupplier(item.name)}
-                            </div>
-                        </div>
-                    </td>
-                    <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.85em;">${item.count}</span></td>
-                    <td class="amount-cell" style="color:#000000;">${fmt(item.total)}</td>
-                    <td class="amount-cell">${fmt(item.avg)}</td>
-                    <td class="amount-cell" style="color:#000000;">
-                        ${fmt(item.rest)}
-                    </td>
-                </tr>
-            `).join('');
-            document.getElementById('tableBody').innerHTML = html;
-        }
-
-        function getBillsForSupplier(supplierName) {
-            const bills = billsData[supplierName];
-            
-            if (!bills || bills.length === 0) {
-                return '<div class="no-bills">Нет данных о счетах</div>';
-            }
-            
-            let html = '';
-            let total = 0;
-            
-            bills.forEach(bill => {
-                if (bill.number && bill.amount) {
-                    html += `
-                        <div class="bill-item">
-                            <span class="bill-number">${bill.number}</span>
-                            <span class="bill-amount">${fmt(bill.amount)}</span>
-                        </div>
-                    `;
-                    total += bill.amount;
-                }
-            });
-            
-            if (total > 0) {
-                html += `
-                    <div class="bill-item" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-weight: 600;">
-                        <span>Итого по счетам:</span>
-                        <span class="bill-amount">${fmt(total)}</span>
+                        `}
                     </div>
-                `;
-            }
+                    
+                    <div class="bills-section">
+                        <div class="bills-title">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            Счета из авансов/переплат:
+                        </div>
+                        ${getBillsForSupplier(item.name)}
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="background:${getSupplierColorRGBA(item.colorIndex, 0.1)}; color:${getSupplierColor(item.colorIndex)}; padding:4px 8px; border-radius:4px; font-size:0.85em; font-weight:600;">
+                        ${item.count}
+                    </span>
+                </div>
+            </td>
+            <td class="amount-cell" style="color:#000000;">
+                ${fmt(item.total)}
+                <div style="font-size:0.8em; color:var(--text-muted); margin-top:2px;">
+                    ${item.count > 0 ? `${getRussianWordForm(item.count, ['платеж', 'платежа', 'платежей'])}` : ''}
+                </div>
+            </td>
+            <td class="amount-cell" style="display:none">
+                ${fmt(item.avg)}
+            </td>
+            <td class="amount-cell" style="color:#000000;">
+                ${fmt(item.rest)}
+                <div style="font-size:0.8em; color:${item.rest > 0 ? 'var(--success)' : item.rest < 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top:2px;">
+                    ${item.rest > 0 ? 'К возврату' : item.rest < 0 ? 'К доплате' : 'Нулевой остаток'}
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    document.getElementById('tableBody').innerHTML = html;
+}
+function formatDate(dateString) {
+    if (!dateString || dateString.trim() === '') return '-';
+    
+    try {
+        dateString = dateString.trim();
+        
+        const dateMatch = dateString.match(/^(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{4})$/);
+        
+        if (dateMatch) {
+            const day = parseInt(dateMatch[1], 10);
+            const month = parseInt(dateMatch[2], 10) - 1;
+            const year = parseInt(dateMatch[3], 10);
             
-            return html;
+            const date = new Date(year, month, day);
+            
+            if (date.getFullYear() === year && 
+                date.getMonth() === month && 
+                date.getDate() === day) {
+                return date.toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            }
         }
+        
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+        
+        return dateString;
+    } catch (e) {
+        console.warn('Ошибка форматирования даты:', dateString, e);
+        return dateString;
+    }
+}
+        function getBillsForSupplier(supplierName) {
+    const bills = billsData[supplierName];
+    
+    if (!bills || bills.length === 0) {
+        return `
+            <div class="no-bills-container">
+                <div class="no-bills-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="no-bills-text">Нет данных о счетах</div>
+            </div>
+        `;
+    }
+    
+    let html = `
+        <div class="bills-table-container">
+            <table class="bills-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Номер счета</th>
+                        <th style="width: 35%;">Дата</th>
+                        <th style="width: 30%; text-align: right;">Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    let total = 0;
+
+    bills.forEach((bill, index) => {
+        if (bill.number && bill.amount) {
+            const formattedDate = formatDate(bill.date);
+            
+            html += `
+                <tr>
+                    <td class="bill-number-cell">
+                        ${bill.number}
+                    </td>
+                    <td class="bill-date-cell">${formattedDate}</td>
+                    <td class="bill-amount-cell">${fmt(bill.amount)}</td>
+                </tr>
+            `;
+            total += bill.amount;
+        }
+    });
+    
+    html += `
+                </tbody>
+                <tfoot>
+                    <tr class="bills-total-row">
+                        <td colspan="2">
+                            <strong>Итого по счетам:</strong>
+                            <span style="font-size: 0.8em; color: var(--text-muted); margin-left: 8px;">
+                                ${bills.length} ${getRussianWordForm(bills.length, ['счет', 'счета', 'счетов'])}
+                            </span>
+                        </td>
+                        <td class="bill-amount-cell" style="font-size: 1.1em;">${fmt(total)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+    
+    return html;
+}
+
+function parseDateForSorting(dateString) {
+    if (!dateString) return new Date(0);
+    
+    dateString = dateString.trim();
+    
+    const dateMatch = dateString.match(/^(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{4})$/);
+    
+    if (dateMatch) {
+        const day = parseInt(dateMatch[1], 10);
+        const month = parseInt(dateMatch[2], 10) - 1;
+        const year = parseInt(dateMatch[3], 10);
+        return new Date(year, month, day);
+    }
+    
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+        return date;
+    }
+    
+    return new Date(0);
+}
+
+function getRussianWordForm(number, forms) {
+    number = Math.abs(number) % 100;
+    const remainder = number % 10;
+    
+    if (number > 10 && number < 20) return forms[2];
+    if (remainder > 1 && remainder < 5) return forms[1];
+    if (remainder === 1) return forms[0];
+    return forms[2];
+}
 
         function toggleDetails(id) {
             const el = document.getElementById(`details-${id}`);
