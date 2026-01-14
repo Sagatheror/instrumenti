@@ -8,7 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -547,6 +548,161 @@
 .bills-table-container {
     animation: fadeInUp 0.3s ease-out;
 }
+/* В стили добавьте */
+.print-only {
+    display: none !important;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .container {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+/* Стили для страниц в PDF */
+.pdf-page {
+    page-break-after: always;
+    padding: 20px;
+}
+
+.pdf-page:last-child {
+    page-break-after: auto;
+}
+
+.pdf-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #333;
+}
+
+.pdf-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.pdf-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.pdf-charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.pdf-chart-wrapper {
+    width: 100%;
+    height: 300px;
+}
+
+.pdf-supplier-page {
+    padding: 30px 20px;
+}
+
+.pdf-supplier-header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border-left: 5px solid #6366f1;
+}
+
+.pdf-supplier-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.pdf-supplier-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.pdf-stat-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.pdf-stat-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.pdf-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.pdf-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 25px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+    color: #333;
+}
+
+.pdf-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.pdf-table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #dee2e6;
+    font-size: 12px;
+}
+
+.pdf-table td {
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    font-size: 13px;
+}
+
+.pdf-table-total {
+    background: #e9ecef !important;
+    font-weight: 700;
+}
+
+.pdf-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    font-size: 11px;
+    color: #666;
+}
     </style>
 </head>
 <body>
@@ -572,8 +728,11 @@
                 <button class="btn btn-secondary" onclick="toggleChartsType()">
                     <i class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Столбцы</span>
                 </button>
-                <button class="btn btn-secondary" onclick="exportToCSV()">
+                <button class="btn btn-secondary" style="display:none" onclick="exportToCSV()">
                     <i class="fas fa-download"></i> Экспорт
+                </button>
+                <button class="btn btn-primary" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf"></i> Экспорт в PDF
                 </button>
                 <button class="btn btn-ghost" onclick="toggleFilters()">
                     <i class="fas fa-filter"></i> Фильтры
@@ -1377,9 +1536,10 @@ function getRussianWordForm(number, forms) {
             showToast('Отчет скачан', 'success');
         }
 
-        function fmt(num) {
-            return new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
-        }
+        function fmt(num, withCurrency = true) {
+    const formatted = new Intl.NumberFormat('ru-RU').format(num);
+    return withCurrency ? formatted + ' ₽' : formatted;
+}
 
         function showLoader(show) {
             document.getElementById('loader').style.display = show ? 'flex' : 'none';
@@ -1405,6 +1565,649 @@ function getRussianWordForm(number, forms) {
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+async function exportToPDF() {
+    showLoader(true);
+    
+    try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 20;
+        
+        // 1. СТРАНИЦА С ГРАФИКАМИ
+        // Создаем контейнер для графиков с фиксированной высотой
+        const chartsContainer = document.createElement('div');
+        chartsContainer.style.width = '800px';
+        chartsContainer.style.backgroundColor = 'white';
+        chartsContainer.style.padding = '30px';
+        chartsContainer.style.fontFamily = 'Inter, sans-serif';
+        
+        // Заголовок
+        chartsContainer.innerHTML = `
+            <div style="
+                background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+                border-radius: 16px;
+                padding: 30px;
+                margin-bottom: 30px;
+                color: white;
+                box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+            ">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <div style="
+                        width: 60px;
+                        height: 60px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 24px;
+                    ">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <h1 style="font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Аналитика поставщиков</h1>
+                        <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
+                            Детальный отчет по депозитам и остаткам
+                        </div>
+                    </div>
+                </div>
+                <div style="
+                    display: flex;
+                    gap: 20px;
+                    margin-top: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.2);
+                ">
+                    <div style="font-size: 14px;">
+                        <div style="opacity: 0.8;">Дата отчета</div>
+                        <div style="font-weight: 600;">${new Date().toLocaleDateString('ru-RU')}</div>
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div style="opacity: 0.8;">Всего поставщиков</div>
+                        <div style="font-weight: 600;">${displayData.length}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Общая статистика
+        const totalDep = displayData.reduce((acc, i) => acc + i.total, 0);
+        const totalRest = displayData.reduce((acc, i) => acc + (i.rest || 0), 0);
+        const totalSuppliers = displayData.length;
+        
+        chartsContainer.innerHTML += `
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin: 30px 0 40px 0;
+            ">
+                <div style="
+                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                    padding: 25px;
+                    border-radius: 16px;
+                    border-left: 6px solid #6366f1;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                    transition: all 0.3s ease;
+                ">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 15px;
+                    ">
+                        <div style="
+                            width: 48px;
+                            height: 48px;
+                            background: rgba(99, 102, 241, 0.1);
+                            border-radius: 12px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #6366f1;
+                            font-size: 20px;
+                        ">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div>
+                            <div style="
+                                font-size: 14px;
+                                color: #64748b;
+                                font-weight: 600;
+                                letter-spacing: 0.5px;
+                            ">Общая сумма депозитов</div>
+                            <div style="
+                                font-size: 32px;
+                                font-weight: 800;
+                                color: #1e293b;
+                                line-height: 1.1;
+                                margin-top: 5px;
+                            ">${fmtNoCurrency(totalDep)} ₽</div>
+                        </div>
+                    </div>
+                    <div style="
+                        font-size: 13px;
+                        color: #94a3b8;
+                        margin-top: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <i class="fas fa-arrow-up" style="color: #10b981;"></i>
+                        Общие вложения всех поставщиков
+                    </div>
+                </div>
+                
+                <div style="
+                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                    padding: 25px;
+                    border-radius: 16px;
+                    border-left: 6px solid #10b981;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                    transition: all 0.3s ease;
+                ">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 15px;
+                    ">
+                        <div style="
+                            width: 48px;
+                            height: 48px;
+                            background: rgba(16, 185, 129, 0.1);
+                            border-radius: 12px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #10b981;
+                            font-size: 20px;
+                        ">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div>
+                            <div style="
+                                font-size: 14px;
+                                color: #64748b;
+                                font-weight: 600;
+                                letter-spacing: 0.5px;
+                            ">Общий остаток</div>
+                            <div style="
+                                font-size: 32px;
+                                font-weight: 800;
+                                color: #1e293b;
+                                line-height: 1.1;
+                                margin-top: 5px;
+                            ">${fmtNoCurrency(totalRest)} ₽</div>
+                        </div>
+                    </div>
+                    <div style="
+                        font-size: 13px;
+                        color: #94a3b8;
+                        margin-top: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <i class="fas fa-balance-scale" style="color: #6366f1;"></i>
+                        Сумма к возврату/доплате
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Создаем контейнеры для графиков
+        const chartsWrapper = document.createElement('div');
+        chartsWrapper.style.marginBottom = '40px';
+        
+        // График депозитов
+        const depositChartDiv = document.createElement('div');
+        depositChartDiv.style.marginBottom = '30px';
+        depositChartDiv.innerHTML = `
+            <div style="margin-bottom: 15px; font-weight: 600; font-size: 16px; color: #333;">
+                <i class="fas fa-wallet" style="color: #6366f1; margin-right: 8px;"></i>
+                Общая сумма депозитов по поставщикам
+            </div>
+            <div style="width: 100%; height: 250px;">
+                <canvas id="pdfDepositChart" width="760" height="250"></canvas>
+            </div>
+        `;
+        
+        // График остатков
+        const balanceChartDiv = document.createElement('div');
+        balanceChartDiv.innerHTML = `
+            <div style="margin-bottom: 15px; font-weight: 600; font-size: 16px; color: #333;">
+                <i class="fas fa-piggy-bank" style="color: #10b981; margin-right: 8px;"></i>
+                Текущие остатки по поставщикам
+            </div>
+            <div style="width: 100%; height: 250px;">
+                <canvas id="pdfBalanceChart" width="760" height="250"></canvas>
+            </div>
+        `;
+        
+        chartsWrapper.appendChild(depositChartDiv);
+        chartsWrapper.appendChild(balanceChartDiv);
+        chartsContainer.appendChild(chartsWrapper);
+        
+        // Добавляем на временную страницу
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.appendChild(chartsContainer);
+        document.body.appendChild(tempDiv);
+        
+        // Создаем графики для PDF (упрощенные версии)
+        const pdfDepositCtx = document.getElementById('pdfDepositChart').getContext('2d');
+        const pdfBalanceCtx = document.getElementById('pdfBalanceChart').getContext('2d');
+        
+        const labels = displayData.map(d => d.name);
+        const totals = displayData.map(d => d.total);
+        const rests = displayData.map(d => d.rest);
+        
+        // Упрощенный график депозитов
+        new Chart(pdfDepositCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Сумма депозита',
+                    data: totals,
+                    backgroundColor: displayData.map((d, i) => getSupplierColorRGBA(i, 0.8)),
+                    borderColor: displayData.map((d, i) => getSupplierColor(i)),
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: v => fmtNoCurrency(v) + ' ₽',
+                            font: { size: 10 },
+                            maxTicksLimit: 8
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 9 },
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Упрощенный график остатков
+        new Chart(pdfBalanceCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Остаток',
+                    data: rests,
+                    backgroundColor: displayData.map((d, i) => getSupplierColorRGBA(i, 0.8)),
+                    borderColor: displayData.map((d, i) => getSupplierColor(i)),
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: v => fmtNoCurrency(v) + ' ₽',
+                            font: { size: 10 },
+                            maxTicksLimit: 8
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 9 },
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Ждем отрисовки графиков
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Конвертируем в canvas с ОПТИМИЗИРОВАННЫМИ параметрами
+        const chartsCanvas = await html2canvas(chartsContainer, {
+            scale: 1.5, // Уменьшаем масштаб с 2 до 1.5
+            backgroundColor: 'white',
+            useCORS: true,
+            logging: false,
+            imageTimeout: 0,
+            removeContainer: true,
+            width: 800,
+            height: chartsContainer.offsetHeight,
+            windowWidth: 800,
+            windowHeight: chartsContainer.offsetHeight
+        });
+        
+        // ОПТИМИЗАЦИЯ: Конвертируем в JPEG с качеством 0.8
+        const chartsImgData = chartsCanvas.toDataURL('image/jpeg', 0.8);
+        
+        // Рассчитываем высоту изображения для PDF
+        const imgWidth = pageWidth - 2 * margin;
+        const imgHeight = (chartsCanvas.height * imgWidth) / chartsCanvas.width;
+        
+        // Добавляем первую страницу
+        pdf.addImage(chartsImgData, 'JPEG', margin, margin, imgWidth, Math.min(imgHeight, pageHeight - 2 * margin));
+        
+        // Удаляем временный контейнер
+        document.body.removeChild(tempDiv);
+        
+        // 2. СТРАНИЦЫ ДЛЯ КАЖДОГО ПОСТАВЩИКА
+        for (let i = 0; i < displayData.length; i++) {
+            const supplier = displayData[i];
+            
+            // Создаем контейнер для страницы поставщика
+            const supplierContainer = document.createElement('div');
+            supplierContainer.style.width = '800px';
+            supplierContainer.style.backgroundColor = 'white';
+            supplierContainer.style.padding = '30px';
+            supplierContainer.style.fontFamily = 'Inter, sans-serif';
+            
+            // Заголовок поставщика
+            supplierContainer.innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid ${getSupplierColor(supplier.colorIndex)};">
+                    <div style="font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #333;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: ${getSupplierColor(supplier.colorIndex)}; border-radius: 50%; margin-right: 10px;"></span>
+                        ${supplier.name}
+                    </div>
+                    <div style="display: flex; gap: 20px; font-size: 14px; color: #666;">
+                        <div>ID: ${supplier.id}</div>
+                        <div>Количество депозитов: ${supplier.count}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Статистика поставщика
+            supplierContainer.innerHTML = `
+    <div style="
+        background: linear-gradient(135deg, ${getSupplierColorRGBA(supplier.colorIndex, 0.1)} 0%, rgba(255, 255, 255, 0.1) 100%);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid ${getSupplierColorRGBA(supplier.colorIndex, 0.2)};
+        position: relative;
+        overflow: hidden;
+    ">
+        <div style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: ${getSupplierColorRGBA(supplier.colorIndex, 0.05)};
+            border-radius: 50%;
+            transform: translate(50px, -50px);
+        "></div>
+        
+        <div style="display: flex; align-items: center; gap: 20px; position: relative; z-index: 2;">
+            <div style="
+                width: 70px;
+                height: 70px;
+                background: linear-gradient(135deg, ${getSupplierColor(supplier.colorIndex)}, ${getSupplierColorRGBA(supplier.colorIndex, 0.7)});
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 28px;
+                font-weight: 700;
+                box-shadow: 0 8px 20px ${getSupplierColorRGBA(supplier.colorIndex, 0.3)};
+            ">
+                ${supplier.name.charAt(0)}
+            </div>
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 26px; font-weight: 800; color: #1e293b;">
+                        ${supplier.name}
+                    </div>
+                    <div style="
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: ${supplier.rest > 0 ? '#10b981' : supplier.rest < 0 ? '#ef4444' : '#64748b'};
+                        background: ${supplier.rest > 0 ? 'rgba(16, 185, 129, 0.1)' : supplier.rest < 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(148, 163, 184, 0.1)'};
+                        padding: 8px 16px;
+                        border-radius: 12px;
+                        border: 1px solid ${supplier.rest > 0 ? 'rgba(16, 185, 129, 0.2)' : supplier.rest < 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(148, 163, 184, 0.2)'};
+                    ">
+                        ${fmtNoCurrency(supplier.rest)} ₽
+                        <div style="
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: ${supplier.rest > 0 ? '#10b981' : supplier.rest < 0 ? '#ef4444' : '#64748b'};
+                            margin-top: 2px;
+                            text-align: center;
+                        ">
+                            ${supplier.rest > 0 ? 'К возврату' : supplier.rest < 0 ? 'К доплате' : 'Сбалансирован'}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 20px; font-size: 14px; color: #64748b;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-hashtag"></i>
+                        ID: ${supplier.id}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-wallet"></i>
+                        ${supplier.count} ${getRussianWordForm(supplier.count, ['депозит', 'депозита', 'депозитов'])}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Сумма депозитов: ${fmtNoCurrency(supplier.total)} ₽
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+            
+            // Секция депозитов
+            if (supplier.deposits.length > 0) {
+                let depositsTable = `
+                    <div style="margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid #dee2e6;">
+                        <div style="font-size: 16px; font-weight: 600; color: #333;">
+                            <i class="fas fa-wallet" style="margin-right: 8px; color: #6366f1;"></i>
+                            Депозиты поставщика
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <thead>
+                            <tr>
+                                <th style="background: #f8f9fa; padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #dee2e6; font-size: 12px; width: 60%;">Описание</th>
+                                <th style="background: #f8f9fa; padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #dee2e6; font-size: 12px; width: 40%;">Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                supplier.deposits.forEach((d, idx) => {
+                    depositsTable += `
+                        <tr>
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                                ${d.year ? `Депозит за ${d.year} год` : `Депозит #${idx + 1}`}
+                            </td>
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                                ${fmtNoCurrency(d.amount)} ₽
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                depositsTable += `
+                            <tr style="background: #e9ecef;">
+                                <td style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
+                                    <strong>Итого депозитов (${supplier.count} ${getRussianWordForm(supplier.count, ['платеж', 'платежа', 'платежей'])})</strong>
+                                </td>
+                                <td style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
+                                    <strong>${fmtNoCurrency(supplier.total)} ₽</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                supplierContainer.innerHTML += depositsTable;
+            }
+            
+            // Секция счетов
+            const bills = billsData[supplier.name];
+            if (bills && bills.length > 0) {
+                const billsTotal = bills.reduce((sum, bill) => sum + (bill.amount || 0), 0);
+                
+                let billsTable = `
+                    <div style="margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid #dee2e6;">
+                        <div style="font-size: 16px; font-weight: 600; color: #333;">
+                            <i class="fas fa-file-invoice-dollar" style="margin-right: 8px; color: #10b981;"></i>
+                            Счета из авансов/переплат
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <thead>
+                            <tr>
+                                <th style="background: #f8f9fa; padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #dee2e6; font-size: 12px; width: 35%;">Номер счета</th>
+                                <th style="background: #f8f9fa; padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #dee2e6; font-size: 12px; width: 35%;">Дата</th>
+                                <th style="background: #f8f9fa; padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #dee2e6; font-size: 12px; width: 30%;">Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bills.forEach(bill => {
+                    billsTable += `
+                        <tr>
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                                ${bill.number || '-'}
+                            </td>
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                                ${formatDate(bill.date)}
+                            </td>
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                                ${fmtNoCurrency(bill.amount || 0)} ₽
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                billsTable += `
+                            <tr style="background: #e9ecef;">
+                                <td colspan="2" style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
+                                    <strong>Итого по счетам (${bills.length} ${getRussianWordForm(bills.length, ['счет', 'счета', 'счетов'])})</strong>
+                                </td>
+                                <td style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
+                                    <strong>${fmtNoCurrency(billsTotal)} ₽</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                supplierContainer.innerHTML += billsTable;
+            }
+            
+            // Футер страницы
+            supplierContainer.innerHTML += `
+                <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; font-size: 11px; color: #666;">
+                    Страница ${i + 2} из ${displayData.length + 1} • Отчет сформирован ${new Date().toLocaleDateString('ru-RU')}
+                </div>
+            `;
+            
+            // Добавляем на временную страницу
+            const tempSupplierDiv = document.createElement('div');
+            tempSupplierDiv.style.position = 'absolute';
+            tempSupplierDiv.style.left = '-9999px';
+            tempSupplierDiv.appendChild(supplierContainer);
+            document.body.appendChild(tempSupplierDiv);
+            
+            // Новая страница в PDF
+            pdf.addPage();
+            
+            // Конвертируем страницу поставщика с ОПТИМИЗИРОВАННЫМИ параметрами
+            const supplierCanvas = await html2canvas(supplierContainer, {
+                scale: 1.5, // Уменьшаем масштаб
+                backgroundColor: 'white',
+                useCORS: true,
+                logging: false,
+                imageTimeout: 0,
+                removeContainer: true,
+                width: 800,
+                height: supplierContainer.offsetHeight,
+                windowWidth: 800,
+                windowHeight: supplierContainer.offsetHeight
+            });
+            
+            // ОПТИМИЗАЦИЯ: Конвертируем в JPEG
+            const supplierImgData = supplierCanvas.toDataURL('image/jpeg', 0.8);
+            
+            // Рассчитываем высоту
+            const supplierImgWidth = pageWidth - 2 * margin;
+            const supplierImgHeight = (supplierCanvas.height * supplierImgWidth) / supplierCanvas.width;
+            
+            // Добавляем страницу
+            pdf.addImage(supplierImgData, 'JPEG', margin, margin, supplierImgWidth, Math.min(supplierImgHeight, pageHeight - 2 * margin));
+            
+            // Удаляем временный контейнер
+            document.body.removeChild(tempSupplierDiv);
+            
+            // Очищаем память
+            supplierCanvas.width = 0;
+            supplierCanvas.height = 0;
+        }
+        
+        // Сохраняем PDF
+        const fileName = `Отчет_поставщики_${new Date().toISOString().slice(0,10)}.pdf`;
+        pdf.save(fileName);
+        
+        showToast('PDF успешно сгенерирован', 'success');
+        
+    } catch (error) {
+        console.error('Ошибка при генерации PDF:', error);
+        showToast('Ошибка при генерации PDF: ' + error.message, 'error');
+    } finally {
+        showLoader(false);
+    }
+}
+
+// Вспомогательная функция для форматирования без знака рубля
+function fmtNoCurrency(num) {
+    return new Intl.NumberFormat('ru-RU').format(num);
+}
     </script>
 </body>
 </html>
