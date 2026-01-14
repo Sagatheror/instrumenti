@@ -1575,15 +1575,12 @@ async function exportToPDF() {
         const pageHeight = pdf.internal.pageSize.getHeight();
         const margin = 20;
         
-        // 1. СТРАНИЦА С ГРАФИКАМИ
-        // Создаем контейнер для графиков с фиксированной высотой
         const chartsContainer = document.createElement('div');
         chartsContainer.style.width = '800px';
         chartsContainer.style.backgroundColor = 'white';
         chartsContainer.style.padding = '30px';
         chartsContainer.style.fontFamily = 'Inter, sans-serif';
         
-        // Заголовок
         chartsContainer.innerHTML = `
             <div style="
                 background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
@@ -1632,7 +1629,6 @@ async function exportToPDF() {
             </div>
         `;
         
-        // Общая статистика
         const totalDep = displayData.reduce((acc, i) => acc + i.total, 0);
         const totalRest = displayData.reduce((acc, i) => acc + (i.rest || 0), 0);
         const totalSuppliers = displayData.length;
@@ -1758,11 +1754,9 @@ async function exportToPDF() {
             </div>
         `;
         
-        // Создаем контейнеры для графиков
         const chartsWrapper = document.createElement('div');
         chartsWrapper.style.marginBottom = '40px';
         
-        // График депозитов
         const depositChartDiv = document.createElement('div');
         depositChartDiv.style.marginBottom = '30px';
         depositChartDiv.innerHTML = `
@@ -1775,7 +1769,6 @@ async function exportToPDF() {
             </div>
         `;
         
-        // График остатков
         const balanceChartDiv = document.createElement('div');
         balanceChartDiv.innerHTML = `
             <div style="margin-bottom: 15px; font-weight: 600; font-size: 16px; color: #333;">
@@ -1791,14 +1784,12 @@ async function exportToPDF() {
         chartsWrapper.appendChild(balanceChartDiv);
         chartsContainer.appendChild(chartsWrapper);
         
-        // Добавляем на временную страницу
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.left = '-9999px';
         tempDiv.appendChild(chartsContainer);
         document.body.appendChild(tempDiv);
         
-        // Создаем графики для PDF (упрощенные версии)
         const pdfDepositCtx = document.getElementById('pdfDepositChart').getContext('2d');
         const pdfBalanceCtx = document.getElementById('pdfBalanceChart').getContext('2d');
         
@@ -1806,7 +1797,6 @@ async function exportToPDF() {
         const totals = displayData.map(d => d.total);
         const rests = displayData.map(d => d.rest);
         
-        // Упрощенный график депозитов
         new Chart(pdfDepositCtx, {
             type: 'bar',
             data: {
@@ -1853,7 +1843,6 @@ async function exportToPDF() {
             }
         });
         
-        // Упрощенный график остатков
         new Chart(pdfBalanceCtx, {
             type: 'bar',
             data: {
@@ -1900,12 +1889,10 @@ async function exportToPDF() {
             }
         });
         
-        // Ждем отрисовки графиков
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Конвертируем в canvas с ОПТИМИЗИРОВАННЫМИ параметрами
         const chartsCanvas = await html2canvas(chartsContainer, {
-            scale: 1.5, // Уменьшаем масштаб с 2 до 1.5
+            scale: 1.5,
             backgroundColor: 'white',
             useCORS: true,
             logging: false,
@@ -1917,31 +1904,24 @@ async function exportToPDF() {
             windowHeight: chartsContainer.offsetHeight
         });
         
-        // ОПТИМИЗАЦИЯ: Конвертируем в JPEG с качеством 0.8
         const chartsImgData = chartsCanvas.toDataURL('image/jpeg', 0.8);
         
-        // Рассчитываем высоту изображения для PDF
         const imgWidth = pageWidth - 2 * margin;
         const imgHeight = (chartsCanvas.height * imgWidth) / chartsCanvas.width;
         
-        // Добавляем первую страницу
         pdf.addImage(chartsImgData, 'JPEG', margin, margin, imgWidth, Math.min(imgHeight, pageHeight - 2 * margin));
         
-        // Удаляем временный контейнер
         document.body.removeChild(tempDiv);
         
-        // 2. СТРАНИЦЫ ДЛЯ КАЖДОГО ПОСТАВЩИКА
         for (let i = 0; i < displayData.length; i++) {
             const supplier = displayData[i];
             
-            // Создаем контейнер для страницы поставщика
             const supplierContainer = document.createElement('div');
             supplierContainer.style.width = '800px';
             supplierContainer.style.backgroundColor = 'white';
             supplierContainer.style.padding = '30px';
             supplierContainer.style.fontFamily = 'Inter, sans-serif';
             
-            // Заголовок поставщика
             supplierContainer.innerHTML = `
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid ${getSupplierColor(supplier.colorIndex)};">
                     <div style="font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #333;">
@@ -1955,7 +1935,6 @@ async function exportToPDF() {
                 </div>
             `;
             
-            // Статистика поставщика
             supplierContainer.innerHTML = `
     <div style="
         background: linear-gradient(135deg, ${getSupplierColorRGBA(supplier.colorIndex, 0.1)} 0%, rgba(255, 255, 255, 0.1) 100%);
@@ -2038,7 +2017,6 @@ async function exportToPDF() {
     </div>
 `;
             
-            // Секция депозитов
             if (supplier.deposits.length > 0) {
                 let depositsTable = `
                     <div style="margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid #dee2e6;">
@@ -2086,7 +2064,6 @@ async function exportToPDF() {
                 supplierContainer.innerHTML += depositsTable;
             }
             
-            // Секция счетов
             const bills = billsData[supplier.name];
             if (bills && bills.length > 0) {
                 const billsTotal = bills.reduce((sum, bill) => sum + (bill.amount || 0), 0);
@@ -2141,26 +2118,22 @@ async function exportToPDF() {
                 supplierContainer.innerHTML += billsTable;
             }
             
-            // Футер страницы
             supplierContainer.innerHTML += `
                 <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; font-size: 11px; color: #666;">
                     Страница ${i + 2} из ${displayData.length + 1} • Отчет сформирован ${new Date().toLocaleDateString('ru-RU')}
                 </div>
             `;
             
-            // Добавляем на временную страницу
             const tempSupplierDiv = document.createElement('div');
             tempSupplierDiv.style.position = 'absolute';
             tempSupplierDiv.style.left = '-9999px';
             tempSupplierDiv.appendChild(supplierContainer);
             document.body.appendChild(tempSupplierDiv);
             
-            // Новая страница в PDF
             pdf.addPage();
             
-            // Конвертируем страницу поставщика с ОПТИМИЗИРОВАННЫМИ параметрами
             const supplierCanvas = await html2canvas(supplierContainer, {
-                scale: 1.5, // Уменьшаем масштаб
+                scale: 1.5,
                 backgroundColor: 'white',
                 useCORS: true,
                 logging: false,
@@ -2172,25 +2145,19 @@ async function exportToPDF() {
                 windowHeight: supplierContainer.offsetHeight
             });
             
-            // ОПТИМИЗАЦИЯ: Конвертируем в JPEG
             const supplierImgData = supplierCanvas.toDataURL('image/jpeg', 0.8);
             
-            // Рассчитываем высоту
             const supplierImgWidth = pageWidth - 2 * margin;
             const supplierImgHeight = (supplierCanvas.height * supplierImgWidth) / supplierCanvas.width;
             
-            // Добавляем страницу
             pdf.addImage(supplierImgData, 'JPEG', margin, margin, supplierImgWidth, Math.min(supplierImgHeight, pageHeight - 2 * margin));
             
-            // Удаляем временный контейнер
             document.body.removeChild(tempSupplierDiv);
             
-            // Очищаем память
             supplierCanvas.width = 0;
             supplierCanvas.height = 0;
         }
         
-        // Сохраняем PDF
         const fileName = `Отчет_поставщики_${new Date().toISOString().slice(0,10)}.pdf`;
         pdf.save(fileName);
         
@@ -2204,7 +2171,6 @@ async function exportToPDF() {
     }
 }
 
-// Вспомогательная функция для форматирования без знака рубля
 function fmtNoCurrency(num) {
     return new Intl.NumberFormat('ru-RU').format(num);
 }
