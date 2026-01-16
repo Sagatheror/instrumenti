@@ -3111,38 +3111,6 @@ tr:hover {
   pointer-events: none;
   z-index: 9996;
   overflow: hidden;
-}
-
-.sakura-petal {
-  position: absolute;
-  animation: sakuraFall linear infinite;
-}
-
-@keyframes sakuraFall {
-  0% {
-    transform: translateY(-10px) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-.spring-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9996;
-  overflow: hidden;
   background: 
     radial-gradient(circle at 20% 80%, rgba(255, 235, 59, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(129, 199, 132, 0.1) 0%, transparent 50%);
@@ -3151,7 +3119,6 @@ tr:hover {
 .sakura-petal {
   position: absolute;
   animation: sakuraFall linear infinite;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   z-index: 1;
 }
 
@@ -3162,7 +3129,6 @@ tr:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  filter: blur(2px);
   opacity: 0.6;
 }
 
@@ -5788,3 +5754,4 @@ function updateSendButtonState() {
 </script>
 </body>
 </html>
+
