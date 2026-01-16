@@ -1177,39 +1177,79 @@ tr:hover {
 }
 /* Улучшаем окно баг-репорта */
 #bugModal .modal-content {
-  max-width: 600px;
+  max-width: 650px;
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--gray-50), var(--light));
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-xl);
   animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+#bugModal .modal-title {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+}
+
+#bugModal .modal-body {
+  padding: 2rem;
+}
+.bug-form-group {
+  margin-bottom: 1.75rem;
+}
+
+.bug-form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 0.75rem;
+}
+
+.bug-form-label i {
+  color: var(--danger);
+  font-size: 1rem;
+}
 /* Красивое текстовое поле */
 #bugDescription {
   width: 100%;
-  padding: 1.25rem;
+  min-height: 180px;
+  max-height: 300px;
+  padding: 1.5rem;
   border: 2px solid var(--gray-300);
   border-radius: var(--radius-lg);
   background: var(--light);
   color: var(--dark);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.6;
   resize: vertical;
-  min-height: 150px;
-  max-height: 300px;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 #bugDescription:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+ outline: none;
+  border-color: var(--danger);
+  box-shadow: 
+    0 0 0 4px rgba(239, 68, 68, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.05);
   background: var(--gray-50);
+  transform: translateY(-1px);
 }
 
 /* Placeholder стилизация */
 #bugDescription::placeholder {
   color: var(--gray-500);
   font-style: italic;
+  opacity: 0.7;
 }
 
 /* Счетчик символов */
@@ -1253,16 +1293,16 @@ tr:hover {
 /* Красивое поле ввода */
 #bugIdInput {
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem 1.25rem 3rem;
   border: 2px solid var(--gray-300);
   border-radius: var(--radius-lg);
   background: var(--light);
   color: var(--dark);
   font-family: var(--font-mono);
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   letter-spacing: 0.5px;
 }
 
@@ -1271,7 +1311,7 @@ tr:hover {
   border-color: var(--primary);
   box-shadow: 
     0 0 0 4px rgba(67, 97, 238, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    inset 0 2px 4px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
 }
 
@@ -1281,7 +1321,14 @@ tr:hover {
   font-weight: 400;
   font-family: var(--font-sans);
 }
-
+.bug-id-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 1.2rem;
+}
 /* Автозаполнение */
 #bugIdInput:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 30px var(--light) inset;
@@ -1294,8 +1341,8 @@ tr:hover {
   overflow-y: auto;
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
-  padding: 1rem;
   background: var(--gray-50);
+  padding: 0.75rem;
 }
 
 /* Элементы истории */
@@ -1303,19 +1350,36 @@ tr:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   margin-bottom: 0.5rem;
   background: var(--light);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.bug-history-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: linear-gradient(var(--primary), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bug-history-item:hover::before {
+  opacity: 1;
 }
 
 .bug-history-item:hover {
-  background: var(--primary-light);
-  border-color: var(--primary);
   transform: translateX(5px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary-light);
 }
 
 .bug-history-item:active {
@@ -1326,31 +1390,46 @@ tr:hover {
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--primary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .bug-history-date {
   font-size: 0.75rem;
   color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+.bug-history-arrow {
+  color: var(--gray-400);
+  font-size: 0.875rem;
+  transition: transform 0.3s ease;
 }
 
+.bug-history-item:hover .bug-history-arrow {
+  transform: translateX(3px);
+  color: var(--primary);
+}
 /* Результаты поиска */
 #bugStatusResult {
-  padding: 1rem;
-  border-radius: var(--radius);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
   background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
   border-left: 4px solid var(--primary);
-  animation: fadeIn 0.3s ease;
+  animation: slideInUp 0.4s ease;
 }
 
-.status-success {
-  border-left-color: var(--success) !important;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), var(--gray-50)) !important;
+.status-card.success {
+  border-left-color: var(--success);
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), var(--gray-50));
 }
 
-.status-error {
-  border-left-color: var(--danger) !important;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), var(--gray-50)) !important;
+.status-card.error {
+  border-left-color: var(--danger);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), var(--gray-50));
+}
+
+.status-card.warning {
+  border-left-color: var(--warning);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), var(--gray-50));
 }
 
 /* Анимация поиска */
@@ -1386,11 +1465,25 @@ tr:hover {
     transform: scale(1) translateY(0);
   }
 }
+#searchBugId {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 #searchBugId:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
-
+#searchBugId:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
 #searchBugId:active {
   transform: translateY(0);
 }
@@ -1463,7 +1556,1161 @@ tr:hover {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+#instructionModal .modal-content {
+  max-width: 800px;
+  max-height: 85vh;
+  padding: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--gray-50), var(--light));
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-xl);
+}
 
+#instructionModal .modal-header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 1.5rem 2rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#instructionModal .modal-title {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+}
+
+#instructionModal .modal-title i {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#instructionModal .modal-close {
+  color: white;
+  font-size: 1.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#instructionModal .modal-close:hover {
+  color: var(--accent);
+  transform: rotate(90deg) scale(1.1);
+}
+
+#instructionContent {
+  max-height: calc(85vh - 80px);
+  overflow-y: auto;
+  padding: 2.5rem;
+  background: var(--light);
+}
+
+/* Стилизация скроллбара внутри инструкции */
+#instructionContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+#instructionContent::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 4px;
+}
+
+#instructionContent::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--primary), var(--secondary));
+  border-radius: 4px;
+}
+
+#instructionContent::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--primary-light), var(--secondary));
+}
+
+/* Улучшенная типографика инструкции */
+#instructionContent h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 2rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+#instructionContent h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px;
+}
+
+#instructionContent p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--gray-600);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Стилизация шагов */
+.instruction-step {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.instruction-step:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--accent);
+}
+
+.instruction-step::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.instruction-step:hover::before {
+  transform: translateX(100%);
+}
+
+.instruction-step h3 {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  font-size: 1.3rem;
+}
+
+.instruction-step h3 i {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.instruction-step ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.instruction-step li {
+  margin-bottom: 0.75rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.instruction-step li::marker {
+  color: var(--primary);
+  font-size: 1.2em;
+}
+
+.instruction-step li:last-child {
+  margin-bottom: 0;
+}
+
+/* Стили для дополнительных функций */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background: var(--gray-50);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary-light);
+}
+
+.feature-card strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Анимация появления контента */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.instruction-step {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.instruction-step:nth-child(1) { animation-delay: 0.1s; }
+.instruction-step:nth-child(2) { animation-delay: 0.2s; }
+.instruction-step:nth-child(3) { animation-delay: 0.3s; }
+.instruction-step:nth-child(4) { animation-delay: 0.4s; }
+
+/* Кнопка призыва к действию */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 2rem auto;
+  display: block;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+}
+
+.cta-button i {
+  transition: transform 0.3s ease;
+}
+
+.cta-button:hover i {
+  transform: translateX(5px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  #instructionModal .modal-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  #instructionContent {
+    padding: 1.5rem;
+  }
+  
+  #instructionContent h2 {
+    font-size: 1.5rem;
+  }
+  
+  .instruction-step {
+    padding: 1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+#sendBugBtn {
+  background: linear-gradient(135deg, var(--danger), #ff6b6b);
+  color: white;
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+#sendBugBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+#sendBugBtn:hover::before {
+  left: 100%;
+}
+
+#sendBugBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, #ff6b6b, var(--danger));
+}
+
+#sendBugBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+#sendBugBtn:disabled:hover {
+  box-shadow: none;
+}
+#checkStatusBtn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#checkStatusBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+#cancelBugBtn {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#cancelBugBtn:hover {
+  background: var(--gray-200);
+  transform: translateY(-2px);
+}
+.bug-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.bug-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--danger);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.bug-loading-text {
+  color: var(--gray-600);
+  font-size: 0.95rem;
+}
+.bug-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), transparent);
+  border-radius: var(--radius-lg);
+}
+
+.bug-success-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--success);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: scaleIn 0.5s ease;
+}
+
+.bug-success-id {
+  background: var(--gray-100);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--primary);
+  margin: 1rem 0;
+  border: 1px solid var(--gray-300);
+}
+
+.bug-success-hint {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+.bug-id-input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.status-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.status-icon.success {
+  background: var(--success);
+  color: white;
+}
+
+.status-icon.error {
+  background: var(--danger);
+  color: white;
+}
+
+.status-icon.warning {
+  background: var(--warning);
+  color: white;
+}
+
+.status-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--dark);
+}
+
+.status-id {
+  font-family: var(--font-mono);
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.status-details {
+  background: var(--light);
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-top: 1rem;
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.status-row:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  color: var(--gray-600);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.status-value {
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.status-value.success {
+  color: var(--success);
+}
+
+.status-value.error {
+  color: var(--danger);
+}
+
+.status-value.warning {
+  color: var(--warning);
+}
+
+/* Кнопки модального окна */
+.bug-id-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+#closeBugIdModalBtn {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#closeBugIdModalBtn:hover {
+  background: var(--gray-200);
+  transform: translateY(-2px);
+}
+/* Индикатор поиска */
+.searching-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.searching-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.searching-text {
+  color: var(--gray-600);
+  font-size: 0.95rem;
+}
+/* Анимации */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+#changelogModal .modal-content {
+  max-width: 850px;
+  max-height: 85vh;
+  padding: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--gray-50), var(--light));
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#changelogModal .modal-header {
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  padding: 1.75rem 2.5rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+#changelogModal .modal-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
+  animation: shimmer 3s infinite linear;
+  pointer-events: none;
+}
+
+#changelogModal .modal-title {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#changelogModal .modal-title i {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.25);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+#changelogModal .modal-title:hover i {
+  transform: rotate(15deg) scale(1.1);
+}
+
+#changelogModal .modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.75rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+#changelogModal .modal-close:hover {
+  background: white;
+  color: #8B5CF6;
+  transform: rotate(90deg) scale(1.1);
+  border-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Контейнер changelog */
+#changelogContent {
+  max-height: calc(85vh - 100px);
+  overflow-y: auto;
+  padding: 0;
+  position: relative;
+}
+
+/* Стилизация скроллбара внутри changelog */
+#changelogContent::-webkit-scrollbar {
+  width: 10px;
+}
+
+#changelogContent::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 5px;
+}
+
+#changelogContent::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--primary), var(--secondary));
+  border-radius: 5px;
+  border: 2px solid var(--light);
+}
+
+#changelogContent::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--primary-light), var(--secondary));
+}
+
+/* Заголовок changelog */
+.changelog-header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(124, 58, 237, 0.05));
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.changelog-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+}
+
+.changelog-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.changelog-subtitle {
+  color: var(--gray-600);
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Список версий */
+.changelog-timeline {
+  position: relative;
+  padding: 2.5rem 2rem 3rem;
+  background: var(--light);
+}
+
+.changelog-timeline::before {
+  content: '';
+  position: absolute;
+  left: 3.5rem;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, 
+    transparent,
+    var(--primary) 10%,
+    var(--accent) 50%,
+    var(--secondary) 90%,
+    transparent
+  );
+  opacity: 0.4;
+  border-radius: 3px;
+}
+
+/* Версия */
+.changelog-version {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-left: 5rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.changelog-version:last-child {
+  margin-bottom: 0;
+}
+
+.changelog-version::before {
+  content: '';
+  position: absolute;
+  left: 3rem;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: 4px solid var(--light);
+  box-shadow: 
+    0 0 0 4px rgba(67, 97, 238, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.changelog-version:hover::before {
+  transform: scale(1.3);
+  box-shadow: 
+    0 0 0 8px rgba(67, 97, 238, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Карточка версии */
+.version-card {
+  background: var(--light);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.version-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+.version-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.version-card:hover::before {
+  opacity: 1;
+}
+
+/* Заголовок версии */
+.version-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.version-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.version-number {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+.version-date {
+  font-size: 0.95rem;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.version-date i {
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+/* Бейдж типа обновления */
+.version-type {
+  padding: 0.625rem 1.25rem;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.version-type::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.version-type:hover::before {
+  left: 100%;
+}
+
+.version-type:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.version-type.added {
+  background: linear-gradient(135deg, var(--success), #10B981);
+  color: white;
+}
+
+.version-type.fixed {
+  background: linear-gradient(135deg, var(--warning), #F59E0B);
+  color: white;
+}
+
+.version-type.changed {
+  background: linear-gradient(135deg, var(--primary), #3B82F6);
+  color: white;
+}
+
+.version-type.removed {
+  background: linear-gradient(135deg, var(--danger), #EF4444);
+  color: white;
+}
+
+/* Список изменений */
+.version-changes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.change-item {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  position: relative;
+  line-height: 1.6;
+  color: var(--gray-700);
+  transition: all 0.3s ease;
+}
+
+.change-item:last-child {
+  margin-bottom: 0;
+}
+
+.change-item:hover {
+  transform: translateX(5px);
+}
+
+.change-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+}
+
+.change-item.added::before {
+  background: var(--success);
+  box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.2);
+}
+
+.change-item.fixed::before {
+  background: var(--warning);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+.change-item.changed::before {
+  background: var(--primary);
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+}
+
+.change-item.removed::before {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+.change-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Категории изменений */
+.change-category {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), transparent);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--primary);
+}
+
+.category-title i {
+  font-size: 1rem;
+  color: var(--primary);
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.changelog-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.changelog-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--gray-200);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+.changelog-loading-text {
+  color: var(--gray-600);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Сообщение об ошибке */
+.changelog-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+  border-radius: var(--radius-xl);
+  margin: 2rem;
+}
+
+.changelog-error-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.changelog-error-text {
+  color: var(--gray-700);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.changelog-error-hint {
+  color: var(--gray-500);
+  font-size: 0.95rem;
+  max-width: 400px;
+}
+
+/* Пустой changelog */
+.changelog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), transparent);
+  border-radius: var(--radius-xl);
+  margin: 2rem;
+}
+.changelog-empty-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.changelog-empty-text {
+  color: var(--gray-700);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.changelog-empty-subtext {
+  color: var(--gray-500);
+  font-size: 0.95rem;
+  max-width: 400px;
+}
 </style>
 </head>
 <body>
@@ -1656,7 +2903,7 @@ tr:hover {
   <button class="control-btn" id="snowToggleBtn" title="Снегопад">
     <i class="fas fa-snowflake"></i>
   </button>
-  <button class="control-btn" style="display:none" id="fullscreenBtn" title="Полный экран">
+  <button class="control-btn" id="fullscreenBtn" title="Полный экран">
     <i class="fas fa-expand"></i>
   </button>
   <button class="control-btn" style="display:none" id="backHomeBtn" title="Назад на главную">
@@ -1695,14 +2942,34 @@ tr:hover {
       </h2>
       <button class="modal-close" id="closeBugModal">&times;</button>
     </div>
-    <div class="mb-4">
-      <label class="form-label">Опишите проблему или предложение</label>
-      <textarea id="bugDescription" rows="4" class="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Опишите подробно проблему или ваше предложение..."></textarea>
-    </div>
-    <div class="flex gap-2 justify-end">
-      <button class="btn btn-secondary" id="checkStatusBtn">Статус</button>
-      <button class="btn btn-secondary" id="cancelBugBtn">Отмена</button>
-      <button class="btn btn-primary" id="sendBugBtn">Отправить</button>
+    <div class="modal-body">
+      <div class="bug-form-group">
+        <label class="bug-form-label">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Опишите проблему или предложение</span>
+        </label>
+        <textarea id="bugDescription" 
+                  rows="6" 
+                  placeholder="Опишите подробно проблему или ваше предложение. Чем больше деталей, тем быстрее мы сможем помочь!"></textarea>
+        <div class="char-counter-container">
+          <div class="char-hint">Минимум 10 символов</div>
+        </div>
+      </div>
+      
+      <div class="bug-form-actions">
+        <button class="btn btn-secondary" id="checkStatusBtn">
+          <i class="fas fa-search"></i>
+          <span>Проверить статус</span>
+        </button>
+        <button class="btn btn-secondary" id="cancelBugBtn">
+          <i class="fas fa-times"></i>
+          <span>Отмена</span>
+        </button>
+        <button class="btn btn-primary" id="sendBugBtn" disabled>
+          <i class="fas fa-paper-plane"></i>
+          <span>Отправить отчет</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1749,18 +3016,43 @@ tr:hover {
     <div class="modal-header">
       <h2 class="modal-title">
         <i class="fas fa-search"></i>
-        <span>Поиск Bug ID</span>
+        <span>Проверка статуса Bug ID</span>
       </h2>
       <button class="modal-close" id="closeBugIdModal">&times;</button>
     </div>
-    <div class="mb-4">
-      <input type="text" id="bugIdInput" placeholder="Введите Bug ID" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-    </div>
-    <div class="mb-4" id="recentBugIds"></div>
-    <div class="mb-4" id="bugStatusResult"></div>
-    <div class="flex gap-2 justify-end">
-      <button class="btn btn-secondary" id="searchBugId">Поиск</button>
-      <button class="btn btn-primary" id="closeBugIdModalBtn">Закрыть</button>
+    <div class="modal-body">
+      <div class="bug-id-input-group">
+        <i class="fas fa-bug bug-id-icon"></i>
+        <input type="text" 
+               id="bugIdInput" 
+               placeholder="Введите Bug ID (например: BUG-123456789)"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+      </div>
+      
+      <div class="recent-bugs-section">
+        <div class="recent-bugs-title">
+          <i class="fas fa-history"></i>
+          <span>Недавние Bug ID</span>
+        </div>
+        <div id="recentBugIds">
+          <!-- История будет загружена динамически -->
+        </div>
+      </div>
+      
+      <div id="bugStatusResult">
+        <!-- Результаты поиска будут отображаться здесь -->
+      </div>
+      
+      <div class="bug-id-actions">
+        <button class="btn btn-primary" id="searchBugId">
+          <i class="fas fa-search"></i>
+          <span>Найти статус</span>
+        </button>
+        <button class="btn btn-secondary" id="closeBugIdModalBtn">
+          <i class="fas fa-times"></i>
+          <span>Закрыть</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -2710,34 +4002,61 @@ function sendBugReport() {
 
 function showLastBugIds() {
     const recentBugs = bugIdHistory.slice(0, 5);
-    let html = '<h4 style="margin-bottom: 1rem; color: var(--gray-700);">Недавние Bug ID:</h4>';
+    const container = document.getElementById('recentBugIds');
     
     if (recentBugs.length === 0) {
-        html += '<p style="color: var(--gray-500); text-align: center; padding: 1rem; background: var(--gray-100); border-radius: var(--radius);">Нет истории Bug ID</p>';
-    } else {
-        html += '<div class="bug-history-list">';
-        recentBugs.forEach(entry => {
-            const dateStr = entry.timestamp.toLocaleString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            html += `
-                <div class="bug-history-item" onclick="document.getElementById('bugIdInput').value='${entry.id}'; searchBugStatus()">
-                    <div>
-                        <div class="bug-history-id">${entry.id}</div>
-                        <div class="bug-history-date">${dateStr}</div>
-                    </div>
-                    <i class="fas fa-arrow-right" style="color: var(--gray-400);"></i>
-                </div>`;
-        });
-        html += '</div>';
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>Нет истории Bug ID</p>
+            </div>
+        `;
+        return;
     }
-    document.getElementById('recentBugIds').innerHTML = html;
+    
+    let html = '';
+    recentBugs.forEach(entry => {
+        const dateStr = entry.timestamp.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        const timeAgo = getTimeAgo(entry.timestamp);
+        
+        html += `
+            <div class="bug-history-item" onclick="fillBugId('${entry.id}')">
+                <div>
+                    <div class="bug-history-id">${entry.id}</div>
+                    <div class="bug-history-date">${dateStr} (${timeAgo})</div>
+                </div>
+                <i class="fas fa-arrow-right bug-history-arrow"></i>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
-
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'только что';
+    if (diffMins < 60) return `${diffMins} мин назад`;
+    if (diffHours < 24) return `${diffHours} ч назад`;
+    if (diffDays === 1) return 'вчера';
+    if (diffDays < 7) return `${diffDays} дн назад`;
+    return 'более недели назад';
+}
+function fillBugId(bugId) {
+    document.getElementById('bugIdInput').value = bugId;
+    document.getElementById('bugIdInput').focus();
+}
 function searchBugStatus() {
     const bugId = document.getElementById('bugIdInput').value.trim();
     if (!bugId) {
@@ -2750,11 +4069,9 @@ function searchBugStatus() {
 function fetchBugStatus(bugId) {
     const resultDiv = document.getElementById('bugStatusResult');
     resultDiv.innerHTML = `
-        <div style="text-align: center; padding: 2rem;">
-            <div class="searching" style="font-size: 2rem; margin-bottom: 1rem;">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div style="color: var(--gray-600);">Ищем статус для ${bugId}...</div>
+        <div class="searching-indicator">
+            <div class="searching-spinner"></div>
+            <div class="searching-text">Ищем статус для ${bugId}...</div>
         </div>
     `;
     
@@ -2821,151 +4138,510 @@ function fetchBugStatus(bugId) {
         })
         .catch(() => {
             resultDiv.innerHTML = `
-                <div class="status-error">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <i class="fas fa-exclamation-triangle" style="color: var(--warning); font-size: 1.5rem;"></i>
-                        <div>
-                            <div style="font-weight: 600; color: var(--warning);">Ошибка соединения</div>
-                            <div style="color: var(--gray-700);">Не удалось получить данные</div>
+                    <div class="status-card error">
+                        <div class="status-header">
+                            <div class="status-icon error">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div>
+                                <div class="status-title">Bug ID не найден</div>
+                                <div class="status-id">${bugId}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-100); border-radius: var(--radius);">
+                            <p style="margin-bottom: 0.5rem; color: var(--gray-700);">
+                                Возможные причины:
+                            </p>
+                            <ul style="padding-left: 1.5rem; color: var(--gray-600); font-size: 0.9rem;">
+                                <li>Bug ID введен неверно</li>
+                                <li>Отчет еще не обработан</li>
+                                <li>Обратитесь к администратору системы</li>
+                            </ul>
                         </div>
                     </div>
-                </div>`;
+                `;
         });
 }
 
 // ===== Загрузка контента =====
 function loadChangelog() {
+    const changelogContent = document.getElementById('changelogContent');
+    
+    // Показываем индикатор загрузки
+    changelogContent.innerHTML = `
+        <div class="changelog-loading">
+            <div class="changelog-spinner"></div>
+            <div class="changelog-loading-text">Загрузка истории изменений...</div>
+        </div>
+    `;
+    
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист2';
-
+    
     fetch(sheetUrl)
-        .then(response => response.text())
-        .then(text => {
-            const jsonData = JSON.parse(text.substring(47).slice(0, -2));
-            const rows = jsonData.table.rows;
-            let entriesHtml = '';
-
-            function formatDateToDDMMYY(dateStr) {
-                const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
-                if (dateMatch) {
-                    let year = parseInt(dateMatch[1], 10);
-                    let month = parseInt(dateMatch[2], 10);
-                    let day = parseInt(dateMatch[3], 10);
-                    month += 1;
-                    const dd = day.toString().padStart(2, '0');
-                    const mm = month.toString().padStart(2, '0');
-                    const yy = (year % 100).toString().padStart(2, '0');
-                    return `${dd}.${mm}.${yy}`;
-                }
-                return dateStr;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка сети');
             }
+            return response.text();
+        })
+        .then(text => {
+            try {
+                const jsonText = text.substring(47).slice(0, -2);
+                const jsonData = JSON.parse(jsonText);
+                const rows = jsonData.table.rows;
+                
+                if (!rows || rows.length === 0) {
+                    showEmptyChangelog();
+                    return;
+                }
+                
+                renderChangelog(rows);
+            } catch (error) {
+                console.error('Ошибка парсинга changelog:', error);
+                showErrorChangelog();
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки changelog:', error);
+            showErrorChangelog();
+        });
+}
 
-            rows.forEach(row => {
-                const version = row.c[0].v;
-                const rawDate = row.c[1].v;
-                const date = formatDateToDDMMYY(rawDate);
-                const type = row.c[2].v.trim();
-                let description = row.c[3].v;
-                description = description.replace(/^•\s?/gm, '<li>•</li>');
-                const descriptionHtml = description
-                    .split('\n')
-                    .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<p>${line.trim()}</p>`)
-                    .join('');
-                
-                let typeClass = '';
-                if (type === 'Добавлено') typeClass = 'success';
-                else if (type === 'Исправлено') typeClass = 'warning';
-                else if (type === 'Общее') typeClass = 'info';
-                
-                entriesHtml += `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: var(--gray-100); border-radius: var(--radius);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <div>
-                                <span style="font-weight: 600; color: var(--primary);">Версия ${version}</span>
-                                <span style="color: var(--gray-500); margin-left: 0.5rem;">[${date}]</span>
+function renderChangelog(rows) {
+    const changelogContent = document.getElementById('changelogContent');
+    
+    // Собираем HTML для changelog
+    let changelogHtml = `
+        <div class="changelog-header">
+            <h1 class="changelog-title">История изменений</h1>
+            <p class="changelog-subtitle">Следите за обновлениями и улучшениями приложения</p>
+        </div>
+        
+        <div class="changelog-timeline">
+    `;
+    
+    // Группируем изменения по версиям
+    const versions = [];
+    let currentVersion = null;
+    
+    rows.forEach((row, index) => {
+        const cols = row.c;
+        if (!cols || cols.length < 4) return;
+        
+        const version = cols[0] ? cols[0].v : '0.0.0';
+        const rawDate = cols[1] ? cols[1].v : '';
+        const type = cols[2] ? cols[2].v.trim() : 'Общее';
+        const description = cols[3] ? cols[3].v : '';
+        
+        if (!currentVersion || currentVersion.version !== version) {
+            if (currentVersion) {
+                versions.push(currentVersion);
+            }
+            currentVersion = {
+                version: version,
+                date: rawDate,
+                changes: []
+            };
+        }
+        
+        currentVersion.changes.push({
+            type: type,
+            description: description
+        });
+    });
+    
+    // Добавляем последнюю версию
+    if (currentVersion) {
+        versions.push(currentVersion);
+    }
+    
+    // Сортируем версии по дате (новые сверху)
+    versions.sort((a, b) => {
+        const dateA = parseDateString(a.date);
+        const dateB = parseDateString(b.date);
+        return dateB - dateA; // Обратный порядок: новые сверху
+    });
+    
+    // Рендерим каждую версию
+    versions.forEach((version, index) => {
+        const versionNumber = version.version;
+        const date = formatDate(version.date);
+        const changes = version.changes;
+        
+        // Группируем изменения по типам
+        const changesByType = {};
+        changes.forEach(change => {
+            if (!changesByType[change.type]) {
+                changesByType[change.type] = [];
+            }
+            changesByType[change.type].push(change.description);
+        });
+        
+        // Определяем основной тип версии
+        let mainType = 'changed';
+        if (changes.some(c => c.type === 'Добавлено')) mainType = 'added';
+        if (changes.some(c => c.type === 'Исправлено')) mainType = 'fixed';
+        if (changes.some(c => c.type === 'Удалено')) mainType = 'removed';
+        
+        // Определяем иконку для типа
+        const typeIcon = getTypeIcon(mainType);
+        const typeLabel = getTypeLabel(mainType);
+        
+        changelogHtml += `
+            <div class="changelog-version" style="animation-delay: ${index * 0.1}s">
+                <div class="version-card">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <div class="version-number">
+                                <i class="${typeIcon}"></i>
+                                ${versionNumber}
                             </div>
-                            <span style="padding: 0.25rem 0.5rem; background: var(--${typeClass}); color: white; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
-                                ${type}
-                            </span>
+                            <div class="version-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${date}
+                            </div>
                         </div>
-                        <div>${descriptionHtml}</div>
-                    </div>`;
+                        <span class="version-type ${mainType}">
+                            <i class="${typeIcon}"></i>
+                            ${typeLabel}
+                        </span>
+                    </div>
+                    
+                    <div class="version-changes">
+        `;
+        
+        // Рендерим изменения по категориям
+        Object.entries(changesByType).forEach(([type, typeChanges]) => {
+            const changeTypeClass = getChangeTypeClass(type);
+            const changeTypeIcon = getChangeTypeIcon(type);
+            
+            if (Object.keys(changesByType).length > 1) {
+                changelogHtml += `
+                    <div class="change-category">
+                        <div class="category-title">
+                            <i class="${changeTypeIcon}"></i>
+                            ${type}
+                        </div>
+                `;
+            }
+            
+            changelogHtml += '<ul class="version-changes">';
+            
+            typeChanges.forEach(description => {
+                changelogHtml += `
+                    <li class="change-item ${changeTypeClass}">
+                        <span class="change-text">${formatDescription(description)}</span>
+                    </li>
+                `;
             });
             
-            document.getElementById('changelogContent').innerHTML = entriesHtml;
-        })
-        .catch(() => {
-            document.getElementById('changelogContent').innerHTML = 
-                '<p style="color: var(--gray-500); text-align: center; padding: 2rem;">Не удалось загрузить историю изменений.</p>';
+            changelogHtml += '</ul>';
+            
+            if (Object.keys(changesByType).length > 1) {
+                changelogHtml += '</div>';
+            }
         });
+        
+        changelogHtml += `
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    changelogHtml += `
+        </div>
+        
+        <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), transparent); border-top: 1px solid var(--gray-200);">
+            <p style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-info-circle"></i>
+                Всего обновлений: ${versions.length}
+            </p>
+            <p style="color: var(--gray-500); font-size: 0.9rem;">
+                Последнее обновление: ${new Date().toLocaleDateString('ru-RU')}
+            </p>
+        </div>
+    `;
+    
+    changelogContent.innerHTML = changelogHtml;
+    
+    // Запускаем анимации после загрузки
+    setTimeout(() => {
+        const versions = document.querySelectorAll('.changelog-version');
+        versions.forEach(version => {
+            version.style.opacity = '1';
+        });
+    }, 100);
+}
+
+// Вспомогательные функции
+function parseDateString(dateStr) {
+    if (!dateStr) return new Date(0); // Возвращаем старую дату если нет даты
+    
+    try {
+        // Пробуем разные форматы дат
+        // Формат дд.мм.гг
+        if (dateStr.includes('.')) {
+            const parts = dateStr.split('.');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // Месяцы в JS 0-11
+                let year = parseInt(parts[2], 10);
+                
+                // Если год двухзначный
+                if (year < 100) {
+                    year += 2000; // Предполагаем 21 век
+                }
+                
+                return new Date(year, month, day);
+            }
+        }
+        
+        // Формат ISO (например, Date(...))
+        if (dateStr.includes('Date(')) {
+            const match = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
+            if (match) {
+                const year = parseInt(match[1], 10);
+                const month = parseInt(match[2], 10);
+                const day = parseInt(match[3], 10);
+                return new Date(year, month, day);
+            }
+        }
+        
+        // Пробуем стандартный парсинг
+        const parsedDate = new Date(dateStr);
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate;
+        }
+        
+        return new Date(0); // Возвращаем старую дату если парсинг не удался
+    } catch (error) {
+        console.error('Ошибка парсинга даты:', dateStr, error);
+        return new Date(0);
+    }
+}
+
+function formatDate(dateStr) {
+    try {
+        const date = parseDateString(dateStr);
+        
+        // Проверяем, что дата валидна
+        if (date.getTime() === 0 || isNaN(date.getTime())) {
+            return dateStr || 'Дата не указана';
+        }
+        
+        // Форматируем в красивый русский формат
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    } catch (error) {
+        console.error('Ошибка форматирования даты:', dateStr, error);
+        return dateStr || 'Дата не указана';
+    }
+}
+
+function getTypeIcon(type) {
+    switch(type) {
+        case 'added': return 'fas fa-plus-circle';
+        case 'fixed': return 'fas fa-wrench';
+        case 'changed': return 'fas fa-exchange-alt';
+        case 'removed': return 'fas fa-minus-circle';
+        default: return 'fas fa-star';
+    }
+}
+
+function getTypeLabel(type) {
+    switch(type) {
+        case 'added': return 'Добавлено';
+        case 'fixed': return 'Исправлено';
+        case 'changed': return 'Изменено';
+        case 'removed': return 'Удалено';
+        default: return 'Обновление';
+    }
+}
+
+function getChangeTypeClass(type) {
+    const typeLower = type.toLowerCase();
+    if (typeLower.includes('добавлен')) return 'added';
+    if (typeLower.includes('исправлен')) return 'fixed';
+    if (typeLower.includes('изменен')) return 'changed';
+    if (typeLower.includes('удален')) return 'removed';
+    return 'changed';
+}
+
+function getChangeTypeIcon(type) {
+    const typeLower = type.toLowerCase();
+    if (typeLower.includes('добавлен')) return 'fas fa-plus';
+    if (typeLower.includes('исправлен')) return 'fas fa-bug';
+    if (typeLower.includes('изменен')) return 'fas fa-pencil-alt';
+    if (typeLower.includes('удален')) return 'fas fa-trash';
+    return 'fas fa-edit';
+}
+
+function formatDescription(description) {
+    // Очищаем описание от лишних символов
+    let cleanDesc = description.trim();
+    
+    // Если пустая строка, возвращаем пустую
+    if (!cleanDesc) return '';
+    
+    // Удаляем начальные маркеры списка
+    cleanDesc = cleanDesc.replace(/^[•\-*]\s*/, '');
+    
+    // Заменяем переносы строк на <br>
+    cleanDesc = cleanDesc.replace(/\n/g, '<br>');
+    
+    // Выделяем ключевые слова
+    const keywords = ['улучшен', 'добавлен', 'исправлен', 'изменен', 'обновлен', 'удален'];
+    keywords.forEach(keyword => {
+        const regex = new RegExp(`(${keyword}[а-я]*)`, 'gi');
+        cleanDesc = cleanDesc.replace(regex, '<strong>$1</strong>');
+    });
+    
+    // Выделяем версии и номера
+    cleanDesc = cleanDesc.replace(/(v?\d+\.\d+\.\d+)/g, '<code>$1</code>');
+    cleanDesc = cleanDesc.replace(/(#\d+)/g, '<code>$1</code>');
+    
+    return cleanDesc;
+}
+
+function showEmptyChangelog() {
+    const changelogContent = document.getElementById('changelogContent');
+    changelogContent.innerHTML = `
+        <div class="changelog-empty">
+            <div class="changelog-empty-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <div class="changelog-empty-text">История изменений пуста</div>
+            <div class="changelog-empty-subtext">
+                Обновления появятся здесь после их публикации
+            </div>
+        </div>
+    `;
+}
+
+function showErrorChangelog() {
+    const changelogContent = document.getElementById('changelogContent');
+    changelogContent.innerHTML = `
+        <div class="changelog-error">
+            <div class="changelog-error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="changelog-error-text">Не удалось загрузить историю изменений</div>
+            <div class="changelog-error-hint">
+                Проверьте подключение к интернету и попробуйте обновить страницу
+            </div>
+            <button class="btn btn-primary" onclick="loadChangelog()" style="margin-top: 1.5rem;">
+                <i class="fas fa-redo"></i>
+                Попробовать снова
+            </button>
+        </div>
+    `;
 }
 
 function loadInstruction() {
     const instructionContent = document.getElementById('instructionContent');
     instructionContent.innerHTML = `
         <div style="max-height: 60vh; overflow-y: auto; padding: 1.5rem; font-family: var(--font-sans); color: var(--gray-700); line-height: 1.6;">
-            <h2 style="text-align: center; margin-bottom: 1.5rem; font-weight: 700; color: var(--primary); font-size: 2rem;">
-                Как использовать этот инструмент
-            </h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">
-                Добро пожаловать! Этот сайт — ваш помощник для анализа и визуализации данных. Ниже — краткая, но яркая инструкция, чтобы вы могли быстро начать работать и получать максимум пользы.
+            <h2>🚀 Руководство по использованию</h2>
+            <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem; color: var(--gray-600);">
+                Добро пожаловать! Этот инструмент поможет вам анализировать и визуализировать данные эффективно и просто.
             </p>
+            
             <!-- Шаг 1 -->
-            <div style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
-                    <i class="fas fa-cloud-download-alt"></i> Шаг 1: Получение файла СОТ
+            <div class="instruction-step">
+                <h3>
+                    <i class="fas fa-cloud-download-alt"></i>
+                    Шаг 1: Получение файла СОТ
                 </h3>
-                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
-                    <li>Нажмите "Выгрузить СОТ".</li>
-                    <li>Откроется новая вкладка — входите, если нужно авторизоваться.</li>
-                    <li>Выберите диапазон дат для выгрузки.</li>
-                    <li>Нажмите кнопку для скачивания файла и вернитесь сюда.</li>
+                <ul>
+                    <li>Нажмите кнопку <strong>"Выгрузить СОТ"</strong> в боковой панели</li>
+                    <li>В новой вкладке авторизуйтесь при необходимости</li>
+                    <li>Выберите нужный диапазон дат для выгрузки</li>
+                    <li>Скачайте файл и вернитесь на эту страницу</li>
                 </ul>
             </div>
+            
             <!-- Шаг 2 -->
-            <div style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
-                    <i class="fas fa-upload"></i> Шаг 2: Загрузка CSV
+            <div class="instruction-step">
+                <h3>
+                    <i class="fas fa-upload"></i>
+                    Шаг 2: Загрузка CSV файлов
                 </h3>
-                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
-                    <li>Кликните "Выберите CSV" и выберите файл с компьютера.</li>
-                    <li>После загрузки появится подтверждение — можно продолжать.</li>
+                <ul>
+                    <li>Перетащите CSV файлы в зону загрузки или нажмите для выбора</li>
+                    <li>Поддерживается загрузка нескольких файлов одновременно</li>
+                    <li>После загрузки файлы появятся в списке слева</li>
+                    <li>Кликните по файлу для переключения между ними</li>
                 </ul>
             </div>
+            
             <!-- Шаг 3 -->
-            <div style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
-                    <i class="fas fa-sliders-h"></i> Шаг 3: Настройка параметров
+            <div class="instruction-step">
+                <h3>
+                    <i class="fas fa-sliders-h"></i>
+                    Шаг 3: Настройка параметров
                 </h3>
-                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
-                    <li>Выберите сайт, инструмент, режим и сотрудника (если нужно).</li>
-                    <li>Фильтруйте данные для точного анализа.</li>
+                <ul>
+                    <li>Выберите <strong>сайт</strong> из выпадающего списка</li>
+                    <li>Выберите <strong>инструмент</strong> для анализа</li>
+                    <li>Установите режим: <strong>"Общий"</strong> или <strong>"По сотруднику"</strong></li>
+                    <li>При выборе режима по сотруднику - выберите конкретного сотрудника</li>
                 </ul>
             </div>
+            
             <!-- Шаг 4 -->
-            <div style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); font-size: 1.25rem;">
-                    <i class="fas fa-chart-line"></i> Шаг 4: Визуализация данных
+            <div class="instruction-step">
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Шаг 4: Анализ и визуализация
                 </h3>
-                <ul style="padding-left: 2rem; font-size: 1rem; list-style: disc; color: var(--gray-600);">
-                    <li>График обновится автоматически — наблюдайте за динамикой.</li>
-                    <li>Нажмите "Обновить" для ручной перерисовки.</li>
-                    <li>"ТОП" — покажет лучших сотрудников.</li>
-                    <li>"Итоги" — даст сводную таблицу за выбранный период.</li>
-                    <li>Можно построить несколько графиков по разным CSV одновременно. Загрузите нужное число файлов и используйте навигацию ("Предыдущий" и "Следующий").</li>
+                <ul>
+                    <li>График автоматически обновится при изменении параметров</li>
+                    <li>Используйте кнопки <strong>зумирования</strong> для детального просмотра</li>
+                    <li>Нажмите <strong>"ТОП"</strong> для просмотра лучших сотрудников</li>
+                    <li>Нажмите <strong>"Итоги"</strong> для сводной таблицы результатов</li>
                 </ul>
             </div>
-            <!-- Заключение -->
-            <p style="text-align: center; margin-top: 2rem; font-size: 1.2rem; font-weight: 600;">Готовы к работе? Начинайте анализировать ваши данные!</p>
+            
             <!-- Дополнительные функции -->
-            <div style="margin-top: 3rem; font-size: 0.95rem; color: var(--gray-600);">
-                <h3 style="margin-bottom: 1rem;">Дополнительные функции</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li><strong>Changelog</strong> — следите за обновлениями сайта.</li>
-                    <li><strong>Тёмная тема</strong> — переключайте стиль для вечерней работы.</li>
-                    <li><strong>Обратная связь</strong> — сообщите о баге или оставьте пожелание, нажав "сообщение".</li>
-                    <li><strong>Инструкция</strong> — всегда можно открыть заново, нажав иконку "инфо".</li>
-                    <li><strong>Статус</strong> — следите за статусом сообщения (Bug ID указывается в уведомлении).</li>
-                </ul>
+            <div style="margin-top: 3rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.3rem;">
+                    <i class="fas fa-star"></i> Дополнительные возможности
+                </h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <strong><i class="fas fa-history"></i> История изменений</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Следите за обновлениями сайта</p>
+                    </div>
+                    <div class="feature-card">
+                        <strong><i class="fas fa-moon"></i> Темная тема</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Переключение для комфортной работы</p>
+                    </div>
+                    <div class="feature-card">
+                        <strong><i class="fas fa-comment-dots"></i> Обратная связь</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Сообщайте о проблемах и предложениях</p>
+                    </div>
+                    <div class="feature-card">
+                        <strong><i class="fas fa-snowflake"></i> Сезонные эффекты</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Праздничное настроение зимой</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Призыв к действию -->
+            <button class="cta-button" onclick="document.getElementById('instructionModal').classList.remove('show')">
+                <span>Начать анализ</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <!-- Контактная информация -->
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-200); text-align: center; font-size: 0.9rem; color: var(--gray-500);">
+                <p>Нужна помощь? Обращайтесь к администратору системы</p>
+                <p style="margin-top: 0.5rem;">Версия 2.0 • Последнее обновление: ${new Date().toLocaleDateString('ru-RU')}</p>
             </div>
         </div>
     `;
