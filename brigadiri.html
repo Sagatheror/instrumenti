@@ -1080,257 +1080,309 @@
             currentCharts.push(chart);
             return chart;
         }
-        
-        function displayData1(data) {
-            let html = '';
+function extractAccountNumber(fullAccount) {
+    if (!fullAccount) return '';
+    
+    const match = fullAccount.match(/SCHETA-?\s*(\d+)/i);
+    if (match) {
+        return `SCHETA-${match[1]}`;
+    }
+    
+    const numberMatch = fullAccount.match(/\d{4,}/);
+    if (numberMatch) {
+        return `SCHETA-${numberMatch[0]}`;
+    }
+    
+    return fullAccount.length > 20 ? fullAccount.substring(0, 20) + '...' : fullAccount;
+}
+
+function displayData1(data) {
+    let html = '';
+    
+    let deposit = '';
+    if (data.length > 0 && data[0].length > 5) {
+        deposit = data[0][5] || '';
+    }
+    
+    let balance = '';
+    if (data.length > 252 && data[252].length > 2) {
+        balance = data[252][2] || '';
+    }
+    
+    const accounts = [];
+    let totalAmount = 0;
+    let accountCount = 0;
+    
+    for (let i = 1; i < Math.min(data.length, 251); i++) {
+        if (data[i].length >= 3) {
+            const account = data[i][0] || '';
+            const date = data[i][1] || '';
+            const amount = data[i][2] || '';
             
-            let deposit = '';
-            if (data.length > 0 && data[0].length > 5) {
-                deposit = data[0][5] || '';
-            }
-            
-            let balance = '';
-            if (data.length > 252 && data[252].length > 2) {
-                balance = data[252][2] || '';
-            }
-            
-            const accounts = [];
-            let totalAmount = 0;
-            let accountCount = 0;
-            
-            for (let i = 1; i < Math.min(data.length, 251); i++) {
-                if (data[i].length >= 3) {
-                    const account = data[i][0] || '';
-                    const date = data[i][1] || '';
-                    const amount = data[i][2] || '';
-                    
-                    if (account || date || amount) {
-                        accounts.push({ account, date, amount });
-                        
-                        const amountNum = parseFloat(amount.replace(/[^\d.-]/g, '')) || 0;
-                        totalAmount += amountNum;
-                        accountCount++;
-                    }
-                }
-            }
-            
-            const formattedTotalAmount = totalAmount.toLocaleString('ru-RU', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
-            });
-            
-            const dates = [];
-            const amounts = [];
-            const accountNames = [];
-            const accountAmounts = [];
-            
-            const maxChartItems = 15;
-            const chartAccounts = accounts.slice(0, maxChartItems);
-            
-            chartAccounts.forEach((item, index) => {
-                if (item.date) dates.push(item.date);
-                if (item.amount) {
-                    const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
-                    amounts.push(amountNum);
-                }
-                if (item.account) accountNames.push(`Счет ${index + 1}`);
-                if (item.amount) {
-                    const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
-                    accountAmounts.push(amountNum);
-                }
-            });
-            
-            html += `
-                <div class="summary-section fade-in">
-                    <div class="summary-card">
-                        <div class="summary-title"><i class="fas fa-piggy-bank"></i> Депозит</div>
-                        <div class="summary-value">${deposit || 'Нет данных'}</div>
-                        <div class="summary-change positive"><i class="fas fa-arrow-up"></i> Активный</div>
-                    </div>
-                    <div class="summary-card green">
-                        <div class="summary-title"><i class="fas fa-wallet"></i> Остаток</div>
-                        <div class="summary-value">${balance || 'Нет данных'}</div>
-                        <div class="summary-change positive"><i class="fas fa-check-circle"></i> На счету</div>
-                    </div>
-                    <div class="summary-card orange">
-                        <div class="summary-title"><i class="fas fa-file-invoice-dollar"></i> Сумма счетов</div>
-                        <div class="summary-value">${formattedTotalAmount}</div>
-                        <div class="summary-change positive"><i class="fas fa-chart-line"></i> Всего</div>
-                    </div>
-                    <div class="summary-card purple">
-                        <div class="summary-title"><i class="fas fa-list-ol"></i> Количество счетов</div>
-                        <div class="summary-value">${accountCount}</div>
-                        <div class="summary-change positive"><i class="fas fa-plus"></i> Обработано</div>
-                    </div>
-                </div>
-            `;
-            
-            html += `
-                <div class="charts-section fade-in">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-chart-bar"></i> Распределение сумм по счетам</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="amountsChart"></canvas></div>
-                    </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-chart-line"></i> Суммы по датам</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="datesChart"></canvas></div>
-                    </div>
-                </div>
-            `;
-            
-            if (accounts.length > 0) {
-                html += `
-                    <div class="table-container fade-in">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-hashtag"></i> Счет</th>
-                                    <th><i class="far fa-calendar-alt"></i> Дата</th>
-                                    <th><i class="fas fa-money-bill-wave"></i> Сумма</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+            if (account || date || amount) {
+                accounts.push({ account, date, amount });
                 
-                accounts.forEach(item => {
-                    html += `
-                        <tr>
-                            <td><i class="fas fa-file-invoice"></i> ${item.account || ''}</td>
-                            <td>${item.date || ''}</td>
-                            <td><strong>${item.amount || ''}</strong></td>
-                        </tr>
-                    `;
-                });
-                
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="empty-state fade-in">
-                        <i class="fas fa-file-excel"></i>
-                        <h3>Нет данных о счетах</h3>
-                        <p>В таблице не найдены данные о счетах для отображения</p>
-                    </div>
-                `;
+                const amountNum = parseFloat(amount.replace(/[^\d.-]/g, '')) || 0;
+                totalAmount += amountNum;
+                accountCount++;
             }
-            
-            dataDisplay.innerHTML = html;
-            
-            setTimeout(() => {
-                createChart('amountsChart', {
-                    type: 'bar',
-                    data: {
-                        labels: accountNames,
-                        datasets: [{
-                            label: 'Сумма',
-                            data: accountAmounts,
-                            backgroundColor: 'rgba(79, 70, 229, 0.7)',
-                            borderColor: 'rgba(79, 70, 229, 1)',
-                            borderWidth: 2,
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                                ticks: {
-                                    color: '#64748b',
-                                    callback: function(value) {
-                                        return value.toLocaleString('ru-RU');
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                                ticks: { color: '#64748b' }
-                            }
-                        }
-                    }
-                });
-                
-                createChart('datesChart', {
-                    type: 'line',
-                    data: {
-                        labels: dates,
-                        datasets: [{
-                            label: 'Сумма',
-                            data: amounts,
-                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                            borderColor: 'rgba(79, 70, 229, 1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            pointRadius: 5,
-                            pointHoverRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                                ticks: {
-                                    color: '#64748b',
-                                    callback: function(value) {
-                                        return value.toLocaleString('ru-RU');
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                                ticks: { color: '#64748b' }
-                            }
-                        }
-                    }
-                });
-            }, 100);
         }
+    }
+    
+    const formattedTotalAmount = totalAmount.toLocaleString('ru-RU', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    });
+    
+    const dateSums = {};
+    const accountNames = [];
+    const accountDisplayNames = [];
+    const accountAmounts = [];
+    
+    accounts.forEach((item) => {
+        if (item.date) {
+            const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
+            
+            if (dateSums[item.date]) {
+                dateSums[item.date] += amountNum;
+            } else {
+                dateSums[item.date] = amountNum;
+            }
+        }
+        
+        if (item.account) {
+            accountNames.push(item.account);
+            accountDisplayNames.push(extractAccountNumber(item.account));
+            const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
+            accountAmounts.push(amountNum);
+        }
+    });
+    
+    const dates = Object.keys(dateSums);
+    const amounts = dates.map(date => dateSums[date]);
+    
+    const sortedDateIndices = dates.map((date, index) => index)
+        .sort((a, b) => new Date(dates[a]) - new Date(dates[b]));
+    
+    const sortedDates = sortedDateIndices.map(i => dates[i]);
+    const sortedAmounts = sortedDateIndices.map(i => amounts[i]);
+    
+    html += `
+        <div class="summary-section fade-in">
+            <div class="summary-card">
+                <div class="summary-title"><i class="fas fa-piggy-bank"></i> Депозит</div>
+                <div class="summary-value">${deposit || 'Нет данных'}</div>
+                <div class="summary-change positive"><i class="fas fa-arrow-up"></i> Активный</div>
+            </div>
+            <div class="summary-card green">
+                <div class="summary-title"><i class="fas fa-wallet"></i> Остаток</div>
+                <div class="summary-value">${balance || 'Нет данных'}</div>
+                <div class="summary-change positive"><i class="fas fa-check-circle"></i> На счету</div>
+            </div>
+            <div class="summary-card orange">
+                <div class="summary-title"><i class="fas fa-file-invoice-dollar"></i> Сумма счетов</div>
+                <div class="summary-value">${formattedTotalAmount}</div>
+                <div class="summary-change positive"><i class="fas fa-chart-line"></i> Всего</div>
+            </div>
+            <div class="summary-card purple">
+                <div class="summary-title"><i class="fas fa-list-ol"></i> Количество счетов</div>
+                <div class="summary-value">${accountCount}</div>
+                <div class="summary-change positive"><i class="fas fa-plus"></i> Обработано</div>
+            </div>
+        </div>
+    `;
+    
+    html += `
+        <div class="charts-section fade-in">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title"><i class="fas fa-chart-bar"></i> Распределение сумм по счетам</div>
+                </div>
+                <div class="chart-wrapper"><canvas id="amountsChart"></canvas></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title"><i class="fas fa-chart-line"></i> Суммы по датам</div>
+                </div>
+                <div class="chart-wrapper"><canvas id="datesChart"></canvas></div>
+            </div>
+        </div>
+    `;
+    
+    if (accounts.length > 0) {
+        html += `
+            <div class="table-container fade-in">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Счет</th>
+                            <th><i class="far fa-calendar-alt"></i> Дата</th>
+                            <th><i class="fas fa-money-bill-wave"></i> Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        accounts.forEach(item => {
+            const displayAccount = extractAccountNumber(item.account);
+             html += `
+                <tr>
+                    <td><i class="fas fa-file-invoice"></i> ${item.account || ''}</td>
+                    <td>${item.date || ''}</td>
+                    <td><strong>${item.amount || ''}</strong></td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } else {
+        html += `
+            <div class="empty-state fade-in">
+                <i class="fas fa-file-excel"></i>
+                <h3>Нет данных о счетах</h3>
+                <p>В таблице не найдены данные о счетах для отображения</p>
+            </div>
+        `;
+    }
+    
+    dataDisplay.innerHTML = html;
+    
+    setTimeout(() => {
+        createChart('amountsChart', {
+            type: 'bar',
+            data: {
+                labels: accountDisplayNames,
+                datasets: [{
+                    label: 'Сумма',
+                    data: accountAmounts,
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#f8fafc',
+                        borderColor: '#4f46e5',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
+                            },
+                            title: function(context) {
+                                const fullAccount = accountNames[context[0].dataIndex] || '';
+                                const displayAccount = accountDisplayNames[context[0].dataIndex] || '';
+                                
+                                if (fullAccount !== displayAccount && fullAccount.length > displayAccount.length) {
+                                    return `${displayAccount}\n(${fullAccount})`;
+                                }
+                                return displayAccount;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(226, 232, 240, 0.5)' },
+                        ticks: {
+                            color: '#64748b',
+                            callback: function(value) {
+                                return value.toLocaleString('ru-RU');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { color: 'rgba(226, 232, 240, 0.3)' },
+                        ticks: { 
+                            color: '#64748b',
+                            maxRotation: 45,
+                            minRotation: 45,
+                            callback: function(value, index) {
+                                const label = accountDisplayNames[index] || '';
+                                return label.length > 12 ? label.substring(0, 10) + '...' : label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        createChart('datesChart', {
+            type: 'line',
+            data: {
+                labels: sortedDates,
+                datasets: [{
+                    label: 'Сумма',
+                    data: sortedAmounts,
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#f8fafc',
+                        borderColor: '#4f46e5',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
+                            },
+                            title: function(context) {
+                                return `Дата: ${context[0].label}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(226, 232, 240, 0.5)' },
+                        ticks: {
+                            color: '#64748b',
+                            callback: function(value) {
+                                return value.toLocaleString('ru-RU');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { color: 'rgba(226, 232, 240, 0.3)' },
+                        ticks: { 
+                            color: '#64748b',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }, 100);
+}
         
         function displayData2(data) {
             let html = '';
@@ -1535,7 +1587,7 @@
                     </div>
                     <div class="chart-container">
                         <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-doughnut"></i> Остатки сотрудников</div>
+                            <div class="chart-title"><i class="fas fa-pie-chart"></i> Остатки сотрудников</div>
                         </div>
                         <div class="chart-wrapper"><canvas id="balancesChart"></canvas></div>
                     </div>
