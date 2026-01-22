@@ -59,19 +59,40 @@
 
   * {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  padding: 0;
+  box-sizing: border-box;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
   }
 
   body {
     font-family: 'Inter', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-    transition: all var(--transition-normal);
+  background: linear-gradient(135deg, 
+    var(--bg-primary) 0%, 
+    color-mix(in srgb, var(--bg-primary) 90%, var(--accent-primary) 10%) 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+              color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+  position: relative;
+  overflow-x: hidden;
   }
-
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(var(--accent-primary-rgb), 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(var(--accent-secondary-rgb), 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(var(--accent-warning-rgb), 0.03) 0%, transparent 30%);
+  z-index: -1;
+  pointer-events: none;
+}
   /* Основной контейнер */
   .app-container {
     display: grid;
@@ -85,13 +106,17 @@
 
   /* Боковая панель */
   .sidebar {
-    background: var(--bg-secondary);
+    background: linear-gradient(180deg, 
+    var(--bg-secondary) 0%,
+    color-mix(in srgb, var(--bg-secondary) 95%, var(--accent-primary) 5%) 100%);
     border-radius: var(--radius-xl);
     padding: 24px;
     box-shadow: var(--shadow-lg);
     height: fit-content;
     position: sticky;
     top: 24px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .logo {
@@ -144,10 +169,10 @@
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     text-decoration: none;
-    transition: all var(--transition-fast);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     margin-bottom: 4px;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     background: none;
     width: 100%;
     text-align: left;
@@ -158,14 +183,40 @@
   .nav-item:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
+    border-color: var(--accent-primary);
+  transform: translateX(5px);
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .nav-item.active {
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     color: white;
     box-shadow: var(--shadow-md);
+    position: relative;
+  overflow: hidden;
   }
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shine 2s infinite linear;
+}
 
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
   .nav-item i {
     width: 20px;
     font-size: 16px;
@@ -217,14 +268,45 @@
   }
 
   .card {
-    background: var(--bg-secondary);
+    background: linear-gradient(145deg, 
+    var(--bg-secondary) 0%,
+    color-mix(in srgb, var(--bg-secondary) 98%, var(--accent-primary) 2%) 100%);
     border-radius: var(--radius-xl);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: 24px;
     box-shadow: var(--shadow-lg);
     transition: all var(--transition-normal);
-    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
   }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.7s ease;
+}
+.dark-theme .card::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+}
 
+.card:hover::before {
+  left: 100%;
+}
   .card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-xl);
@@ -317,11 +399,40 @@
     font-weight: 500;
     border: none;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     white-space: nowrap;
+    position: relative;
+  overflow: hidden;
   }
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
 
+.btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
   .btn-primary {
     background: var(--bg-tertiary);
     color: var(--text-primary);
@@ -431,10 +542,13 @@
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
+    font-size: 13px;
   }
 
   .data-table th {
     background: var(--bg-tertiary);
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 16px 20px;
     text-align: left;
     font-weight: 600;
@@ -443,6 +557,8 @@
     letter-spacing: 0.5px;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
   }
 
   .data-table td {
@@ -467,59 +583,282 @@
   /* Переключатель темы */
   .theme-toggle {
     position: relative;
-    width: 60px;
-    height: 32px;
+  width: 80px;
+  height: 40px;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform-style: preserve-3d;
+  perspective: 1000px;
   }
-
+.theme-toggle:hover {
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+.theme-toggle:active {
+  transform: translateY(0) scale(0.98);
+}
   .theme-toggle input {
     opacity: 0;
-    width: 0;
-    height: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
   }
 
   .theme-slider {
     position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg-tertiary);
-    border-radius: 50px;
-    transition: all var(--transition-normal);
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    #fbbf24 0%, 
+    #f59e0b 25%, 
+    #f97316 50%, 
+    #ea580c 100%);
+  border-radius: 50px;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  z-index: 1;
   }
 
   .theme-slider:before {
     position: absolute;
-    content: "";
-    height: 24px;
-    width: 24px;
-    left: 4px;
-    bottom: 4px;
-    background: white;
-    border-radius: 50%;
-    transition: all var(--transition-normal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    color: var(--accent-warning);
+  content: "";
+  height: 32px;
+  width: 32px;
+  left: 4px;
+  bottom: 4px;
+  background: linear-gradient(135deg, #ffffff, #fef3c7);
+  border-radius: 50%;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: #f59e0b;
+  z-index: 3;
+  box-shadow: 
+    0 4px 12px rgba(251, 191, 36, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  transform: rotate(0deg);
+  animation: sunGlow 3s ease-in-out infinite;
   }
+.theme-slider:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    #4f46e5 0%, 
+    #7c3aed 25%, 
+    #9333ea 50%, 
+    #a855f7 100%);
+  border-radius: 50px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+}
+.theme-slider .icon-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  pointer-events: none;
+  z-index: 2;
+}
 
+.theme-slider .icon-container i {
+  font-size: 16px;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.theme-slider .icon-container .sun-icon {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+  animation: sunPulse 2s ease-in-out infinite;
+}
+
+.theme-slider .icon-container .moon-icon {
+  color: #fef3c7;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.8);
+  animation: moonGlow 3s ease-in-out infinite;
+}
   input:checked + .theme-slider {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  }
+  background: linear-gradient(135deg, 
+    #4f46e5 0%, 
+    #7c3aed 25%, 
+    #9333ea 50%, 
+    #a855f7 100%);
+}
 
-  input:checked + .theme-slider:before {
-    transform: translateX(28px);
-    content: "\f185";
-  }
+input:checked + .theme-slider:before {
+  transform: translateX(40px) rotate(720deg);
+  content: "\f186";
+  color: #a78bfa;
+  background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
+  box-shadow: 
+    0 4px 16px rgba(167, 139, 250, 0.5),
+    0 0 0 3px rgba(255, 255, 255, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  animation: moonGlow 3s ease-in-out infinite;
+}
 
-  input:not(:checked) + .theme-slider:before {
-    content: "\f186";
-  }
+input:checked + .theme-slider .sun-icon {
+  opacity: 0.3;
+  transform: scale(0.8);
+}
 
+input:checked + .theme-slider .moon-icon {
+  opacity: 1;
+  transform: scale(1.4) rotate(360deg);
+  animation: moonPulse 2s ease-in-out infinite;
+}
+input:not(:checked) + .theme-slider {
+  background: linear-gradient(135deg, 
+    #fbbf24 0%, 
+    #f59e0b 25%, 
+    #f97316 50%, 
+    #ea580c 100%);
+}
+
+input:not(:checked) + .theme-slider:before {
+  transform: translateX(0) rotate(0deg);
+  content: "\f185";
+  color: #f59e0b;
+  background: linear-gradient(135deg, #ffffff, #fef3c7);
+  box-shadow: 
+    0 4px 16px rgba(251, 191, 36, 0.5),
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9);
+  animation: sunGlow 3s ease-in-out infinite;
+}
+input:not(:checked) + .theme-slider .sun-icon {
+  opacity: 1;
+  transform: scale(1.4) rotate(0deg);
+  animation: sunPulse 2s ease-in-out infinite;
+}
+
+input:not(:checked) + .theme-slider .moon-icon {
+  opacity: 0.3;
+  transform: scale(0.8);
+}
+@keyframes sunGlow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 12px rgba(251, 191, 36, 0.4),
+      0 0 0 2px rgba(255, 255, 255, 0.8),
+      inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(251, 191, 36, 0.6),
+      0 0 0 3px rgba(255, 255, 255, 0.9),
+      inset 0 2px 4px rgba(255, 255, 255, 0.9);
+  }
+}
+
+@keyframes moonGlow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 12px rgba(167, 139, 250, 0.4),
+      0 0 0 2px rgba(255, 255, 255, 0.1),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(167, 139, 250, 0.6),
+      0 0 0 3px rgba(255, 255, 255, 0.2),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+}
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+input:checked + .theme-slider .stars {
+  opacity: 1;
+}
+.dark-theme .theme-toggle {
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    0 0 20px rgba(99, 102, 241, 0.3);
+}
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, 
+    #fbbf24, #f59e0b, #7c3aed, #4f46e5);
+  border-radius: 52px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.theme-toggle:hover::before {
+  opacity: 1;
+  animation: borderRotate 3s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.theme-toggle:hover .particles {
+  opacity: 0.3;
+}
   /* Уведомления */
   .notification {
     position: fixed;
@@ -644,25 +983,6 @@
 
   @keyframes spin {
     to { transform: rotate(360deg); }
-  }
-
-  /* Снег */
-  .snow-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .snowflake {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    filter: blur(1px);
   }
 
   /* Адаптивность */
@@ -1754,6 +2074,355 @@
       transform: translateX(15px);
     }
   }
+  .theme-transition-active {
+  animation: themePulse 0.5s ease;
+}
+
+@keyframes themePulse {
+  0% { opacity: 0.95; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+.page-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-primary);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+sidebar, .top-bar, .card, .table-container, .nav-item, .btn, .modal-content {
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+              border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+              box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+@keyframes waveExpand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.6;
+    filter: blur(2px);
+  }
+  100% {
+    width: 200vmax;
+    height: 200vmax;
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* Эффект мерцания звезд для темной темы */
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+.theme-text-transition {
+  background: linear-gradient(90deg, 
+    var(--accent-warning), 
+    var(--accent-primary), 
+    var(--accent-secondary));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 2s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.theme-transition-active .sidebar,
+.theme-transition-active .top-bar,
+.theme-transition-active .card {
+  animation: themePulse 1.2s ease;
+}
+
+/* Эффект свечения для иконок в темной теме */
+.dark-theme .nav-item.active i,
+.dark-theme .btn-primary i {
+  filter: drop-shadow(0 0 3px rgba(96, 165, 250, 0.5));
+  animation: iconGlow 3s ease-in-out infinite;
+}
+
+@keyframes iconGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(96, 165, 250, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.8));
+  }
+}
+/* Весенняя тема */
+.spring-theme {
+  --accent-primary: #10b981;
+  --accent-secondary: #34d399;
+  --accent-warning: #f59e0b;
+  --border-color: #a7f3d0;
+}
+
+/* Для светлой темы - яркие весенние цвета */
+.spring-theme:not(.dark-theme) .sidebar {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.spring-theme:not(.dark-theme) .top-bar {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.spring-theme:not(.dark-theme) .card {
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #a7f3d0;
+}
+
+.spring-theme:not(.dark-theme) .nav-item.active {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.spring-theme:not(.dark-theme) .btn-primary {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+/* Для темной темы - более темные, но все еще весенние цвета */
+.spring-theme.dark-theme .sidebar {
+  background: linear-gradient(135deg, #064e3b, #047857);
+}
+
+.spring-theme.dark-theme .top-bar {
+  background: linear-gradient(135deg, #064e3b, #047857);
+}
+
+.spring-theme.dark-theme .card {
+  background: linear-gradient(135deg, #065f46, #059669);
+  border: 1px solid #10b981;
+}
+
+.spring-theme.dark-theme .nav-item.active {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.spring-theme.dark-theme .btn-primary {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+/* Облака для темной темы */
+.dark-theme .spring-cloud {
+  background: rgba(240, 253, 244, 0.9); /* Более светлые облака в темной теме */
+  box-shadow: 
+    0 0 20px rgba(240, 253, 244, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Подснежники для темной темы */
+.dark-theme .spring-snowdrop:before {
+  background: linear-gradient(to bottom, #10b981, #047857);
+}
+
+.dark-theme .spring-snowdrop:after {
+  background: radial-gradient(circle at 30% 30%, #fef3c7, #f59e0b);
+  box-shadow: 0 0 5px rgba(254, 243, 199, 0.7);
+}
+
+/* Текст для темной темы с весенним оформлением */
+.spring-theme.dark-theme .card-title,
+.spring-theme.dark-theme .card-description,
+.spring-theme.dark-theme .form-label,
+.spring-theme.dark-theme .page-title,
+.spring-theme.dark-theme .page-subtitle,
+.spring-theme.dark-theme .nav-title,
+.spring-theme.dark-theme .nav-item:not(.active),
+.spring-theme.dark-theme .table-title,
+.spring-theme.dark-theme .footer {
+  color: #f0fdf4 !important; /* Светло-зеленый текст для лучшей читаемости */
+}
+
+.spring-theme.dark-theme .form-control,
+.spring-theme.dark-theme .form-select,
+.spring-theme.dark-theme #bugDescription,
+.spring-theme.dark-theme #userName,
+.spring-theme.dark-theme #bugIdInput {
+  background: #022c22 !important; /* Темно-зеленый фон для полей ввода */
+  color: #f0fdf4 !important;
+  border-color: #10b981 !important;
+}
+
+.spring-theme.dark-theme .file-upload {
+  border-color: #10b981 !important;
+  background: #065f46 !important;
+}
+
+.spring-theme.dark-theme .file-upload:hover {
+  background: #047857 !important;
+}
+
+.spring-theme.dark-theme .stat-card {
+  background: #064e3b !important;
+}
+
+.spring-theme.dark-theme .btn-secondary,
+.spring-theme.dark-theme .btn-info,
+.spring-theme.dark-theme .btn-success:not(.spring-theme .btn-success),
+.spring-theme.dark-theme .btn-danger {
+  background: #065f46 !important;
+  color: #f0fdf4 !important;
+  border-color: #10b981 !important;
+}
+
+.spring-theme.dark-theme .btn-secondary:hover,
+.spring-theme.dark-theme .btn-info:hover,
+.spring-theme.dark-theme .btn-success:not(.spring-theme .btn-success):hover,
+.spring-theme.dark-theme .btn-danger:hover {
+  background: #047857 !important;
+}
+
+/* Модальные окна для темной темы с весенним оформлением */
+.spring-theme.dark-theme .modal-content {
+  background: linear-gradient(135deg, #064e3b, #047857) !important;
+  border-color: #10b981 !important;
+}
+
+.spring-theme.dark-theme .modal-header {
+  background: linear-gradient(135deg, #10b981, #34d399) !important;
+}
+
+/* Таблица для темной темы с весенним оформлением */
+.spring-theme.dark-theme .table-container {
+  background: linear-gradient(135deg, #064e3b, #047857) !important;
+  border-color: #10b981 !important;
+}
+
+.spring-theme.dark-theme .data-table th {
+  background: #065f46 !important;
+  color: #f0fdf4 !important;
+}
+
+.spring-theme.dark-theme .data-table td {
+  background: #022c22 !important;
+  color: #f0fdf4 !important;
+  border-color: #10b981 !important;
+}
+
+.spring-theme.dark-theme .data-table tr:hover {
+  background: #064e3b !important;
+}
+
+/* Уведомления для темной темы с весенним оформлением */
+.spring-theme.dark-theme .notification {
+  background: #065f46 !important;
+  border-left-color: #10b981 !important;
+  color: #f0fdf4 !important;
+}
+
+/* Чанжлог и инструкции для темной темы */
+.spring-theme.dark-theme #changelogContent,
+.spring-theme.dark-theme #instructionContent {
+  background: #022c22 !important;
+  color: #f0fdf4 !important;
+}
+
+.spring-theme.dark-theme .changelog-entry,
+.spring-theme.dark-theme .instruction-step {
+  background: #064e3b !important;
+  border-color: #10b981 !important;
+}
+
+/* Спиннер для темной темы с весенним оформлением */
+.spring-theme.dark-theme .spinner-circle {
+  border-color: #065f46 !important;
+  border-top-color: #10b981 !important;
+}
+.spring-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9996;
+  overflow: hidden;
+}
+.spring-cloud {
+  position: fixed;
+  width: 120px;
+  height: 40px;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.8;
+  filter: blur(1px);
+  z-index: 9995;
+  pointer-events: none;
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  transition: opacity 2s ease;
+}
+
+.spring-cloud:before,
+.spring-cloud:after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+  box-shadow: inherit;
+}
+
+.spring-cloud:before {
+  width: 50px;
+  height: 50px;
+  top: -20px;
+  left: 15px;
+}
+
+.spring-cloud:after {
+  width: 40px;
+  height: 40px;
+  top: -15px;
+  right: 20px;
+}
+.spring-cloud.large:before {
+  width: 70px;
+  height: 70px;
+  top: -30px;
+  left: 10px;
+}
+
+.spring-cloud.large:after {
+  width: 60px;
+  height: 60px;
+  top: -25px;
+  right: 15px;
+}
+
+.spring-cloud.large::before {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: inherit;
+  border-radius: 50%;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 </style>
 </head>
 <body>
@@ -1947,17 +2616,24 @@
         </button>
       </div>
 
-      <div class="nav-section">
-        <div class="nav-title">Настройки</div>
-        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px;">
-          <i class="fas fa-palette"></i>
-          <span style="flex: 1;">Тема</span>
-          <label class="theme-toggle">
-            <input type="checkbox" id="themeToggle">
-            <span class="theme-slider"></span>
-          </label>
+     <div class="nav-section">
+  <div class="nav-title">Настройки</div>
+  <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px;">
+    <i class="fas fa-palette"></i>
+    <span style="flex: 1; color: var(--text-secondary);">Тема</span>
+    <label class="theme-toggle" id="themeToggleContainer">
+      <input type="checkbox" id="themeToggle">
+      <span class="theme-slider">
+        <div class="icon-container">
+          <i class="fas fa-sun sun-icon"></i>
+          <i class="fas fa-moon moon-icon"></i>
         </div>
-      </div>
+        <div class="stars" id="starsContainer"></div>
+        <div class="particles" id="particlesContainer"></div>
+      </span>
+    </label>
+  </div>
+</div>
 
       <div style="margin-top: 32px;">
         <button class="btn btn-primary btn-full" onclick="saveChanges()">
@@ -1999,7 +2675,10 @@
             <i class="fas fa-snowflake"></i>
             <span class="btn-text" id="snowText">Снег</span>
           </button>
-          
+          <button class="btn btn-success btn-sm" id="springToggleBtn" title="Включить/выключить весеннее оформление">
+  <i class="fas fa-seedling"></i>
+  <span class="btn-text" id="springText">Весна</span>
+</button>
           <!-- Кнопка переключения интерфейса -->
           <button class="btn btn-secondary btn-sm" id="interfaceToggleBtn" title="Переключить интерфейс">
             <i class="fas fa-exchange-alt"></i>
@@ -2220,7 +2899,7 @@
 
   <!-- Контейнер для снега -->
   <div class="snow-container" id="snowContainer"></div>
-
+<div class="spring-container" id="springContainer"></div>
   <script>
     // Глобальные переменные
     let csvData = [];
@@ -2233,25 +2912,430 @@
 
     // Инициализация при загрузке
     document.addEventListener('DOMContentLoaded', function() {
+      updateSpringButton();
       // Настройка переключателя темы
       const themeToggle = document.getElementById('themeToggle');
-      const savedTheme = localStorage.getItem('theme');
-      
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        themeToggle.checked = true;
-      }
-      
-      themeToggle.addEventListener('change', function() {
-        if (this.checked) {
-          document.body.classList.add('dark-theme');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.body.classList.remove('dark-theme');
-          localStorage.setItem('theme', 'light');
-        }
-      });
+const themeToggleContainer = document.getElementById('themeToggleContainer');
+const starsContainer = document.getElementById('starsContainer');
+const particlesContainer = document.getElementById('particlesContainer');
+const savedTheme = localStorage.getItem('theme');
+function createStars() {
+  starsContainer.innerHTML = '';
+  const isDark = document.body.classList.contains('dark-theme');
+  
+  for (let i = 0; i < 20; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    
+    // Разные типы звезд
+    const starType = Math.random();
+    let size, opacity, animationDelay;
+    
+    if (starType < 0.3) {
+      // Большие яркие звезды
+      size = Math.random() * 3 + 2;
+      opacity = Math.random() * 0.7 + 0.3;
+      animationDelay = Math.random() * 2;
+    } else if (starType < 0.7) {
+      // Средние звезды
+      size = Math.random() * 2 + 1;
+      opacity = Math.random() * 0.5 + 0.2;
+      animationDelay = Math.random() * 3;
+    } else {
+      // Мелкие тусклые звезды
+      size = Math.random() * 1 + 0.5;
+      opacity = Math.random() * 0.3 + 0.1;
+      animationDelay = Math.random() * 4;
+    }
+    
+    star.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      opacity: ${opacity};
+      background: ${isDark ? '#ffffff' : '#fef3c7'};
+      box-shadow: ${isDark ? '0 0 4px rgba(255, 255, 255, 0.5)' : '0 0 4px rgba(251, 191, 36, 0.5)'};
+      animation: starTwinkle ${Math.random() * 4 + 2}s ease-in-out infinite ${animationDelay}s;
+    `;
+    
+    starsContainer.appendChild(star);
+  }
+}
 
+// Создаем частицы для эффекта при наведении
+function createParticles() {
+  particlesContainer.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.cssText = `
+      width: ${Math.random() * 3 + 1}px;
+      height: ${Math.random() * 3 + 1}px;
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      background: ${i % 2 === 0 ? '#fbbf24' : '#7c3aed'};
+      opacity: ${Math.random() * 0.4 + 0.1};
+    `;
+    particlesContainer.appendChild(particle);
+  }
+}
+// Функция для плавного переключения темы
+function toggleThemeWithAnimation(isDark) {
+  // Создаем эффект морфинга для текста
+  const pageTitle = document.querySelector('.page-title');
+  const pageSubtitle = document.querySelector('.page-subtitle');
+  const originalTitle = pageTitle.textContent;
+  const originalSubtitle = pageSubtitle.textContent;
+  
+  // Временно меняем текст для эффекта
+  pageTitle.classList.add('theme-text-transition');
+  pageSubtitle.classList.add('theme-text-transition');
+  
+  // Создаем волновой эффект из центра переключателя
+  const toggleRect = themeToggleContainer.getBoundingClientRect();
+  const centerX = toggleRect.left + toggleRect.width / 2;
+  const centerY = toggleRect.top + toggleRect.height / 2;
+  
+  const wave = document.createElement('div');
+  wave.style.cssText = `
+    position: fixed;
+    top: ${centerY}px;
+    left: ${centerX}px;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, 
+      ${isDark ? 'rgba(79, 70, 229, 0.4)' : 'rgba(251, 191, 36, 0.4)'}, 
+      transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9998;
+    pointer-events: none;
+    animation: waveExpand 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  `;
+  
+  document.body.appendChild(wave);
+  
+  // Создаем частицы для эффекта перехода
+  createTransitionParticles(isDark, centerX, centerY);
+  
+  // Добавляем класс для общей анимации перехода
+  document.body.classList.add('theme-transition-active');
+  
+  // Меняем тему с небольшой задержкой для синхронизации
+  setTimeout(() => {
+    if (isDark) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
+    }
+    
+    // Обновляем звездочки
+    createStars();
+  }, 300);
+  
+  // Убираем эффекты после завершения
+  setTimeout(() => {
+    wave.remove();
+    pageTitle.classList.remove('theme-text-transition');
+    pageSubtitle.classList.remove('theme-text-transition');
+    document.body.classList.remove('theme-transition-active');
+  }, 1200);
+}
+
+function createTransitionParticles(isDark, centerX, centerY) {
+  const particleCount = 20;
+  const colors = isDark 
+    ? ['#7c3aed', '#4f46e5', '#6366f1', '#8b5cf6']
+    : ['#fbbf24', '#f59e0b', '#f97316', '#ea580c'];
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    const angle = (i / particleCount) * Math.PI * 2;
+    const distance = 60 + Math.random() * 40;
+    const size = Math.random() * 4 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const duration = 800 + Math.random() * 400;
+    
+    particle.style.cssText = `
+      position: fixed;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border-radius: 50%;
+      left: ${centerX}px;
+      top: ${centerY}px;
+      z-index: 9997;
+      pointer-events: none;
+      box-shadow: 0 0 8px ${color};
+      opacity: 0.8;
+    `;
+    
+    document.body.appendChild(particle);
+    
+    // Анимация частицы
+    particle.animate([
+      {
+        transform: 'translate(0, 0) scale(1) rotate(0deg)',
+        opacity: 0.8
+      },
+      {
+        transform: `
+          translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) 
+          scale(0) rotate(${Math.random() * 360}deg)
+        `,
+        opacity: 0
+      }
+    ], {
+      duration: duration,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+    }).onfinish = () => {
+      particle.remove();
+    };
+  }
+}
+function createWaveEffect(isDark) {
+  const wave = document.createElement('div');
+  wave.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, 
+      ${isDark ? 'rgba(79, 70, 229, 0.8)' : 'rgba(251, 191, 36, 0.8)'}, 
+      transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9998;
+    pointer-events: none;
+    animation: waveExpand 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  `;
+  
+  document.body.appendChild(wave);
+  
+  setTimeout(() => {
+    wave.remove();
+  }, 1000);
+}
+function createParticleEffect(isDark) {
+  const toggleRect = themeToggleContainer.getBoundingClientRect();
+  const centerX = toggleRect.left + toggleRect.width / 2;
+  const centerY = toggleRect.top + toggleRect.height / 2;
+  
+  for (let i = 0; i < 12; i++) {
+    const particle = document.createElement('div');
+    const angle = (i / 12) * Math.PI * 2;
+    const distance = 30;
+    const color = isDark ? 
+      `hsl(${280 + Math.random() * 40}, 100%, 70%)` : 
+      `hsl(${40 + Math.random() * 20}, 100%, 60%)`;
+    
+    particle.style.cssText = `
+      position: fixed;
+      width: ${Math.random() * 4 + 2}px;
+      height: ${Math.random() * 4 + 2}px;
+      background: ${color};
+      border-radius: 50%;
+      left: ${centerX}px;
+      top: ${centerY}px;
+      z-index: 9997;
+      pointer-events: none;
+      box-shadow: 0 0 10px ${color};
+    `;
+    
+    document.body.appendChild(particle);
+    
+    // Анимация частицы
+    particle.animate([
+      {
+        transform: 'translate(0, 0) scale(1)',
+        opacity: 1
+      },
+      {
+        transform: `
+          translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) 
+          scale(0)
+        `,
+        opacity: 0
+      }
+    ], {
+      duration: 800,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+    }).onfinish = () => {
+      particle.remove();
+    };
+  }
+}
+// CSS для анимации перехода
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes waveExpand {
+    0% {
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      width: 200vw;
+      height: 200vw;
+      opacity: 0;
+    }
+  }
+  
+  @keyframes themeTransition {
+    0% {
+      opacity: 0;
+      clip-path: circle(0% at 50% 50%);
+    }
+    50% {
+      opacity: 0.7;
+      clip-path: circle(100% at 50% 50%);
+    }
+    100% {
+      opacity: 0;
+      clip-path: circle(100% at 50% 50%);
+    }
+  }
+  
+  /* Плавная анимация для всех элементов с задержками */
+  body {
+    transition: 
+      background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+      color 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+  }
+  
+  .sidebar, .top-bar, .card, .table-container {
+    transition: 
+      background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+      border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
+      box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+  }
+  
+  .nav-item, .btn {
+    transition: 
+      all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  }
+  
+  /* Эффект морфинга для текста */
+  .page-title, .page-subtitle, .card-title, .card-description {
+    transition: 
+      color 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s,
+      transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Эффект при переключении темы */
+  .theme-transition-active {
+    animation: themePulse 0.8s ease;
+  }
+  
+  @keyframes themePulse {
+    0% { 
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: scale(1.02);
+    }
+    100% { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Эффект свечения для иконок */
+  .dark-theme .nav-item i,
+  .dark-theme .btn i {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+    transition: filter 0.5s ease;
+  }
+  
+  .dark-theme .logo-icon {
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+  }
+  
+  /* Эффект градиентного текста при переключении */
+  .theme-text-transition {
+    background: linear-gradient(90deg, 
+      var(--accent-warning), 
+      var(--accent-primary), 
+      var(--accent-secondary));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientShift 2s ease infinite;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+`;
+document.head.appendChild(style);
+
+// Инициализация темы
+if (savedTheme === 'dark') {
+  document.body.classList.add('dark-theme');
+  themeToggle.checked = true;
+}
+
+// Создаем звездочки и частицы при загрузке
+createStars();
+createParticles();
+
+// Обработчик переключения темы
+themeToggle.addEventListener('change', function() {
+  const isDark = this.checked;
+  
+  // Плавное переключение темы
+  toggleThemeWithAnimation(isDark);
+  
+  // Показываем уведомление
+  showNotification(`Тема изменена на ${isDark ? 'тёмную' : 'светлую'}`, 'info');
+});
+// Добавляем обработчик для клавиатуры (Alt+T для переключения темы)
+document.addEventListener('keydown', function(e) {
+  if (e.altKey && e.key === 't') {
+    e.preventDefault();
+    themeToggle.click();
+  }
+});
+themeToggleContainer.addEventListener('mouseenter', function() {
+  createParticles();
+  
+  // Анимация частиц
+  const particles = particlesContainer.querySelectorAll('.particle');
+  particles.forEach((particle, index) => {
+    const angle = (index / particles.length) * Math.PI * 2;
+    const distance = 15;
+    
+    particle.animate([
+      {
+        transform: 'translate(0, 0) scale(1)',
+        opacity: particle.style.opacity
+      },
+      {
+        transform: `
+          translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)
+          scale(0.5)
+        `,
+        opacity: 0
+      }
+    ], {
+      duration: 800,
+      easing: 'ease-out',
+      delay: index * 50
+    });
+  });
+});
+
+// Обновляем звездочки при изменении размера окна
+window.addEventListener('resize', createStars);
       // Загрузка changelog
       loadChangelogFromSheet();
       
@@ -3378,6 +4462,232 @@ Bug ID: ${bugId}
       }
       saveChanges();
     }
+    let springActive = false;
+let springInterval = null;
+let cloudInterval = null;
+let snowdropInterval = null;
+let activeSnowdrops = [];
+
+// Добавьте обработчик для кнопки весны (в DOMContentLoaded):
+document.getElementById('springToggleBtn').addEventListener('click', toggleSpring);
+
+// Обновите функцию toggleSpring:
+function toggleSpring() {
+  if (springActive) {
+    stopSpring();
+  } else {
+    startSpring();
+  }
+  updateSpringButton();
+}
+
+function startSpring() {
+  if (springActive) return;
+  
+  // Проверяем, сейчас ли весенний период
+  if (!isSpringPeriod()) {
+    showNotification('Весеннее оформление доступно только с 1 марта по 31 мая', 'info');
+    updateSpringButton();
+    return;
+  }
+  
+  springActive = true;
+  
+  // Сохраняем состояние в localStorage
+  localStorage.setItem('springEnabled', 'true');
+  
+  // Добавляем класс весенней темы к body
+  document.body.classList.add('spring-theme');
+  
+  // Запускаем создание облаков
+  createClouds();
+  cloudInterval = setInterval(createCloud, 5000);
+  showNotification('Весеннее настроение включено 🌸');
+}
+
+function updateSpringButton() {
+  const springBtn = document.getElementById('springToggleBtn');
+  const springText = document.getElementById('springText');
+  
+  // Проверяем, сейчас ли весенний период
+  const isSpringNow = isSpringPeriod();
+  
+  // Если не весна, скрываем кнопку
+  if (!isSpringNow && springActive) {
+    // Если весеннее оформление активно, но не весенний период - выключаем
+    stopSpring();
+  }
+  
+  // Показываем/скрываем кнопку в зависимости от сезона
+  if (isSpringNow) {
+    springBtn.style.display = 'inline-flex';
+    
+    if (springActive) {
+      springBtn.classList.remove('btn-success');
+      springBtn.classList.add('btn-warning');
+      springText.textContent = 'Выкл. весну';
+      springBtn.title = 'Выключить весеннее оформление';
+    } else {
+      springBtn.classList.remove('btn-warning');
+      springBtn.classList.add('btn-success');
+      springText.textContent = 'Весна';
+      springBtn.title = 'Включить весеннее оформление';
+    }
+  } else {
+    springBtn.style.display = 'none';
+  }
+}
+
+// Функция для создания облаков
+function createClouds() {
+  // Создаем несколько начальных облаков
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => createCloud(), i * 1000);
+  }
+}
+
+function createCloud() {
+  // Проверяем, активна ли весенняя тема
+  if (!springActive) return;
+  
+  const cloud = document.createElement('div');
+  cloud.className = 'spring-cloud';
+  
+  // Случайные параметры для облака
+  const size = Math.random() * 80 + 100;
+  const height = Math.random() * 70 + 10;
+  const speed = Math.random() * 0.1 + 0.05;
+  
+  // Проверяем, активна ли темная тема
+  const isDark = document.body.classList.contains('dark-theme');
+  
+  // Настройки в зависимости от типа облака и темы
+  let cloudConfig = {
+    opacity: isDark ? 0.8 : 0.7,
+    blur: 1
+  };
+  
+  cloud.style.width = `${size}px`;
+  cloud.style.height = `${size * 0.35}px`;
+  cloud.style.top = `${height}%`;
+  cloud.style.left = `-${size}px`;
+  cloud.style.opacity = '0'; // Начинаем с прозрачности 0
+  cloud.style.filter = `blur(${cloudConfig.blur}px)`;
+  cloud.style.transition = 'opacity 0.5s ease'; // Добавляем transition для плавного появления
+  
+  // Разные цвета облаков в зависимости от темы
+  if (isDark) {
+    const lightness = Math.random() * 15 + 85;
+    const saturation = Math.random() * 10 + 60;
+    cloud.style.background = `hsla(120, ${saturation}%, ${lightness}%, 0.9)`;
+  } else {
+    const hue = Math.random() * 20 + 180;
+    const saturation = Math.random() * 20 + 70;
+    const lightness = Math.random() * 10 + 90;
+    cloud.style.background = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
+  
+  document.getElementById('springContainer').appendChild(cloud);
+  
+  // Плавное появление облака
+  setTimeout(() => {
+    if (cloud.parentNode && springActive) {
+      cloud.style.opacity = cloudConfig.opacity;
+    }
+  }, 10);
+  
+  // Анимация движения облака
+  const duration = (window.innerWidth + size) / speed * 2;
+  const verticalMovement = Math.random() * 20 - 10;
+  
+  const animation = cloud.animate([
+    { 
+      transform: 'translateX(0) translateY(0)', 
+      opacity: cloudConfig.opacity 
+    },
+    { 
+      transform: `translateX(${window.innerWidth + size}px) translateY(${verticalMovement}px)`, 
+      opacity: 0 
+    }
+  ], {
+    duration: duration,
+    easing: 'linear'
+  });
+  
+  animation.onfinish = () => {
+    if (cloud.parentNode) {
+      cloud.remove();
+    }
+  };
+  
+  // Также добавляем плавное изменение прозрачности во время движения
+  setTimeout(() => {
+    if (cloud.parentNode && springActive) {
+      cloud.animate([
+        { opacity: cloudConfig.opacity },
+        { opacity: cloudConfig.opacity * 0.7 },
+        { opacity: cloudConfig.opacity }
+      ], {
+        duration: 5000,
+        iterations: Infinity,
+        easing: 'ease-in-out'
+      });
+    }
+  }, 1000);
+}
+window.addEventListener('resize', function() {
+  if (springActive) {
+    // При изменении размера окна пересоздаем облака
+    document.querySelectorAll('.spring-cloud').forEach(cloud => cloud.remove());
+    createClouds();
+  }
+});
+function stopSpring() {
+  if (!springActive) return;
+  springActive = false;
+  
+  // Сохраняем состояние в localStorage
+  localStorage.setItem('springEnabled', 'false');
+  
+  // Убираем класс весенней темы
+  document.body.classList.remove('spring-theme');
+  
+  // Останавливаем создание новых облаков
+  clearInterval(cloudInterval);
+  
+  // Плавно скрываем существующие облака
+  document.querySelectorAll('.spring-cloud').forEach(cloud => {
+    cloud.style.transition = 'opacity 1s ease';
+    cloud.style.opacity = '0';
+    
+    // Удаляем облако после анимации
+    setTimeout(() => {
+      if (cloud.parentNode) {
+        cloud.remove();
+      }
+    }, 100);
+  });
+  
+  showNotification('Весеннее оформление выключено');
+}
+function isSpringPeriod() {
+  const now = new Date();
+  const month = now.getMonth() + 1; // 1-12
+  const day = now.getDate(); // 1-31
+  
+  // Если март (3), апрель (4) или май (5)
+  if (month >= 3 && month <= 5) {
+    // Проверяем границы месяцев
+    if (month === 3) {
+      return day >= 1; // С 1 марта
+    } else if (month === 5) {
+      return day <= 31; // До 31 мая
+    }
+    return true; // Апрель полностью входит
+  }
+  return false;
+}
+
   </script>
 </body>
 </html>
