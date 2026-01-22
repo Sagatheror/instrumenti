@@ -3207,43 +3207,9 @@ style.textContent = `
       color 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
   }
   
-  .sidebar, .top-bar, .card, .table-container {
-    transition: 
-      background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
-      border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
-      box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-  }
-  
   .nav-item, .btn {
     transition: 
       all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-  }
-  
-  /* Эффект морфинга для текста */
-  .page-title, .page-subtitle, .card-title, .card-description {
-    transition: 
-      color 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s,
-      transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* Эффект при переключении темы */
-  .theme-transition-active {
-    animation: themePulse 0.8s ease;
-  }
-  
-  @keyframes themePulse {
-    0% { 
-      opacity: 0.9;
-      transform: scale(0.98);
-    }
-    50% { 
-      opacity: 0.7;
-      transform: scale(1.02);
-    }
-    100% { 
-      opacity: 1;
-      transform: scale(1);
-    }
   }
   
   /* Эффект свечения для иконок */
