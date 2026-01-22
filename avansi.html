@@ -1410,97 +1410,101 @@ tr:hover::before {
         }
 
         function renderTable(data) {
-    const html = data.map(item => `
-        <tr>
+    const html = data.map(item => {
+        const bills = billsData[item.name] || [];
+        const hasBills = bills.length > 0;
+        const hasDeposits = item.deposits.length > 0;
+        
+        return `
+        <tr data-supplier-id="${item.id}">
             <td>
                 <div class="supplier-cell">
-                    <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)};"></span>
-                    ${item.name}
+                    <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)}; box-shadow: 0 0 0 3px ${getSupplierColorRGBA(item.colorIndex, 0.2)};"></span>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 1em; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">${item.name}</div>
+                        <div style="font-size: 1em; color: var(--text-muted); display: flex; gap: 12px;">
+                            <span><i class="fas fa-layer-group"></i> ${item.count} ${getRussianWordForm(item.count, ['депозит', 'депозита', 'депозитов'])}</span>
+                        </div>
+                    </div>
                 </div>
-                <button class="details-toggle" onclick="toggleDetails('${item.id}')">
-                    <i class="fas fa-chevron-down" id="icon-${item.id}"></i> Подробнее
+                <button class="details-toggle" onclick="toggleDetails('${item.id}')" style="margin-top: 8px;">
+                    <i class="fas fa-chevron-down" id="icon-${item.id}"></i> 
+                    <span>Подробнее</span>
+                    <span style="margin-left: 4px; font-size: 1.2em; opacity: 0.7;">
+                        (${hasDeposits ? item.deposits.length + ' деп.' : 'нет деп.'}${hasBills ? ', ' + bills.length + ' счет.' : ''})
+                    </span>
                 </button>
                 <div id="details-${item.id}" class="details-content">
-                    <div class="deposits-section">
-                        <div class="deposits-title">
-                            <i class="fas fa-wallet"></i>
-                            Депозиты поставщика
-                        </div>
-                        ${item.deposits.length > 0 ? `
-                            <div class="bills-table-container">
-                                <table class="bills-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 60%;">Описание</th>
-                                            <th style="width: 40%; text-align: right;">Сумма</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${item.deposits.map((d, i) => `
-                                            <tr>
-                                                <td>
-                                                    ${d.year ? `Депозит за ${d.year} год` : `Депозит #${i + 1}`}
-                                                </td>
-                                                <td class="bill-amount-cell">${fmt(d.amount)}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr class="bills-total-row">
-                                            <td>
-                                                <strong>Итого депозитов:</strong>
-                                                <span style="font-size: 0.8em; color: var(--text-muted); margin-left: 8px;">
-                                                    ${item.count} ${getRussianWordForm(item.count, ['платеж', 'платежа', 'платежей'])}
-                                                </span>
-                                            </td>
-                                            <td class="bill-amount-cell" style="font-size: 1.1em;">${fmt(item.total)}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        ` : `
-                            <div class="no-bills-container">
-                                <div class="no-bills-icon">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div class="detail-card" style="background: linear-gradient(135deg, ${getSupplierColorRGBA(item.colorIndex, 0.05)} 0%, rgba(255,255,255,0.1) 100%); border: 1px solid ${getSupplierColorRGBA(item.colorIndex, 0.1)}; border-radius: var(--radius-md); padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <div style="width: 32px; height: 32px; background: ${getSupplierColorRGBA(item.colorIndex, 0.1)}; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: ${getSupplierColor(item.colorIndex)};">
                                     <i class="fas fa-wallet"></i>
                                 </div>
-                                <div class="no-bills-text">Нет данных о депозитах</div>
+                                <div style="font-size: 1em; font-weight: 600; color: var(--text-main);">Депозиты</div>
                             </div>
-                        `}
+                            ${renderDepositsSection(item)}
+                        </div>
+                        
+                        <div class="detail-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255,255,255,0.1) 100%); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: var(--radius-md); padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <div style="width: 32px; height: 32px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--success);">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                                <div style="font-size: 1em; font-weight: 600; color: var(--text-main);">Счета</div>
+                            </div>
+                            ${getBillsForSupplier(item.name)}
+                        </div>
                     </div>
                     
-                    <div class="bills-section">
-                        <div class="bills-title">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            Счета из авансов/переплат:
+                    <div style="background: linear-gradient(135deg, var(--primary-light) 0%, rgba(224, 231, 255, 0.1) 100%); border-radius: var(--radius-md); padding: 16px; border: 1px solid rgba(99, 102, 241, 0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="font-weight: 600; color: var(--text-main);">Итоговая сводка</div>
+                            <div style="font-size: 1em; color: var(--text-muted);">
+                                <i class="fas fa-calendar-alt"></i> ${new Date().toLocaleDateString('ru-RU')}
+                            </div>
                         </div>
-                        ${getBillsForSupplier(item.name)}
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1em; color: var(--text-secondary); margin-bottom: 4px;">Общая сумма</div>
+                                <div style="font-size: 1.5em; font-weight: 700; color: var(--text-main);">${fmt(item.total)}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1em; color: var(--text-secondary); margin-bottom: 4px;">Текущий остаток</div>
+                                <div style="font-size: 1.5em; font-weight: 700; color: ${item.rest > 0 ? 'var(--success)' : item.rest < 0 ? '#ef4444' : 'var(--text-main)'};">${fmt(item.rest)}</div>
+                            </div>
+                            <div style="display: none; text-align: center;">
+                                <div style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 4px;">Средний депозит</div>
+                                <div style="font-size: 1.5em; font-weight: 700; color: var(--text-main);">${fmt(item.avg)}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </td>
             <td>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="background:${getSupplierColorRGBA(item.colorIndex, 0.1)}; color:${getSupplierColor(item.colorIndex)}; padding:4px 8px; border-radius:4px; font-size:0.85em; font-weight:600;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                    <div style="background: ${getSupplierColorRGBA(item.colorIndex, 0.1)}; color: ${getSupplierColor(item.colorIndex)}; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: 700; min-width: 40px; text-align: center;">
                         ${item.count}
-                    </span>
+                    </div>
+                    <div style="font-size: 1em; color: var(--text-muted); text-align: center;">
+                        ${getRussianWordForm(item.count, ['деп.', 'деп.', 'деп.'])}
+                    </div>
                 </div>
             </td>
-            <td class="amount-cell" style="color:#000000;">
-                ${fmt(item.total)}
-                <div style="font-size:0.8em; color:var(--text-muted); margin-top:2px;">
-                    ${item.count > 0 ? `${getRussianWordForm(item.count, ['платеж', 'платежа', 'платежей'])}` : ''}
+            <td class="amount-cell">
+                <div style="font-weight: 700; color: #000000; font-size: 1.1em;">${fmt(item.total)}</div>
+                <div style="font-size: 1em; color: var(--text-muted); margin-top: 2px; display: none; align-items: center; gap: 4px;">
+                    <i class="fas fa-calculator"></i>
+                    ${item.count > 0 ? `~${fmt(item.avg)} ср.` : 'нет данных'}
                 </div>
             </td>
-            <td class="amount-cell" style="display:none">
-                ${fmt(item.avg)}
-            </td>
-            <td class="amount-cell" style="color:#000000;">
-                ${fmt(item.rest)}
-                <div style="font-size:0.8em; color:${item.rest > 0 ? 'var(--success)' : item.rest < 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top:2px;">
-                    ${item.rest > 0 ? 'К возврату' : item.rest < 0 ? 'К доплате' : 'Нулевой остаток'}
+            <td class="amount-cell">
+                <div style="font-weight: 700; color: ${item.rest > 0 ? 'var(--success)' : item.rest < 0 ? '#ef4444' : '#000000'}; font-size: 12px;">${fmt(item.rest)}</div>
                 </div>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
+    
     document.getElementById('tableBody').innerHTML = html;
 }
 function formatDate(dateString) {
@@ -1579,11 +1583,11 @@ function formatDate(dateString) {
             
             html += `
                 <tr>
-                    <td class="bill-number-cell">
+                    <td class="bill-number-cell" style="font-size: 12px">
                         ${bill.number}
                     </td>
-                    <td class="bill-date-cell">${formattedDate}</td>
-                    <td class="bill-amount-cell">${fmt(bill.amount)}</td>
+                    <td class="bill-date-cell" style="font-size: 12px">${formattedDate}</td>
+                    <td class="bill-amount-cell" style="font-size: 12px">${fmt(bill.amount)}</td>
                 </tr>
             `;
             total += bill.amount;
@@ -1596,7 +1600,7 @@ function formatDate(dateString) {
                     <tr class="bills-total-row">
                         <td colspan="2">
                             <strong>Итого по счетам:</strong>
-                            <span style="font-size: 0.8em; color: var(--text-muted); margin-left: 8px;">
+                            <span style="font-size: 1em; color: var(--text-muted); margin-left: 8px;">
                                 ${bills.length} ${getRussianWordForm(bills.length, ['счет', 'счета', 'счетов'])}
                             </span>
                         </td>
@@ -2169,7 +2173,7 @@ async function exportToPDF() {
                     ">
                         ${fmtNoCurrency(supplier.rest)} ₽
                         <div style="
-                            font-size: 12px;
+                            font-size: 14px;
                             font-weight: 600;
                             color: ${supplier.rest > 0 ? '#10b981' : supplier.rest < 0 ? '#ef4444' : '#64748b'};
                             margin-top: 2px;
@@ -2270,13 +2274,13 @@ async function exportToPDF() {
                 bills.forEach(bill => {
                     billsTable += `
                         <tr>
-                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 16px;">
                                 ${bill.number || '-'}
                             </td>
-                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 16px;">
                                 ${formatDate(bill.date)}
                             </td>
-                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 13px;">
+                            <td style="padding: 10px 15px; border: 1px solid #dee2e6; font-size: 16px;">
                                 ${fmtNoCurrency(bill.amount || 0)} ₽
                             </td>
                         </tr>
@@ -2285,7 +2289,7 @@ async function exportToPDF() {
                 
                 billsTable += `
                             <tr style="background: #e9ecef;">
-                                <td colspan="2" style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
+                                <td colspan="2" style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 16px; font-weight: 700;">
                                     <strong>Итого по счетам (${bills.length} ${getRussianWordForm(bills.length, ['счет', 'счета', 'счетов'])})</strong>
                                 </td>
                                 <td style="padding: 12px 15px; border: 1px solid #dee2e6; font-size: 13px; font-weight: 700;">
@@ -2390,6 +2394,112 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 });
+function renderDepositsSection(item) {
+    if (!item.deposits || item.deposits.length === 0) {
+        return `
+            <div class="no-bills-container" style="background: transparent; border: none; padding: 20px 0;">
+                <div class="no-bills-icon" style="font-size: 1.5em; margin-bottom: 8px;">
+                    <i class="fas fa-wallet" style="color: var(--text-muted);"></i>
+                </div>
+                <div class="no-bills-text" style="font-size: 0.9em;">Нет данных о депозитах</div>
+            </div>
+        `;
+    }
+    
+    const depositsByYear = {};
+    item.deposits.forEach(deposit => {
+        const year = deposit.year || 'Без года';
+        if (!depositsByYear[year]) {
+            depositsByYear[year] = { total: 0, count: 0, deposits: [] };
+        }
+        depositsByYear[year].total += deposit.amount;
+        depositsByYear[year].count += 1;
+        depositsByYear[year].deposits.push(deposit);
+    });
+    
+    let html = `
+        <div style="max-height: 200px; overflow-y: auto; padding-right: 8px;">
+    `;
+    
+    Object.entries(depositsByYear).forEach(([year, data], index) => {
+        const yearColor = getYearColor(year);
+        
+        html += `
+            <div style="margin-bottom: ${index < Object.keys(depositsByYear).length - 1 ? '16px' : '8px'};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 8px; height: 8px; background: ${yearColor}; border-radius: 50%;"></div>
+                        <span style="font-weight: 600; font-size: 1em; color: var(--text-main);">${year}</span>
+                    </div>
+                    <div style="font-size: 1em; color: var(--text-muted);">
+                        ${data.count} ${getRussianWordForm(data.count, ['депозит', 'депозита', 'депозитов'])}
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+        `;
+        
+        data.deposits.forEach((deposit, depIndex) => {
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.5); border-radius: 4px; border-left: 3px solid ${yearColor};">
+                    <div style="font-size: 1em; color: var(--text-main);">
+                        <span style="opacity: 0.7; margin-right: 4px;">#${depIndex + 1}</span>
+                        Депозит
+                    </div>
+                    <div style="font-family: 'Roboto Mono', monospace; font-weight: 600; font-size: 1em; color: #000000;">
+                        ${fmt(deposit.amount)}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.1);">
+                    <div style="font-size: 1em; font-weight: 600; color: var(--text-main);">
+                        Итого за ${year}:
+                    </div>
+                    <div style="font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1em; color: #000000;">
+                        ${fmt(data.total)}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+        </div>
+        
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 1em; font-weight: 700; color: var(--text-main);">
+                    Всего депозитов:
+                    <span style="font-size: 0.85em; font-weight: 600; color: var(--text-muted); margin-left: 8px;">
+                        ${item.count} ${getRussianWordForm(item.count, ['платеж', 'платежа', 'платежей'])}
+                    </span>
+                </div>
+                <div style="font-family: 'Roboto Mono', monospace; font-weight: 800; font-size: 1.2em; color: var(--text-main);">
+                    ${fmt(item.total)}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
+
+function getYearColor(year) {
+    const yearColors = {
+        '2024': '#6366f1',
+        '2025': '#10b981',
+        '2026': '#f59e0b',
+        '2023': '#8b5cf6',
+        '2022': '#ec4899',
+        'Без года': '#94a3b8'
+    };
+    return yearColors[year] || '#94a3b8';
+}
     </script>
 </body>
 </html>
