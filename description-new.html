@@ -2424,6 +2424,47 @@ sidebar, .top-bar, .card, .table-container, .nav-item, .btn, .modal-content {
   left: 50%;
   transform: translateX(-50%);
 }
+  .send-btn-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--accent-warning);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  display: none;
+}
+
+.send-btn-info.show {
+  display: block;
+  animation: slideUp 0.3s ease;
+}
+
+.send-btn-info ul {
+  font-size: 14px;
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.send-btn-info li {
+  font-size: 14px;
+  margin-bottom: 0.25rem;
+  position: relative;
+}
+
+.send-btn-info li:before {
+  content: "•";
+  position: absolute;
+  left: -1rem;
+  color: var(--accent-warning);
+}
+
+.send-btn-info .info-icon {
+  color: var(--accent-warning);
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
 </style>
 </head>
 <body>
@@ -4054,32 +4095,120 @@ Bug ID: ${bugId}
     }
 
     function updateSendButtonState() {
-      const description = document.getElementById('bugDescription').value.trim();
-      const userName = document.getElementById('userName').value.trim();
-      const sendBtn = document.getElementById('sendBugBtn');
-      const minLength = 10;
-      
-      // Обновляем счетчик символов для имени
-      const nameCounter = document.getElementById('nameCharCounter');
-      if (nameCounter) {
-        nameCounter.textContent = `${userName.length}/50 символов`;
-        nameCounter.className = 'char-hint ' + 
-          (userName.length === 0 ? 'text-gray-500' : 
-           userName.length < 2 ? 'text-warning' : 'text-success');
-      }
-      
-      // Обновляем счетчик символов для описания
-      const descCounter = document.getElementById('descCharCounter');
-      if (descCounter) {
-        descCounter.textContent = `${description.length} символов (минимум ${minLength})`;
-        descCounter.className = 'char-hint ' + 
-          (description.length === 0 ? 'text-gray-500' : 
-           description.length < minLength ? 'text-warning' : 'text-success');
-      }
-      
-      // Включаем кнопку только если оба поля заполнены правильно
-      sendBtn.disabled = !(userName.length >= 2 && description.length >= minLength);
-    }
+  const description = document.getElementById('bugDescription').value.trim();
+  const userName = document.getElementById('userName').value.trim();
+  const sendBtn = document.getElementById('sendBugBtn');
+  const infoBlock = document.getElementById('sendBtnInfo');
+  const requirementsList = document.getElementById('requirementsList');
+  const minLength = 10;
+  
+  // Обновляем счетчик символов для имени
+  const nameCounter = document.getElementById('nameCharCounter');
+  if (nameCounter) {
+    nameCounter.textContent = `${userName.length}/50 символов`;
+    nameCounter.className = 'char-hint ' + 
+      (userName.length === 0 ? 'text-gray-500' : 
+       userName.length < 2 ? 'text-warning' : 'text-success');
+  }
+  
+  // Обновляем счетчик символов для описания
+  const descCounter = document.getElementById('descCharCounter');
+  if (descCounter) {
+    descCounter.textContent = `${description.length} символов (минимум ${minLength})`;
+    descCounter.className = 'char-hint ' + 
+      (description.length === 0 ? 'text-gray-500' : 
+       description.length < minLength ? 'text-warning' : 'text-success');
+  }
+  
+  // Включаем кнопку только если оба поля заполнены правильно
+  const isNameValid = userName.length >= 2;
+  const isDescriptionValid = description.length >= minLength;
+  const isFormValid = isNameValid && isDescriptionValid;
+  
+  sendBtn.disabled = !isFormValid;
+  
+  // Обновляем информационный блок
+  updateRequirementsInfo(isNameValid, isDescriptionValid, userName.length, description.length, minLength);
+  
+  // Показываем/скрываем информационный блок
+  if (!isFormValid) {
+    infoBlock.classList.add('show');
+  } else {
+    infoBlock.classList.remove('show');
+  }
+}
+
+function updateRequirementsInfo(isNameValid, isDescriptionValid, nameLength, descLength, minLength) {
+  const requirementsList = document.getElementById('requirementsList');
+  
+  let html = '';
+  
+  // Требования для имени
+  if (!isNameValid) {
+    const icon = nameLength >= 2 ? 'check' : 'times';
+    const color = nameLength >= 2 ? 'success' : 'danger';
+    html += `
+      <li>
+        <i class="fas fa-${icon} text-${color}"></i>
+        <span style="${nameLength >= 2 ? 'text-decoration: line-through; color: var(--text-tertiary);' : ''}">
+          Имя должно содержать минимум 2 символа (сейчас: ${nameLength})
+        </span>
+      </li>
+    `;
+  } else {
+    html += `
+      <li>
+        <i class="fas fa-check text-success"></i>
+        <span style="text-decoration: line-through; color: var(--text-tertiary);">
+          Имя должно содержать минимум 2 символа ✓
+        </span>
+      </li>
+    `;
+  }
+  
+  // Требования для описания
+  if (!isDescriptionValid) {
+    const icon = descLength >= minLength ? 'check' : 'times';
+    const color = descLength >= minLength ? 'success' : 'danger';
+    const remaining = Math.max(0, minLength - descLength);
+    html += `
+      <li>
+        <i class="fas fa-${icon} text-${color}"></i>
+        <span style="${descLength >= minLength ? 'text-decoration: line-through; color: var(--text-tertiary);' : ''}">
+          Описание должно содержать минимум ${minLength} символов 
+          ${remaining > 0 ? `(осталось: ${remaining})` : ''}
+        </span>
+      </li>
+    `;
+  } else {
+    html += `
+      <li>
+        <i class="fas fa-check text-success"></i>
+        <span style="text-decoration: line-through; color: var(--text-tertiary);">
+          Описание должно содержать минимум ${minLength} символов ✓
+        </span>
+      </li>
+    `;
+  }
+  
+  // Общие советы
+  html += `
+    <li>
+      <i class="fas fa-lightbulb text-info"></i>
+      <span style="color: var(--text-tertiary); font-style: italic;">
+        Опишите проблему максимально подробно
+      </span>
+    </li>
+    <li>
+      <i class="fas fa-lightbulb text-info"></i>
+      <span style="color: var(--text-tertiary); font-style: italic;">
+        Укажите шаги для воспроизведения проблемы
+      </span>
+    </li>
+  `;
+  
+  requirementsList.innerHTML = html;
+}
 
     function showLastBugIds() {
       const recentBugs = bugIdHistory.slice(0, 5);
