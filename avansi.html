@@ -1055,10 +1055,10 @@ tr:hover::before {
         amounts: 'I28:I48' 
     },
     'СПОРТ-ФОРА': { 
-        numbers: 'AJ28:AJ48', 
-        dates: 'AK28:AK48',
-        amounts: 'AL28:AL48' 
-    }
+    numbers: 'AK28:AK48', 
+    dates: 'AL28:AL48',
+    amounts: 'AM28:AM48' 
+}
 };
 
         const RANGES = [
@@ -1202,6 +1202,8 @@ tr:hover::before {
     }
     
     for (const [supplier, ranges] of Object.entries(BILLS_RANGES)) {
+        console.log(`\n=== Processing ${supplier} ===`);
+        
         const bills = [];
         
         const getCol = (range) => {
@@ -1219,31 +1221,79 @@ tr:hover::before {
             return match ? parseInt(match[2]) - 1 : 0;
         };
         
-        const numbersCol = getCol(ranges.numbers);
-        const datesCol = getCol(ranges.dates);
-        const amountsCol = getCol(ranges.amounts);
+        const baseNumbersCol = getCol(ranges.numbers);
+        const baseDatesCol = getCol(ranges.dates);
+        const baseAmountsCol = getCol(ranges.amounts);
         const startRow = getStartRow(ranges.numbers);
         const endRow = getEndRow(ranges.numbers);
         
+        console.log(`Range: ${ranges.numbers} (rows ${startRow+1} to ${endRow+1})`);
+        console.log(`Base columns: numbers=${baseNumbersCol}, dates=${baseDatesCol}, amounts=${baseAmountsCol}`);
+
         for (let i = startRow; i <= endRow; i++) {
             if (i < lines.length) {
                 const cols = lines[i].split(',');
-                const billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
-                const date = cols[datesCol] ? cols[datesCol].trim() : '';
-                const amount = parseNum(cols[amountsCol]);
                 
-                if (billNumber && amount !== null) {
-                    bills.push({
-                        number: billNumber,
-                        date: date,
-                        amount: amount
-                    });
+                let billNumber = '';
+                let date = '';
+                let amount = null;
+                
+                for (let offset = -3; offset <= 3; offset++) {
+                    const testNumCol = baseNumbersCol + offset;
+                    const testDateCol = baseDatesCol + offset;
+                    const testAmountCol = baseAmountsCol + offset;
+                    
+                    if (testNumCol >= 0 && testDateCol >= 0 && testAmountCol >= 0 &&
+                        testNumCol < cols.length && testDateCol < cols.length && testAmountCol < cols.length) {
+                        
+                        const testNumber = cols[testNumCol] ? cols[testNumCol].trim() : '';
+                        const testDate = cols[testDateCol] ? cols[testDateCol].trim() : '';
+                        const testAmount = parseNum(cols[testAmountCol]);
+                        
+                        const isNumber = testNumber && !isNaN(parseInt(testNumber));
+                        const isDateString = testNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
+                        const hasAmount = testAmount !== null;
+                        
+                        if (isNumber && !isDateString && hasAmount) {
+                            billNumber = testNumber;
+                            date = testDate;
+                            amount = testAmount;
+                            console.log(`Row ${i+1}: Found at offset ${offset}: "${billNumber}", "${date}", ${amount}`);
+                            break;
+                        }
+                    }
+                }
+                
+                if (!billNumber) {
+                    billNumber = cols[baseNumbersCol] ? cols[baseNumbersCol].trim() : '';
+                    date = cols[baseDatesCol] ? cols[baseDatesCol].trim() : '';
+                    amount = parseNum(cols[baseAmountsCol]);
+                    console.log(`Row ${i+1}: Trying base columns: "${billNumber}", "${date}", ${amount}`);
+                }
+                
+                if (billNumber && !isNaN(parseInt(billNumber)) && amount !== null) {
+                    const looksLikeDate = billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
+                    if (!looksLikeDate) {
+                        bills.push({
+                            number: billNumber,
+                            date: date,
+                            amount: amount
+                        });
+                        console.log(`  ✓ Added bill #${billNumber}`);
+                    } else {
+                        console.log(`  ✗ Skipped: "${billNumber}" looks like a date`);
+                    }
+                } else {
+                    console.log(`  ✗ Skipped: invalid data (number="${billNumber}", amount=${amount})`);
                 }
             }
         }
         
         if (bills.length > 0) {
             billsBySupplier[supplier] = bills;
+            console.log(`Total bills for ${supplier}: ${bills.length}`);
+        } else {
+            console.log(`No bills found for ${supplier}`);
         }
     }
     
@@ -1251,11 +1301,12 @@ tr:hover::before {
 }
 
         function parseNum(str) {
-            if (!str) return null;
-            const clean = str.replace(/[^\d.,-]/g, '').replace(',', '.');
-            const num = parseFloat(clean);
-            return isNaN(num) ? null : num;
-        }
+    if (!str) return null;
+    const clean = str.replace(/[^\d.,-]/g, '');
+    const withoutThousands = clean.replace(/,/g, '');
+    const num = parseFloat(withoutThousands);
+    return isNaN(num) ? null : num;
+}
 
         function updateDashboard() {
             renderStats(displayData);
