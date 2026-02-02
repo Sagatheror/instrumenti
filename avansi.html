@@ -1250,7 +1250,7 @@ tr:hover::before {
                         const testDate = cols[testDateCol] ? cols[testDateCol].trim() : '';
                         const testAmount = parseNum(cols[testAmountCol]);
                         
-                        const isNumber = testNumber && !isNaN(parseInt(testNumber));
+                        const isNumber = testNumber && (testNumber === "_" || !isNaN(parseInt(testNumber)));
                         const isDateString = testNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
                         const hasAmount = testAmount !== null;
                         
@@ -1271,7 +1271,7 @@ tr:hover::before {
                     console.log(`Row ${i+1}: Trying base columns: "${billNumber}", "${date}", ${amount}`);
                 }
                 
-                if (billNumber && !isNaN(parseInt(billNumber)) && amount !== null) {
+                if (billNumber && (billNumber === "_" || !isNaN(parseInt(billNumber))) && amount !== null) {
                     const looksLikeDate = billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
                     if (!looksLikeDate) {
                         bills.push({
@@ -1631,7 +1631,7 @@ function formatDate(dateString) {
     bills.forEach((bill, index) => {
         if (bill.number && bill.amount) {
             const formattedDate = formatDate(bill.date);
-            
+            console.log('Bills:', bills);
             html += `
                 <tr>
                     <td class="bill-number-cell" style="font-size: 12px">
