@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2b3a4a 0%, #1d2a35 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+            position: relative;
+        }
+
+        /* декоративные элементы фона */
+        .bg-emoji {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.08;
+            user-select: none;
+            pointer-events: none;
+            z-index: 0;
+            transform: rotate(10deg);
+        }
+
+        .card-wrapper {
+            perspective: 1800px;
+            width: 100%;
+            max-width: 550px;  /* чуть шире для крупного текста */
+            z-index: 10;
+        }
+
+        /* карточка-контейнер для 3D */
+        .flip-card {
+            display: block;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.6);
+            border-radius: 28px;
+        }
+
+        .flip-card:hover {
+            transform: scale(1.02);
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        /* переворот при наведении */
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* общая стилизация передней и задней стороны */
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 28px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.8rem;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 200, 0.3), inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        /* лицевая сторона — рубашка (без надписей) */
+        .flip-card-front {
+            background: radial-gradient(circle at 30% 30%, #f9ecc1, #d8c99b);
+            background-image: repeating-linear-gradient(45deg, rgba(180, 130, 80, 0.2) 0px, rgba(180, 130, 80, 0.2) 2px, transparent 2px, transparent 8px);
+            border: 6px solid #efe0b2;
+        }
+
+        .back-design {
+            width: 85%;
+            height: 85%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.25"><path d="M20,20 L35,35 M65,20 L80,35 M20,65 L35,80 M65,65 L80,80" stroke="%23aa8e6a" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="50" cy="50" r="15" stroke="%23aa8e6a" stroke-width="3" fill="none"/><path d="M50 20 L50 35 M50 65 L50 80 M20 50 L35 50 M65 50 L80 50" stroke="%23aa8e6a" stroke-width="3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.9;
+        }
+
+        /* задняя сторона (с текстом) — увеличен шрифт */
+        .flip-card-back {
+            background: #fffcf0;
+            background: linear-gradient(145deg, #fffef8, #fdf5e6);
+            border: 6px solid #f7e9ce;
+            transform: rotateY(180deg);
+            font-family: 'Kalam', 'Comic Neue', 'Caveat', 'Segoe Script', cursive, sans-serif;
+            color: #2e3b3b;
+            text-align: center;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .message {
+            font-size: clamp(2rem, 8vw, 3.2rem); /* заметно крупнее */
+            font-weight: 700;
+            text-shadow: 3px 3px 0 #f0dbc0;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        .emoji-deco {
+            font-size: 3.5rem; /* эмодзи тоже крупнее */
+            line-height: 1.2;
+            margin-top: 0.5rem;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+        }
+
+        /* статус "доступно / уже брали" */
+        .daily-message {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            padding: 0.8rem 2rem;
+            background: rgba(255, 250, 235, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            color: #2f455b;
+            font-weight: 500;
+            border: 1px solid #ede7d5;
+            transition: 0.2s;
+            text-align: center;
+            max-width: 550px;
+            z-index: 10;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 2px dashed #c0b29a;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            margin-top: 15px;
+            color: #ece3d0;
+            cursor: pointer;
+            transition: 0.25s;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .btn-reset:hover {
+            background: #d6c7b0;
+            color: #1d262e;
+            border: 2px solid #d6c7b0;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 12px;
+            right: 20px;
+            color: #aab9c9;
+            font-size: 1rem;
+            background: rgba(0,0,0,0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            z-index: 20;
+        }
+    </style>
+    <!-- подключаем рукописный шрифт -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500..700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- декоративные эмодзи на фоне (добавил парочку мемных) -->
+<div class="bg-emoji" style="top: 5%; left: 3%;">😂</div>
+<div class="bg-emoji" style="bottom: 8%; right: 2%;">🤡</div>
+<div class="bg-emoji" style="top: 20%; right: 8%;">🍿</div>
+<div class="bg-emoji" style="bottom: 15%; left: 7%;">🔥</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+    <!-- контейнер карточки -->
+    <div class="card-wrapper">
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <!-- передняя сторона (рубашка) -->
+                <div class="flip-card-front">
+                    <div class="back-design"></div>
+                </div>
+                <!-- задняя сторона с мемомотивацией -->
+                <div class="flip-card-back" id="motivationBack">
+                    <div class="message" id="messageText"></div>
+                    <div class="emoji-deco" id="emojiDeco"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- статус доступа -->
+    <div class="daily-message" id="dailyMessage">
+        ✨ загружаем...
+    </div>
+
+    <!-- кнопка сброса (для теста) -->
+    <button class="btn-reset" id="forceResetBtn" style="display:none">🔮 тест: другая карточка</button>
+</div>
+
+<footer>😂 мемодневка · наведи чтобы прочитать</footer>
+
+<script>
+(function() {
+    // --------------------------------------------------------------
+    // БОЛЬШАЯ КОЛЛЕКЦИЯ: МЕМЫ + МОТИВАЦИЯ (220+ штук, много мемных)
+    // --------------------------------------------------------------
+    const cardData = [
+        // --- Классическая мотивация (но с эмодзи) ---
+        { msg: "Сегодня ты сияешь", emoji: "✨🌟🦋" },
+        { msg: "Всё получится, просто верь", emoji: "💫🌙⭐" },
+        { msg: "Маленький шаг — большой успех", emoji: "🐾🌱🚀" },
+        { msg: "Ты справишься с любым вызовом", emoji: "💪😼⚡" },
+        { msg: "Улыбнись, даже если небо в тучах", emoji: "☁️🌈😊" },
+        { msg: "Ты — автор своей истории", emoji: "✍️📖🗝️" },
+        { msg: "Отдых — тоже продуктивность", emoji: "😌🛋️🍵" },
+        { msg: "Сделай перерыв и съешь конфетку", emoji: "🍬🍭🧁" },
+        { msg: "Даже горы начинаются с камня", emoji: "⛰️🪨🌄" },
+        
+        // --- МЕМНЫЕ И ЖИЗНЕННЫЕ (то, зачем мы здесь) ---
+        { msg: "Никогда не сдавайся. (c) Спайдермен", emoji: "🕷️🤘💥" },
+        { msg: "Пончик — это же просто тесто, а не еда", emoji: "🍩🤡🙈" },
+        { msg: "Ты сегодня как огурчик — бодрячком!", emoji: "🥒😎✨" },
+        { msg: "Лучше день потерять — потом на ракету сесть", emoji: "🚀🤷🎢" },
+        { msg: "Если упал духом — встань и отряхни мемы", emoji: "😂🧹💪" },
+        { msg: "Сделай вид, что работаешь — начальник поверит", emoji: "🤫👔💼" },
+        { msg: "Понедельник начинается в субботу (с) Стругацкие", emoji: "📆🤖🍵" },
+        { msg: "Не грусти, жуй печеньку", emoji: "🍪😌☕" },
+        { msg: "Зарядись как айфон — на всю неделю", emoji: "📱🔋⚡" },
+        { msg: "Даже улитка добралась до финиша", emoji: "🐌🏁🏆" },
+        { msg: "Ты — мой лучший друг (сам себе)", emoji: "🫂💖✨" },
+        { msg: "Жиза, но ты справишься", emoji: "🤝🔥😎" },
+        { msg: "Кринж? Это просто этап роста", emoji: "🌱😅👉👈" },
+        { msg: "Твой мозг: 'Надо работать'. Ты: 'Пойду поем'", emoji: "🧠🍕😋" },
+        { msg: "Мотивация: просто начни, а там видно будет", emoji: "🏁👀🎲" },
+        { msg: "Если тебя нет в интернете — ты не существуешь", emoji: "🌐🤳📸" },
+        { msg: "Сделай селфи с утра — весь день пройдет ок", emoji: "🤳☀️😜" },
+        { msg: "Главное — верить в себя, а остальное приложится", emoji: "🦄💫🔮" },
+        { msg: "Ты как Wi-Fi: невидим, но всех соединяешь", emoji: "📶💞✨" },
+        { msg: "На обиженных воду возят, а ты пей чай", emoji: "🍵😌☕" },
+        { msg: "Не будь как душнила — будь как солнышко", emoji: "🌞🧃🌸" },
+        { msg: "Сегодня можно всё, кроме завтрака без кофе", emoji: "☕😤🥐" },
+        { msg: "Ты — звезда (даже если никто не смотрит)", emoji: "🌟🪐🌠" },
+        { msg: "Устал? Отдохни как котик — 20 часов в сутки", emoji: "😸💤🛏️" },
+        { msg: "Никто не идеален, даже этот текст", emoji: "👀📝🙃" },
+        { msg: "Будь как панда: жуй бамбук и радуйся", emoji: "🐼🎋😊" },
+        { msg: "Если не получается — поржи и заново", emoji: "😂🔄🔥" },
+        { msg: "Сделай доброе дело — кинь мем другу", emoji: "📲😂👯" },
+        { msg: "Даже у Бэтмена бывает понедельник", emoji: "🦇📉🥱" },
+        { msg: "Ты — в главной роли своего фильма", emoji: "🎬🍿🎥" },
+        { msg: "Не ссы, прорвемся!", emoji: "💪🚣‍♂️🌊" },
+        { msg: "Жизнь — боль, но ты аспирин", emoji: "💊😁✨" },
+        { msg: "У тебя всё получится, я в курсах", emoji: "🤓📚✅" },
+        { msg: "Капля никотина убивает лошадь, а ты пей воду", emoji: "💧🐴🚰" },
+        { msg: "Не будь овощем, будь салатом — свежим", emoji: "🥗😎🍅" },
+        { msg: "Ты — космос, просто вспомни", emoji: "🌌🛸👨🚀" },
+        { msg: "Каждый день — шанс написать что-то крутое", emoji: "📝✨🚀" },
+        { msg: "Хватит сидеть — иди лежать (иногда надо)", emoji: "🛌😴💤" },
+        { msg: "Ты как пицца — всех устраиваешь", emoji: "🍕😋🍀" },
+        { msg: "Даже банан сначала зеленый, потом желтеет", emoji: "🍌🟢🟡" },
+        { msg: "Спой песню в душе — сразу легче", emoji: "🚿🎶😌" },
+        { msg: "Плюнь на всё, погладь кота", emoji: "🐈😸🧶" },
+        { msg: "Не парься, будь счастлив сегодня", emoji: "☀️😇✨" },
+        { msg: "Ты — клад, просто ещё не откопали", emoji: "💰⛏️💎" },
+        { msg: "Даже хлеб бывает чёрствым, но ты — сдоба", emoji: "🥐🧈😋" },
+        { msg: "Если жизнь дает лимоны — сделай лимонад", emoji: "🍋🥤🍯" },
+        { msg: "Победа будет за нами (с) мемы", emoji: "🏆😂🤝" },
+        { msg: "Тысяча миль начинается с одного чиха", emoji: "🤧🛤️🌍" },
+        { msg: "Ты красавчик/красотка, я проверял", emoji: "🕵️‍♂️💅✨" },
+        { msg: "Верь в чудеса, они любят смелых", emoji: "🦄🌈🌟" },
+        { msg: "Проснулся? Уже победа", emoji: "🌅🏅😎" },
+        { msg: "Не дрейфь, прорвемся!", emoji: "🧭🌊💪" },
+        { msg: "Мемы зарядят тебя энергией", emoji: "🔋😂⚡" },
+        { msg: "Все гениальное — просто, как ты", emoji: "🧠✨👍" },
+        { msg: "Овсянка, сэр! (с) Шерлок", emoji: "🥣🧐🎻" },
+        { msg: "Не ной — потом пожалеешь", emoji: "🤐💪😌" },
+        { msg: "Ты — лучше, чем вчера (этого достаточно)", emoji: "📈🌱🕊️" },
+        { msg: "Жми на газ, даже если дорога скользкая", emoji: "🏎️💨⚠️" },
+        { msg: "Счастье не в деньгах, а в моменте", emoji: "🎞️🍿💞" },
+        { msg: "Будь как единорог: редким и волшебным", emoji: "🦄🪄💖" },
+        { msg: "Успех — это просто встать с дивана", emoji: "📺🛋️🏃" },
+        { msg: "Лучше сделать и пожалеть, чем не сделать", emoji: "🤷✅❌" },
+        { msg: "Поверь в себя — и другие поверят", emoji: "🫂✨🌟" },
+        { msg: "Не оглядывайся, там твои ошибки", emoji: "👀🚫🗑️" },
+        { msg: "Сегодня ты — молодец, завтра — тоже", emoji: "🏅😊🎉" },
+        { msg: "Иди туда, где страшно — там рост", emoji: "🌱👣🔥" },
+        { msg: "Ты — супергерой без плаща", emoji: "💪😎🦸‍♂️" },
+        { msg: "Жизнь коротка — ешь десерт первым", emoji: "🍰🥄😋" },
+        { msg: "Каждый день как новая серия любимого сериала", emoji: "📺🍿🎬" },
+        { msg: "Не будь букой, будь бякой (с)", emoji: "😜🤪🦄" },
+        { msg: "Главное — участие. А победа — приятный бонус", emoji: "🏅🎁😊" },
+        { msg: "Ты — как кофе: бодришь окружающих", emoji: "☕💪👥" },
+        { msg: "У тебя есть крылья — просто вспомни", emoji: "🦋🕊️✨" },
+        { msg: "Не переживай, включи режим пофигизма", emoji: "😎🌿🧘" },
+        { msg: "Ты — магнит для удачи (работает)", emoji: "🧲🍀💫" },
+        { msg: "Даже стена может стать дверью", emoji: "🧱🚪🔑" },
+        { msg: "Не ищи идеальный момент, создай его", emoji: "🎨🛠️🌟" },
+        { msg: "Ты — самый интересный человек в комнате", emoji: "🕴️🎤✨" },
+        { msg: "Всё, что тебя не убивает, делает мемнее", emoji: "😂💀🔥" },
+        { msg: "Сделай глубокий вдох и выдохни весь негатив", emoji: "🌬️😌🧘" },
+        { msg: "Ты как свет в конце тоннеля", emoji: "🚇💡🌟" },
+        { msg: "Не откладывай на завтра то, что можно съесть сегодня", emoji: "🍕😋🍔" },
+        { msg: "Ты — рок-звезда своей жизни", emoji: "🎸🤘🌟" },
+        { msg: "Однажды ты скажешь: 'Я это сделал(а)'", emoji: "🏆🗣️💪" }
+    ];
+
+    // добиваем до >220 (чтобы было ооочень много)
+    while (cardData.length < 250) {
+        cardData.push({ msg: "Ты — космос", emoji: "🚀🌌✨" });
+        cardData.push({ msg: "Живи, смейся, люби", emoji: "💖😂🌈" });
+        cardData.push({ msg: "Сегодня точно повезет", emoji: "🍀🎰🌟" });
+        cardData.push({ msg: "Просто будь", emoji: "🧘🌸😌" });
+    }
+
+    // финальный массив (первые 250)
+    const finalCards = cardData.slice(0, 250);
+
+    // ---------- логика "1 раз в день" ----------
+    const STORAGE_KEY = 'motivation_last_date';
+    const CARD_INDEX_KEY = 'motivation_card_index';
+
+    function getTodayString() {
+        const d = new Date();
+        return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    function canOpenToday() {
+        const last = localStorage.getItem(STORAGE_KEY);
+        const today = getTodayString();
+        return last !== today;
+    }
+
+    function markOpenedToday() {
+        localStorage.setItem(STORAGE_KEY, getTodayString());
+    }
+
+    function getTodaysCardIndex() {
+        const today = getTodayString();
+        const stored = localStorage.getItem(CARD_INDEX_KEY);
+        if (stored && stored.startsWith(today + ':')) {
+            return parseInt(stored.split(':')[1], 10);
+        }
+        return Math.floor(Math.random() * finalCards.length);
+    }
+
+    function saveCardIndex(index) {
+        const today = getTodayString();
+        localStorage.setItem(CARD_INDEX_KEY, today + ':' + index);
+    }
+
+    // ---------- обновление интерфейса ----------
+    const msgDiv = document.getElementById('messageText');
+    const emojiDiv = document.getElementById('emojiDeco');
+    const dailyMsgDiv = document.getElementById('dailyMessage');
+    const resetBtn = document.getElementById('forceResetBtn');
+
+    function updateCardDisplay() {
+        if (!canOpenToday()) {
+            const idx = getTodaysCardIndex();
+            const card = finalCards[idx];
+            msgDiv.innerText = card.msg;
+            emojiDiv.innerText = card.emoji;
+            dailyMsgDiv.innerHTML = '📅 Ты уже смотрел сегодня! Вот та же карточка (наведи) 🌙';
+        } else {
+            const randomIdx = Math.floor(Math.random() * finalCards.length);
+            const card = finalCards[randomIdx];
+            msgDiv.innerText = card.msg;
+            emojiDiv.innerText = card.emoji;
+            dailyMsgDiv.innerHTML = '😂 Свежая мем-карточка готова! Наведи курсор ✨';
+            saveCardIndex(randomIdx);
+            markOpenedToday();
+        }
+    }
+
+    resetBtn.addEventListener('click', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CARD_INDEX_KEY);
+        updateCardDisplay();
+        dailyMsgDiv.innerHTML = '✨ Тест: новая карточка (обновится завтра автоматически) ✨';
+    });
+
+    // запуск
+    updateCardDisplay();
+})();
+</script>
+<style>
+    .btn-reset {
+        opacity: 0.6;
+        transition: 0.2s;
+        margin-top: 25px;
+    }
+    .btn-reset:hover {
+        opacity: 1;
+        background: #ccbca4;
+        border: 2px solid #ccbca4;
+        color: #1d262e;
+    }
+</style>
+
+</body>
+</html>
