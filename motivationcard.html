@@ -502,41 +502,64 @@ const cardData = [
     const resetBtn = document.getElementById('forceResetBtn');
 
     function updateCardDisplay() {
-        const today = getTodayString();
-        const lastDate = localStorage.getItem(STORAGE_KEY);
-        const savedIndexData = localStorage.getItem(CARD_INDEX_KEY);
-        
-        // Проверяем, есть ли сохраненная карточка для сегодняшнего дня
-        if (lastDate === today && savedIndexData && savedIndexData.startsWith(today + ':')) {
+    const today = getTodayString();
+    const lastDate = localStorage.getItem(STORAGE_KEY);
+    const savedIndexData = localStorage.getItem(CARD_INDEX_KEY);
+    
+    // Отладка - посмотрим в консоли что сохраняется
+    console.log('Today:', today);
+    console.log('Last date from storage:', lastDate);
+    console.log('Saved index data:', savedIndexData);
+    
+    // Проверяем, есть ли сохраненная карточка для сегодняшнего дня
+    if (lastDate === today && savedIndexData) {
+        // Проверяем, что данные начинаются с today:
+        if (savedIndexData.startsWith(today + ':')) {
             // Сегодня уже открывали - показываем сохраненную карточку
             const savedIdx = parseInt(savedIndexData.split(':')[1], 10);
+            console.log('Found saved index for today:', savedIdx);
+            
             // Проверяем, что индекс существует в массиве
             if (savedIdx >= 0 && savedIdx < finalCards.length) {
                 const card = finalCards[savedIdx];
                 msgDiv.innerText = card.msg;
                 emojiDiv.innerText = card.emoji;
+                dailyMsgDiv.innerHTML = '📅 Ты уже смотрел сегодня. Вот она снова (наведи) 🌙';
             } else {
-                // Если индекс некорректный (маловероятно), генерируем новый
+                // Если индекс некорректный, генерируем новый
+                console.log('Saved index invalid, generating new');
                 const randomIdx = Math.floor(Math.random() * finalCards.length);
                 const card = finalCards[randomIdx];
                 msgDiv.innerText = card.msg;
                 emojiDiv.innerText = card.emoji;
+                dailyMsgDiv.innerHTML = '💪 Свежая, мощная карточка! Наведи курсор ✨';
                 localStorage.setItem(CARD_INDEX_KEY, today + ':' + randomIdx);
             }
-            dailyMsgDiv.innerHTML = '📅 Ты уже смотрел сегодня. Вот она снова (наведи) 🌙';
         } else {
-            // Сегодня еще не открывали - генерируем новую карточку
+            // Данные есть, но не соответствуют today - возможно остались от другого дня
+            console.log('Saved data does not match today, generating new');
             const randomIdx = Math.floor(Math.random() * finalCards.length);
             const card = finalCards[randomIdx];
             msgDiv.innerText = card.msg;
             emojiDiv.innerText = card.emoji;
             dailyMsgDiv.innerHTML = '💪 Свежая, мощная карточка! Наведи курсор ✨';
-            
-            // Сохраняем данные
             localStorage.setItem(STORAGE_KEY, today);
             localStorage.setItem(CARD_INDEX_KEY, today + ':' + randomIdx);
         }
+    } else {
+        // Нет сохраненных данных или другой день
+        console.log('No saved data or different day, generating new');
+        const randomIdx = Math.floor(Math.random() * finalCards.length);
+        const card = finalCards[randomIdx];
+        msgDiv.innerText = card.msg;
+        emojiDiv.innerText = card.emoji;
+        dailyMsgDiv.innerHTML = '💪 Свежая, мощная карточка! Наведи курсор ✨';
+        
+        // Сохраняем данные
+        localStorage.setItem(STORAGE_KEY, today);
+        localStorage.setItem(CARD_INDEX_KEY, today + ':' + randomIdx);
     }
+}
 
     // Кнопка сброса для тестирования (оставим, но теперь она честно сбрасывает)
     resetBtn.addEventListener('click', () => {
@@ -555,3 +578,4 @@ const cardData = [
 </script>
 </body>
 </html>
+
