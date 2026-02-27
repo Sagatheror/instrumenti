@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МЕМОДНЕВНИК · навеки в одном дне</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +25,6 @@
             backdrop-filter: blur(1px);
         }
 
-        /* хаотичные эмодзи с анимацией */
         .bg-emoji {
             position: absolute;
             font-size: 5rem;
@@ -41,13 +41,11 @@
             100% { transform: translate(30px, -20px) rotate(15deg) scale(1.2); }
         }
 
-        /* карточка с супер-3D */
         .card-wrapper {
             perspective: 3500px;
             width: 100%;
             max-width: 680px;
             z-index: 30;
-            transition: filter 0.3s;
         }
 
         .flip-card {
@@ -97,7 +95,6 @@
             box-shadow: inset 0 0 30px #00000060, inset 0 0 0 3px #dcb885;
         }
 
-        /* рубашка — металл/дерево с тиснением */
         .flip-card-front {
             background: #2c1e12;
             background-image: repeating-linear-gradient(35deg, #5f4632 0px, #5f4632 3px, #7b5d42 3px, #7b5d42 9px);
@@ -116,7 +113,6 @@
             mix-blend-mode: hard-light;
         }
 
-        /* зад — бумага с текстурой */
         .flip-card-back {
             background: #fef7e9;
             background: linear-gradient(145deg, #fff6e6, #fbebd2), repeating-linear-gradient(45deg, rgba(200,180,130,0.2) 0px, rgba(200,180,130,0.2) 2px, transparent 2px, transparent 8px);
@@ -136,7 +132,6 @@
             letter-spacing: -0.02em;
             word-break: break-word;
             max-width: 100%;
-            transition: transform 0.2s;
         }
 
         .emoji-deco {
@@ -167,7 +162,6 @@
             max-width: 700px;
             z-index: 25;
             letter-spacing: 0.5px;
-            transition: 0.2s;
         }
 
         .btn-reset {
@@ -227,7 +221,6 @@
             box-shadow: 0 5px 12px black;
         }
 
-        /* неоновый счетчик */
         #counterDisplay {
             transition: 0.3s;
         }
@@ -236,7 +229,6 @@
             border-color: #efc48c;
         }
 
-        /* модальное окошко для сложности — статистика (чисто декор) */
         .stats-badge {
             position: fixed;
             top: 20px;
@@ -262,7 +254,7 @@
 
 <div class="stats-badge" id="statsPreview" style="display:none">⚡ 777 жестоких фраз</div>
 
-<!-- фоновый ад random позиций -->
+<!-- фоновые эмодзи (без изменений) -->
 <div class="bg-emoji" style="top: 3%; left: 8%; animation-duration: 14s;">💀</div>
 <div class="bg-emoji" style="top: 77%; left: 12%; animation-duration: 21s;">🤬</div>
 <div class="bg-emoji" style="top: 15%; right: 3%; animation-duration: 19s;">🍆</div>
@@ -300,13 +292,10 @@
 <script>
 (function() {
     // --------------------------------------------------------------
-    // МЕГАКОЛЛЕКЦИЯ · 777 ФРАЗ (мат, мотивация, абсурд)
+    // МЕГАКОЛЛЕКЦИЯ · 777 ФРАЗ
     // --------------------------------------------------------------
-
-    // вспомогательная функция генератора (чтоб не копипастить 777 вручную, но сохранить разнообразие)
     function generateCardData() {
         const base = [
-            // первая сотня (классика)
             { msg: "Сегодня ты сияешь", emoji: "✨🌟🦋" },
             { msg: "Всё получится, просто верь", emoji: "💫🌙⭐" },
             { msg: "Маленький шаг — большой успех", emoji: "🐾🌱🚀" },
@@ -402,7 +391,6 @@
             { msg: "Однажды ты скажешь: 'Я это сделал'", emoji: "🏆🗣️💪" },
         ];
 
-        // жесткие матерные (расширим до 200+ вариантов)
         const hard = [
             { msg: "У тебя будет ахуенный день", emoji: "🤟🔥💯" },
             { msg: "Ты ебашишь как зверь — красава", emoji: "🦁🔨💪" },
@@ -505,82 +493,79 @@
             { msg: "Сегодня будет жиза, но ты не сломайся", emoji: "💪😅✨" },
         ];
 
-        // Собираем 777 путем копирования с небольшими вариациями
         let mega = [];
-        // добавляем базу с небольшим изменением эмодзи для уникальности
         for (let i = 0; i < 3; i++) {
-            base.forEach(b => mega.push({ msg: b.msg + (i===1?' ☝️':'') , emoji: b.emoji + [' 🫡',' 🔥',' 💯'][i] }));
+            base.forEach(b => mega.push({ msg: b.msg + (i===1?' ☝️':''), emoji: b.emoji + [' 🫡',' 🔥',' 💯'][i] }));
         }
-        // вставляем жесткие в 4х вариациях
         for (let i = 0; i < 4; i++) {
-            hard.forEach(h => mega.push({ msg: h.msg + (i===2?' ':''), emoji: h.emoji + [' 👊',' 🍑',' 🥴',''][i] }));
+            hard.forEach(h => mega.push({ msg: h.msg, emoji: h.emoji + [' 👊',' 🍑',' 🥴',''][i] }));
         }
-        // добавим уникальные комбинации чтобы набрать 777+
         for (let i=0; i<50; i++) {
             mega.push({ msg: `Хули ты, просто будь собой #${i+1}`, emoji: '😎🔥🔞' });
             mega.push({ msg: `Заебись же сегодня #${i+1}`, emoji: '💫😜💯' });
         }
-        // обрезать до 777
         return mega.slice(0, 777);
     }
 
-    const finalCards = generateCardData(); // ровно 777 элементов
+    const finalCards = generateCardData();
 
-    // счетчик
+    // счетчики
     document.getElementById('counterDisplay').innerText = `🧠 ${finalCards.length} фраз`;
     document.getElementById('statsPreview').innerText = `⚡ ${finalCards.length} жестоких фраз`;
 
-    // ---------- логика 1 день + тест ----------
-    const STORAGE_KEY = 'motivation_last_date_v2';
-    const CARD_INDEX_KEY = 'motivation_card_index_v2';
+    // ---------- ИСПРАВЛЕННАЯ ЛОГИКА ----------
+    const STORAGE_KEY = 'motivation_last_date_v3';     // обновил ключи
+    const CARD_INDEX_KEY = 'motivation_card_index_v3';
 
     function getTodayString() {
         const d = new Date();
-        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function canOpenToday() {
-        return localStorage.getItem(STORAGE_KEY) !== getTodayString();
+    function getStoredDate() {
+        return localStorage.getItem(STORAGE_KEY);
     }
 
-    function markOpenedToday() {
-        localStorage.setItem(STORAGE_KEY, getTodayString());
-    }
-
-    function getTodaysCardIndex() {
-        const today = getTodayString();
+    function getStoredIndex() {
         const stored = localStorage.getItem(CARD_INDEX_KEY);
-        if (stored && stored.startsWith(today+':')) {
-            return parseInt(stored.split(':')[1], 10);
-        }
-        return Math.floor(Math.random() * finalCards.length);
+        return stored ? parseInt(stored, 10) : null;
     }
 
-    function saveCardIndex(index) {
-        localStorage.setItem(CARD_INDEX_KEY, getTodayString() + ':' + index);
+    function saveTodayIndex(index) {
+        localStorage.setItem(STORAGE_KEY, getTodayString());
+        localStorage.setItem(CARD_INDEX_KEY, index);
     }
 
     const msgDiv = document.getElementById('messageText');
     const emojiDiv = document.getElementById('emojiDeco');
     const dailyMsgDiv = document.getElementById('dailyMessage');
-    const resetBtn = document.getElementById('forceResetBtn');
 
     function updateCardDisplay() {
-        let idx;
-        if (!canOpenToday()) {
-            idx = getTodaysCardIndex();
+        const today = getTodayString();
+        const storedDate = getStoredDate();
+        const storedIndex = getStoredIndex();
+
+        let cardIndex;
+        let isNewDay = (storedDate !== today);
+
+        if (!isNewDay && storedIndex !== null && storedIndex >= 0 && storedIndex < finalCards.length) {
+            // сегодня уже открывали — берём сохранённый индекс
+            cardIndex = storedIndex;
             dailyMsgDiv.innerHTML = '📅 Ты уже открывал сегодня. Наведи — та же карта 🌙';
         } else {
-            idx = Math.floor(Math.random() * finalCards.length);
+            // новый день или нет индекса — генерим свежий
+            cardIndex = Math.floor(Math.random() * finalCards.length);
+            saveTodayIndex(cardIndex);
             dailyMsgDiv.innerHTML = '💥 СВЕЖАК! Наведи, чтобы прочесть ✨';
-            saveCardIndex(idx);
-            markOpenedToday();
         }
-        const card = finalCards[idx] || { msg: 'Ошибочка, но ты крут', emoji: '😎✅' };
+
+        const card = finalCards[cardIndex] || { msg: 'Ошибочка, но ты крут', emoji: '😎✅' };
         msgDiv.innerText = card.msg;
         emojiDiv.innerText = card.emoji;
     }
 
+    // кнопка сброса (скрыта, но работает если понадобится)
+    const resetBtn = document.getElementById('forceResetBtn');
     resetBtn.addEventListener('click', () => {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(CARD_INDEX_KEY);
@@ -588,7 +573,17 @@
         dailyMsgDiv.innerHTML = '🎲 тест: другая карточка (завтра сброс)';
     });
 
+    // первоначальный запуск
     updateCardDisplay();
+
+    // опционально: автоматическая проверка в полночь (перезагружать не требуется, но если страница висит сутки — обновим)
+    function checkForNewDay() {
+        const today = getTodayString();
+        if (localStorage.getItem(STORAGE_KEY) !== today) {
+            updateCardDisplay();
+        }
+    }
+    setInterval(checkForNewDay, 60000); // проверка раз в минуту (для отладки, на деле можно реже)
 })();
 </script>
 </body>
