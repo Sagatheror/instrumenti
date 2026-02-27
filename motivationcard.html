@@ -518,37 +518,45 @@ const cardData = [
 
     // ---------- обновление ----------
     const msgDiv = document.getElementById('messageText');
-    const emojiDiv = document.getElementById('emojiDeco');
-    const dailyMsgDiv = document.getElementById('dailyMessage');
-    const resetBtn = document.getElementById('forceResetBtn');
+const emojiDiv = document.getElementById('emojiDeco');
+const dailyMsgDiv = document.getElementById('dailyMessage');
+const resetBtn = document.getElementById('forceResetBtn');
 
-    function updateCardDisplay() {
-        if (!canOpenToday()) {
-            const idx = getTodaysCardIndex();
-            const card = finalCards[idx];
-            msgDiv.innerText = card.msg;
-            emojiDiv.innerText = card.emoji;
-            dailyMsgDiv.innerHTML = '📅 Ты уже смотрел сегодня. Вот она снова (наведи) 🌙';
-        } else {
-            const randomIdx = Math.floor(Math.random() * finalCards.length);
-            const card = finalCards[randomIdx];
-            msgDiv.innerText = card.msg;
-            emojiDiv.innerText = card.emoji;
-            dailyMsgDiv.innerHTML = '💪 Свежая, мощная карточка! Наведи курсор ✨';
-            saveCardIndex(randomIdx);
-            markOpenedToday();
-        }
+function updateCardDisplay() {
+    const today = getTodayString();
+    const lastDate = localStorage.getItem(STORAGE_KEY);
+    const savedIndexData = localStorage.getItem(CARD_INDEX_KEY);
+    
+    // Проверяем, есть ли сохраненная карточка для сегодняшнего дня
+    if (lastDate === today && savedIndexData && savedIndexData.startsWith(today + ':')) {
+        // Сегодня уже открывали - показываем сохраненную карточку
+        const savedIdx = parseInt(savedIndexData.split(':')[1], 10);
+        const card = finalCards[savedIdx];
+        msgDiv.innerText = card.msg;
+        emojiDiv.innerText = card.emoji;
+        dailyMsgDiv.innerHTML = '📅 Ты уже смотрел сегодня. Вот она снова (наведи) 🌙';
+    } else {
+        // Сегодня еще не открывали - генерируем новую карточку
+        const randomIdx = Math.floor(Math.random() * finalCards.length);
+        const card = finalCards[randomIdx];
+        msgDiv.innerText = card.msg;
+        emojiDiv.innerText = card.emoji;
+        dailyMsgDiv.innerHTML = '💪 Свежая, мощная карточка! Наведи курсор ✨';
+        
+        // Сохраняем данные
+        localStorage.setItem(STORAGE_KEY, today);
+        localStorage.setItem(CARD_INDEX_KEY, today + ':' + randomIdx);
     }
+}
 
-    resetBtn.addEventListener('click', () => {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(CARD_INDEX_KEY);
-        updateCardDisplay();
-        dailyMsgDiv.innerHTML = '🎲 Тест: новая карточка (завтра вернется авторежим)';
-    });
-
+resetBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CARD_INDEX_KEY);
     updateCardDisplay();
-})();
+    dailyMsgDiv.innerHTML = '🎲 Тест: новая карточка (завтра вернется авторежим)';
+});
+
+updateCardDisplay();
 </script>
 <style>
     .btn-reset {
@@ -566,3 +574,4 @@ const cardData = [
 
 </body>
 </html>
+
