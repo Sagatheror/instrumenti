@@ -4791,7 +4791,23 @@ function isSpringPeriod() {
   }
   return false;
 }
-
+function isWinterPeriod() {
+  const now = new Date();
+  const month = now.getMonth() + 1; // 1-12
+  return month === 12 || month === 1 || month === 2;
+}
+if (isWinterPeriod()) {
+  // показываем кнопку
+  document.getElementById('snowToggleBtn').style.display = 'inline-flex';
+  // запускаем снег, если нужно
+  if (isSnowPeriod()) {
+    startSnow();
+    updateSnowButton();
+  }
+} else {
+  // скрываем кнопку
+  document.getElementById('snowToggleBtn').style.display = 'none';
+}
   </script>
 </body>
 </html>
