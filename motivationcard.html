@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Cards • 5 тем</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Comic+Neue:wght@400;700&family=Rubik+Glitch&family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.5s ease, color 0.3s ease, border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         body {
             min-height: 100vh;
-            background: radial-gradient(ellipse at top, #2b414d, #0b1820), url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDQwIDQwIj48cGF0aCBkPSJNMjAgM2wxMCAxMC0xMCAxMC0xMC0xMCAxMC0xMHoiIGZpbGw9IiMyMjMzNDAiIG9wYWNpdHk9IjAuMTUiLz48L3N2Zz4=');
-            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            font-family: 'Roboto', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -21,30 +25,45 @@
             margin: 0;
             position: relative;
             overflow-x: hidden;
-            backdrop-filter: blur(1px);
         }
 
-        .bg-emoji {
-            position: absolute;
-            font-size: 5rem;
-            opacity: 0.05;
-            user-select: none;
-            pointer-events: none;
-            z-index: 0;
-            animation: float 18s infinite alternate ease-in-out;
-            filter: blur(2px) drop-shadow(0 0 5px gold);
+        /* ========== ОБЩИЕ СТИЛИ ========== */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 60px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 95%;
         }
 
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-            100% { transform: translate(30px, -20px) rotate(15deg) scale(1.2); }
+        .theme-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
         }
 
         .card-wrapper {
-            perspective: 3500px;
             width: 100%;
             max-width: 680px;
             z-index: 30;
+            margin-top: 100px;
         }
 
         .flip-card {
@@ -53,14 +72,12 @@
             aspect-ratio: 3 / 4;
             position: relative;
             cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.3s;
+            transition: transform 0.3s ease, filter 0.3s ease;
             border-radius: 40px;
-            filter: drop-shadow(0 20px 25px #00000080);
         }
 
         .flip-card:hover {
-            transform: scale(1.03) translateY(-12px) rotate(0.5deg);
-            filter: drop-shadow(0 30px 30px black);
+            transform: scale(1.02) translateY(-8px);
         }
 
         .flip-card-inner {
@@ -71,7 +88,6 @@
             transition: transform 1s cubic-bezier(0.25, 1.2, 0.5, 1);
             transform-style: preserve-3d;
             border-radius: 40px;
-            box-shadow: 0 20px 40px -8px #000000, 0 0 0 2px #ab8e62 inset;
         }
 
         .flip-card:hover .flip-card-inner {
@@ -84,507 +100,1057 @@
             height: 100%;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            border-radius: 40px;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem 2rem;
-            box-shadow: inset 0 0 30px #00000060, inset 0 0 0 3px #dcb885;
-        }
-
-        .flip-card-front {
-            background: #2c1e12;
-            background-image: repeating-linear-gradient(35deg, #5f4632 0px, #5f4632 3px, #7b5d42 3px, #7b5d42 9px);
-            border: 8px solid #b4946a;
-        }
-
-        .back-design {
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.35"><path d="M10,60 L30,30 L50,50 L70,25 L90,55" stroke="%23ecca90" stroke-width="3" fill="none"/><path d="M15,75 L35,50 L55,70 L75,45 L90,65" stroke="%23ecca90" stroke-width="2.5" fill="none"/></svg>');
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: 0.8;
-            mix-blend-mode: hard-light;
+            padding: 2rem;
+            border-radius: 20px;
         }
 
         .flip-card-back {
-            background: #fef7e9;
-            background: linear-gradient(145deg, #fff6e6, #fbebd2), repeating-linear-gradient(45deg, rgba(200,180,130,0.2) 0px, rgba(200,180,130,0.2) 2px, transparent 2px, transparent 8px);
-            border: 8px solid #dbbc8c;
             transform: rotateY(180deg);
-            font-family: 'Caveat', 'Kalam', 'Comic Neue', cursive;
-            color: #1f282e;
-            line-height: 1.35;
-            box-shadow: inset 0 0 60px #fae2b5, 0 15px 25px black;
         }
 
-        .message {
-            font-size: clamp(2.4rem, 9vw, 3.8rem);
-            font-weight: 800;
-            text-shadow: 5px 5px 0 #fed8a8, 8px 8px 10px rgba(0,0,0,0.15);
-            margin-bottom: 0.3rem;
-            letter-spacing: -0.02em;
-            word-break: break-word;
-            max-width: 100%;
+        .bg-emoji {
+            position: absolute;
+            font-size: 5rem;
+            opacity: 0.15;
+            user-select: none;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s infinite alternate ease-in-out;
         }
 
-        .emoji-deco {
-            font-size: 4.2rem;
-            line-height: 1.3;
-            margin-top: 0.3rem;
-            filter: drop-shadow(0 8px 8px #a5734b);
-            background: rgba(255,250,210,0.6);
-            border-radius: 80px;
-            padding: 0.4rem 1.5rem;
-            backdrop-filter: blur(8px);
-            border: 1px solid #c99e6b;
-            transform: rotate(-0.5deg);
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            100% { transform: translate(30px, -20px) rotate(15deg) scale(1.2); }
         }
 
         .daily-message {
             margin-top: 40px;
-            font-size: 1.3rem;
-            padding: 1rem 2.8rem;
-            background: rgba(10, 18, 25, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 100px;
-            box-shadow: 0 15px 30px #00000080, 0 0 0 3px #cfa668 inset, 0 0 15px #ffd58c;
-            color: #fff8e7;
-            font-weight: 700;
-            border: 1px solid #fcd396;
             text-align: center;
             max-width: 700px;
             z-index: 25;
-            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
 
-        .btn-reset {
-            background: rgba(30, 20, 15, 0.7);
-            border: 2px solid #ebc794;
-            padding: 0.8rem 2.4rem;
-            border-radius: 70px;
-            font-size: 1.2rem;
-            margin-top: 25px;
-            color: #fff2d4;
-            cursor: pointer;
-            transition: 0.25s;
-            font-family: 'Segoe UI', sans-serif;
-            font-weight: 700;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 6px 14px black;
-            letter-spacing: 0.4px;
-        }
-
-        .btn-reset:hover {
-            background: #dbbd8c;
-            color: #0d1a1f;
-            border: 2px solid #ffefc0;
-            transform: scale(1.08) translateY(-4px);
-            box-shadow: 0 15px 25px black;
-        }
-
-        footer {
+        .stats-badge {
             position: fixed;
-            bottom: 18px;
-            right: 26px;
-            color: #e3cfb5;
-            font-size: 1.05rem;
-            background: #121d24dd;
-            padding: 0.6rem 2rem;
-            border-radius: 50px;
-            backdrop-filter: blur(15px);
-            border: 1px solid #b4986f;
-            z-index: 40;
-            font-weight: 600;
-            box-shadow: 0 5px 12px #000000;
+            top: 100px;
+            right: 20px;
+            padding: 12px 20px;
+            z-index: 50;
+            transition: all 0.3s ease;
         }
 
         .footer-left {
             position: fixed;
             bottom: 18px;
             left: 26px;
-            color: #ffeac2;
-            background: #191f25dd;
-            padding: 0.6rem 2rem;
-            border-radius: 50px;
-            backdrop-filter: blur(15px);
-            border: 1px solid #bb9d73;
+            padding: 12px 25px;
             z-index: 40;
-            font-size: 1.05rem;
-            font-weight: 700;
-            box-shadow: 0 5px 12px black;
+            transition: all 0.3s ease;
         }
 
-        #counterDisplay {
-            transition: 0.3s;
-        }
-        #counterDisplay:hover {
-            text-shadow: 0 0 8px #ffd27f;
-            border-color: #efc48c;
-        }
-
-        .stats-badge {
+        footer {
+            display: none;
             position: fixed;
-            top: 20px;
-            right: 30px;
-            background: #1f2b33ee;
-            color: #d4b185;
-            padding: 0.4rem 1.2rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
+            bottom: 18px;
+            right: 26px;
+            padding: 12px 25px;
+            z-index: 40;
+            transition: all 0.3s ease;
+        }
+
+        #messageText, #emojiDeco {
+            transition: opacity 0.5s ease;
+            width: 100%;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== ТЕМА 1: CYBERPUNK ========== */
+        body.cyberpunk {
+            background: #0a0c0f;
+            background-image: 
+                linear-gradient(45deg, #00ff4110 0px, #00ff4110 2px, transparent 2px, transparent 8px),
+                linear-gradient(135deg, #ff00c810 0px, #ff00c810 2px, transparent 2px, transparent 8px);
+            background-size: 30px 30px;
+            color: #00ffaa;
+        }
+
+        body.cyberpunk .theme-switch {
+            background: #14181f;
+            border: 3px solid #00ffaa;
+            box-shadow: 0 0 20px #00ffaa, inset 0 0 10px #00ffaa33;
+        }
+
+        body.cyberpunk .theme-btn {
+            background: #1a1f2a;
+            color: #00ffaa;
+            border: 2px solid #ff00c8;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px #00ffaa;
+        }
+
+        body.cyberpunk .theme-btn.active {
+            background: #00ffaa;
+            color: #0a0c0f;
+            border-color: #ff00c8;
+            box-shadow: 0 0 20px #00ffaa;
+        }
+
+        body.cyberpunk .flip-card {
+            filter: drop-shadow(0 0 15px #00ffaa) drop-shadow(0 0 30px #ff00c8);
+        }
+
+        body.cyberpunk .flip-card-inner {
+            box-shadow: 0 0 0 4px #00ffaa, 0 0 0 8px #ff00c8, 0 20px 40px black;
+        }
+
+        body.cyberpunk .flip-card-front {
+            background: #0f1219;
+            background-image: 
+                repeating-linear-gradient(45deg, #00ffaa10 0px, #00ffaa10 4px, #ff00c810 4px, #ff00c810 8px);
+            border: 4px solid #00ffaa;
+            border-radius: 40px;
+        }
+
+        body.cyberpunk .flip-card-back {
+            background: #10141c;
+            background-image: 
+                radial-gradient(circle at 30% 50%, #00ffaa20 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, #ff00c820 0%, transparent 50%);
+            border: 4px solid #ff00c8;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #00ffaa;
+            text-shadow: 2px 2px 0 #ff00c8;
+            border-radius: 40px;
+        }
+
+        body.cyberpunk .message {
+            font-family: 'Rubik Glitch', cursive;
+            font-size: clamp(1.8rem, 8vw, 3rem);
+            color: #00ffaa;
+            text-shadow: 
+                3px 3px 0 #ff00c8,
+                6px 6px 0 #0a0c0f,
+                0 0 20px #00ffaa;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        body.cyberpunk .emoji-deco {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 0 15px #00ffaa) drop-shadow(0 0 30px #ff00c8);
+            background: #0f1219;
+            border: 3px solid #00ffaa;
+            border-radius: 0;
+            padding: 1rem 2rem;
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+        }
+
+        body.cyberpunk .daily-message {
+            background: #0f1219;
+            border: 3px solid #00ffaa;
+            color: #00ffaa;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            padding: 1.5rem 2rem;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px #ff00c8, inset 0 0 20px #00ffaa33;
+            clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+        }
+
+        body.cyberpunk .stats-badge,
+        body.cyberpunk .footer-left,
+        body.cyberpunk footer {
+            background: #0f1219;
+            border: 3px solid #ff00c8;
+            color: #00ffaa;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            text-shadow: 0 0 5px #00ffaa;
+            box-shadow: 0 0 20px #00ffaa;
+        }
+
+        /* ========== ТЕМА 2: ПИКМИ ========== */
+        body.pikmi {
+            background: linear-gradient(135deg, #ffd1e6 0%, #ffe6b3 50%, #c4e6ff 100%);
+            background-attachment: fixed;
+            color: #8b5f8b;
+        }
+
+        body.pikmi .theme-switch {
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
-            border: 1px solid #a6835b;
-            z-index: 50;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            box-shadow: 0 0 15px #00000070;
+            border: 4px solid #ffb3c6;
+            box-shadow: 0 10px 30px rgba(255, 150, 200, 0.3);
+            border-radius: 60px;
+        }
+
+        body.pikmi .theme-btn {
+            background: white;
+            color: #ff8cb0;
+            border: 3px solid #ffb3c6;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 40px;
+            box-shadow: 0 5px 0 #ff8cb0;
+        }
+
+        body.pikmi .theme-btn.active {
+            background: #ff8cb0;
+            color: white;
+            border-color: #ff5c8d;
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #ff5c8d;
+        }
+
+        body.pikmi .flip-card {
+            filter: drop-shadow(0 15px 25px rgba(255, 140, 180, 0.4));
+        }
+
+        body.pikmi .flip-card-inner {
+            box-shadow: 0 20px 40px rgba(255, 140, 180, 0.3), 0 0 0 8px white, 0 0 0 12px #ffb3c6;
+            border-radius: 70px;
+        }
+
+        body.pikmi .flip-card-front {
+            background: #fff5e6;
+            background-image: 
+                repeating-linear-gradient(45deg, #ffd9e6 0px, #ffd9e6 8px, #ffe6f0 8px, #ffe6f0 16px);
+            border: 8px solid #ffb3c6;
+            border-radius: 60px;
+        }
+
+        body.pikmi .flip-card-back {
+            background: #fff9f0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #ffe6f0 10%, transparent 30%),
+                radial-gradient(circle at 80% 70%, #ffe0e6 10%, transparent 30%);
+            border: 8px solid #ffc1d4;
+            border-radius: 60px;
+            font-family: 'Comic Neue', cursive;
+            color: #7a4d7a;
+        }
+
+        body.pikmi .message {
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: clamp(2.4rem, 9vw, 3.8rem);
+            color: #a555a5;
+            text-shadow: 4px 4px 0 #ffb3c6, 6px 6px 0 white;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+
+        body.pikmi .emoji-deco {
+            font-size: 4.5rem;
+            filter: drop-shadow(0 8px 12px #ff8cb0);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border: 5px solid #ffb3c6;
+            border-radius: 100px;
+            padding: 1rem 2.5rem;
+            box-shadow: 0 10px 0 #ff8cb0;
+        }
+
+        body.pikmi .daily-message {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 5px solid #ffb3c6;
+            border-radius: 80px;
+            color: #b36bb3;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: 1.3rem;
+            padding: 1.2rem 2.5rem;
+            box-shadow: 0 10px 0 #ff8cb0, 0 20px 30px rgba(255, 140, 180, 0.3);
+        }
+
+        body.pikmi .stats-badge,
+        body.pikmi .footer-left,
+        body.pikmi footer {
+            background: white;
+            border: 4px solid #ffb3c6;
+            border-radius: 60px;
+            color: #ff8cb0;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 5px 0 #ff8cb0;
+        }
+
+        /* ========== ТЕМА 3: WATCH DOGS ========== */
+        body.watchdogs {
+            background: #1a1e24;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #00ff9d;
+            font-family: 'Roboto', monospace;
+        }
+
+        body.watchdogs .theme-switch {
+            background: #0f1319;
+            border: 2px solid #00ff9d;
+            box-shadow: 0 0 20px #00ff9d33;
+        }
+
+        body.watchdogs .theme-btn {
+            background: #1a212a;
+            color: #00ff9d;
+            border: 2px solid #00cc88;
+            font-family: 'Roboto', monospace;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+        }
+
+        body.watchdogs .theme-btn.active {
+            background: #00ff9d;
+            color: #0a0f14;
+            border-color: #00ff9d;
+            box-shadow: 0 0 20px #00ff9d;
+        }
+
+        body.watchdogs .flip-card {
+            filter: drop-shadow(0 0 20px #00ff9d33);
+        }
+
+        body.watchdogs .flip-card-inner {
+            box-shadow: 0 0 0 3px #00ff9d, 0 0 0 6px #0f1319, 0 0 0 9px #00cc88;
+            border-radius: 20px;
+        }
+
+        body.watchdogs .flip-card-front {
+            background: #0f1319;
+            background-image: 
+                repeating-linear-gradient(0deg, #00ff9d10 0px, #00ff9d10 2px, transparent 2px, transparent 8px),
+                repeating-linear-gradient(90deg, #00ff9d10 0px, #00ff9d10 2px, transparent 2px, transparent 8px);
+            border: 2px solid #00ff9d;
+        }
+
+        body.watchdogs .flip-card-back {
+            background: #0c1016;
+            background-image: 
+                radial-gradient(circle at 30% 40%, #00ff9d15 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, #00ff9d15 0%, transparent 40%);
+            border: 2px solid #00cc88;
+            font-family: 'Roboto', monospace;
+            color: #b0ffd0;
+            text-shadow: 0 0 5px #00ff9d;
+        }
+
+        body.watchdogs .message {
+            font-family: 'Roboto', monospace;
+            font-weight: 700;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: #00ff9d;
+            text-shadow: 
+                0 0 10px #00ff9d,
+                0 0 20px #00cc88;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #00ff9d33;
+            padding-bottom: 1rem;
+        }
+
+        body.watchdogs .emoji-deco {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 10px #00ff9d);
+            background: #0f1319;
+            border: 2px solid #00ff9d;
+            padding: 1rem 2rem;
+            font-family: 'Roboto', monospace;
+        }
+
+        body.watchdogs .daily-message {
+            background: #0f1319;
+            border: 2px solid #00ff9d;
+            color: #00ff9d;
+            font-family: 'Roboto', monospace;
+            font-size: 1rem;
+            padding: 1.2rem 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 30px #00ff9d33, inset 0 0 20px #00ff9d22;
+        }
+
+        body.watchdogs .stats-badge,
+        body.watchdogs .footer-left,
+        body.watchdogs footer {
+            background: #0f1319;
+            border: 2px solid #00ff9d;
+            color: #00ff9d;
+            font-family: 'Roboto', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px #00ff9d66;
+        }
+
+        body.watchdogs .bg-emoji {
+            filter: drop-shadow(0 0 10px #00ff9d);
+            opacity: 0.2;
+        }
+
+        /* ========== ТЕМА 4: МИНИМАЛИЗМ ========== */
+        body.minimal {
+            background: #f5f5f5;
+            background-image: linear-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 100% 40px;
+            color: #333333;
+        }
+
+        body.minimal .theme-switch {
+            background: #ffffff;
+            border: 2px solid #cccccc;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        body.minimal .theme-btn {
+            background: transparent;
+            color: #666666;
+            border: 2px solid #dddddd;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        body.minimal .theme-btn.active {
+            background: #333333;
+            color: #ffffff;
+            border-color: #333333;
+        }
+
+        body.minimal .flip-card {
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+        }
+
+        body.minimal .flip-card-inner {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05), 0 0 0 2px #333333;
+            border-radius: 30px;
+        }
+
+        body.minimal .flip-card-front {
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 30px;
+        }
+
+        body.minimal .flip-card-back {
+            background: #ffffff;
+            border: 1px solid #333333;
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+            border-radius: 30px;
+        }
+
+        body.minimal .message {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: clamp(2.5rem, 9vw, 4rem);
+            color: #333333;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        body.minimal .emoji-deco {
+            font-size: 4rem;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            color: #666666;
+        }
+
+        body.minimal .daily-message {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #666666;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+
+        body.minimal .stats-badge,
+        body.minimal .footer-left,
+        body.minimal footer {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #666666;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        body.minimal .bg-emoji {
+            opacity: 0.1;
+            filter: grayscale(100%);
+        }
+
+        /* ========== ТЕМА 5: ВИНТАЖ ========== */
+        body.vintage {
+            background: #e8d9c0;
+            background-image: 
+                repeating-linear-gradient(45deg, #d4bc9a22 0px, #d4bc9a22 20px, #c9ad8222 20px, #c9ad8222 40px);
+            color: #5d3a1a;
+        }
+
+        body.vintage .theme-switch {
+            background: #f2e3ce;
+            border: 4px solid #b48c5c;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 40px 40px 40px 40px;
+        }
+
+        body.vintage .theme-btn {
+            background: #f2e3ce;
+            color: #7b4f2e;
+            border: 3px solid #b48c5c;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 30px;
+            box-shadow: inset 0 -3px 0 #8b6b41;
+        }
+
+        body.vintage .theme-btn.active {
+            background: #b48c5c;
+            color: #f2e3ce;
+            border-color: #5d3a1a;
+            box-shadow: inset 0 -2px 0 #3f2b14;
+        }
+
+        body.vintage .flip-card {
+            filter: drop-shadow(0 15px 20px rgba(93, 58, 26, 0.3));
+        }
+
+        body.vintage .flip-card-inner {
+            box-shadow: 0 20px 30px rgba(0,0,0,0.2), 0 0 0 8px #d4b28c, 0 0 0 12px #b48c5c;
+            border-radius: 40px 40px 40px 40px;
+        }
+
+        body.vintage .flip-card-front {
+            background: #f2e3ce;
+            background-image: 
+                repeating-linear-gradient(45deg, #e2cdb0 0px, #e2cdb0 4px, #ecdbbc 4px, #ecdbbc 8px);
+            border: 4px solid #b48c5c;
+            border-radius: 30px;
+        }
+
+        body.vintage .flip-card-back {
+            background: #faf0e1;
+            background-image: 
+                radial-gradient(circle at 30% 40%, #e2cdb0 5%, transparent 30%),
+                radial-gradient(circle at 70% 60%, #d4b28c 5%, transparent 30%);
+            border: 4px solid #d4b28c;
+            border-radius: 30px;
+            font-family: 'Playfair Display', serif;
+            color: #5d3a1a;
+        }
+
+        body.vintage .message {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: clamp(2.2rem, 9vw, 3.5rem);
+            color: #5d3a1a;
+            text-shadow: 2px 2px 0 #d4b28c;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            font-style: italic;
+        }
+
+        body.vintage .emoji-deco {
+            font-size: 4rem;
+            background: #f2e3ce;
+            border: 3px solid #b48c5c;
+            border-radius: 100px;
+            padding: 1rem 2rem;
+            box-shadow: inset 0 -5px 0 #8b6b41;
+            font-family: 'Playfair Display', serif;
+        }
+
+        body.vintage .daily-message {
+            background: #f2e3ce;
+            border: 4px solid #b48c5c;
+            border-radius: 60px;
+            color: #5d3a1a;
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+            box-shadow: inset 0 -5px 0 #8b6b41, 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        body.vintage .stats-badge,
+        body.vintage .footer-left,
+        body.vintage footer {
+            background: #f2e3ce;
+            border: 3px solid #b48c5c;
+            border-radius: 40px;
+            color: #5d3a1a;
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 1rem;
+            box-shadow: inset 0 -3px 0 #8b6b41, 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        body.vintage .bg-emoji {
+            filter: sepia(100%) saturate(300%);
+            opacity: 0.15;
         }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500..700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="cyberpunk">
 
-<div class="stats-badge" id="statsPreview" style="display:none">⚡ 777 жестоких фраз</div>
+    <div class="theme-switch">
+        <button class="theme-btn active" id="themeCyberpunk">🤖 CYBER</button>
+        <button class="theme-btn" id="themePikmi">🌸 ПИКМИ</button>
+        <button class="theme-btn" id="themeWatchdogs">👁️ WD</button>
+        <button class="theme-btn" id="themeMinimal">⚪ МИНИ</button>
+        <button class="theme-btn" id="themeVintage">📜 ВИНТАЖ</button>
+    </div>
 
-<!-- фоновые эмодзи (без изменений) -->
-<div class="bg-emoji" style="top: 3%; left: 8%; animation-duration: 14s;">💀</div>
-<div class="bg-emoji" style="top: 77%; left: 12%; animation-duration: 21s;">🤬</div>
-<div class="bg-emoji" style="top: 15%; right: 3%; animation-duration: 19s;">🍆</div>
-<div class="bg-emoji" style="bottom: 25%; right: 18%; animation-duration: 23s;">💩</div>
-<div class="bg-emoji" style="top: 45%; left: 25%; animation-duration: 17s;">👺</div>
-<div class="bg-emoji" style="top: 80%; left: 70%; animation-duration: 12s;">🤡</div>
-<div class="bg-emoji" style="top: 10%; left: 80%; animation-duration: 20s;">🔥</div>
-<div class="bg-emoji" style="bottom: 5%; left: 40%; animation-duration: 25s;">🍑</div>
-<div class="bg-emoji" style="top: 60%; left: 5%; animation-duration: 18s;">👽</div>
-<div class="bg-emoji" style="top: 30%; left: 60%; animation-duration: 22s;">😈</div>
+    <div class="stats-badge" id="statsPreview" style="display:none">⚡ 777 ФРАЗ</div>
 
-<div style="display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; z-index: 20;">
-    <div class="card-wrapper">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <div class="back-design"></div>
-                </div>
-                <div class="flip-card-back" id="motivationBack">
-                    <div class="message" id="messageText"></div>
-                    <div class="emoji-deco" id="emojiDeco"></div>
+    <!-- фоновые эмодзи -->
+    <div class="bg-emoji" style="top: 3%; left: 8%; animation-duration: 14s;">💀</div>
+    <div class="bg-emoji" style="top: 77%; left: 12%; animation-duration: 21s;">🤬</div>
+    <div class="bg-emoji" style="top: 15%; right: 3%; animation-duration: 19s;">🍆</div>
+    <div class="bg-emoji" style="bottom: 25%; right: 18%; animation-duration: 23s;">💩</div>
+    <div class="bg-emoji" style="top: 45%; left: 25%; animation-duration: 17s;">👺</div>
+    <div class="bg-emoji" style="top: 80%; left: 70%; animation-duration: 12s;">🤡</div>
+    <div class="bg-emoji" style="top: 10%; left: 80%; animation-duration: 20s;">🔥</div>
+    <div class="bg-emoji" style="bottom: 5%; left: 40%; animation-duration: 25s;">🍑</div>
+    <div class="bg-emoji" style="top: 60%; left: 5%; animation-duration: 18s;">👽</div>
+    <div class="bg-emoji" style="top: 30%; left: 60%; animation-duration: 22s;">😈</div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; z-index: 20;">
+        <div class="card-wrapper">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front"></div>
+                    <div class="flip-card-back" id="motivationBack">
+                        <div class="message" id="messageText"></div>
+                        <div class="emoji-deco" id="emojiDeco"></div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="daily-message" id="dailyMessage">
+            🚀 загружается 777 фраз...
+        </div>
     </div>
 
-    <div class="daily-message" id="dailyMessage">
-        🚀 загружается 777 мемов...
-    </div>
+    <div class="footer-left" id="counterDisplay" style="display:none">🧠 777 фраз</div>
+    <footer>✨ 5 тем • выбор за тобой</footer>
 
-    <button class="btn-reset" id="forceResetBtn" style="display:none">🎲 вырвать случайную (тест)</button>
-</div>
-<div class="footer-left" id="counterDisplay" style="display:none">🧠 777 фраз</div>
+    <script>
+        (function() {
+            // ========== КОЛЛЕКЦИЯ ФРАЗ ==========
+            function generateCardData() {
+                const base = [
+                    { msg: "Сегодня ты сияешь", emoji: "✨🌟🦋" },
+                    { msg: "Всё получится, просто верь", emoji: "💫🌙⭐" },
+                    { msg: "Маленький шаг — большой успех", emoji: "🐾🌱🚀" },
+                    { msg: "Ты справишься с любым вызовом", emoji: "💪😼⚡" },
+                    { msg: "Улыбнись, даже если небо в тучах", emoji: "☁️🌈😊" },
+                    { msg: "Ты — автор своей истории", emoji: "✍️📖🗝️" },
+                    { msg: "Отдых — тоже продуктивность", emoji: "😌🛋️🍵" },
+                    { msg: "Сделай перерыв и съешь конфетку", emoji: "🍬🍭🧁" },
+                    { msg: "Даже горы начинаются с камня", emoji: "⛰️🪨🌄" },
+                    { msg: "Никогда не сдавайся", emoji: "🕷️🤘💥" },
+                    { msg: "Пончик — это же просто тесто", emoji: "🍩🤡🙈" },
+                    { msg: "Ты сегодня как огурчик", emoji: "🥒😎✨" },
+                    { msg: "Лучше день потерять — на ракету сесть", emoji: "🚀🤷🎢" },
+                    { msg: "Если упал духом — встань и отряхни мемы", emoji: "😂🧹💪" },
+                    { msg: "Сделай вид, что работаешь", emoji: "🤫👔💼" },
+                    { msg: "Понедельник начинается в субботу", emoji: "📆🤖🍵" },
+                    { msg: "Не грусти, жуй печеньку", emoji: "🍪😌☕" },
+                    { msg: "Зарядись как айфон", emoji: "📱🔋⚡" },
+                    { msg: "Даже улитка добралась до финиша", emoji: "🐌🏁🏆" },
+                    { msg: "Ты — мой лучший друг", emoji: "🫂💖✨" },
+                    { msg: "Жиза, но ты справишься", emoji: "🤝🔥😎" },
+                    { msg: "Кринж? Это просто этап роста", emoji: "🌱😅👉👈" },
+                    { msg: "Твой мозг: 'Надо работать'", emoji: "🧠🍕😋" },
+                    { msg: "Мотивация: просто начни", emoji: "🏁👀🎲" },
+                    { msg: "Сделай селфи с утра", emoji: "🤳☀️😜" },
+                    { msg: "Главное — верить в себя", emoji: "🦄💫🔮" },
+                    { msg: "Ты как Wi-Fi: невидим, но соединяешь", emoji: "📶💞✨" },
+                    { msg: "Не будь как душнила", emoji: "🍵😌☕" },
+                    { msg: "Сегодня можно всё", emoji: "☕😤🥐" },
+                    { msg: "Ты — звезда", emoji: "🌟🪐🌠" },
+                    { msg: "Устал? Отдохни как котик", emoji: "😸💤🛏️" },
+                    { msg: "Никто не идеален", emoji: "👀📝🙃" },
+                    { msg: "Будь как панда: жуй бамбук", emoji: "🐼🎋😊" },
+                    { msg: "Если не получается — поржи и заново", emoji: "😂🔄🔥" },
+                    { msg: "Сделай доброе дело", emoji: "📲😂👯" },
+                    { msg: "Даже у Бэтмена бывает понедельник", emoji: "🦇📉🥱" },
+                    { msg: "Ты — в главной роли", emoji: "🎬🍿🎥" },
+                    { msg: "Не ссы, прорвемся!", emoji: "💪🚣‍♂️🌊" },
+                    { msg: "Жизнь — боль, но ты аспирин", emoji: "💊😁✨" },
+                    { msg: "У тебя всё получится", emoji: "🤓📚✅" },
+                    { msg: "Капля никотина убивает лошадь", emoji: "💧🐴🚰" },
+                    { msg: "Не будь овощем", emoji: "🥗😎🍅" },
+                    { msg: "Ты — космос", emoji: "🌌🛸👨🚀" },
+                    { msg: "Каждый день — шанс", emoji: "📝✨🚀" },
+                    { msg: "Хватит сидеть — иди лежать", emoji: "🛌😴💤" },
+                    { msg: "Ты как пицца", emoji: "🍕😋🍀" },
+                    { msg: "Даже банан сначала зеленый", emoji: "🍌🟢🟡" },
+                    { msg: "Спой песню в душе", emoji: "🚿🎶😌" },
+                    { msg: "Плюнь на всё, погладь кота", emoji: "🐈😸🧶" },
+                    { msg: "Не парься, будь счастлив", emoji: "☀️😇✨" },
+                    { msg: "Ты — клад", emoji: "💰⛏️💎" },
+                    { msg: "Даже хлеб бывает чёрствым", emoji: "🥐🧈😋" },
+                    { msg: "Если жизнь дает лимоны", emoji: "🍋🥤🍯" },
+                    { msg: "Победа будет за нами", emoji: "🏆😂🤝" },
+                    { msg: "Тысяча миль начинается с одного чиха", emoji: "🤧🛤️🌍" },
+                    { msg: "Ты красавчик", emoji: "🕵️‍♂️💅✨" },
+                    { msg: "Верь в чудеса", emoji: "🦄🌈🌟" },
+                    { msg: "Проснулся? Уже победа", emoji: "🌅🏅😎" },
+                    { msg: "Не дрейфь, прорвемся!", emoji: "🧭🌊💪" },
+                    { msg: "Мемы зарядят тебя", emoji: "🔋😂⚡" },
+                    { msg: "Все гениальное — просто", emoji: "🧠✨👍" },
+                    { msg: "Овсянка, сэр!", emoji: "🥣🧐🎻" },
+                    { msg: "Не ной — потом пожалеешь", emoji: "🤐💪😌" },
+                    { msg: "Ты — лучше, чем вчера", emoji: "📈🌱🕊️" },
+                    { msg: "Жми на газ", emoji: "🏎️💨⚠️" },
+                    { msg: "Счастье не в деньгах", emoji: "🎞️🍿💞" },
+                    { msg: "Будь как единорог", emoji: "🦄🪄💖" },
+                    { msg: "Успех — это просто встать с дивана", emoji: "📺🛋️🏃" },
+                    { msg: "Лучше сделать и пожалеть", emoji: "🤷✅❌" },
+                    { msg: "Поверь в себя", emoji: "🫂✨🌟" },
+                    { msg: "Не оглядывайся", emoji: "👀🚫🗑️" },
+                    { msg: "Сегодня ты — молодец", emoji: "🏅😊🎉" },
+                    { msg: "Иди туда, где страшно", emoji: "🌱👣🔥" },
+                    { msg: "Ты — супергерой без плаща", emoji: "💪😎🦸‍♂️" },
+                    { msg: "Жизнь коротка — ешь десерт первым", emoji: "🍰🥄😋" },
+                    { msg: "Каждый день как новая серия", emoji: "📺🍿🎬" },
+                    { msg: "Не будь букой, будь бякой", emoji: "😜🤪🦄" },
+                    { msg: "Главное — участие", emoji: "🏅🎁😊" },
+                    { msg: "Ты — как кофе", emoji: "☕💪👥" },
+                    { msg: "У тебя есть крылья", emoji: "🦋🕊️✨" },
+                    { msg: "Не переживай, включи режим пофигизма", emoji: "😎🌿🧘" },
+                    { msg: "Ты — магнит для удачи", emoji: "🧲🍀💫" },
+                    { msg: "Даже стена может стать дверью", emoji: "🧱🚪🔑" },
+                    { msg: "Не ищи идеальный момент", emoji: "🎨🛠️🌟" },
+                    { msg: "Ты — самый интересный человек", emoji: "🕴️🎤✨" },
+                    { msg: "Всё, что тебя не убивает", emoji: "😂💀🔥" },
+                    { msg: "Сделай глубокий вдох", emoji: "🌬️😌🧘" },
+                    { msg: "Ты как свет в конце тоннеля", emoji: "🚇💡🌟" },
+                    { msg: "Не откладывай на завтра", emoji: "🍕😋🍔" },
+                    { msg: "Ты — рок-звезда", emoji: "🎸🤘🌟" },
+                    { msg: "Однажды ты скажешь: 'Я это сделал'", emoji: "🏆🗣️💪" },
+                    { msg: "У тебя будет ахуенный день", emoji: "🤟🔥💯" },
+                    { msg: "Ты ебашишь как зверь", emoji: "🦁🔨💪" },
+                    { msg: "Не пизди себе в уши", emoji: "👂🚫💥" },
+                    { msg: "Сегодня ты просто пушка-бомба", emoji: "💣🧨😎" },
+                    { msg: "Выше нос, бля буду", emoji: "👃😤✨" },
+                    { msg: "Разрешаю тебе быть счастливым", emoji: "😠✅😁" },
+                    { msg: "Твои успехи — пиздец какие большие", emoji: "📈🫡💥" },
+                    { msg: "Сделай так, чтобы все охуели", emoji: "🤯👏🔥" },
+                    { msg: "Ты круче, чем думаешь, ёпта", emoji: "😎✨👑" },
+                    { msg: "Сегодня твой день — не проеби его", emoji: "📆🚫😡" },
+                    { msg: "Заряжен на похуизм и успех", emoji: "🔋😌🍀" },
+                    { msg: "Хватит дристать — действуй", emoji: "🧻🚽💨" },
+                    { msg: "Всё будет заебись", emoji: "🫡💫🍑" },
+                    { msg: "Лучше быть богатым и здоровым", emoji: "💰💊🙏" },
+                    { msg: "Сделай глоток пива и расслабься", emoji: "🍺😌🛀" },
+                    { msg: "Ты — настоящий краш", emoji: "💘😍👌" },
+                    { msg: "Не душни, просто живи кайфуй", emoji: "🚿😎🌈" },
+                    { msg: "Ништяк же будет", emoji: "👀💫✨" },
+                    { msg: "У тебя характер — охуеть можно", emoji: "😼💪🧠" },
+                    { msg: "Не ной, братан, всё пучком", emoji: "🤝😌🌿" },
+                    { msg: "Ебашь до потери пульса", emoji: "⛓️🫀😴" },
+                    { msg: "Будь как трактор", emoji: "🚜🌲💨" },
+                    { msg: "Каждый твой день — это маленький пиздец", emoji: "🤏💥😈" },
+                    { msg: "Улыбнись, хуле грустный", emoji: "😊🤷‍♂️✨" },
+                    { msg: "Сегодня ты — чемпион", emoji: "🏆🕳️👑" },
+                    { msg: "Дохуля планов? Выполняй!", emoji: "📋✅💪" },
+                    { msg: "Не парься, возьми выходной", emoji: "😎🌴🍹" },
+                    { msg: "Зарядился? Погнали", emoji: "🔋🌀💨" },
+                    { msg: "Ты — заебись, даже с утра без кофе", emoji: "☕🚫😎" },
+                    { msg: "Жизнь боль, но ты анестезия", emoji: "💉😁✨" },
+                    { msg: "Будь как виски", emoji: "🥃💪⏳" },
+                    { msg: "Сделай громко музон", emoji: "🎧🔊😈" },
+                    { msg: "Ты ваще с другой планеты", emoji: "🛸👽🌟" },
+                    { msg: "Не будь лохом, будь львом", emoji: "🦁👑💪" },
+                    { msg: "Пусть удача тебя трахает", emoji: "🤞🍑😜" },
+                    { msg: "Проблемы? Решим нахер", emoji: "⚡🤜🤛" },
+                    { msg: "Ты — просто пипец какой молодец", emoji: "🥳🎉🫡" },
+                    { msg: "Живи так, чтобы враги офигели", emoji: "😈👀🔥" },
+                    { msg: "Никогда не сдавайся, слышишь, ёбта", emoji: "👂😤💯" },
+                    { msg: "Счастье — оно рядом, хули ты", emoji: "😊🏠🫵" },
+                    { msg: "Пойди уже и сделай", emoji: "🫵✅😅" },
+                    { msg: "Ты — звезда эстрады своей жизни", emoji: "🎤🌟💃" },
+                    { msg: "Всё нахуй, иди вперед!", emoji: "➡️🔥🖕" },
+                    { msg: "Настрой — боевой, яйца — стальные", emoji: "⚔️🛡️🥚" },
+                    { msg: "У тебя будет просто ахренный день", emoji: "😵‍💫🌟💥" },
+                    { msg: "Ты — машина, просто заправься", emoji: "🚗⛽😎" },
+                    { msg: "Не будь овцой — будь пастухом", emoji: "🐑👨‍🌾💪" },
+                    { msg: "Пиздато выглядишь сегодня", emoji: "🤩👗✨" },
+                    { msg: "Успех уже близко", emoji: "🏁🚦💨" },
+                    { msg: "День будет огонь", emoji: "🔥🪓😜" },
+                    { msg: "Все твои страхи — хуйня", emoji: "😨🥗🚫" },
+                    { msg: "Будь здоров и счастлив", emoji: "🍻💊😇" },
+                    { msg: "Ты — легенда", emoji: "📜👑😎" },
+                    { msg: "Пора валить к успеху", emoji: "🏝️✈️🚀" },
+                    { msg: "Все будет охуенно", emoji: "🗣️💫🔮" },
+                    { msg: "Роботай как пчелка", emoji: "🐝👔😎" },
+                    { msg: "Сделай так, чтобы завидовали", emoji: "👀💚😏" },
+                    { msg: "Глаза боятся, а жопа — нет", emoji: "👀😨🍑" },
+                    { msg: "Не будь мямлей — будь козырем", emoji: "🃏👑😼" },
+                    { msg: "Хватит тупить", emoji: "🛋️🥴🍕" },
+                    { msg: "Вкатывайся в день плавно", emoji: "🛼💢💥" },
+                    { msg: "Сегодня ты монстр продуктивности", emoji: "👹📈💪" },
+                    { msg: "Выпей чай и успокойся, дебил", emoji: "🫖🧘🤯" },
+                    { msg: "Люби себя, даже когда ты дурак", emoji: "😘🙈💖" },
+                    { msg: "Не очкуй — всё пучком", emoji: "🙅😨✨" },
+                    { msg: "Ты же можешь, я знаю", emoji: "🫵🧠💡" },
+                    { msg: "Пусть зависть врагов греет душу", emoji: "🔥👿😌" },
+                    { msg: "Ты — суперзвезда, понял, нет?", emoji: "⭐🤨🎸" },
+                    { msg: "Жизнь — штука жесткая, но ты жестче", emoji: "🌍🦾😎" },
+                    { msg: "Расслабь булки, всё будет огонь", emoji: "🍞🔥😉" },
+                    { msg: "Твой потенциал — безразмерный", emoji: "📏🚀✨" },
+                    { msg: "Заряжаю на удачу, прием", emoji: "📡🍀📻" },
+                    { msg: "Не тормози — ускоряйся", emoji: "🐌➡️🐆" },
+                    { msg: "Действуй, не ссы в уши", emoji: "👂🚫💪" },
+                    { msg: "Сегодня ты пробка", emoji: "🍾🏆😎" },
+                    { msg: "Жиза, но ты красавчик", emoji: "💯😏🔥" },
+                    { msg: "Дорогу осилит идущий", emoji: "🚶‍♂️🛣️🧠" },
+                    { msg: "Будь солнцем, даже когда дождь", emoji: "☀️🌧️😊" },
+                    { msg: "Пусть все будет пучком", emoji: "🧺🌿😌" },
+                    { msg: "Сделай глубокий вдох — ты крут", emoji: "🌬️😎👍" },
+                    { msg: "Всё, что ни делается — к лучшему", emoji: "🤷‍♂️💫👌" },
+                    { msg: "Не ври себе, просто живи", emoji: "🤥🚫🌊" },
+                    { msg: "Твоя улыбка стоит миллион", emoji: "😁💰💎" },
+                    { msg: "Сегодня ты — кремень", emoji: "🪨🔥⚔️" },
+                    { msg: "Не парься, будь счастлив назло", emoji: "😤😊✨" },
+                    { msg: "У тебя есть всё для счастья", emoji: "🎁😇💖" },
+                    { msg: "Просто включи режим Бога", emoji: "👼🎛️😈" },
+                    { msg: "Ты — машина, просто залей бензин", emoji: "🏎️⛽😎" },
+                    { msg: "Не тупи, решай проблемы сходу", emoji: "🧩⚡🤯" },
+                    { msg: "Кто если не ты? Вот и хули", emoji: "🤷‍♂️👑💪" },
+                    { msg: "Ты сделаешь это, даже если сдохнешь", emoji: "💀✅😈" },
+                    { msg: "Жизнь — игра, ты — главный герой", emoji: "🎮👤🌟" },
+                    { msg: "Сегодня ловишь дзен и бабки", emoji: "🧘💰😌" },
+                    { msg: "От тебя фанатеет даже удача", emoji: "🍀😍🔥" },
+                    { msg: "Всё наладится, слышишь?", emoji: "🔧💥✨" },
+                    { msg: "Ты — чемпион по жизни", emoji: "🥇🌍😎" },
+                    { msg: "Не ссы в компот — там пьют", emoji: "🥤😜👌" },
+                ];
 
-<script>
-(function() {
-    // --------------------------------------------------------------
-    // МЕГАКОЛЛЕКЦИЯ · 777 ФРАЗ
-    // --------------------------------------------------------------
-    function generateCardData() {
-        const base = [
-            { msg: "Сегодня ты сияешь", emoji: "✨🌟🦋" },
-            { msg: "Всё получится, просто верь", emoji: "💫🌙⭐" },
-            { msg: "Маленький шаг — большой успех", emoji: "🐾🌱🚀" },
-            { msg: "Ты справишься с любым вызовом", emoji: "💪😼⚡" },
-            { msg: "Улыбнись, даже если небо в тучах", emoji: "☁️🌈😊" },
-            { msg: "Ты — автор своей истории", emoji: "✍️📖🗝️" },
-            { msg: "Отдых — тоже продуктивность", emoji: "😌🛋️🍵" },
-            { msg: "Сделай перерыв и съешь конфетку", emoji: "🍬🍭🧁" },
-            { msg: "Даже горы начинаются с камня", emoji: "⛰️🪨🌄" },
-            { msg: "Никогда не сдавайся. (c) Спайдермен", emoji: "🕷️🤘💥" },
-            { msg: "Пончик — это же просто тесто", emoji: "🍩🤡🙈" },
-            { msg: "Ты сегодня как огурчик — бодрячком!", emoji: "🥒😎✨" },
-            { msg: "Лучше день потерять — на ракету сесть", emoji: "🚀🤷🎢" },
-            { msg: "Если упал духом — встань и отряхни мемы", emoji: "😂🧹💪" },
-            { msg: "Сделай вид, что работаешь — начальник поверит", emoji: "🤫👔💼" },
-            { msg: "Понедельник начинается в субботу", emoji: "📆🤖🍵" },
-            { msg: "Не грусти, жуй печеньку", emoji: "🍪😌☕" },
-            { msg: "Зарядись как айфон", emoji: "📱🔋⚡" },
-            { msg: "Даже улитка добралась до финиша", emoji: "🐌🏁🏆" },
-            { msg: "Ты — мой лучший друг", emoji: "🫂💖✨" },
-            { msg: "Жиза, но ты справишься", emoji: "🤝🔥😎" },
-            { msg: "Кринж? Это просто этап роста", emoji: "🌱😅👉👈" },
-            { msg: "Твой мозг: 'Надо работать'. Ты: 'Пойду поем'", emoji: "🧠🍕😋" },
-            { msg: "Мотивация: просто начни, а там видно будет", emoji: "🏁👀🎲" },
-            { msg: "Если тебя нет в интернете — ты не существуешь", emoji: "🌐🤳📸" },
-            { msg: "Сделай селфи с утра", emoji: "🤳☀️😜" },
-            { msg: "Главное — верить в себя", emoji: "🦄💫🔮" },
-            { msg: "Ты как Wi-Fi: невидим, но соединяешь", emoji: "📶💞✨" },
-            { msg: "На обиженных воду возят, а ты пей чай", emoji: "🍵😌☕" },
-            { msg: "Не будь как душнила — будь как солнышко", emoji: "🌞🧃🌸" },
-            { msg: "Сегодня можно всё, кроме завтрака без кофе", emoji: "☕😤🥐" },
-            { msg: "Ты — звезда (даже если никто не смотрит)", emoji: "🌟🪐🌠" },
-            { msg: "Устал? Отдохни как котик", emoji: "😸💤🛏️" },
-            { msg: "Никто не идеален, даже этот текст", emoji: "👀📝🙃" },
-            { msg: "Будь как панда: жуй бамбук", emoji: "🐼🎋😊" },
-            { msg: "Если не получается — поржи и заново", emoji: "😂🔄🔥" },
-            { msg: "Сделай доброе дело — кинь мем другу", emoji: "📲😂👯" },
-            { msg: "Даже у Бэтмена бывает понедельник", emoji: "🦇📉🥱" },
-            { msg: "Ты — в главной роли своего фильма", emoji: "🎬🍿🎥" },
-            { msg: "Не ссы, прорвемся!", emoji: "💪🚣‍♂️🌊" },
-            { msg: "Жизнь — боль, но ты аспирин", emoji: "💊😁✨" },
-            { msg: "У тебя всё получится, я в курсах", emoji: "🤓📚✅" },
-            { msg: "Капля никотина убивает лошадь, а ты пей воду", emoji: "💧🐴🚰" },
-            { msg: "Не будь овощем, будь салатом", emoji: "🥗😎🍅" },
-            { msg: "Ты — космос, просто вспомни", emoji: "🌌🛸👨🚀" },
-            { msg: "Каждый день — шанс написать крутое", emoji: "📝✨🚀" },
-            { msg: "Хватит сидеть — иди лежать", emoji: "🛌😴💤" },
-            { msg: "Ты как пицца — всех устраиваешь", emoji: "🍕😋🍀" },
-            { msg: "Даже банан сначала зеленый", emoji: "🍌🟢🟡" },
-            { msg: "Спой песню в душе — сразу легче", emoji: "🚿🎶😌" },
-            { msg: "Плюнь на всё, погладь кота", emoji: "🐈😸🧶" },
-            { msg: "Не парься, будь счастлив сегодня", emoji: "☀️😇✨" },
-            { msg: "Ты — клад, просто ещё не откопали", emoji: "💰⛏️💎" },
-            { msg: "Даже хлеб бывает чёрствым, но ты — сдоба", emoji: "🥐🧈😋" },
-            { msg: "Если жизнь дает лимоны — сделай лимонад", emoji: "🍋🥤🍯" },
-            { msg: "Победа будет за нами (с) мемы", emoji: "🏆😂🤝" },
-            { msg: "Тысяча миль начинается с одного чиха", emoji: "🤧🛤️🌍" },
-            { msg: "Ты красавчик, я проверял", emoji: "🕵️‍♂️💅✨" },
-            { msg: "Верь в чудеса, они любят смелых", emoji: "🦄🌈🌟" },
-            { msg: "Проснулся? Уже победа", emoji: "🌅🏅😎" },
-            { msg: "Не дрейфь, прорвемся!", emoji: "🧭🌊💪" },
-            { msg: "Мемы зарядят тебя энергией", emoji: "🔋😂⚡" },
-            { msg: "Все гениальное — просто, как ты", emoji: "🧠✨👍" },
-            { msg: "Овсянка, сэр! (с) Шерлок", emoji: "🥣🧐🎻" },
-            { msg: "Не ной — потом пожалеешь", emoji: "🤐💪😌" },
-            { msg: "Ты — лучше, чем вчера", emoji: "📈🌱🕊️" },
-            { msg: "Жми на газ, даже если дорога скользкая", emoji: "🏎️💨⚠️" },
-            { msg: "Счастье не в деньгах, а в моменте", emoji: "🎞️🍿💞" },
-            { msg: "Будь как единорог: редким и волшебным", emoji: "🦄🪄💖" },
-            { msg: "Успех — это просто встать с дивана", emoji: "📺🛋️🏃" },
-            { msg: "Лучше сделать и пожалеть, чем не сделать", emoji: "🤷✅❌" },
-            { msg: "Поверь в себя — и другие поверят", emoji: "🫂✨🌟" },
-            { msg: "Не оглядывайся, там твои ошибки", emoji: "👀🚫🗑️" },
-            { msg: "Сегодня ты — молодец, завтра — тоже", emoji: "🏅😊🎉" },
-            { msg: "Иди туда, где страшно — там рост", emoji: "🌱👣🔥" },
-            { msg: "Ты — супергерой без плаща", emoji: "💪😎🦸‍♂️" },
-            { msg: "Жизнь коротка — ешь десерт первым", emoji: "🍰🥄😋" },
-            { msg: "Каждый день как новая серия любимого сериала", emoji: "📺🍿🎬" },
-            { msg: "Не будь букой, будь бякой", emoji: "😜🤪🦄" },
-            { msg: "Главное — участие. А победа — приятный бонус", emoji: "🏅🎁😊" },
-            { msg: "Ты — как кофе: бодришь окружающих", emoji: "☕💪👥" },
-            { msg: "У тебя есть крылья — просто вспомни", emoji: "🦋🕊️✨" },
-            { msg: "Не переживай, включи режим пофигизма", emoji: "😎🌿🧘" },
-            { msg: "Ты — магнит для удачи", emoji: "🧲🍀💫" },
-            { msg: "Даже стена может стать дверью", emoji: "🧱🚪🔑" },
-            { msg: "Не ищи идеальный момент, создай его", emoji: "🎨🛠️🌟" },
-            { msg: "Ты — самый интересный человек в комнате", emoji: "🕴️🎤✨" },
-            { msg: "Всё, что тебя не убивает, делает мемнее", emoji: "😂💀🔥" },
-            { msg: "Сделай глубокий вдох и выдохни весь негатив", emoji: "🌬️😌🧘" },
-            { msg: "Ты как свет в конце тоннеля", emoji: "🚇💡🌟" },
-            { msg: "Не откладывай на завтра то, что можно съесть сегодня", emoji: "🍕😋🍔" },
-            { msg: "Ты — рок-звезда своей жизни", emoji: "🎸🤘🌟" },
-            { msg: "Однажды ты скажешь: 'Я это сделал'", emoji: "🏆🗣️💪" },
-        ];
+                let mega = [];
+                for (let i = 0; i < 4; i++) {
+                    base.forEach(b => mega.push({ 
+                        msg: b.msg + (i > 0 ? ` ${'•'.repeat(i)}` : ''), 
+                        emoji: b.emoji + ['', ' 💫', ' ⚡', ' 🌈'][i] 
+                    }));
+                }
+                
+                for (let i = 0; i < 77; i++) {
+                    mega.push({ 
+                        msg: `Секретная фраза #${i+1}`, 
+                        emoji: ['🔮✨', '💫🌟', '⚡💥', '🌈🦄'][i % 4] 
+                    });
+                }
+                
+                return mega.slice(0, 777);
+            }
 
-        const hard = [
-            { msg: "У тебя будет ахуенный день", emoji: "🤟🔥💯" },
-            { msg: "Ты ебашишь как зверь — красава", emoji: "🦁🔨💪" },
-            { msg: "Не пизди себе в уши — всё получится", emoji: "👂🚫💥" },
-            { msg: "Сегодня ты просто пушка-бомба", emoji: "💣🧨😎" },
-            { msg: "Выше нос, бля буду", emoji: "👃😤✨" },
-            { msg: "Разрешаю тебе быть счастливым, понял?", emoji: "😠✅😁" },
-            { msg: "Твои успехи — пиздец какие большие", emoji: "📈🫡💥" },
-            { msg: "Сделай так, чтобы все охуели", emoji: "🤯👏🔥" },
-            { msg: "Не ссы, прорвемся на ура", emoji: "💦⛵🌊" },
-            { msg: "Ты круче, чем думаешь, ёпта", emoji: "😎✨👑" },
-            { msg: "Сегодня твой день — не проеби его", emoji: "📆🚫😡" },
-            { msg: "Заряжен на похуизм и успех", emoji: "🔋😌🍀" },
-            { msg: "Хватит дристать — действуй", emoji: "🧻🚽💨" },
-            { msg: "Всё будет заебись, я гарантирую", emoji: "🫡💫🍑" },
-            { msg: "Лучше быть богатым и здоровым, чем бедным и больным. Аминь", emoji: "💰💊🙏" },
-            { msg: "Сделай глоток пива и расслабься", emoji: "🍺😌🛀" },
-            { msg: "Ты — настоящий краш, без шуток", emoji: "💘😍👌" },
-            { msg: "Не душни, просто живи кайфуй", emoji: "🚿😎🌈" },
-            { msg: "Ништяк же будет, вот увидишь", emoji: "👀💫✨" },
-            { msg: "У тебя характер — охуеть можно", emoji: "😼💪🧠" },
-            { msg: "Не ной, братан, всё пучком", emoji: "🤝😌🌿" },
-            { msg: "Ебашь до потери пульса, но отдыхай", emoji: "⛓️🫀😴" },
-            { msg: "Будь как трактор — прешь напролом", emoji: "🚜🌲💨" },
-            { msg: "Каждый твой день — это маленький пиздец", emoji: "🤏💥😈" },
-            { msg: "Улыбнись, хуле грустный", emoji: "😊🤷‍♂️✨" },
-            { msg: "Сегодня ты — чемпион, очко не жми", emoji: "🏆🕳️👑" },
-            { msg: "Дохуля планов? Выполняй!", emoji: "📋✅💪" },
-            { msg: "Не парься, возьми выходной, блин", emoji: "😎🌴🍹" },
-            { msg: "Зарядился? Погнали наводить шорох", emoji: "🔋🌀💨" },
-            { msg: "Ты — заебись, даже с утра без кофе", emoji: "☕🚫😎" },
-            { msg: "Жизнь боль, но ты анестезия", emoji: "💉😁✨" },
-            { msg: "Будь как виски — крепким и выдержанным", emoji: "🥃💪⏳" },
-            { msg: "Сделай громко музон — и пофиг всем", emoji: "🎧🔊😈" },
-            { msg: "Ты ваще с другой планеты, крутой", emoji: "🛸👽🌟" },
-            { msg: "Не будь лохом, будь львом", emoji: "🦁👑💪" },
-            { msg: "Пусть удача тебя трахает, а не ты её", emoji: "🤞🍑😜" },
-            { msg: "Проблемы? Решим нахер", emoji: "⚡🤜🤛" },
-            { msg: "Ты — просто пипец какой молодец", emoji: "🥳🎉🫡" },
-            { msg: "Живи так, чтобы враги офигели", emoji: "😈👀🔥" },
-            { msg: "Никогда не сдавайся, слышишь, ёбта", emoji: "👂😤💯" },
-            { msg: "Счастье — оно рядом, хули ты", emoji: "😊🏠🫵" },
-            { msg: "Пойди уже и сделай на отъебись, но сделай", emoji: "🫵✅😅" },
-            { msg: "Ты — звезда эстрады своей жизни", emoji: "🎤🌟💃" },
-            { msg: "Всё нахуй, иди вперед!", emoji: "➡️🔥🖕" },
-            { msg: "Настрой — боевой, яйца — стальные", emoji: "⚔️🛡️🥚" },
-            { msg: "У тебя будет просто ахренный день", emoji: "😵‍💫🌟💥" },
-            { msg: "Ты — машина, просто заправься", emoji: "🚗⛽😎" },
-            { msg: "Не будь овцой — будь пастухом", emoji: "🐑👨‍🌾💪" },
-            { msg: "Пиздато выглядишь сегодня", emoji: "🤩👗✨" },
-            { msg: "Успех уже близко, не вздумай тормозить", emoji: "🏁🚦💨" },
-            { msg: "День будет огонь, просто подожги", emoji: "🔥🪓😜" },
-            { msg: "Все твои страхи — хуйня на постном масле", emoji: "😨🥗🚫" },
-            { msg: "Будь здоров и счастлив, мать твою", emoji: "🍻💊😇" },
-            { msg: "Ты — легенда, просто мало кто знает", emoji: "📜👑😎" },
-            { msg: "Пора валить на Бали? Пора валить к успеху", emoji: "🏝️✈️🚀" },
-            { msg: "Все будет охуенно, я сказал", emoji: "🗣️💫🔮" },
-            { msg: "Роботай как пчелка, но отдыхай как босс", emoji: "🐝👔😎" },
-            { msg: "Сделай так, чтобы завидовали", emoji: "👀💚😏" },
-            { msg: "Глаза боятся, а жопа — нет", emoji: "👀😨🍑" },
-            { msg: "Не будь мямлей — будь козырем", emoji: "🃏👑😼" },
-            { msg: "Хватит тупить — пора тупить с комфортом", emoji: "🛋️🥴🍕" },
-            { msg: "Вкатывайся в день плавно, но жестко", emoji: "🛼💢💥" },
-            { msg: "Сегодня ты монстр продуктивности", emoji: "👹📈💪" },
-            { msg: "Выпей чай и успокойся, дебил", emoji: "🫖🧘🤯" },
-            { msg: "Люби себя, даже когда ты дурак", emoji: "😘🙈💖" },
-            { msg: "Не очкуй — всё пучком", emoji: "🙅😨✨" },
-            { msg: "Ты же можешь, я знаю", emoji: "🫵🧠💡" },
-            { msg: "Пусть зависть врагов греет душу", emoji: "🔥👿😌" },
-            { msg: "Ты — суперзвезда, понял, нет?", emoji: "⭐🤨🎸" },
-            { msg: "Жизнь — штука жесткая, но ты жестче", emoji: "🌍🦾😎" },
-            { msg: "Расслабь булки, всё будет огонь", emoji: "🍞🔥😉" },
-            { msg: "Твой потенциал — безразмерный", emoji: "📏🚀✨" },
-            { msg: "Заряжаю на удачу, прием", emoji: "📡🍀📻" },
-            { msg: "Не тормози — ускоряйся", emoji: "🐌➡️🐆" },
-            { msg: "Действуй, не ссы в уши", emoji: "👂🚫💪" },
-            { msg: "Сегодня ты пробка — вылетаешь с победой", emoji: "🍾🏆😎" },
-            { msg: "Жиза, но ты красавчик", emoji: "💯😏🔥" },
-            { msg: "Дорогу осилит идущий, а ты иди", emoji: "🚶‍♂️🛣️🧠" },
-            { msg: "Будь солнцем, даже когда дождь", emoji: "☀️🌧️😊" },
-            { msg: "Пусть все будет пучком, а не набекрень", emoji: "🧺🌿😌" },
-            { msg: "Сделай глубокий вдох — ты крут", emoji: "🌬️😎👍" },
-            { msg: "Всё, что ни делается — к лучшему, бля", emoji: "🤷‍♂️💫👌" },
-            { msg: "Не ври себе, просто живи", emoji: "🤥🚫🌊" },
-            { msg: "Твоя улыбка стоит миллион", emoji: "😁💰💎" },
-            { msg: "Сегодня ты — кремень", emoji: "🪨🔥⚔️" },
-            { msg: "Не парься, будь счастлив назло", emoji: "😤😊✨" },
-            { msg: "У тебя есть всё для счастья", emoji: "🎁😇💖" },
-            { msg: "Просто включи режим Бога", emoji: "👼🎛️😈" },
-            { msg: "Ты — машина, просто залей бензин", emoji: "🏎️⛽😎" },
-            { msg: "Не тупи, решай проблемы сходу", emoji: "🧩⚡🤯" },
-            { msg: "Кто если не ты? Вот и хули", emoji: "🤷‍♂️👑💪" },
-            { msg: "Ты сделаешь это, даже если сдохнешь", emoji: "💀✅😈" },
-            { msg: "Жизнь — игра, ты — главный герой", emoji: "🎮👤🌟" },
-            { msg: "Сегодня ловишь дзен и бабки", emoji: "🧘💰😌" },
-            { msg: "От тебя фанатеет даже удача", emoji: "🍀😍🔥" },
-            { msg: "Всё наладится, слышишь? Ахуенно наладится", emoji: "🔧💥✨" },
-            { msg: "Ты — чемпион по жизни", emoji: "🥇🌍😎" },
-            { msg: "Не ссы в компот — там пьют", emoji: "🥤😜👌" },
-            { msg: "Сегодня будет жиза, но ты не сломайся", emoji: "💪😅✨" },
-        ];
+            const finalCards = generateCardData();
+            
+            // ========== ТЕМА ==========
+            const STORAGE_THEME_KEY = 'mood_theme_v2';
+            const STORAGE_DATE_KEY = 'mood_last_date_v2';
+            const STORAGE_INDEX_KEY = 'mood_card_index_v2';
 
-        let mega = [];
-        for (let i = 0; i < 3; i++) {
-            base.forEach(b => mega.push({ msg: b.msg + (i===1?' ☝️':''), emoji: b.emoji + [' 🫡',' 🔥',' 💯'][i] }));
-        }
-        for (let i = 0; i < 4; i++) {
-            hard.forEach(h => mega.push({ msg: h.msg, emoji: h.emoji + [' 👊',' 🍑',' 🥴',''][i] }));
-        }
-        for (let i=0; i<50; i++) {
-            mega.push({ msg: `Хули ты, просто будь собой #${i+1}`, emoji: '😎🔥🔞' });
-            mega.push({ msg: `Заебись же сегодня #${i+1}`, emoji: '💫😜💯' });
-        }
-        return mega.slice(0, 777);
-    }
+            const body = document.body;
+            const cyberpunkBtn = document.getElementById('themeCyberpunk');
+            const pikmiBtn = document.getElementById('themePikmi');
+            const watchdogsBtn = document.getElementById('themeWatchdogs');
+            const minimalBtn = document.getElementById('themeMinimal');
+            const vintageBtn = document.getElementById('themeVintage');
 
-    const finalCards = generateCardData();
+            // Загружаем сохраненную тему
+            const savedTheme = localStorage.getItem(STORAGE_THEME_KEY) || 'cyberpunk';
+            body.className = savedTheme;
+            updateThemeButtons(savedTheme);
 
-    // счетчики
-    document.getElementById('counterDisplay').innerText = `🧠 ${finalCards.length} фраз`;
-    document.getElementById('statsPreview').innerText = `⚡ ${finalCards.length} жестоких фраз`;
+            function updateThemeButtons(theme) {
+                cyberpunkBtn.classList.toggle('active', theme === 'cyberpunk');
+                pikmiBtn.classList.toggle('active', theme === 'pikmi');
+                watchdogsBtn.classList.toggle('active', theme === 'watchdogs');
+                minimalBtn.classList.toggle('active', theme === 'minimal');
+                vintageBtn.classList.toggle('active', theme === 'vintage');
+            }
 
-    // ---------- ИСПРАВЛЕННАЯ ЛОГИКА ----------
-    const STORAGE_KEY = 'motivation_last_date_v3';     // обновил ключи
-    const CARD_INDEX_KEY = 'motivation_card_index_v3';
+            cyberpunkBtn.addEventListener('click', () => {
+                body.className = 'cyberpunk';
+                localStorage.setItem(STORAGE_THEME_KEY, 'cyberpunk');
+                updateThemeButtons('cyberpunk');
+                updateCardDisplay(); // Обновляем сообщение под тему
+            });
 
-    function getTodayString() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    }
+            pikmiBtn.addEventListener('click', () => {
+                body.className = 'pikmi';
+                localStorage.setItem(STORAGE_THEME_KEY, 'pikmi');
+                updateThemeButtons('pikmi');
+                updateCardDisplay();
+            });
 
-    function getStoredDate() {
-        return localStorage.getItem(STORAGE_KEY);
-    }
+            watchdogsBtn.addEventListener('click', () => {
+                body.className = 'watchdogs';
+                localStorage.setItem(STORAGE_THEME_KEY, 'watchdogs');
+                updateThemeButtons('watchdogs');
+                updateCardDisplay();
+            });
 
-    function getStoredIndex() {
-        const stored = localStorage.getItem(CARD_INDEX_KEY);
-        return stored ? parseInt(stored, 10) : null;
-    }
+            minimalBtn.addEventListener('click', () => {
+                body.className = 'minimal';
+                localStorage.setItem(STORAGE_THEME_KEY, 'minimal');
+                updateThemeButtons('minimal');
+                updateCardDisplay();
+            });
 
-    function saveTodayIndex(index) {
-        localStorage.setItem(STORAGE_KEY, getTodayString());
-        localStorage.setItem(CARD_INDEX_KEY, index);
-    }
+            vintageBtn.addEventListener('click', () => {
+                body.className = 'vintage';
+                localStorage.setItem(STORAGE_THEME_KEY, 'vintage');
+                updateThemeButtons('vintage');
+                updateCardDisplay();
+            });
 
-    const msgDiv = document.getElementById('messageText');
-    const emojiDiv = document.getElementById('emojiDeco');
-    const dailyMsgDiv = document.getElementById('dailyMessage');
+            // ========== КАРТОЧКА ДНЯ ==========
+            document.getElementById('statsPreview').innerText = `⚡ ${finalCards.length} ФРАЗ`;
+            document.getElementById('counterDisplay').innerHTML = `🧠 ${finalCards.length} фраз`;
 
-    function updateCardDisplay() {
-        const today = getTodayString();
-        const storedDate = getStoredDate();
-        const storedIndex = getStoredIndex();
+            function getTodayString() {
+                const d = new Date();
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
 
-        let cardIndex;
-        let isNewDay = (storedDate !== today);
+            function getStoredDate() {
+                return localStorage.getItem(STORAGE_DATE_KEY);
+            }
 
-        if (!isNewDay && storedIndex !== null && storedIndex >= 0 && storedIndex < finalCards.length) {
-            // сегодня уже открывали — берём сохранённый индекс
-            cardIndex = storedIndex;
-            dailyMsgDiv.innerHTML = '📅 Ты уже открывал сегодня. Наведи — та же карта 🌙';
-        } else {
-            // новый день или нет индекса — генерим свежий
-            cardIndex = Math.floor(Math.random() * finalCards.length);
-            saveTodayIndex(cardIndex);
-            dailyMsgDiv.innerHTML = '💥 СВЕЖАК! Наведи, чтобы прочесть ✨';
-        }
+            function getStoredIndex() {
+                const stored = localStorage.getItem(STORAGE_INDEX_KEY);
+                return stored ? parseInt(stored, 10) : null;
+            }
 
-        const card = finalCards[cardIndex] || { msg: 'Ошибочка, но ты крут', emoji: '😎✅' };
-        msgDiv.innerText = card.msg;
-        emojiDiv.innerText = card.emoji;
-    }
+            function saveTodayIndex(index) {
+                localStorage.setItem(STORAGE_DATE_KEY, getTodayString());
+                localStorage.setItem(STORAGE_INDEX_KEY, index);
+            }
 
-    // кнопка сброса (скрыта, но работает если понадобится)
-    const resetBtn = document.getElementById('forceResetBtn');
-    resetBtn.addEventListener('click', () => {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(CARD_INDEX_KEY);
-        updateCardDisplay();
-        dailyMsgDiv.innerHTML = '🎲 тест: другая карточка (завтра сброс)';
-    });
+            const msgDiv = document.getElementById('messageText');
+            const emojiDiv = document.getElementById('emojiDeco');
+            const dailyMsgDiv = document.getElementById('dailyMessage');
 
-    // первоначальный запуск
-    updateCardDisplay();
+            function showLoadingState() {
+                dailyMsgDiv.innerHTML = '<span class="loading-spinner"></span> Загружаю мудрость...';
+            }
 
-    // опционально: автоматическая проверка в полночь (перезагружать не требуется, но если страница висит сутки — обновим)
-    function checkForNewDay() {
-        const today = getTodayString();
-        if (localStorage.getItem(STORAGE_KEY) !== today) {
+            function getThemeMessage() {
+                const theme = body.className;
+                const messages = {
+                    cyberpunk: ['💀 НЕОН АКТИВИРОВАН', '🤖 СИСТЕМА ЗАПУЩЕНА', '⚡ НОВАЯ ФРАЗА В СЕТИ'],
+                    pikmi: ['🌸 Свежая пикми-мудрость', '✨ Нежная фраза дня', '🍭 Сладкое сообщение'],
+                    watchdogs: ['👁️ ДОСТУП ПОЛУЧЕН', '🔓 СИСТЕМА ВЗЛОМАНА', '💻 НОВЫЙ ПАКЕТ ДАННЫХ'],
+                    minimal: ['⚪ Простая истина', '📄 Чистый лист', '▪️ Минимализм дня'],
+                    vintage: ['📜 Старая мудрость', '🕰️ Винтажная мысль', '🎞️ Плёнка дней']
+                };
+                const themeMessages = messages[theme] || messages.cyberpunk;
+                return themeMessages[Math.floor(Math.random() * themeMessages.length)];
+            }
+
+            function updateCardDisplay() {
+                showLoadingState();
+                
+                setTimeout(() => {
+                    const today = getTodayString();
+                    const storedDate = getStoredDate();
+                    const storedIndex = getStoredIndex();
+
+                    let cardIndex;
+                    let isNewDay = (storedDate !== today);
+
+                    if (!isNewDay && storedIndex !== null && storedIndex >= 0 && storedIndex < finalCards.length) {
+                        cardIndex = storedIndex;
+                        dailyMsgDiv.innerHTML = '🌙 Та же карта, новый взгляд';
+                    } else {
+                        cardIndex = Math.floor(Math.random() * finalCards.length);
+                        saveTodayIndex(cardIndex);
+                        dailyMsgDiv.innerHTML = getThemeMessage();
+                    }
+
+                    const card = finalCards[cardIndex] || { msg: 'Ты крут!', emoji: '😎✨' };
+                    
+                    msgDiv.style.opacity = '0';
+                    emojiDiv.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        msgDiv.innerText = card.msg;
+                        emojiDiv.innerText = card.emoji;
+                        msgDiv.style.opacity = '1';
+                        emojiDiv.style.opacity = '1';
+                    }, 300);
+                }, 500);
+            }
+
+            // Проверка нового дня
+            function checkForNewDay() {
+                const today = getTodayString();
+                if (localStorage.getItem(STORAGE_DATE_KEY) !== today) {
+                    updateCardDisplay();
+                }
+            }
+
+            // Инициализация
             updateCardDisplay();
-        }
-    }
-    setInterval(checkForNewDay, 60000); // проверка раз в минуту (для отладки, на деле можно реже)
-})();
-</script>
+            setInterval(checkForNewDay, 60000);
+
+            // Скрытое обновление (Ctrl+R)
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    localStorage.removeItem(STORAGE_DATE_KEY);
+                    localStorage.removeItem(STORAGE_INDEX_KEY);
+                    updateCardDisplay();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
-
-
-
