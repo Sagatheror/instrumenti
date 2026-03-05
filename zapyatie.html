@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Объединение чисел из Excel</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+  }
+
+  .container {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 900px;
+    width: 100%;
+    animation: slideUp 0.5s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h2 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 2em;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .subtitle {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+  }
+
+  .input-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+  }
+
+  .input-section:hover {
+    border-color: #667eea;
+    background: #fff;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #495057;
+  }
+
+  textarea {
+    width: 100%;
+    height: 180px;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    resize: vertical;
+    transition: all 0.3s ease;
+    line-height: 1.5;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0 5px;
+    flex-wrap: wrap;
+  }
+
+  .quick-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #495057;
+  }
+
+  .quick-btn:hover {
+    background-color: #dee2e6;
+    transform: translateY(-1px);
+  }
+
+  .buttons {
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1em;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  }
+
+  .btn-outline {
+    background: white;
+    color: #495057;
+    border: 2px solid #e9ecef;
+  }
+
+  .btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+  }
+
+  .result-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+  }
+
+  #resultHeader {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+    color: #2d3748;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .stats-badge {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    color: #4a5568;
+  }
+
+  #result {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 80px;
+    max-height: 250px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    border: 2px solid rgba(255,255,255,0.5);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .preview-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    background: #e2e8f0;
+    color: #4a5568;
+    margin-right: 8px;
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+  }
+
+  .notification.success {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    color: #1e7e34;
+  }
+
+  .notification.error {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .footer-notes {
+    margin-top: 20px;
+    font-size: 0.85em;
+    color: #718096;
+    text-align: center;
+  }
+
+  .kbd {
+    background: #e9ecef;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px;
+    }
+    
+    .buttons {
+      flex-direction: column;
+    }
+    
+    button {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="input-section">
+    <label for="inputArea">
+      📋 Вставьте данные:
+      <span class="preview-badge">Поддерживаются любые разделители</span>
+    </label>
+    <textarea id="inputArea" placeholder="Пример:&#10;123  456&#10;789&#10;321    654&#10;987"></textarea>
+    
+    <div class="quick-actions" style="display:none">
+      <button class="quick-btn" onclick="insertExample()">📋 Вставить пример</button>
+      <button class="quick-btn" onclick="removeDuplicates()">🔄 Удалить дубликаты</button>
+      <button class="quick-btn" onclick="sortNumbers()">⬆️ Сортировать</button>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="btn-primary" onclick="addCommas()">
+      <span>➕</span> Добавить запятые 
+    </button>
+    <button class="btn-secondary" onclick="addCommasAndSpace()">
+      <span>➕</span> Запятые с пробелами
+    </button>
+    <button class="btn-outline" onclick="addCustomSeparator()">
+      <span>⚙️</span> Свой разделитель
+    </button>
+  </div>
+
+  <div class="buttons">
+    <button class="btn-outline" onclick="copyResult()">
+      <span>📋</span> Копировать
+    </button>
+    <button class="btn-outline" onclick="clearAll()">
+      <span>🗑️</span> Очистить всё
+    </button>
+  </div>
+
+  <div class="result-section">
+    <div id="resultHeader">
+      <span>📎 Результат:</span>
+      <span id="stats" class="stats-badge"></span>
+    </div>
+    <div id="result"></div>
+    <div class="footer-notes">
+      <span class="kbd">Ctrl+Enter</span> - быстрая обработка | 
+      <span class="kbd">Esc</span> - очистить
+    </div>
+  </div>
+</div>
+
+<script>
+  let lastResult = '';
+
+  function showNotification(message, isError = false) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${isError ? 'error' : 'success'}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+
+  function extractNumbers(inputText) {
+    if (!inputText.trim()) return [];
+    
+    // Разделяем по любым пробельным символам и фильтруем пустые строки
+    const numbers = inputText.split(/[\s,;]+/).filter(s => s.trim() !== '');
+    
+    // Показываем предупреждение, если есть нечисловые значения
+    const nonNumeric = numbers.filter(n => isNaN(n) || n === '');
+    if (nonNumeric.length > 0) {
+      showNotification(`Найдено ${nonNumeric.length} нечисловых значений`, true);
+    }
+    
+    return numbers;
+  }
+
+  function updateStats(numbers) {
+    const statsElement = document.getElementById('stats');
+    if (numbers && numbers.length > 0) {
+      statsElement.textContent = `📊 Всего чисел: ${numbers.length}`;
+    } else {
+      statsElement.textContent = '';
+    }
+  }
+
+  function formatResult(numbers, prefix = ',', suffix = '') {
+    if (numbers.length === 0) return '';
+    
+    // Добавляем разделитель ко всем числам, кроме первого
+    const result = numbers.map((num, index) => {
+      if (index === 0) return num;
+      return prefix + num + suffix;
+    }).join('');
+    
+    return result;
+  }
+
+  function addCommas() {
+    const inputText = document.getElementById('inputArea').value;
+    if (!inputText.trim()) {
+      showNotification('Введите данные для обработки', true);
+      return;
+    }
+
+    const numbers = extractNumbers(inputText);
+    updateStats(numbers);
+    
+    // Исправлено: не добавляем запятую перед первым числом
+    const resultString = formatResult(numbers, ',', '');
+    document.getElementById('result').innerText = resultString;
+    lastResult = resultString;
+    
+    showNotification(`✅ Обработано ${numbers.length} чисел`);
+  }
+
+  function addCommasAndSpace() {
+    const inputText = document.getElementById('inputArea').value;
+    if (!inputText.trim()) {
+      showNotification('Введите данные для обработки', true);
+      return;
+    }
+
+    const numbers = extractNumbers(inputText);
+    updateStats(numbers);
+    
+    // Исправлено: не добавляем запятую перед первым числом
+    const resultString = formatResult(numbers, ', ', '');
+    document.getElementById('result').innerText = resultString;
+    lastResult = resultString;
+    
+    showNotification(`✅ Обработано ${numbers.length} чисел`);
+  }
+
+  function addCustomSeparator() {
+    const separator = prompt('Введите разделитель (например: ; | - /)', ',');
+    if (separator === null) return;
+    
+    const inputText = document.getElementById('inputArea').value;
+    if (!inputText.trim()) {
+      showNotification('Введите данные для обработки', true);
+      return;
+    }
+
+    const numbers = extractNumbers(inputText);
+    updateStats(numbers);
+    
+    // Исправлено: не добавляем разделитель перед первым числом
+    const resultString = formatResult(numbers, separator, '');
+    document.getElementById('result').innerText = resultString;
+    lastResult = resultString;
+    
+    showNotification(`✅ Использован разделитель: ${separator}`);
+  }
+
+  function insertExample() {
+    document.getElementById('inputArea').value = '123\n456\n789\n321\n654\n987';
+    showNotification('Пример вставлен');
+  }
+
+  function removeDuplicates() {
+    const inputText = document.getElementById('inputArea').value;
+    if (!inputText.trim()) {
+      showNotification('Нет данных для обработки', true);
+      return;
+    }
+
+    const numbers = extractNumbers(inputText);
+    const uniqueNumbers = [...new Set(numbers)];
+    
+    document.getElementById('inputArea').value = uniqueNumbers.join('\n');
+    showNotification(`Удалено дубликатов: ${numbers.length - uniqueNumbers.length}`);
+  }
+
+  function sortNumbers() {
+    const inputText = document.getElementById('inputArea').value;
+    if (!inputText.trim()) {
+      showNotification('Нет данных для обработки', true);
+      return;
+    }
+
+    const numbers = extractNumbers(inputText);
+    const sortedNumbers = numbers.sort((a, b) => {
+      // Пробуем сортировать как числа, если не получается - как строки
+      const numA = parseFloat(a);
+      const numB = parseFloat(b);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return numA - numB;
+      }
+      return a.localeCompare(b);
+    });
+    
+    document.getElementById('inputArea').value = sortedNumbers.join('\n');
+    showNotification('Числа отсортированы');
+  }
+
+  function copyResult() {
+    if (!lastResult) {
+      showNotification('Нет результата для копирования', true);
+      return;
+    }
+
+    navigator.clipboard.writeText(lastResult).then(() => {
+      showNotification('✅ Скопировано в буфер обмена!');
+    }).catch(() => {
+      // Fallback для старых браузеров
+      const textArea = document.createElement('textarea');
+      textArea.value = lastResult;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        showNotification('✅ Скопировано в буфер обмена!');
+      } catch (err) {
+        showNotification('❌ Ошибка копирования', true);
+      }
+      
+      document.body.removeChild(textArea);
+    });
+  }
+
+  function clearAll() {
+    document.getElementById('inputArea').value = '';
+    document.getElementById('result').innerText = '';
+    document.getElementById('stats').textContent = '';
+    lastResult = '';
+    showNotification('Все поля очищены');
+  }
+
+  // Горячие клавиши
+  document.getElementById('inputArea').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+      e.preventDefault();
+      addCommas();
+    }
+    if (e.key === 'Escape') {
+      clearAll();
+    }
+  });
+
+  // Автоматическое обновление статистики при вводе
+  document.getElementById('inputArea').addEventListener('input', function() {
+    const numbers = extractNumbers(this.value);
+    updateStats(numbers);
+  });
+
+  // Drag & drop поддержка
+  document.getElementById('inputArea').addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.target.style.borderColor = '#667eea';
+  });
+
+  document.getElementById('inputArea').addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    e.target.style.borderColor = '#e9ecef';
+  });
+
+  document.getElementById('inputArea').addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.target.style.borderColor = '#e9ecef';
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        document.getElementById('inputArea').value = event.target.result;
+        showNotification('Файл загружен');
+      };
+      
+      reader.readAsText(file);
+    }
+  });
+</script>
+
+</body>
+</html>
