@@ -1021,7 +1021,7 @@
         <div class="sidebar">         
             <div class="nav-menu">
                 <div class="nav-section">
-                    <div class="nav-section-title">Аналитика</div>
+                    <div class="nav-section-title">Основное</div>
                     <div class="nav-item" onclick="loadPage('page1'); hideSidebar();">
                         <i class="fas fa-chart-line"></i>
                         <span>Интерактивный график</span>
@@ -1031,6 +1031,10 @@
                         <i class="fas fa-file-alt"></i>
                         <span>Описание</span>
                     </div>
+                    <div class="nav-item" onclick="loadPage('page5'); hideSidebar();">
+        <i class="fas fa-file"></i>
+        <span>Запятые коды 1С</span>
+    </div>
                 </div>
                 
                 <div class="nav-section">
@@ -1137,6 +1141,15 @@
                                     <div class="feature-desc">Готовые решения для основных визуализаций описания</div>
                                 </div>
                             </div>
+                            <div class="feature" onclick="loadPage('page5'); hideSidebar();">
+        <div class="feature-icon">
+            <i class="fas fa-file"></i>
+        </div>
+        <div class="feature-content">
+            <div class="feature-title">Запятые коды 1С</div>
+            <div class="feature-desc">Правильная расстановка символов</div>
+        </div>
+    </div>
                         </div>
                     </div>
                 </div>
@@ -1150,27 +1163,33 @@
 
     <script>
         const pages = {
-            'page1': {
-                title: 'Интерактивный график',
-                url: 'https://sagatheror.github.io/instrumenti/new-interface.html',
-                icon: 'fas fa-chart-line'
-            },
-            'page2': {
-                title: 'Описание',
-                url: 'https://sagatheror.github.io/instrumenti/description-new.html',
-                icon: 'fas fa-file-alt'
-            },
-            'page3': {
-                title: 'Палитра цветов',
-                url: 'https://sagatheror.github.io/instrumenti/palitra.html',
-                icon: 'fas fa-palette'
-            },
-            'page4': {
-                title: 'Шаблоны визуализации',
-                url: 'https://sagatheror.github.io/instrumenti/formalization.html',
-                icon: 'fas fa-shapes'
-            }
-        };
+    'page1': {
+        title: 'Интерактивный график',
+        url: 'https://sagatheror.github.io/instrumenti/new-interface.html',
+        icon: 'fas fa-chart-line'
+    },
+    'page2': {
+        title: 'Описание',
+        url: 'https://sagatheror.github.io/instrumenti/description-new.html',
+        icon: 'fas fa-file-alt'
+    },
+    'page3': {
+        title: 'Палитра цветов',
+        url: 'https://sagatheror.github.io/instrumenti/palitra.html',
+        icon: 'fas fa-palette'
+    },
+    'page4': {
+        title: 'Шаблоны визуализации',
+        url: 'https://sagatheror.github.io/instrumenti/formalization.html',
+        icon: 'fas fa-shapes'
+    },
+    // 👇 ДОБАВЬТЕ ЭТУ НОВУЮ СТРАНИЦУ
+    'page5': {
+        title: 'Запятые коды 1С',
+        url: 'https://sagatheror.github.io/instrumenti/zapyatie.html',
+        icon: 'fas fa-file'
+    }
+};
         
         let currentPage = 'welcome';
         let isSidebarHidden = false;
@@ -1584,4 +1603,3 @@
     </script>
 </body>
 </html>
-
