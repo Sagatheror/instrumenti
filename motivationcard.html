@@ -29,40 +29,50 @@
         /* ========== ОБЩИЕ СТИЛИ ========== */
         .theme-switch {
             position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            padding: 10px 15px;
-            border-radius: 60px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 95%;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 50px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 95%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .theme-btn {
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            border: none;
-            border-radius: 40px;
-            font-size: 14px;
-            white-space: nowrap;
+            padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: bold;
+    border: none;
+    border-radius: 40px;
+    font-size: 13px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .theme-btn:hover {
-            transform: scale(1.05);
-        }
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
 
+.theme-btn:active {
+    transform: translateY(0);
+}
         .card-wrapper {
             width: 100%;
             max-width: 680px;
             z-index: 30;
             margin-top: 100px;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .flip-card {
@@ -73,8 +83,25 @@
             cursor: pointer;
             transition: transform 0.3s ease, filter 0.3s ease;
             border-radius: 40px;
+            animation: pulseGlow 3s infinite ease-in-out;
         }
+.flip-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 40px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 0 30px currentColor;
+}
 
+.flip-card:hover::after {
+    opacity: 0.3;
+}
         .flip-card:hover {
             transform: scale(1.02) translateY(-8px);
         }
@@ -112,27 +139,94 @@
         }
 
         .bg-emoji {
-            position: absolute;
-            font-size: 5rem;
-            opacity: 0.15;
-            user-select: none;
-            pointer-events: none;
-            z-index: 0;
-            animation: float 20s infinite alternate ease-in-out;
-        }
+    position: absolute;
+    font-size: 5rem;
+    opacity: 0.1;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    animation: float 20s infinite alternate ease-in-out;
+    filter: blur(0.5px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.bg-emoji:hover {
+    opacity: 0.2;
+    transform: scale(1.2) rotate(10deg);
+    animation-play-state: paused;
+}
+
+/* Добавьте разные скорости анимации для эмодзи */
+.bg-emoji:nth-child(odd) {
+    animation-duration: 25s;
+}
+
+.bg-emoji:nth-child(3n) {
+    animation-duration: 18s;
+    animation-delay: -2s;
+}
+
+.bg-emoji:nth-child(5n+2) {
+    animation-duration: 30s;
+    filter: blur(1px);
+}
 
         @keyframes float {
             0% { transform: translate(0, 0) rotate(0deg) scale(1); }
             100% { transform: translate(30px, -20px) rotate(15deg) scale(1.2); }
         }
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+@keyframes pulseGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px currentColor);
+    }
+    50% {
+        filter: drop-shadow(0 0 20px currentColor);
+    }
+}
         .daily-message {
-            margin-top: 40px;
-            text-align: center;
-            max-width: 700px;
-            z-index: 25;
-            transition: all 0.3s ease;
-        }
+    margin-top: 40px;
+    text-align: center;
+    max-width: 700px;
+    z-index: 25;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 1rem 2rem;
+    border-radius: 60px;
+    font-size: 1.1rem;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.daily-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.daily-message:hover::before {
+    left: 100%;
+}
+
+.daily-message:hover {
+    transform: scale(1.02) translateY(-2px);
+}
 
         .stats-badge {
             position: fixed;
@@ -168,19 +262,22 @@
         }
 
         .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid currentColor;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid transparent;
+    border-top-color: currentColor;
+    border-right-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+}
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
         /* ========== ТЕМА 1: CYBERPUNK ========== */
         body.cyberpunk {
@@ -864,6 +961,29 @@ body.ordinary .bg-emoji {
     opacity: 0.2;
     filter: sepia(30%);
 }
+html {
+    scroll-behavior: smooth;
+}
+
+/* Улучшенный скроллбар */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+}
     </style>
 </head>
 <body class="cyberpunk">
@@ -1108,32 +1228,25 @@ body.ordinary .bg-emoji {
                     { msg: "Ты — чемпион по жизни", emoji: "🥇🌍😎" },
                     { msg: "Не ссы в компот — там пьют", emoji: "🥤😜👌" },
                 ];
-
                 let mega = [];
                 for (let i = 0; i < 4; i++) {
                     base.forEach(b => mega.push({ 
-                        msg: b.msg + (i > 0 ? ` ${'•'.repeat(i)}` : ''), 
+                        msg: b.msg, 
                         emoji: b.emoji + ['', ' 💫', ' ⚡', ' 🌈'][i] 
                     }));
                 }
-                
                 for (let i = 0; i < 77; i++) {
                     mega.push({ 
                         msg: `Секретная фраза #${i+1}`, 
                         emoji: ['🔮✨', '💫🌟', '⚡💥', '🌈🦄'][i % 4] 
                     });
                 }
-                
                 return mega.slice(0, 777);
             }
-
             const finalCards = generateCardData();
-            
-            // ========== ТЕМА ==========
             const STORAGE_THEME_KEY = 'mood_theme_v2';
             const STORAGE_DATE_KEY = 'mood_last_date_v2';
             const STORAGE_INDEX_KEY = 'mood_card_index_v2';
-
             const body = document.body;
             const cyberpunkBtn = document.getElementById('themeCyberpunk');
             const pikmiBtn = document.getElementById('themePikmi');
@@ -1141,12 +1254,9 @@ body.ordinary .bg-emoji {
             const minimalBtn = document.getElementById('themeMinimal');
             const vintageBtn = document.getElementById('themeVintage');
             const ordinaryBtn = document.getElementById('themeOrdinary'); 
-
-            // Загружаем сохраненную тему
             const savedTheme = localStorage.getItem(STORAGE_THEME_KEY) || 'cyberpunk';
             body.className = savedTheme;
             updateThemeButtons(savedTheme);
-
             function updateThemeButtons(theme) {
                 cyberpunkBtn.classList.toggle('active', theme === 'cyberpunk');
                 pikmiBtn.classList.toggle('active', theme === 'pikmi');
@@ -1155,35 +1265,30 @@ body.ordinary .bg-emoji {
                 vintageBtn.classList.toggle('active', theme === 'vintage');
                 ordinaryBtn.classList.toggle('active', theme === 'ordinary');
             }
-
             cyberpunkBtn.addEventListener('click', () => {
                 body.className = 'cyberpunk';
                 localStorage.setItem(STORAGE_THEME_KEY, 'cyberpunk');
                 updateThemeButtons('cyberpunk');
-                updateCardDisplay(); // Обновляем сообщение под тему
+                updateCardDisplay();
             });
-
             pikmiBtn.addEventListener('click', () => {
                 body.className = 'pikmi';
                 localStorage.setItem(STORAGE_THEME_KEY, 'pikmi');
                 updateThemeButtons('pikmi');
                 updateCardDisplay();
             });
-
             watchdogsBtn.addEventListener('click', () => {
                 body.className = 'watchdogs';
                 localStorage.setItem(STORAGE_THEME_KEY, 'watchdogs');
                 updateThemeButtons('watchdogs');
                 updateCardDisplay();
             });
-
             minimalBtn.addEventListener('click', () => {
                 body.className = 'minimal';
                 localStorage.setItem(STORAGE_THEME_KEY, 'minimal');
                 updateThemeButtons('minimal');
                 updateCardDisplay();
             });
-
             vintageBtn.addEventListener('click', () => {
                 body.className = 'vintage';
                 localStorage.setItem(STORAGE_THEME_KEY, 'vintage');
@@ -1194,39 +1299,30 @@ ordinaryBtn.addEventListener('click', () => {
     body.className = 'ordinary';
     localStorage.setItem(STORAGE_THEME_KEY, 'ordinary');
     updateThemeButtons('ordinary');
-    showToast('📦 Обычный режим');
 });
-            // ========== КАРТОЧКА ДНЯ ==========
             document.getElementById('statsPreview').innerText = `⚡ ${finalCards.length} ФРАЗ`;
             document.getElementById('counterDisplay').innerHTML = `🧠 ${finalCards.length} фраз`;
-
             function getTodayString() {
                 const d = new Date();
                 return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
             }
-
             function getStoredDate() {
                 return localStorage.getItem(STORAGE_DATE_KEY);
             }
-
             function getStoredIndex() {
                 const stored = localStorage.getItem(STORAGE_INDEX_KEY);
                 return stored ? parseInt(stored, 10) : null;
             }
-
             function saveTodayIndex(index) {
                 localStorage.setItem(STORAGE_DATE_KEY, getTodayString());
                 localStorage.setItem(STORAGE_INDEX_KEY, index);
             }
-
             const msgDiv = document.getElementById('messageText');
             const emojiDiv = document.getElementById('emojiDeco');
             const dailyMsgDiv = document.getElementById('dailyMessage');
-
             function showLoadingState() {
                 dailyMsgDiv.innerHTML = '<span class="loading-spinner"></span> Загружаю мудрость...';
             }
-
             function getThemeMessage() {
     const theme = body.className;
     const messages = {
@@ -1235,23 +1331,19 @@ ordinaryBtn.addEventListener('click', () => {
         watchdogs: ['👁️ ДОСТУП ПОЛУЧЕН', '🔓 СИСТЕМА ВЗЛОМАНА', '💻 НОВЫЙ ПАКЕТ ДАННЫХ'],
         minimal: ['⚪ Простая истина', '📄 Чистый лист', '▪️ Минимализм дня'],
         vintage: ['📜 Старая мудрость', '🕰️ Винтажная мысль', '🎞️ Плёнка дней'],
-        ordinary: ['📦 Обычная мудрость', '✨ Простое сообщение', '🌟 Классика дня'] // Добавить эту строку
+        ordinary: ['📦 Обычная мудрость', '✨ Простое сообщение', '🌟 Классика дня']
     };
     const themeMessages = messages[theme] || messages.cyberpunk;
     return themeMessages[Math.floor(Math.random() * themeMessages.length)];
 }
-
             function updateCardDisplay() {
                 showLoadingState();
-                
                 setTimeout(() => {
                     const today = getTodayString();
                     const storedDate = getStoredDate();
                     const storedIndex = getStoredIndex();
-
                     let cardIndex;
                     let isNewDay = (storedDate !== today);
-
                     if (!isNewDay && storedIndex !== null && storedIndex >= 0 && storedIndex < finalCards.length) {
                         cardIndex = storedIndex;
                         dailyMsgDiv.innerHTML = '🌙 Та же карта, новый взгляд';
@@ -1260,12 +1352,9 @@ ordinaryBtn.addEventListener('click', () => {
                         saveTodayIndex(cardIndex);
                         dailyMsgDiv.innerHTML = getThemeMessage();
                     }
-
                     const card = finalCards[cardIndex] || { msg: 'Ты крут!', emoji: '😎✨' };
-                    
                     msgDiv.style.opacity = '0';
                     emojiDiv.style.opacity = '0';
-                    
                     setTimeout(() => {
                         msgDiv.innerText = card.msg;
                         emojiDiv.innerText = card.emoji;
@@ -1274,20 +1363,14 @@ ordinaryBtn.addEventListener('click', () => {
                     }, 300);
                 }, 500);
             }
-
-            // Проверка нового дня
             function checkForNewDay() {
                 const today = getTodayString();
                 if (localStorage.getItem(STORAGE_DATE_KEY) !== today) {
                     updateCardDisplay();
                 }
             }
-
-            // Инициализация
             updateCardDisplay();
             setInterval(checkForNewDay, 60000);
-
-            // Скрытое обновление (Ctrl+R)
             document.addEventListener('keydown', (e) => {
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
@@ -1300,4 +1383,3 @@ ordinaryBtn.addEventListener('click', () => {
     </script>
 </body>
 </html>
-
