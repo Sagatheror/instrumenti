@@ -26,138 +26,130 @@
 
         /* Декоративные элементы фона */
         .bg-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            z-index: 0;
-            transition: opacity 0.5s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255,255,255,0.1) 0%, transparent 40%);
+    z-index: 0;
+    transition: opacity 0.5s ease;
+    opacity: 0.3;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
 
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+.bg-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+    animation: gridFloat 20s linear infinite;
+}
 
-        .bg-orb {
-            position: fixed;
-            width: 80vmax;
-            height: 80vmax;
-            border-radius: 50%;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.6;
-        }
+@keyframes gridFloat {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(5px, 5px); }
+    50% { transform: translate(10px, 0); }
+    75% { transform: translate(5px, -5px); }
+    100% { transform: translate(0, 0); }
+}
+.bg-orb {
+    position: fixed;
+    width: 80vmax;
+    height: 80vmax;
+    border-radius: 50%;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(100px) brightness(0.8);
+    z-index: 0;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+}
 
-        .bg-orb-2 {
-            position: fixed;
-            width: 60vmax;
-            height: 60vmax;
-            border-radius: 50%;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            bottom: 0;
-            right: 0;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.6;
-        }
+.bg-orb-2 {
+    position: fixed;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    bottom: -10%;
+    right: -10%;
+    filter: blur(100px) brightness(0.8);
+    z-index: 0;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+}
 
-        /* Частицы */
-        .particle {
-            position: fixed;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-            transition: all 0.5s ease;
-        }
+      .particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    transition: all 0.5s ease;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px currentColor;
+    --duration: 10s;
+}
 
-        /* Анимации (сохранены из предыдущей версии) */
-        @keyframes cyberpunkOrb1 {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.5; }
-            25% { transform: translate(-45%, -55%) scale(1.3) rotate(90deg); opacity: 0.7; }
-            50% { transform: translate(-55%, -45%) scale(1.1) rotate(180deg); opacity: 0.6; }
-            75% { transform: translate(-40%, -60%) scale(1.4) rotate(270deg); opacity: 0.8; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0.5; }
-        }
+.particle:nth-child(3n) {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 200, 200, 0.6);
+}
 
-        @keyframes cyberpunkOrb2 {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.4; }
-            33% { transform: translate(-10%, -10%) scale(1.4) rotate(-120deg); opacity: 0.6; }
-            66% { transform: translate(5%, 5%) scale(0.9) rotate(-240deg); opacity: 0.5; }
-            100% { transform: translate(0, 0) scale(1) rotate(-360deg); opacity: 0.4; }
-        }
+.particle:nth-child(5n+2) {
+    width: 3px;
+    height: 3px;
+    background: rgba(200, 255, 200, 0.6);
+}
+@keyframes cyberpunkOrb1 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.5; filter: blur(100px) hue-rotate(0deg); }
+    25% { transform: translate(-45%, -55%) scale(1.3) rotate(90deg); opacity: 0.7; filter: blur(100px) hue-rotate(30deg); }
+    50% { transform: translate(-55%, -45%) scale(1.1) rotate(180deg); opacity: 0.6; filter: blur(100px) hue-rotate(60deg); }
+    75% { transform: translate(-40%, -60%) scale(1.4) rotate(270deg); opacity: 0.8; filter: blur(100px) hue-rotate(30deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0.5; filter: blur(100px) hue-rotate(0deg); }
+}
 
-        @keyframes picmiOrb1 {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.4; }
-            20% { transform: translate(-40%, -60%) scale(1.2) rotate(72deg); opacity: 0.6; }
-            40% { transform: translate(-60%, -40%) scale(1.1) rotate(144deg); opacity: 0.7; }
-            60% { transform: translate(-45%, -55%) scale(1.3) rotate(216deg); opacity: 0.5; }
-            80% { transform: translate(-55%, -45%) scale(1.2) rotate(288deg); opacity: 0.6; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0.4; }
-        }
+@keyframes cyberpunkOrb2 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.4; filter: blur(100px) hue-rotate(0deg); }
+    33% { transform: translate(-10%, -10%) scale(1.4) rotate(-120deg); opacity: 0.6; filter: blur(100px) hue-rotate(-30deg); }
+    66% { transform: translate(5%, 5%) scale(0.9) rotate(-240deg); opacity: 0.5; filter: blur(100px) hue-rotate(-60deg); }
+    100% { transform: translate(0, 0) scale(1) rotate(-360deg); opacity: 0.4; filter: blur(100px) hue-rotate(0deg); }
+}
 
-        @keyframes picmiOrb2 {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.3; }
-            25% { transform: translate(15%, -10%) scale(1.3) rotate(-90deg); opacity: 0.5; }
-            50% { transform: translate(-10%, 15%) scale(1.2) rotate(-180deg); opacity: 0.6; }
-            75% { transform: translate(5%, 5%) scale(1.4) rotate(-270deg); opacity: 0.4; }
-            100% { transform: translate(0, 0) scale(1) rotate(-360deg); opacity: 0.3; }
-        }
+@keyframes oceanOrb1 {
+    0% { transform: translate(-50%, -50%) scale(1) translateY(0) translateX(0); opacity: 0.4; filter: blur(100px) brightness(1); }
+    20% { transform: translate(-45%, -55%) scale(1.2) translateY(-20px) translateX(-10px); opacity: 0.6; filter: blur(100px) brightness(1.1); }
+    40% { transform: translate(-55%, -45%) scale(1.1) translateY(20px) translateX(10px); opacity: 0.5; filter: blur(100px) brightness(0.9); }
+    60% { transform: translate(-48%, -52%) scale(1.3) translateY(-10px) translateX(-15px); opacity: 0.7; filter: blur(100px) brightness(1.2); }
+    80% { transform: translate(-52%, -48%) scale(1.2) translateY(10px) translateX(15px); opacity: 0.6; filter: blur(100px) brightness(0.95); }
+    100% { transform: translate(-50%, -50%) scale(1) translateY(0) translateX(0); opacity: 0.4; filter: blur(100px) brightness(1); }
+}
 
-        @keyframes darkOrb1 {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; filter: blur(80px); }
-            33% { transform: translate(-48%, -52%) scale(1.3); opacity: 0.3; filter: blur(90px); }
-            66% { transform: translate(-52%, -48%) scale(0.9); opacity: 0.25; filter: blur(70px); }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; filter: blur(80px); }
-        }
-
-        @keyframes darkOrb2 {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.15; filter: blur(80px); }
-            33% { transform: translate(-5%, -5%) scale(1.3); opacity: 0.25; filter: blur(90px); }
-            66% { transform: translate(5%, 5%) scale(0.9); opacity: 0.2; filter: blur(70px); }
-            100% { transform: translate(0, 0) scale(1); opacity: 0.15; filter: blur(80px); }
-        }
-
-        @keyframes oceanOrb1 {
-            0% { transform: translate(-50%, -50%) scale(1) translateY(0); opacity: 0.4; }
-            20% { transform: translate(-50%, -55%) scale(1.2) translateY(-20px); opacity: 0.6; }
-            40% { transform: translate(-50%, -45%) scale(1.1) translateY(20px); opacity: 0.5; }
-            60% { transform: translate(-50%, -52%) scale(1.3) translateY(-10px); opacity: 0.7; }
-            80% { transform: translate(-50%, -48%) scale(1.2) translateY(10px); opacity: 0.6; }
-            100% { transform: translate(-50%, -50%) scale(1) translateY(0); opacity: 0.4; }
-        }
-
-        @keyframes oceanOrb2 {
-            0% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; }
-            20% { transform: translate(-8%, -12%) scale(1.3) translateY(-15px); opacity: 0.5; }
-            40% { transform: translate(6%, 4%) scale(1.2) translateY(15px); opacity: 0.4; }
-            60% { transform: translate(-12%, 2%) scale(1.4) translateY(-8px); opacity: 0.6; }
-            80% { transform: translate(4%, -6%) scale(1.2) translateY(10px); opacity: 0.5; }
-            100% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; }
-        }
-
+@keyframes oceanOrb2 {
+    0% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; filter: blur(100px) brightness(1); }
+    20% { transform: translate(-8%, -12%) scale(1.3) translateY(-15px); opacity: 0.5; filter: blur(100px) brightness(1.2); }
+    40% { transform: translate(6%, 4%) scale(1.2) translateY(15px); opacity: 0.4; filter: blur(100px) brightness(0.9); }
+    60% { transform: translate(-12%, 2%) scale(1.4) translateY(-8px); opacity: 0.6; filter: blur(100px) brightness(1.3); }
+    80% { transform: translate(4%, -6%) scale(1.2) translateY(10px); opacity: 0.5; filter: blur(100px) brightness(0.95); }
+    100% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; filter: blur(100px) brightness(1); }
+}
         /* Основной контейнер */
         .oracle {
             position: relative;
@@ -236,25 +228,50 @@
 
         /* Верхняя панель */
         .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding: 0 12px;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 45px;
+    padding: 0 15px;
+    position: relative;
+}
 
-        .date {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
+.date {
+    color: rgba(255, 255, 255, 0.98);
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 12px 25px;
+    border-radius: 60px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.date::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.date:hover::before {
+    left: 100%;
+}
+
+.date:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.5);
+}
 
         .oracle.theme-cyberpunk .date,
         .oracle.theme-cyberpunk .stat-badge,
@@ -384,42 +401,62 @@
 
         /* Карточка */
         .card-wrapper {
-            perspective: 3000px;
-            margin-bottom: 30px;
-            cursor: pointer;
-            transition: transform 0.4s ease;
-        }
+    perspective: 3000px;
+    margin-bottom: 40px;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
 
-        .card-wrapper:hover {
-            transform: scale(1.02);
-        }
+.card-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: inherit;
+    filter: blur(30px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: 60px;
+    z-index: -1;
+}
+
+.card-wrapper:hover::before {
+    opacity: 0.3;
+}
+
+.card-wrapper:hover {
+    transform: scale(1.03) translateY(-8px);
+}
 
         .card {
-            position: relative;
-            width: 100%;
-            min-height: 380px;
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-style: preserve-3d;
-            border-radius: 48px;
-        }
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+    border-radius: 60px;
+}
 
-        .card.flipped {
-            transform: rotateY(180deg) scale(1.02);
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            min-height: 380px;
-            backface-visibility: hidden;
-            border-radius: 48px;
-            padding: 48px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            transition: all 0.5s ease;
-            backdrop-filter: blur(12px);
-        }
+.card.flipped {
+    transform: rotateY(180deg) scale(1.05);
+}
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    min-height: 420px;
+    backface-visibility: hidden;
+    border-radius: 60px;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.5s ease;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.1);
+}
 
         .oracle.theme-cyberpunk .card-front,
         .oracle.theme-cyberpunk .card-back {
@@ -446,67 +483,90 @@
         }
 
         .card-front {
-            transform: rotateY(0deg);
-            color: white;
-            align-items: center;
-            text-align: center;
-        }
+    transform: rotateY(0deg);
+    color: white;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+}
 
-        .card-front .icon {
-            font-size: 7rem;
-            margin-bottom: 24px;
-            animation: float 4s ease-in-out infinite;
-            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5));
-        }
+.card-front .icon {
+    font-size: 8rem;
+    margin-bottom: 30px;
+    animation: floatAdvanced 4s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
+    text-shadow: 0 0 30px currentColor;
+}
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
-        }
-
+@keyframes floatAdvanced {
+    0%, 100% { 
+        transform: translateY(0) scale(1) rotate(0deg); 
+        filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5));
+    }
+    25% { 
+        transform: translateY(-15px) scale(1.08) rotate(-3deg); 
+        filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.7));
+    }
+    50% { 
+        transform: translateY(-25px) scale(1.15) rotate(0deg); 
+        filter: drop-shadow(0 35px 45px rgba(0, 0, 0, 0.8));
+    }
+    75% { 
+        transform: translateY(-15px) scale(1.08) rotate(3deg); 
+        filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.7));
+    }
+}
         .card-front .hint {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-top: 24px;
-            letter-spacing: 2px;
-            position: relative;
-            font-weight: 500;
+            font-size: 1.3rem;
+    opacity: 0.9;
+    margin-top: 30px;
+    letter-spacing: 3px;
+    position: relative;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px 30px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
         }
+.card-front .hint::after {
+    content: '👆';
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5rem;
+    animation: bounce 1.2s infinite;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+}
 
-        .card-front .hint::after {
-            content: '👆';
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2rem;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-8px); }
-        }
+@keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-12px); }
+}
 
         .card-back {
             transform: rotateY(180deg);
-            color: white;
-            overflow-y: auto;
+    color: white;
+    overflow-y: auto;
+    background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));
+    position: relative;
         }
+.card-back p {
+    font-size: 1.8rem;
+    line-height: 1.7;
+    font-weight: 500;
+    text-align: center;
+    word-break: break-word;
+    animation: textAppear 0.6s ease-out;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    padding: 20px 0;
+    letter-spacing: 0.5px;
+}
 
-        .card-back p {
-            font-size: 1.6rem;
-            line-height: 1.7;
-            font-weight: 400;
-            text-align: center;
-            word-break: break-word;
-            animation: textAppear 0.6s ease-out;
-        }
-
-        @keyframes textAppear {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+@keyframes textAppear {
+    0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
 
         .rarity-badge {
             position: absolute;
@@ -532,24 +592,25 @@
 
         /* Кнопка */
         .get-button {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            color: white;
-            padding: 24px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            border-radius: 70px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            letter-spacing: 3px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
-        }
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    color: white;
+    padding: 26px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 80px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing: 4px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
 
         .oracle.theme-cyberpunk .get-button {
             background: rgba(0, 255, 255, 0.15);
@@ -582,25 +643,43 @@
         }
 
         .get-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.6s ease;
-        }
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+    z-index: 1;
+}
+.get-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
 
+.get-button:hover::after {
+    transform: scaleX(1);
+}
         .get-button:hover::before {
             left: 100%;
         }
 
         .get-button:hover:not(:disabled) {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 25px 45px -10px rgba(0, 0, 0, 0.7);
-        }
-
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 30px 50px -10px rgba(0, 0, 0, 0.8);
+    letter-spacing: 6px;
+}
+.get-button:active:not(:disabled) {
+    transform: translateY(-3px) scale(1.01);
+}
         .get-button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
@@ -609,243 +688,329 @@
 
         /* НОВЫЙ ЭЛЕМЕНТ: Детектор настроения */
         .mood-detector {
-            margin-top: 25px;
-            margin-bottom: 25px;
-            padding: 20px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 60px;
-            backdrop-filter: blur(10px);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 70px;
+    backdrop-filter: blur(15px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
+}
 
-        .mood-detector:hover {
-            transform: scale(1.02);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
+.mood-detector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.mood-detector:hover {
+    transform: scale(1.02) translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 25px 45px -10px rgba(0, 0, 0, 0.7);
+}
 
-        .mood-detector:active {
-            transform: scale(0.98);
-        }
+.mood-detector:hover::before {
+    opacity: 1;
+}
+.mood-detector:active {
+    transform: scale(0.98) translateY(0);
+}
 
         .mood-header {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 0 10px;
         }
 
         .mood-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
         }
+.mood-title span {
+    font-size: 2rem;
+    animation: pulse 2.5s infinite;
+    filter: drop-shadow(0 0 10px currentColor);
+}
 
-        .mood-title span {
-            font-size: 1.5rem;
-            animation: pulse 2s infinite;
-        }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); filter: drop-shadow(0 0 20px currentColor); }
+}
+.mood-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    animation: spin 12s infinite linear;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
+.mood-indicator:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
 
-        .mood-indicator {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            animation: spin 10s infinite linear;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
         .mood-result {
-            font-size: 1.3rem;
-            font-weight: 500;
-            text-align: center;
-            padding: 10px 0;
-            transition: all 0.3s ease;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            font-size: 1.6rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 20px 15px;
+    transition: all 0.3s ease;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50px;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 1px;
         }
 
-        .mood-emoji {
-            font-size: 2rem;
-            animation: bounce 1s infinite;
-        }
+       .mood-emoji {
+    font-size: 3rem;
+    animation: bounce 1.2s infinite;
+    filter: drop-shadow(0 0 15px currentColor);
+}
 
-        .mood-tag {
-            padding: 5px 15px;
-            border-radius: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-        }
-
-        .mood-footer {
-            display: flex;
-            justify-content: flex-end;
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
+.mood-tag {
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+.mood-footer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    padding: 5px 15px;
+    font-style: italic;
+}
 
         /* Стили для детектора под каждую тему */
         .oracle.theme-cyberpunk .mood-title {
-            color: #a0ffff;
-            text-shadow: 0 0 10px #00ffff;
-        }
+    color: #a0ffff;
+    text-shadow: 0 0 15px #00ffff;
+}
 
-        .oracle.theme-picmi .mood-title {
-            color: #fff0f0;
-            text-shadow: 0 0 10px #ffb6c1;
-        }
+.oracle.theme-cyberpunk .mood-result {
+    border-color: rgba(0, 255, 255, 0.3);
+    box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.1);
+}
 
-        .oracle.theme-dark .mood-title {
-            color: #e0e0f0;
-            text-shadow: 0 0 10px #8080a0;
-        }
+.oracle.theme-picmi .mood-title {
+    color: #fff0f0;
+    text-shadow: 0 0 15px #ffb6c1;
+}
 
-        .oracle.theme-ocean .mood-title {
-            color: #d0f0ff;
-            text-shadow: 0 0 10px #87ceeb;
-        }
+.oracle.theme-picmi .mood-result {
+    border-color: rgba(255, 200, 210, 0.3);
+    box-shadow: inset 0 0 30px rgba(255, 200, 210, 0.1);
+}
+
+.oracle.theme-dark .mood-title {
+    color: #e0e0f0;
+    text-shadow: 0 0 15px #8080a0;
+}
+
+.oracle.theme-dark .mood-result {
+    border-color: rgba(180, 180, 200, 0.2);
+    box-shadow: inset 0 0 30px rgba(180, 180, 200, 0.05);
+}
+
+.oracle.theme-ocean .mood-title {
+    color: #d0f0ff;
+    text-shadow: 0 0 15px #87ceeb;
+}
+
+.oracle.theme-ocean .mood-result {
+    border-color: rgba(135, 206, 235, 0.3);
+    box-shadow: inset 0 0 30px rgba(135, 206, 235, 0.1);
+}
 
         /* Переключатель тем */
         .theme-switcher {
-            display: flex;
-            justify-content: center;
-            gap: 35px;
-            margin-top: 30px;
-            position: relative;
-            padding: 25px 0;
-        }
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+    position: relative;
+    padding: 30px 0;
+}
 
-        .theme-switcher::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4), transparent);
-            z-index: 0;
-        }
+.theme-switcher::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        rgba(255, 255, 255, 0.4), 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    z-index: 0;
+}
+.theme-option {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+}
 
-        .theme-option {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+.theme-option:hover {
+    transform: translateY(-12px) scale(1.05);
+}
+.theme-dot {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
 
-        .theme-option:hover {
-            transform: translateY(-10px);
-        }
+.theme-dot::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+}
 
-        .theme-dot {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            transition: all 0.4s ease;
-            position: relative;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-        }
+.theme-dot::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: inherit;
+    filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+.theme-option:hover .theme-dot::after {
+    opacity: 0.7;
+}
 
-        .theme-dot::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            transition: all 0.4s ease;
-        }
+.theme-option.active .theme-dot {
+    transform: scale(1.25);
+    border-color: white;
+    box-shadow: 0 0 40px currentColor;
+    animation: pulseGlow 2s infinite;
+}
 
-        .theme-dot::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+.theme-option.active .theme-dot::before {
+    border-color: rgba(255, 255, 255, 0.8);
+    animation: ringPulse 2s infinite;
+}
 
-        .theme-option.active .theme-dot {
-            transform: scale(1.3);
-            border-color: white;
-            box-shadow: 0 0 50px currentColor;
-        }
+@keyframes ringPulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        border-color: rgba(255, 255, 255, 0.8);
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.5;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+        border-color: rgba(255, 255, 255, 0);
+    }
+}
 
-        .theme-option.active .theme-dot::after {
-            border-color: rgba(255, 255, 255, 0.6);
-            animation: ringPulse 2s infinite;
-        }
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 40px currentColor;
+    }
+    50% {
+        box-shadow: 0 0 70px currentColor;
+    }
+}
+       
+.theme-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: all 0.4s ease;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 15px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .theme-option.active .theme-dot::before {
-            opacity: 1;
-            animation: ringPulse 2s infinite 0.5s;
-        }
+.theme-option:hover .theme-label {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 4px;
+}
 
-        @keyframes ringPulse {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.6); opacity: 0; }
-        }
-
-        .theme-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(-5px);
-            font-weight: 600;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .theme-option:hover .theme-label {
-            opacity: 1;
-            transform: translateY(0);
-            color: white;
-        }
-
-        .theme-option.active .theme-label {
-            opacity: 1;
-            color: white;
-            transform: translateY(0);
-            text-shadow: 0 0 15px currentColor;
-        }
+.theme-option.active .theme-label {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    text-shadow: 0 0 15px currentColor;
+}
 
         .theme-option[data-theme="cyberpunk"] .theme-dot { 
             background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
@@ -883,28 +1048,31 @@
 
         /* Уведомление */
         .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(150px);
-            background: rgba(20, 20, 35, 0.95);
-            backdrop-filter: blur(20px);
-            color: white;
-            padding: 18px 36px;
-            border-radius: 70px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            font-size: 1.1rem;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 1000;
-            white-space: nowrap;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%) translateY(200px);
+    background: rgba(25, 25, 40, 0.95);
+    backdrop-filter: blur(25px);
+    color: white;
+    padding: 20px 45px;
+    border-radius: 80px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.1);
+    font-size: 1.2rem;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
 
         /* Адаптивность */
         @media (max-width: 500px) {
@@ -1401,42 +1569,90 @@
 
         // Получение сообщения дня
         function getDailyMessage() {
-            if (!canShowToday()) {
-                showToast('❌ Сегодня уже получал(а). До завтра!');
-                return;
-            }
+    if (!canShowToday()) {
+        showToast('❌ Сегодня уже получал(а). До завтра!');
+        
+        // Анимация ошибки на кнопке
+        getMessageBtn.style.transform = 'scale(0.95)';
+        getMessageBtn.style.borderColor = '#ff6b6b';
+        setTimeout(() => {
+            getMessageBtn.style.transform = '';
+            getMessageBtn.style.borderColor = '';
+        }, 300);
+        return;
+    }
 
-            getMessageBtn.style.transform = 'scale(0.98)';
-            setTimeout(() => getMessageBtn.style.transform = '', 150);
+    // Эффект нажатия
+    getMessageBtn.style.transform = 'scale(0.95)';
+    getMessageBtn.style.letterSpacing = '8px';
+    setTimeout(() => {
+        getMessageBtn.style.transform = '';
+        getMessageBtn.style.letterSpacing = '';
+    }, 200);
 
-            const message = getUniqueMessage();
-            currentMessage = message;
-            messageText.textContent = message;
-            
-            const emojis = ['✨', '💎', '⭐', '🔥', '💫', '⚡'];
-            rarityEmoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            
-            card.classList.remove('flipped');
-            
-            lastMessageDate = new Date().toDateString();
-            
-            if (!viewedMessages.includes(message)) {
-                viewedMessages.push(message);
-            }
-            
-            localStorage.setItem('viewedMessages', JSON.stringify(viewedMessages));
-            localStorage.setItem('lastMessageDate', lastMessageDate);
-            
+    // Эффект вспышки на карточке
+    const cardWrapper = document.querySelector('.card-wrapper');
+    cardWrapper.style.filter = 'brightness(1.2)';
+    cardWrapper.style.transform = 'scale(1.05)';
+    setTimeout(() => {
+        cardWrapper.style.filter = '';
+        cardWrapper.style.transform = '';
+    }, 300);
+
+    const message = getUniqueMessage();
+    currentMessage = message;
+    
+    // Анимированное появление текста
+    messageText.style.opacity = '0';
+    messageText.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        messageText.textContent = message;
+        messageText.style.opacity = '1';
+        messageText.style.transform = 'translateY(0)';
+    }, 200);
+    
+    const emojis = ['✨', '💎', '⭐', '🔥', '💫', '⚡', '🌟', '💪', '🎯', '🔮'];
+    const newEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    
+    // Анимация смены эмодзи
+    rarityEmoji.style.transform = 'scale(1.5) rotate(180deg)';
+    setTimeout(() => {
+        rarityEmoji.textContent = newEmoji;
+        rarityEmoji.style.transform = '';
+    }, 200);
+    
+    card.classList.remove('flipped');
+    
+    lastMessageDate = new Date().toDateString();
+    
+    if (!viewedMessages.includes(message)) {
+        viewedMessages.push(message);
+        
+        // Эффект при получении нового сообщения
+        showToast('✨ НОВОЕ ПРОРОЧЕСТВО! ✨');
+        
+        // Анимация прогресс-бара
+        const oldPercent = parseInt(progressFill.style.width) || 0;
+        progressFill.style.width = '0%';
+        setTimeout(() => {
             updateStats();
-            showToast('✨ Пророчество получено');
-            
-            getMessageBtn.disabled = true;
-            
-            // Сбрасываем детектор настроения при получении нового сообщения
-            moodResult.innerHTML = 'Нажми, чтобы узнать своё настроение!';
-            moodIndicator.textContent = '🎯';
-            moodTime.textContent = 'основано на текущем сообщении';
-        }
+        }, 100);
+    } else {
+        showToast('✨ Пророчество получено');
+        updateStats();
+    }
+    
+    localStorage.setItem('viewedMessages', JSON.stringify(viewedMessages));
+    localStorage.setItem('lastMessageDate', lastMessageDate);
+    
+    getMessageBtn.disabled = true;
+    
+    // Сбрасываем детектор настроения при получении нового сообщения
+    moodResult.innerHTML = 'Нажми, чтобы узнать своё настроение!';
+    moodIndicator.textContent = '🎯';
+    moodTime.textContent = 'основано на текущем сообщении';
+}
 
         // Переворот карточки
         window.flipCard = function() {
@@ -1445,127 +1661,278 @@
 
         // НОВАЯ ФУНКЦИЯ: Анализ настроения
         window.analyzeMood = function() {
-            if (!currentMessage) {
-                moodResult.innerHTML = '❌ Сначала получи пророчество!';
-                moodIndicator.textContent = '😴';
-                moodTime.textContent = 'нет сообщения для анализа';
-                
-                // Анимация ошибки
-                const detector = document.getElementById('moodDetector');
-                detector.style.transform = 'scale(0.95)';
-                setTimeout(() => detector.style.transform = '', 200);
-                return;
+    const detector = document.getElementById('moodDetector');
+    
+    if (!currentMessage) {
+        moodResult.innerHTML = `
+            <span class="mood-emoji">😴</span>
+            <span>СНАЧАЛА ПОЛУЧИ ПРОРОЧЕСТВО!</span>
+        `;
+        moodIndicator.textContent = '💤';
+        moodTime.textContent = 'нет сообщения для анализа';
+        
+        // Анимация ошибки
+        detector.style.transform = 'scale(0.95)';
+        detector.style.borderColor = '#ff6b6b';
+        setTimeout(() => {
+            detector.style.transform = '';
+            detector.style.borderColor = '';
+        }, 300);
+        return;
+    }
+
+    // Анимация нажатия
+    detector.style.transform = 'scale(0.97)';
+    detector.style.transition = 'all 0.15s ease';
+    setTimeout(() => {
+        detector.style.transform = '';
+    }, 150);
+
+    // Меняем индикатор с анимацией
+    moodIndicator.style.animation = 'spin 0.5s linear';
+    moodIndicator.textContent = '⚡';
+    
+    // Эффект вспышки
+    detector.style.boxShadow = '0 0 50px rgba(255, 255, 255, 0.5)';
+    setTimeout(() => {
+        detector.style.boxShadow = '';
+    }, 300);
+
+    // Анализируем текст сообщения
+    const text = currentMessage.toLowerCase();
+    
+    // Расширенный анализ настроения
+    let mood = '';
+    let emoji = '';
+    let tag = '';
+    let color = '';
+
+    // Считаем различные категории слов для более точного определения
+    let scores = {
+        aggressive: 0,
+        meme: 0,
+        tired: 0,
+        goal: 0,
+        energy: 0,
+        life: 0,
+        fear: 0,
+        hero: 0
+    };
+
+    // Матрица ключевых слов
+    const keywords = {
+        aggressive: ['еб', 'хуй', 'пизд', 'бля', 'нах', 'жоп', 'говн', 'мудак', 'дебил', 'придурок', 'ублюд'],
+        meme: ['кот', 'мем', 'смеш', 'шутк', 'прикол', 'кек', 'лол', 'рофл'],
+        tired: ['устал', 'лень', 'спать', 'отдых', 'утом', 'сон', 'устал'],
+        goal: ['мечт', 'цель', 'успех', 'побед', 'достиг', 'стрем', 'хочу'],
+        energy: ['сил', 'энерг', 'огонь', 'мощ', 'заряд', 'бодр', 'актив'],
+        life: ['жизн', 'счаст', 'любов', 'гармон', 'душ', 'сердц', 'радост'],
+        fear: ['страх', 'боишь', 'боюс', 'трус', 'опаса', 'пуга'],
+        hero: ['герой', 'побед', 'легенд', 'воин', 'силач', 'чемпион']
+    };
+
+    // Подсчет баллов
+    for (let category in keywords) {
+        keywords[category].forEach(word => {
+            if (text.includes(word)) {
+                scores[category] += 2;
             }
+        });
+    }
 
-            // Анимация нажатия
-            const detector = document.getElementById('moodDetector');
-            detector.style.transform = 'scale(0.98)';
-            setTimeout(() => detector.style.transform = '', 150);
+    // Добавляем баллы за длину и эмоциональность
+    if (text.includes('!')) scores.aggressive += text.split('!').length - 1;
+    if (text.includes('?')) scores.life += 1;
+    if (text.length > 100) scores.goal += 2;
 
-            // Меняем индикатор
-            moodIndicator.textContent = '⚡';
-            setTimeout(() => {
-                moodIndicator.textContent = '🔮';
-            }, 200);
+    // Определяем доминирующую категорию
+    let maxScore = 0;
+    let dominantCategory = 'random';
+    
+    for (let category in scores) {
+        if (scores[category] > maxScore) {
+            maxScore = scores[category];
+            dominantCategory = category;
+        }
+    }
 
-            // Анализируем текст сообщения
-            const text = currentMessage.toLowerCase();
-            
-            // Определяем настроение на основе ключевых слов
-            let mood = '';
-            let emoji = '';
-            let tag = '';
-
-            if (text.includes('еб') || text.includes('хуй') || text.includes('пизд') || text.includes('бля')) {
+    // Если нет явного преобладания, используем случайную категорию с весами
+    if (maxScore < 3) {
+        const randomMoods = [
+            { mood: 'ЗАГАДОЧНЫЙ', emoji: '🔮✨', tag: '#мистика', color: '#9b59b6' },
+            { mood: 'КОСМИЧЕСКИЙ', emoji: '🚀🌌', tag: '#галактика', color: '#3498db' },
+            { mood: 'ПРОСВЕТЛЁННЫЙ', emoji: '🧘‍♂️🌟', tag: '#просветление', color: '#f1c40f' },
+            { mood: 'БУНТАРСКИЙ', emoji: '🤘⚡', tag: '#рок_н_ролл', color: '#e74c3c' },
+            { mood: 'ФИЛОСОФСКИЙ', emoji: '🤔📚', tag: '#мысли_вслух', color: '#2ecc71' }
+        ];
+        const random = randomMoods[Math.floor(Math.random() * randomMoods.length)];
+        mood = random.mood;
+        emoji = random.emoji;
+        tag = random.tag;
+        color = random.color;
+    } else {
+        // Определяем настроение по доминирующей категории
+        switch(dominantCategory) {
+            case 'aggressive':
                 mood = 'АГРЕССИВНО-МОТИВИРОВАННЫЙ';
                 emoji = '🤬🔥';
                 tag = '#порву_всех';
-            } else if (text.includes('кот') || text.includes('мем') || text.includes('смеш')) {
+                color = '#e74c3c';
+                break;
+            case 'meme':
                 mood = 'МЕМНО-ПОЗИТИВНЫЙ';
                 emoji = '😸🎭';
-                tag = '#кек';
-            } else if (text.includes('устал') || text.includes('лень') || text.includes('спать')) {
+                tag = '#кек_лол';
+                color = '#f39c12';
+                break;
+            case 'tired':
                 mood = 'ФИЛОСОФСКИ-УСТАЛЫЙ';
                 emoji = '😴🧠';
                 tag = '#подумаю_завтра';
-            } else if (text.includes('мечт') || text.includes('цель') || text.includes('успех')) {
+                color = '#95a5a6';
+                break;
+            case 'goal':
                 mood = 'ЦЕЛЕУСТРЕМЛЁННЫЙ';
                 emoji = '🎯🚀';
                 tag = '#всё_получится';
-            } else if (text.includes('сил') || text.includes('энерг') || text.includes('огонь')) {
+                color = '#27ae60';
+                break;
+            case 'energy':
                 mood = 'ЭНЕРГИЧНЫЙ';
                 emoji = '⚡💪';
                 tag = '#полный_заряд';
-            } else if (text.includes('жизн') || text.includes('счаст') || text.includes('любов')) {
+                color = '#f1c40f';
+                break;
+            case 'life':
                 mood = 'ГАРМОНИЧНЫЙ';
                 emoji = '☮️🕊️';
-                tag = '#дзен';
-            } else if (text.includes('страх') || text.includes('боишь')) {
+                tag = '#дзен_момент';
+                color = '#2ecc71';
+                break;
+            case 'fear':
                 mood = 'ПРЕОДОЛЕВАЮЩИЙ';
                 emoji = '🦁✨';
                 tag = '#не_боюсь';
-            } else if (text.includes('герой') || text.includes('побед')) {
+                color = '#e67e22';
+                break;
+            case 'hero':
                 mood = 'ГЕРОИЧЕСКИЙ';
                 emoji = '🦸🏆';
                 tag = '#я_легенда';
-            } else {
-                // Рандомное настроение, если ничего не подошло
-                const randomMoods = [
-                    { mood: 'ЗАГАДОЧНЫЙ', emoji: '🔮✨', tag: '#мистика' },
-                    { mood: 'КОСМИЧЕСКИЙ', emoji: '🚀🌌', tag: '#галактика' },
-                    { mood: 'ПРОСВЕТЛЁННЫЙ', emoji: '🧘‍♂️🌟', tag: '#просветление' },
-                    { mood: 'БУНТАРСКИЙ', emoji: '🤘⚡', tag: '#рок_н_ролл' },
-                    { mood: 'ФИЛОСОФСКИЙ', emoji: '🤔📚', tag: '#мысли_вслух' }
-                ];
-                const random = randomMoods[Math.floor(Math.random() * randomMoods.length)];
-                mood = random.mood;
-                emoji = random.emoji;
-                tag = random.tag;
-            }
+                color = '#9b59b6';
+                break;
+            default:
+                mood = 'КОСМИЧЕСКИЙ';
+                emoji = '✨🌌';
+                tag = '#бесконечность';
+                color = '#3498db';
+        }
+    }
 
-            // Добавляем немного случайности для разнообразия
-            const intensifiers = ['', '🔥', '💯', '⚡', '✨'];
-            const randomIntensifier = intensifiers[Math.floor(Math.random() * intensifiers.length)];
+    // Добавляем немного рандома для разнообразия
+    const intensifiers = ['', '🔥', '💯', '⚡', '✨', '🌟', '💫', '⭐'];
+    const randomIntensifier = intensifiers[Math.floor(Math.random() * intensifiers.length)];
 
-            // Обновляем результат с анимацией
-            moodResult.innerHTML = `
-                <span class="mood-emoji">${emoji}</span>
-                <span>${mood} ${randomIntensifier}</span>
-            `;
-            
-            // Обновляем тег
-            moodTime.textContent = tag;
+    // Анимированное обновление результата
+    moodResult.style.opacity = '0';
+    moodResult.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+        moodResult.innerHTML = `
+            <span class="mood-emoji">${emoji}</span>
+            <span>${mood} ${randomIntensifier}</span>
+        `;
+        moodResult.style.opacity = '1';
+        moodResult.style.transform = 'scale(1)';
+    }, 150);
+    
+    // Обновляем индикатор
+    setTimeout(() => {
+        moodIndicator.textContent = emoji.split('')[0] || '🔮';
+        moodIndicator.style.animation = 'spin 10s infinite linear';
+    }, 250);
+    
+    // Обновляем тег
+    moodTime.textContent = tag;
 
-            // Показываем уведомление
-            showToast(`🔮 Твоё настроение: ${mood}`);
-
-            // Добавляем случайный цветной эффект
-            const hue = Math.random() * 360;
-            moodIndicator.style.animation = 'spin 0.5s linear';
-            setTimeout(() => {
-                moodIndicator.style.animation = 'spin 10s infinite linear';
-            }, 500);
-        };
+    // Показываем уведомление с цветом настроения
+    showToast(`🔮 Твоё настроение: ${mood}`);
+    
+    // Визуальный эффект на детекторе
+    detector.style.borderColor = color;
+    detector.style.transition = 'all 0.3s ease';
+    setTimeout(() => {
+        detector.style.borderColor = '';
+    }, 1000);
+};
 
         // Смена темы с сохранением
         window.setTheme = function(theme) {
-            document.querySelectorAll('.theme-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            
-            const activeOption = document.querySelector(`.theme-option[data-theme="${theme}"]`);
-            if (activeOption) {
-                activeOption.classList.add('active');
-            }
-            
-            oracle.classList.remove('theme-cyberpunk', 'theme-picmi', 'theme-dark', 'theme-ocean');
-            oracle.classList.add(`theme-${theme}`);
-            
-            body.classList.remove('theme-cyberpunk-bg', 'theme-picmi-bg', 'theme-dark-bg', 'theme-ocean-bg');
-            body.classList.add(`theme-${theme}-bg`);
-            
-            localStorage.setItem('selectedTheme', theme);
-        };
+    // Анимация переключения
+    const oldTheme = document.querySelector('.theme-option.active')?.getAttribute('data-theme');
+    
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    
+    const activeOption = document.querySelector(`.theme-option[data-theme="${theme}"]`);
+    if (activeOption) {
+        activeOption.classList.add('active');
+        
+        // Добавляем эффект пульсации при клике
+        activeOption.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            activeOption.style.transform = '';
+        }, 200);
+    }
+    
+    // Плавное переключение классов с задержкой для анимации фона
+    oracle.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    body.style.transition = 'background 0.8s ease';
+    
+    oracle.classList.remove('theme-cyberpunk', 'theme-picmi', 'theme-dark', 'theme-ocean');
+    oracle.classList.add(`theme-${theme}`);
+    
+    body.classList.remove('theme-cyberpunk-bg', 'theme-picmi-bg', 'theme-dark-bg', 'theme-ocean-bg');
+    body.classList.add(`theme-${theme}-bg`);
+    
+    // Анимируем сферы при смене темы
+    if (bgOrb1 && bgOrb2) {
+        bgOrb1.style.animation = 'none';
+        bgOrb2.style.animation = 'none';
+        
+        // Принудительный рефлоу
+        void bgOrb1.offsetHeight;
+        
+        // Возвращаем анимацию в зависимости от темы
+        switch(theme) {
+            case 'cyberpunk':
+                bgOrb1.style.animation = 'cyberpunkOrb1 15s infinite linear';
+                bgOrb2.style.animation = 'cyberpunkOrb2 18s infinite linear';
+                break;
+            case 'picmi':
+                bgOrb1.style.animation = 'picmiOrb1 16s infinite ease-in-out';
+                bgOrb2.style.animation = 'picmiOrb2 20s infinite ease-in-out';
+                break;
+            case 'dark':
+                bgOrb1.style.animation = 'darkOrb1 20s infinite alternate';
+                bgOrb2.style.animation = 'darkOrb2 22s infinite alternate';
+                break;
+            case 'ocean':
+                bgOrb1.style.animation = 'oceanOrb1 18s infinite ease-in-out';
+                bgOrb2.style.animation = 'oceanOrb2 21s infinite ease-in-out';
+                break;
+        }
+    }
+    
+    // Обновляем цвета частиц
+    updateParticleColors(theme);
+    
+    localStorage.setItem('selectedTheme', theme);
+    
+    // Показываем уведомление о смене темы
+    showToast(`✨ Тема изменена на ${getThemeName(theme)}`);
+}
 
         // Загрузка сохранённой темы
         function loadSavedTheme() {
@@ -1576,20 +1943,92 @@
                 setTheme('cyberpunk');
             }
         }
-
+function getThemeName(theme) {
+    const names = {
+        'cyberpunk': 'КИБЕРПАНК',
+        'picmi': 'ПИКМИ',
+        'dark': 'ТЁМНЫЙ',
+        'ocean': 'ОКЕАН'
+    };
+    return names[theme] || theme;
+}
+function updateParticleColors(theme) {
+    const particles = document.querySelectorAll('.particle');
+    const colors = {
+        'cyberpunk': ['#00ffff', '#ff00ff', '#ffff00'],
+        'picmi': ['#ffb6c1', '#ffdab9', '#ffe4e1'],
+        'dark': ['#6a6a80', '#4a4a60', '#8a8aa0'],
+        'ocean': ['#87ceeb', '#add8e6', '#b0e0e6']
+    };
+    
+    const themeColors = colors[theme] || colors['cyberpunk'];
+    
+    particles.forEach((particle, index) => {
+        particle.style.background = themeColors[index % themeColors.length];
+        particle.style.boxShadow = `0 0 15px ${themeColors[index % themeColors.length]}`;
+    });
+}
         // Создание частиц
         function createParticles() {
-            const particlesCount = 40;
-            for (let i = 0; i < particlesCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                particle.style.animationDuration = (5 + Math.random() * 10) + 's';
-                document.body.appendChild(particle);
+    const particlesCount = 60; // Увеличили количество
+    const container = document.body;
+    
+    // Удаляем старые частицы если есть
+    const oldParticles = document.querySelectorAll('.particle');
+    oldParticles.forEach(p => p.remove());
+    
+    for (let i = 0; i < particlesCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Случайное начальное положение
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        
+        // Разные размеры
+        const size = 2 + Math.random() * 5;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        // Разная прозрачность
+        particle.style.opacity = 0.2 + Math.random() * 0.6;
+        
+        // Разная скорость анимации
+        const duration = 5 + Math.random() * 15;
+        particle.style.setProperty('--duration', duration + 's');
+        
+        // Задержка анимации
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        
+        // Разное направление движения
+        const xMove = (Math.random() - 0.5) * 200;
+        const yMove = (Math.random() - 0.5) * 200;
+        
+        // Создаем уникальную анимацию для каждой частицы
+        const animName = `floatParticle_${i}`;
+        const keyframes = `
+            @keyframes ${animName} {
+                0% { transform: translate(0, 0) scale(1); }
+                25% { transform: translate(${xMove * 0.25}px, ${yMove * 0.25}px) scale(${1 + Math.random() * 0.3}); }
+                50% { transform: translate(${xMove * 0.5}px, ${yMove * 0.5}px) scale(${1 - Math.random() * 0.2}); }
+                75% { transform: translate(${xMove * 0.75}px, ${yMove * 0.75}px) scale(${1 + Math.random() * 0.4}); }
+                100% { transform: translate(${xMove}px, ${yMove}px) scale(1); }
             }
-        }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = keyframes;
+        document.head.appendChild(styleSheet);
+        
+        particle.style.animation = `${animName} ${duration}s infinite alternate ease-in-out`;
+        
+        container.appendChild(particle);
+    }
+    
+    // Обновляем цвета частиц после создания
+    const savedTheme = localStorage.getItem('selectedTheme') || 'cyberpunk';
+    updateParticleColors(savedTheme);
+}
 
         // Добавляем стиль для частиц
         const style = document.createElement('style');
