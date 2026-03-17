@@ -428,6 +428,15 @@
             border-radius: 30px;
             border-left: 6px solid #f6b83e;
         }
+        .cleanup-info {
+            background: #142433;
+            color: #a0c0ff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -480,7 +489,7 @@
                 </div>
             </div>
 
-            <div class="complaint-area" id="complaintArea">
+            <div class="complaint-area" style="display:none" id="complaintArea">
                 <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
                 <div class="vote-status" id="voteStatus" style="display: none;">
                     <span class="vote-yes-count" id="voteYesCount">0</span>
@@ -498,6 +507,9 @@
     <div class="footer-rules">
         <span>📚 Существительные, мин 2 буквы</span>
         <span class="letter-hint" id="requiredLetterHint">нужная буква: ?</span>
+    </div>
+    <div class="cleanup-info" id="cleanupInfo">
+        ⏱️ Пустые комнаты удаляются через 1 час
     </div>
 </div>
 
@@ -523,6 +535,9 @@
         database = firebase.database();
         storage = firebase.storage();
         console.log("Firebase initialized");
+        
+        // Запускаем автоматическую чистку старых комнат
+        startCleanupService();
     } catch (e) {
         console.error("Firebase init error:", e);
     }
@@ -565,6 +580,85 @@
     const playerNameInput = document.getElementById('playerName');
     const avatarPreview = document.getElementById('avatarPreview');
     const avatarFile = document.getElementById('avatarFile');
+    const cleanupInfo = document.getElementById('cleanupInfo');
+
+    // ==================== АВТОМАТИЧЕСКАЯ ЧИСТКА КОМНАТ ====================
+    function startCleanupService() {
+        // Чистим старые комнаты каждые 15 минут
+        setInterval(cleanupOldRooms, 15 * 60 * 1000);
+        
+        // Также чистим при загрузке
+        setTimeout(cleanupOldRooms, 5000);
+        
+        // Обновляем информацию о времени
+        updateCleanupInfo();
+    }
+
+    function cleanupOldRooms() {
+        const roomsRef = database.ref('rooms');
+        const oneHourAgo = Date.now() - (60 * 60 * 1000); // 1 час
+        
+        roomsRef.once('value', (snapshot) => {
+            const rooms = snapshot.val();
+            if (!rooms) return;
+            
+            let cleanedCount = 0;
+            
+            Object.entries(rooms).forEach(([roomId, roomData]) => {
+                // Проверяем, есть ли игроки
+                const players = roomData.players;
+                const playerCount = players ? Object.keys(players).length : 0;
+                
+                // Удаляем если:
+                // 1. Нет игроков И комната старая (>1 часа)
+                // 2. Или создана давно и пустая
+                if (playerCount === 0) {
+                    if (roomData.createdAt && roomData.createdAt < oneHourAgo) {
+                        roomsRef.child(roomId).remove();
+                        cleanedCount++;
+                    }
+                }
+            });
+            
+            if (cleanedCount > 0) {
+                console.log(`🧹 Удалено ${cleanedCount} старых комнат`);
+                cleanupInfo.textContent = `🧹 Удалено ${cleanedCount} пустых комнат`;
+                setTimeout(() => updateCleanupInfo(), 3000);
+            }
+        });
+    }
+
+    function updateCleanupInfo() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        cleanupInfo.textContent = `⏱️ Пустые комнаты удаляются через 1 час | Последняя проверка: ${timeString}`;
+    }
+
+    // ==================== ПРОВЕРКА ПОДКЛЮЧЕНИЯ ====================
+    function checkPlayerInRoom(room, playerName) {
+        return new Promise((resolve) => {
+            const roomRef = database.ref(`rooms/${room}/players`);
+            
+            roomRef.once('value', (snapshot) => {
+                const players = snapshot.val();
+                if (!players) {
+                    resolve(false);
+                    return;
+                }
+                
+                // Проверяем, есть ли игрок с таким именем
+                const existingPlayer = Object.values(players).find(
+                    p => p.name.toLowerCase() === playerName.toLowerCase()
+                );
+                
+                if (existingPlayer) {
+                    resolve(existingPlayer.id);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
+    }
 
     // Выбор аватара
     window.selectAvatar = function(emoji) {
@@ -598,15 +692,23 @@
     }
 
     // ==================== FIREBASE ====================
-    function createRoom() {
+    async function createRoom() {
         const room = roomInput.value.trim();
         if (!room) {
             messageBox.textContent = 'Введите код комнаты';
             return;
         }
 
-        myId = generatePlayerId();
         myName = playerNameInput.value.trim() || 'Игрок';
+        
+        // Проверяем, не занято ли имя
+        const existingPlayerId = await checkPlayerInRoom(room, myName);
+        if (existingPlayerId) {
+            messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
+            return;
+        }
+
+        myId = generatePlayerId();
         roomId = room;
 
         const roomRef = database.ref(`rooms/${room}`);
@@ -624,14 +726,17 @@
                         name: myName,
                         avatar: myAvatar,
                         avatarUrl: myAvatarUrl,
-                        score: 0
+                        score: 0,
+                        connected: true,
+                        lastSeen: Date.now()
                     }
                 },
                 currentPlayerId: myId,
                 lastWord: '',
                 usedWords: [],
                 complaint: null,
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                lastActivity: Date.now()
             };
 
             roomRef.set(gameState, (error) => {
@@ -641,20 +746,29 @@
                     connectionStatus.textContent = `✅ Создано: ${room}`;
                     messageBox.textContent = 'Комната создана!';
                     setupListeners(room);
+                    startHeartbeat(room);
                 }
             });
         });
     }
 
-    function joinRoom() {
+    async function joinRoom() {
         const room = roomInput.value.trim();
         if (!room) {
             messageBox.textContent = 'Введите код комнаты';
             return;
         }
 
-        myId = generatePlayerId();
         myName = playerNameInput.value.trim() || 'Игрок';
+        
+        // Проверяем, не занято ли имя
+        const existingPlayerId = await checkPlayerInRoom(room, myName);
+        if (existingPlayerId) {
+            messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
+            return;
+        }
+
+        myId = generatePlayerId();
         roomId = room;
 
         const roomRef = database.ref(`rooms/${room}`);
@@ -671,8 +785,11 @@
                 name: myName,
                 avatar: myAvatar,
                 avatarUrl: myAvatarUrl,
-                score: 0
+                score: 0,
+                connected: true,
+                lastSeen: Date.now()
             };
+            updates.lastActivity = Date.now();
 
             roomRef.update(updates, (error) => {
                 if (error) {
@@ -681,8 +798,39 @@
                     connectionStatus.textContent = `✅ Подключён к ${room}`;
                     messageBox.textContent = 'Вы присоединились!';
                     setupListeners(room);
+                    startHeartbeat(room);
                 }
             });
+        });
+    }
+
+    // Сердцебиение - обновляем статус подключения
+    function startHeartbeat(room) {
+        const playerRef = database.ref(`rooms/${room}/players/${myId}`);
+        
+        // Обновляем статус каждые 10 секунд
+        const interval = setInterval(() => {
+            if (roomId && myId) {
+                playerRef.update({
+                    connected: true,
+                    lastSeen: Date.now()
+                });
+            } else {
+                clearInterval(interval);
+            }
+        }, 10000);
+
+        // При закрытии страницы
+        window.addEventListener('beforeunload', () => {
+            if (roomId && myId) {
+                playerRef.update({
+                    connected: false,
+                    lastSeen: Date.now()
+                });
+                setTimeout(() => {
+                    playerRef.remove();
+                }, 1000);
+            }
         });
     }
 
@@ -691,9 +839,21 @@
 
         roomRef.child('players').on('value', (snapshot) => {
             const playersData = snapshot.val() || {};
-            players = Object.values(playersData);
+            
+            // Фильтруем отключившихся игроков (отключены > 30 секунд)
+            const now = Date.now();
+            const activePlayers = Object.values(playersData).filter(p => {
+                return p.connected || (now - (p.lastSeen || 0)) < 30000;
+            });
+            
+            players = activePlayers;
             renderAll();
             updateControls();
+            
+            // Если игроков нет, помечаем комнату для удаления
+            if (activePlayers.length === 0) {
+                roomRef.update({ isEmpty: true, lastActivity: Date.now() });
+            }
         });
 
         roomRef.on('value', (snapshot) => {
@@ -720,12 +880,6 @@
 
             renderAll();
             updateControls();
-        });
-
-        window.addEventListener('beforeunload', () => {
-            if (room && myId) {
-                database.ref(`rooms/${room}/players/${myId}`).remove();
-            }
         });
     }
 
@@ -772,6 +926,7 @@
         updates.currentPlayerId = nextPlayerId;
         updates.lastWord = word;
         updates.usedWords = [...usedWords, word];
+        updates.lastActivity = Date.now();
 
         roomRef.update(updates);
         
@@ -811,7 +966,6 @@
 
         const roomRef = database.ref(`rooms/${roomId}`);
         
-        // Проверяем, не голосовал ли уже
         if (complaintVotes.yes.has(myId) || complaintVotes.no.has(myId)) {
             messageBox.textContent = 'Вы уже проголосовали';
             return;
@@ -835,21 +989,16 @@
         const noVotes = complaintVotes.no.size;
         const totalVotes = yesVotes + noVotes;
         
-        // Все игроки (кроме автора) проголосовали
         if (totalVotes >= totalPlayers - 1) {
             const roomRef = database.ref(`rooms/${roomId}`);
             
             if (yesVotes > noVotes) {
-                // Жалоба подтверждена - слово отменяем
                 const updates = {};
-                
-                // Убираем очко у автора
                 const author = players.find(p => p.id === complaintAuthor);
                 if (author) {
                     updates[`players/${complaintAuthor}/score`] = Math.max(0, (author.score || 0) - 1);
                 }
                 
-                // Очищаем жалобу и сбрасываем последнее слово
                 updates.complaint = null;
                 updates.lastWord = '';
                 updates.usedWords = [];
@@ -857,7 +1006,6 @@
                 roomRef.update(updates);
                 messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено';
             } else {
-                // Жалоба отклонена - слово засчитывается
                 roomRef.child('complaint').set(null);
                 messageBox.textContent = '❌ Жалоба отклонена! Слово засчитано';
             }
@@ -872,6 +1020,11 @@
             const isMe = (p.id === myId);
             let complaintBadge = '';
             let votingControls = '';
+            let connectionBadge = '';
+            
+            if (!p.connected) {
+                connectionBadge = '<div class="complaint-badge" style="background:#666;">📴 отключён</div>';
+            }
             
             if (complaintActive) {
                 if (p.id === complaintAuthor) {
@@ -884,7 +1037,7 @@
                         complaintBadge = '<div class="complaint-badge" style="background:#2e7d32;">✅ согласен</div>';
                     } else if (hasVotedNo) {
                         complaintBadge = '<div class="complaint-badge" style="background:#c62828;">❌ не согласен</div>';
-                    } else if (isMe) {
+                    } else if (isMe && p.connected) {
                         votingControls = `
                             <div class="voting-controls">
                                 <button class="vote-btn vote-yes" onclick="voteYes()">✅ Согласен</button>
@@ -904,6 +1057,7 @@
                     ${avatarHtml}
                     <div class="player-name">${p.name || 'Игрок'}</div>
                     <div class="player-score">${p.score || 0}</div>
+                    ${connectionBadge}
                     ${complaintBadge}
                     ${votingControls}
                 </div>
@@ -920,7 +1074,6 @@
             const totalNeeded = players.length - 1;
             complaintCountDisplay.textContent = `${complaintVotes.yes.size + complaintVotes.no.size} / ${totalNeeded}`;
             
-            // Проверяем результат голосования
             checkVoteResult();
         } else {
             voteStatus.style.display = 'none';
@@ -951,7 +1104,6 @@
         wordInput.disabled = !isMyTurn || !isInRoom;
         submitBtn.disabled = !isMyTurn || !isInRoom;
         
-        // Кнопка жалобы: доступна только если есть слово, нет активной жалобы, и это НЕ автор слова
         if (!isInRoom || !lastWord || complaintActive || myId === currentPlayerId) {
             complaintBtn.disabled = true;
         } else {
@@ -959,7 +1111,6 @@
         }
     }
 
-    // Глобальные функции для голосования
     window.voteYes = function() { vote('yes'); };
     window.voteNo = function() { vote('no'); };
 
@@ -976,7 +1127,6 @@
             if (e.key === 'Enter') submitWord();
         });
 
-        // Выбираем первый аватар по умолчанию
         selectAvatar('😊');
     }
 
