@@ -377,22 +377,23 @@
     const firebaseConfig = {
   apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E",
   authDomain: "word-game-multiplayer-43c82.firebaseapp.com",
+  databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/",
   projectId: "word-game-multiplayer-43c82",
   storageBucket: "word-game-multiplayer-43c82.firebasestorage.app",
   messagingSenderId: "966216835290",
   appId: "1:966216835290:web:bfebbf3b1d13cf80f745e3"
 };
 
-    // Инициализация Firebase
-    let app;
-    let database;
-    try {
-        app = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("Firebase initialized");
-    } catch (e) {
-        console.error("Firebase init error:", e);
-    }
+// Инициализация Firebase
+let app;
+let database;
+try {
+    app = firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log("Firebase initialized");
+} catch (e) {
+    console.error("Firebase init error:", e);
+}
 
     // ==================== СОСТОЯНИЕ ИГРЫ ====================
     let myId = null;
