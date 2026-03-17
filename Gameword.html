@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сетевая игра в слова | Firebase</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0f2a44 0%, #1b3a5c 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+        }
+        .game-container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(10, 25, 40, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 56px;
+            padding: 28px 20px;
+            box-shadow: 0 30px 40px #00000080, 0 0 0 2px #e9c27c inset;
+            border: 1px solid #ffdd9e;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            color: #FFE9A7;
+            text-shadow: 0 5px 0 #7b5a3b, 0 8px 12px black;
+            margin: 0 0 20px;
+        }
+        .connection-panel {
+            background: #1e3347;
+            border-radius: 60px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e9c27c;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        .room-control {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #142433;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        .room-control input {
+            padding: 12px 20px;
+            border-radius: 40px;
+            border: none;
+            font-size: 1.1rem;
+            width: 180px;
+            background: #2b3f54;
+            color: white;
+            border: 2px solid #a88444;
+        }
+        .room-control input::placeholder {
+            color: #9aaec2;
+        }
+        .room-control button {
+            background: #fec165;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 25px;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 4px solid #a5712b;
+            transition: 0.07s;
+            font-size: 1.1rem;
+        }
+        .room-control button:hover {
+            background: #ffd58c;
+            transform: translateY(-2px);
+        }
+        .connection-status {
+            color: #ffeeaa;
+            font-weight: 500;
+            padding: 0 15px;
+        }
+        .player-id {
+            background: #2c4a35;
+            color: #d6ffb0;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: 2px solid #9fcc9b;
+        }
+        .players-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .player-card {
+            flex: 1 1 180px;
+            min-width: 160px;
+            background: #f0e5d2;
+            border-radius: 40px 40px 30px 30px;
+            padding: 18px 8px 12px;
+            text-align: center;
+            box-shadow: 0 12px 0 #8b653b, 0 20px 18px -8px black;
+            border: 2px solid #f5c489;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .player-card.active {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 0 #b87e3f, 0 25px 25px -8px black;
+            border: 3px solid #fbb13c;
+            background: #fff6e6;
+        }
+        .player-card.this-player {
+            outline: 4px solid #4caf92;
+        }
+        .player-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2d1d0e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .player-score {
+            font-size: 2.3rem;
+            font-weight: 800;
+            background: #2f200e;
+            color: #ffd966;
+            display: inline-block;
+            padding: 0px 22px;
+            border-radius: 40px;
+            margin: 6px 0 4px;
+            border: 2px solid #f5b951;
+        }
+        .complaint-badge {
+            display: inline-block;
+            background: #aa4b4b;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 3px 12px;
+            border-radius: 30px;
+            margin-top: 5px;
+            border: 1px solid #ffaeae;
+        }
+        .turn-indicator {
+            background: #1e2f3f;
+            border-radius: 60px;
+            padding: 12px 22px;
+            margin: 10px 0 20px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            border: 2px solid #e9c27c;
+            box-shadow: 0 6px 0 #514128;
+        }
+        .turn-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffe392;
+            background: #232b33;
+            padding: 4px 28px;
+            border-radius: 40px;
+        }
+        .last-word {
+            font-size: 1.4rem;
+            background: #2f3e52;
+            color: #FFEEBB;
+            padding: 6px 24px;
+            border-radius: 40px;
+            font-family: 'Courier New', monospace;
+        }
+        .game-area {
+            background: #26425e;
+            border-radius: 70px;
+            padding: 28px 20px;
+            border: 3px solid #FFD78C;
+            box-shadow: inset 0 -8px 0 #0e1e30, 0 20px 25px -5px black;
+        }
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .word-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .word-input-wrapper {
+            display: flex;
+            flex: 3 1 400px;
+            background: white;
+            border-radius: 100px;
+            border: 4px solid #dbb174;
+            padding: 4px;
+            box-shadow: 0 7px 0 #785f37;
+        }
+        .word-input-wrapper input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.5rem;
+            padding: 16px 25px;
+            background: transparent;
+            font-weight: 500;
+            color: #131313;
+            min-width: 180px;
+        }
+        .word-input-wrapper button {
+            background: #fec165;
+            border: none;
+            margin: 6px;
+            border-radius: 60px;
+            padding: 0 35px;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2e2b1f;
+            cursor: pointer;
+            border-bottom: 5px solid #b17e3b;
+            transition: 0.08s;
+            box-shadow: 0 4px 12px black;
+            white-space: nowrap;
+        }
+        .word-input-wrapper button:hover:not(:disabled) {
+            background: #ffd894;
+            border-bottom-width: 3px;
+            transform: scale(0.98);
+        }
+        .word-input-wrapper button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+        .complaint-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            background: #193045;
+            border-radius: 60px;
+            padding: 14px 20px;
+            border: 1px solid #cfb071;
+        }
+        .complaint-btn {
+            background: #c06c6c;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffe8c7;
+            border-bottom: 5px solid #6f3636;
+            cursor: pointer;
+            transition: 0.07s;
+            box-shadow: 0 4px 12px black;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .complaint-btn:hover:not(:disabled) {
+            background: #d77e7e;
+            border-bottom-width: 3px;
+            transform: translateY(2px);
+        }
+        .complaint-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .complaint-count {
+            background: #341b1b;
+            padding: 5px 18px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            color: #ffaeae;
+            font-weight: 700;
+        }
+        .message-area {
+            background: #10212e;
+            border-radius: 50px;
+            padding: 16px 30px;
+            color: #ffefa5;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border: 2px solid #cbb26a;
+            box-shadow: inset 0 -4px 0 #071118;
+            text-align: center;
+        }
+        .footer-rules {
+            display: flex;
+            justify-content: space-between;
+            color: #e2d7b8;
+            margin-top: 22px;
+            font-size: 1rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .letter-hint {
+            background: #182233;
+            padding: 5px 18px;
+            border-radius: 30px;
+            border-left: 6px solid #f6b83e;
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="game-container">
+    <h1>🌐 Сетевая игра | Firebase</h1>
+
+    <div class="connection-panel">
+        <div class="room-control">
+            <input type="text" id="roomInput" placeholder="Код комнаты" value="game123">
+            <button id="createRoomBtn">🔗 Создать комнату</button>
+            <button id="joinRoomBtn">✨ Присоединиться</button>
+        </div>
+        <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
+        <div class="player-id" id="playerIdDisplay">ID: -</div>
+    </div>
+
+    <div id="playersPanel" class="players-panel"></div>
+
+    <div class="turn-indicator">
+        <span class="turn-text" id="turnDisplay">⏳ Ожидание...</span>
+        <span class="last-word" id="lastWordDisplay">⏳ пока нет</span>
+    </div>
+
+    <div class="game-area">
+        <div class="input-section">
+            <div class="word-row">
+                <div class="word-input-wrapper">
+                    <input type="text" id="wordInput" placeholder="существительное..." autocomplete="off" disabled>
+                    <button id="submitWordBtn" disabled>➤ Отправить</button>
+                </div>
+            </div>
+
+            <div class="complaint-area">
+                <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
+                <div class="complaint-count" id="complaintCountDisplay">0 / 0</div>
+            </div>
+
+            <div class="message-area" id="messageBox">
+                👋 Введите код комнаты и создайте или присоединитесь
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-rules">
+        <span>📚 Существительные, мин 2 буквы</span>
+        <span class="letter-hint" id="requiredLetterHint">нужная буква: ?</span>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ==================== НАСТРОЙКА FIREBASE ====================
+    // Используем публичные тестовые данные (это демо-проект, можно использовать для теста)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTVAJ7EZeHAEYZ1l5ufpzt7AoMmbwNjMk",
+    authDomain: "gameword-8f51e.firebaseapp.com",
+    projectId: "gameword-8f51e",
+    storageBucket: "gameword-8f51e.firebasestorage.app",
+    messagingSenderId: "613192959032",
+    appId: "1:613192959032:web:11c27c06d55103628652cd",
+    measurementId: "G-E62PJLXE3J"
+    };
+
+    // Инициализация Firebase
+    let app;
+    let database;
+    try {
+        app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log("Firebase initialized");
+    } catch (e) {
+        console.error("Firebase init error:", e);
+    }
+
+    // ==================== СОСТОЯНИЕ ИГРЫ ====================
+    let myId = null;
+    let myName = `Игрок_${Math.floor(Math.random() * 1000)}`;
+    let roomId = null;
+    let players = [];
+    let currentPlayerId = null;
+    let lastWord = '';
+    let usedWords = new Set();
+    let complaintActive = false;
+    let complainedWord = '';
+    let complaintVotes = new Set();
+    let complaintAuthor = null;
+
+    // Ссылки на Firebase
+    let roomRef = null;
+    let playersRef = null;
+    let gameStateRef = null;
+
+    // DOM элементы
+    const playersPanel = document.getElementById('playersPanel');
+    const turnDisplay = document.getElementById('turnDisplay');
+    const lastWordDisplay = document.getElementById('lastWordDisplay');
+    const requiredLetterHint = document.getElementById('requiredLetterHint');
+    const wordInput = document.getElementById('wordInput');
+    const submitBtn = document.getElementById('submitWordBtn');
+    const complaintBtn = document.getElementById('complaintBtn');
+    const complaintCountDisplay = document.getElementById('complaintCountDisplay');
+    const messageBox = document.getElementById('messageBox');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const playerIdDisplay = document.getElementById('playerIdDisplay');
+    const roomInput = document.getElementById('roomInput');
+    const createRoomBtn = document.getElementById('createRoomBtn');
+    const joinRoomBtn = document.getElementById('joinRoomBtn');
+
+    // Генерация уникального ID для игрока
+    function generatePlayerId() {
+        return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // ==================== ФУНКЦИИ РАБОТЫ С FIREBASE ====================
+    function createRoom() {
+        const room = roomInput.value.trim();
+        if (!room) {
+            messageBox.textContent = 'Введите код комнаты';
+            return;
+        }
+
+        myId = generatePlayerId();
+        playerIdDisplay.textContent = `ID: ${myId.substr(0, 6)}`;
+        roomId = room;
+
+        // Создаём структуру в Firebase
+        roomRef = database.ref(`rooms/${room}`);
+        
+        // Проверяем, не существует ли уже комната
+        roomRef.once('value', (snapshot) => {
+            if (snapshot.exists()) {
+                messageBox.textContent = 'Комната уже существует, попробуйте присоединиться';
+                return;
+            }
+
+            // Создаём комнату
+            const gameState = {
+                players: {
+                    [myId]: {
+                        id: myId,
+                        name: myName,
+                        score: 0
+                    }
+                },
+                currentPlayerId: myId,
+                lastWord: '',
+                usedWords: [],
+                complaint: null,
+                createdAt: Date.now()
+            };
+
+            roomRef.set(gameState, (error) => {
+                if (error) {
+                    messageBox.textContent = 'Ошибка создания комнаты';
+                } else {
+                    connectionStatus.textContent = `✅ Создано: ${room}`;
+                    messageBox.textContent = 'Комната создана! Ожидайте игроков';
+                    setupListeners();
+                }
+            });
+        });
+    }
+
+    function joinRoom() {
+        const room = roomInput.value.trim();
+        if (!room) {
+            messageBox.textContent = 'Введите код комнаты';
+            return;
+        }
+
+        myId = generatePlayerId();
+        playerIdDisplay.textContent = `ID: ${myId.substr(0, 6)}`;
+        roomId = room;
+
+        roomRef = database.ref(`rooms/${room}`);
+        
+        roomRef.once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                messageBox.textContent = 'Комната не найдена';
+                return;
+            }
+
+            // Добавляем игрока
+            const updates = {};
+            updates[`players/${myId}`] = {
+                id: myId,
+                name: myName,
+                score: 0
+            };
+
+            roomRef.update(updates, (error) => {
+                if (error) {
+                    messageBox.textContent = 'Ошибка подключения';
+                } else {
+                    connectionStatus.textContent = `✅ Подключён к ${room}`;
+                    messageBox.textContent = 'Вы присоединились к игре!';
+                    setupListeners();
+                }
+            });
+        });
+    }
+
+    function setupListeners() {
+        // Слушаем изменения игроков
+        roomRef.child('players').on('value', (snapshot) => {
+            const playersData = snapshot.val() || {};
+            players = Object.values(playersData);
+            renderAll();
+            updateControls();
+        });
+
+        // Слушаем изменения игрового состояния
+        roomRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            currentPlayerId = data.currentPlayerId;
+            lastWord = data.lastWord || '';
+            usedWords = new Set(data.usedWords || []);
+            
+            if (data.complaint) {
+                complaintActive = data.complaint.active;
+                complainedWord = data.complaint.word;
+                complaintAuthor = data.complaint.authorId;
+                complaintVotes = new Set(data.complaint.votes || []);
+            } else {
+                complaintActive = false;
+                complainedWord = '';
+                complaintAuthor = null;
+                complaintVotes.clear();
+            }
+
+            renderAll();
+            updateControls();
+        });
+
+        // Автоматическое удаление при закрытии
+        window.addEventListener('beforeunload', () => {
+            if (roomId && myId) {
+                database.ref(`rooms/${roomId}/players/${myId}`).remove();
+            }
+        });
+    }
+
+    // ==================== ИГРОВАЯ ЛОГИКА ====================
+    function submitWord() {
+        if (!roomRef || !myId || complaintActive) return;
+        if (myId !== currentPlayerId) {
+            messageBox.textContent = 'Сейчас не ваш ход';
+            return;
+        }
+
+        const word = wordInput.value.trim().toLowerCase();
+        if (!word) {
+            messageBox.textContent = 'Введите слово';
+            return;
+        }
+
+        // Валидация
+        if (!/^[а-яё]+$/i.test(word) || word.length < 2) {
+            messageBox.textContent = '❌ Только русские буквы, мин 2';
+            wordInput.value = '';
+            return;
+        }
+
+        if (usedWords.has(word)) {
+            messageBox.textContent = `⚠️ Слово "${word}" уже было`;
+            wordInput.value = '';
+            return;
+        }
+
+        if (lastWord && word[0] !== lastWord.slice(-1)) {
+            messageBox.textContent = `🔤 Должно начинаться с «${lastWord.slice(-1)}»`;
+            wordInput.value = '';
+            return;
+        }
+
+        // Находим следующего игрока
+        const playerIds = players.map(p => p.id);
+        const currentIndex = playerIds.indexOf(myId);
+        const nextIndex = (currentIndex + 1) % playerIds.length;
+        const nextPlayerId = playerIds[nextIndex];
+
+        // Обновляем состояние в Firebase
+        const updates = {};
+        updates[`players/${myId}/score`] = (players.find(p => p.id === myId).score || 0) + 1;
+        updates.currentPlayerId = nextPlayerId;
+        updates.lastWord = word;
+        updates.usedWords = [...usedWords, word];
+
+        roomRef.update(updates);
+        
+        wordInput.value = '';
+        messageBox.textContent = `✅ Слово "${word}" принято!`;
+    }
+
+    function handleComplaint() {
+        if (!roomRef || !myId) return;
+
+        if (!complaintActive) {
+            // Начинаем жалобу
+            if (!lastWord) {
+                messageBox.textContent = 'Не на что жаловаться';
+                return;
+            }
+
+            // Автор последнего слова
+            const authorId = players.find(p => p.id === currentPlayerId)?.id;
+            if (!authorId) return;
+
+            const complaint = {
+                active: true,
+                word: lastWord,
+                authorId: authorId,
+                votes: [myId] // автор не голосует, но мы добавим проверку
+            };
+
+            roomRef.child('complaint').set(complaint);
+            messageBox.textContent = 'Жалоба отправлена!';
+        } else {
+            // Голосуем
+            if (complaintVotes.has(myId)) {
+                messageBox.textContent = 'Вы уже голосовали';
+                return;
+            }
+
+            if (myId === complaintAuthor) {
+                messageBox.textContent = 'Нельзя жаловаться на своё слово';
+                return;
+            }
+
+            const newVotes = [...complaintVotes, myId];
+            
+            // Проверяем, достаточно ли голосов
+            const totalNeeded = players.length - 1; // все кроме автора
+            if (newVotes.length >= totalNeeded) {
+                // Отменяем слово
+                const updates = {};
+                
+                // Убираем очко у автора
+                const author = players.find(p => p.id === complaintAuthor);
+                if (author) {
+                    updates[`players/${complaintAuthor}/score`] = Math.max(0, (author.score || 0) - 1);
+                }
+                
+                // Очищаем жалобу и сбрасываем последнее слово
+                updates.complaint = null;
+                updates.lastWord = '';
+                updates.usedWords = []; // для простоты сбрасываем историю
+                
+                roomRef.update(updates);
+                messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено';
+            } else {
+                // Обновляем голоса
+                roomRef.child('complaint/votes').set(newVotes);
+                messageBox.textContent = `Голос учтён (${newVotes.length}/${totalNeeded})`;
+            }
+        }
+    }
+
+    // ==================== ОТРИСОВКА ====================
+    function renderAll() {
+        let html = '';
+        players.forEach(p => {
+            const isActive = (p.id === currentPlayerId && !complaintActive);
+            const isMe = (p.id === myId);
+            let complaintBadge = '';
+            
+            if (complaintActive) {
+                if (p.id === complaintAuthor) {
+                    complaintBadge = '<div class="complaint-badge">⚠️ под вопросом</div>';
+                } else if (complaintVotes.has(p.id)) {
+                    complaintBadge = '<div class="complaint-badge">🗳️ проголосовал</div>';
+                }
+            }
+            
+            html += `
+                <div class="player-card ${isActive ? 'active' : ''} ${isMe ? 'this-player' : ''}">
+                    <div class="player-name">${p.name || 'Игрок'}</div>
+                    <div class="player-score">${p.score || 0}</div>
+                    ${complaintBadge}
+                </div>
+            `;
+        });
+        playersPanel.innerHTML = html;
+
+        if (complaintActive) {
+            turnDisplay.innerHTML = `⏳ ГОЛОСОВАНИЕ: слово «${complainedWord}» под вопросом`;
+        } else if (currentPlayerId) {
+            const currentPlayer = players.find(p => p.id === currentPlayerId);
+            turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer ? currentPlayer.name : '...'}`;
+        } else {
+            turnDisplay.innerHTML = '⏳ Ожидание игроков...';
+        }
+
+        if (lastWord) {
+            lastWordDisplay.textContent = `« ${lastWord.toUpperCase()} »`;
+            requiredLetterHint.textContent = `нужная буква: «${lastWord.slice(-1)}»`;
+        } else {
+            lastWordDisplay.textContent = '⏳ пока нет';
+            requiredLetterHint.textContent = 'нужная буква: ?';
+        }
+
+        if (complaintActive && players.length > 1) {
+            const totalNeeded = players.length - 1;
+            complaintCountDisplay.textContent = `${complaintVotes.size} / ${totalNeeded}`;
+        } else {
+            complaintCountDisplay.textContent = `0 / 0`;
+        }
+    }
+
+    function updateControls() {
+        const isMyTurn = (myId === currentPlayerId && !complaintActive);
+        const isInRoom = roomId && myId;
+        
+        wordInput.disabled = !isMyTurn || !isInRoom;
+        submitBtn.disabled = !isMyTurn || !isInRoom;
+        
+        if (!isInRoom || !lastWord) {
+            complaintBtn.disabled = true;
+            complaintBtn.textContent = '🚫 Пожаловаться';
+        } else if (complaintActive) {
+            const canVote = myId !== complaintAuthor && !complaintVotes.has(myId);
+            complaintBtn.disabled = !canVote;
+            complaintBtn.textContent = complaintVotes.has(myId) ? '✅ Вы проголосовали' : '🗳️ Проголосовать';
+        } else {
+            complaintBtn.disabled = false;
+            complaintBtn.textContent = '🚫 Пожаловаться';
+        }
+    }
+
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    function init() {
+        connectionStatus.textContent = '⚡ Готов к подключению';
+        
+        createRoomBtn.addEventListener('click', createRoom);
+        joinRoomBtn.addEventListener('click', joinRoom);
+        submitBtn.addEventListener('click', submitWord);
+        complaintBtn.addEventListener('click', handleComplaint);
+        
+        wordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitWord();
+        });
+    }
+
+    init();
+})();
+</script>
+</body>
+</html>
