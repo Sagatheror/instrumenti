@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сетевая игра в слова | Firebase</title>
+    <title>Сетевая игра в слова</title>
     <style>
         * {
             box-sizing: border-box;
@@ -38,6 +38,81 @@
             text-shadow: 0 5px 0 #7b5a3b, 0 8px 12px black;
             margin: 0 0 20px;
         }
+        .profile-setup {
+            background: #1e3347;
+            border-radius: 60px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e9c27c;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-selection {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: 0.2s;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2b3f54;
+        }
+        .avatar-option:hover {
+            transform: scale(1.1);
+        }
+        .avatar-option.selected {
+            border-color: #ffd966;
+            box-shadow: 0 0 15px gold;
+        }
+        .avatar-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #2b3f54;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 3px solid #ffd966;
+        }
+        .name-input {
+            padding: 12px 20px;
+            border-radius: 40px;
+            border: none;
+            font-size: 1.1rem;
+            width: 200px;
+            background: #2b3f54;
+            color: white;
+            border: 2px solid #a88444;
+        }
+        .custom-avatar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            background: #427a5c;
+            padding: 12px 20px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            border-bottom: 4px solid #1f4d33;
+        }
         .connection-panel {
             background: #1e3347;
             border-radius: 60px;
@@ -69,9 +144,6 @@
             color: white;
             border: 2px solid #a88444;
         }
-        .room-control input::placeholder {
-            color: #9aaec2;
-        }
         .room-control button {
             background: #fec165;
             border: none;
@@ -91,14 +163,6 @@
             color: #ffeeaa;
             font-weight: 500;
             padding: 0 15px;
-        }
-        .player-id {
-            background: #2c4a35;
-            color: #d6ffb0;
-            padding: 8px 25px;
-            border-radius: 40px;
-            font-weight: 600;
-            border: 2px solid #9fcc9b;
         }
         .players-panel {
             display: flex;
@@ -127,6 +191,10 @@
         .player-card.this-player {
             outline: 4px solid #4caf92;
         }
+        .player-avatar {
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
         .player-name {
             font-size: 1.6rem;
             font-weight: 700;
@@ -135,6 +203,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            word-break: break-word;
         }
         .player-score {
             font-size: 2.3rem;
@@ -157,6 +226,31 @@
             border-radius: 30px;
             margin-top: 5px;
             border: 1px solid #ffaeae;
+        }
+        .voting-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 5px;
+        }
+        .vote-btn {
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .vote-yes {
+            background: #4caf50;
+            color: white;
+        }
+        .vote-no {
+            background: #f44336;
+            color: white;
+        }
+        .vote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .turn-indicator {
             background: #1e2f3f;
@@ -292,6 +386,22 @@
             color: #ffaeae;
             font-weight: 700;
         }
+        .vote-status {
+            display: flex;
+            gap: 20px;
+            color: white;
+        }
+        .vote-yes-count, .vote-no-count {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .vote-yes-count {
+            background: #2e7d32;
+        }
+        .vote-no-count {
+            background: #c62828;
+        }
         .message-area {
             background: #10212e;
             border-radius: 50px;
@@ -322,10 +432,28 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 <div class="game-container">
-    <h1>🌐 Сетевая игра | Firebase</h1>
+
+    <!-- НАСТРОЙКА ПРОФИЛЯ -->
+    <div class="profile-setup">
+        <div class="avatar-selection">
+            <div class="avatar-preview" id="avatarPreview">😊</div>
+            <div class="avatar-option" onclick="selectAvatar('😊')">😊</div>
+            <div class="avatar-option" onclick="selectAvatar('😎')">😎</div>
+            <div class="avatar-option" onclick="selectAvatar('🤓')">🤓</div>
+            <div class="avatar-option" onclick="selectAvatar('🦸')">🦸</div>
+            <div class="avatar-option" onclick="selectAvatar('🐉')">🐉</div>
+            <div class="avatar-option" onclick="selectAvatar('👾')">👾</div>
+        </div>
+        <div class="custom-avatar">
+            <input type="text" id="playerName" class="name-input" placeholder="Ваше имя" value="Игрок">
+            <input type="file" id="avatarFile" class="file-input" accept="image/*">
+            <label for="avatarFile" class="file-label">📷 Своё фото</label>
+        </div>
+    </div>
 
     <div class="connection-panel">
         <div class="room-control">
@@ -334,7 +462,6 @@
             <button id="joinRoomBtn">✨ Присоединиться</button>
         </div>
         <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
-        <div class="player-id" id="playerIdDisplay">ID: -</div>
     </div>
 
     <div id="playersPanel" class="players-panel"></div>
@@ -353,13 +480,17 @@
                 </div>
             </div>
 
-            <div class="complaint-area">
+            <div class="complaint-area" id="complaintArea">
                 <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
+                <div class="vote-status" id="voteStatus" style="display: none;">
+                    <span class="vote-yes-count" id="voteYesCount">0</span>
+                    <span class="vote-no-count" id="voteNoCount">0</span>
+                </div>
                 <div class="complaint-count" id="complaintCountDisplay">0 / 0</div>
             </div>
 
             <div class="message-area" id="messageBox">
-                👋 Введите код комнаты и создайте или присоединитесь
+                👋 Выберите имя и аватарку, создайте или присоединитесь
             </div>
         </div>
     </div>
@@ -373,31 +504,34 @@
 <script>
 (function() {
     // ==================== НАСТРОЙКА FIREBASE ====================
-    // Используем публичные тестовые данные (это демо-проект, можно использовать для теста)
     const firebaseConfig = {
-  apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E",
-  authDomain: "word-game-multiplayer-43c82.firebaseapp.com",
-  databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/",
-  projectId: "word-game-multiplayer-43c82",
-  storageBucket: "word-game-multiplayer-43c82.firebasestorage.app",
-  messagingSenderId: "966216835290",
-  appId: "1:966216835290:web:bfebbf3b1d13cf80f745e3"
-};
+        apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E",
+        authDomain: "word-game-multiplayer-43c82.firebaseapp.com",
+        databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/",
+        projectId: "word-game-multiplayer-43c82",
+        storageBucket: "word-game-multiplayer-43c82.firebasestorage.app",
+        messagingSenderId: "966216835290",
+        appId: "1:966216835290:web:bfebbf3b1d13cf80f745e3"
+    };
 
-// Инициализация Firebase
-let app;
-let database;
-try {
-    app = firebase.initializeApp(firebaseConfig);
-    database = firebase.database();
-    console.log("Firebase initialized");
-} catch (e) {
-    console.error("Firebase init error:", e);
-}
+    // Инициализация Firebase
+    let app;
+    let database;
+    let storage;
+    try {
+        app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        storage = firebase.storage();
+        console.log("Firebase initialized");
+    } catch (e) {
+        console.error("Firebase init error:", e);
+    }
 
     // ==================== СОСТОЯНИЕ ИГРЫ ====================
     let myId = null;
-    let myName = `Игрок_${Math.floor(Math.random() * 1000)}`;
+    let myName = 'Игрок';
+    let myAvatar = '😊';
+    let myAvatarUrl = null;
     let roomId = null;
     let players = [];
     let currentPlayerId = null;
@@ -405,13 +539,11 @@ try {
     let usedWords = new Set();
     let complaintActive = false;
     let complainedWord = '';
-    let complaintVotes = new Set();
     let complaintAuthor = null;
-
-    // Ссылки на Firebase
-    let roomRef = null;
-    let playersRef = null;
-    let gameStateRef = null;
+    let complaintVotes = {
+        yes: new Set(),
+        no: new Set()
+    };
 
     // DOM элементы
     const playersPanel = document.getElementById('playersPanel');
@@ -422,19 +554,50 @@ try {
     const submitBtn = document.getElementById('submitWordBtn');
     const complaintBtn = document.getElementById('complaintBtn');
     const complaintCountDisplay = document.getElementById('complaintCountDisplay');
+    const voteStatus = document.getElementById('voteStatus');
+    const voteYesCount = document.getElementById('voteYesCount');
+    const voteNoCount = document.getElementById('voteNoCount');
     const messageBox = document.getElementById('messageBox');
     const connectionStatus = document.getElementById('connectionStatus');
-    const playerIdDisplay = document.getElementById('playerIdDisplay');
     const roomInput = document.getElementById('roomInput');
     const createRoomBtn = document.getElementById('createRoomBtn');
     const joinRoomBtn = document.getElementById('joinRoomBtn');
+    const playerNameInput = document.getElementById('playerName');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarFile = document.getElementById('avatarFile');
 
-    // Генерация уникального ID для игрока
+    // Выбор аватара
+    window.selectAvatar = function(emoji) {
+        myAvatar = emoji;
+        myAvatarUrl = null;
+        avatarPreview.textContent = emoji;
+        
+        document.querySelectorAll('.avatar-option').forEach(opt => {
+            opt.classList.remove('selected');
+            if (opt.textContent === emoji) opt.classList.add('selected');
+        });
+    };
+
+    // Загрузка фото
+    avatarFile.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            myAvatarUrl = event.target.result;
+            myAvatar = '📷';
+            avatarPreview.innerHTML = `<img src="${event.target.result}" style="width:50px;height:50px;border-radius:50%;">`;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Генерация ID
     function generatePlayerId() {
         return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    // ==================== ФУНКЦИИ РАБОТЫ С FIREBASE ====================
+    // ==================== FIREBASE ====================
     function createRoom() {
         const room = roomInput.value.trim();
         if (!room) {
@@ -443,25 +606,24 @@ try {
         }
 
         myId = generatePlayerId();
-        playerIdDisplay.textContent = `ID: ${myId.substr(0, 6)}`;
+        myName = playerNameInput.value.trim() || 'Игрок';
         roomId = room;
 
-        // Создаём структуру в Firebase
-        roomRef = database.ref(`rooms/${room}`);
+        const roomRef = database.ref(`rooms/${room}`);
         
-        // Проверяем, не существует ли уже комната
         roomRef.once('value', (snapshot) => {
             if (snapshot.exists()) {
-                messageBox.textContent = 'Комната уже существует, попробуйте присоединиться';
+                messageBox.textContent = 'Комната уже существует';
                 return;
             }
 
-            // Создаём комнату
             const gameState = {
                 players: {
                     [myId]: {
                         id: myId,
                         name: myName,
+                        avatar: myAvatar,
+                        avatarUrl: myAvatarUrl,
                         score: 0
                     }
                 },
@@ -474,11 +636,11 @@ try {
 
             roomRef.set(gameState, (error) => {
                 if (error) {
-                    messageBox.textContent = 'Ошибка создания комнаты';
+                    messageBox.textContent = 'Ошибка: ' + error.message;
                 } else {
                     connectionStatus.textContent = `✅ Создано: ${room}`;
-                    messageBox.textContent = 'Комната создана! Ожидайте игроков';
-                    setupListeners();
+                    messageBox.textContent = 'Комната создана!';
+                    setupListeners(room);
                 }
             });
         });
@@ -492,10 +654,10 @@ try {
         }
 
         myId = generatePlayerId();
-        playerIdDisplay.textContent = `ID: ${myId.substr(0, 6)}`;
+        myName = playerNameInput.value.trim() || 'Игрок';
         roomId = room;
 
-        roomRef = database.ref(`rooms/${room}`);
+        const roomRef = database.ref(`rooms/${room}`);
         
         roomRef.once('value', (snapshot) => {
             if (!snapshot.exists()) {
@@ -503,28 +665,30 @@ try {
                 return;
             }
 
-            // Добавляем игрока
             const updates = {};
             updates[`players/${myId}`] = {
                 id: myId,
                 name: myName,
+                avatar: myAvatar,
+                avatarUrl: myAvatarUrl,
                 score: 0
             };
 
             roomRef.update(updates, (error) => {
                 if (error) {
-                    messageBox.textContent = 'Ошибка подключения';
+                    messageBox.textContent = 'Ошибка: ' + error.message;
                 } else {
                     connectionStatus.textContent = `✅ Подключён к ${room}`;
-                    messageBox.textContent = 'Вы присоединились к игре!';
-                    setupListeners();
+                    messageBox.textContent = 'Вы присоединились!';
+                    setupListeners(room);
                 }
             });
         });
     }
 
-    function setupListeners() {
-        // Слушаем изменения игроков
+    function setupListeners(room) {
+        const roomRef = database.ref(`rooms/${room}`);
+
         roomRef.child('players').on('value', (snapshot) => {
             const playersData = snapshot.val() || {};
             players = Object.values(playersData);
@@ -532,7 +696,6 @@ try {
             updateControls();
         });
 
-        // Слушаем изменения игрового состояния
         roomRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
@@ -542,32 +705,33 @@ try {
             usedWords = new Set(data.usedWords || []);
             
             if (data.complaint) {
-                complaintActive = data.complaint.active;
+                complaintActive = true;
                 complainedWord = data.complaint.word;
                 complaintAuthor = data.complaint.authorId;
-                complaintVotes = new Set(data.complaint.votes || []);
+                complaintVotes.yes = new Set(data.complaint.votes?.yes || []);
+                complaintVotes.no = new Set(data.complaint.votes?.no || []);
             } else {
                 complaintActive = false;
                 complainedWord = '';
                 complaintAuthor = null;
-                complaintVotes.clear();
+                complaintVotes.yes.clear();
+                complaintVotes.no.clear();
             }
 
             renderAll();
             updateControls();
         });
 
-        // Автоматическое удаление при закрытии
         window.addEventListener('beforeunload', () => {
-            if (roomId && myId) {
-                database.ref(`rooms/${roomId}/players/${myId}`).remove();
+            if (room && myId) {
+                database.ref(`rooms/${room}/players/${myId}`).remove();
             }
         });
     }
 
-    // ==================== ИГРОВАЯ ЛОГИКА ====================
+    // ==================== ИГРА ====================
     function submitWord() {
-        if (!roomRef || !myId || complaintActive) return;
+        if (!roomId || !myId || complaintActive) return;
         if (myId !== currentPlayerId) {
             messageBox.textContent = 'Сейчас не ваш ход';
             return;
@@ -579,7 +743,6 @@ try {
             return;
         }
 
-        // Валидация
         if (!/^[а-яё]+$/i.test(word) || word.length < 2) {
             messageBox.textContent = '❌ Только русские буквы, мин 2';
             wordInput.value = '';
@@ -598,13 +761,12 @@ try {
             return;
         }
 
-        // Находим следующего игрока
+        const roomRef = database.ref(`rooms/${roomId}`);
         const playerIds = players.map(p => p.id);
         const currentIndex = playerIds.indexOf(myId);
         const nextIndex = (currentIndex + 1) % playerIds.length;
         const nextPlayerId = playerIds[nextIndex];
 
-        // Обновляем состояние в Firebase
         const updates = {};
         updates[`players/${myId}/score`] = (players.find(p => p.id === myId).score || 0) + 1;
         updates.currentPlayerId = nextPlayerId;
@@ -617,47 +779,68 @@ try {
         messageBox.textContent = `✅ Слово "${word}" принято!`;
     }
 
-    function handleComplaint() {
-        if (!roomRef || !myId) return;
+    function startComplaint() {
+        if (!roomId || !myId) return;
+        if (!lastWord) {
+            messageBox.textContent = 'Не на что жаловаться';
+            return;
+        }
 
-        if (!complaintActive) {
-            // Начинаем жалобу
-            if (!lastWord) {
-                messageBox.textContent = 'Не на что жаловаться';
-                return;
+        const roomRef = database.ref(`rooms/${roomId}`);
+        
+        const complaint = {
+            active: true,
+            word: lastWord,
+            authorId: currentPlayerId,
+            votes: {
+                yes: [],
+                no: []
             }
+        };
 
-            // Автор последнего слова
-            const authorId = players.find(p => p.id === currentPlayerId)?.id;
-            if (!authorId) return;
+        roomRef.child('complaint').set(complaint);
+        messageBox.textContent = 'Жалоба отправлена! Голосуйте!';
+    }
 
-            const complaint = {
-                active: true,
-                word: lastWord,
-                authorId: authorId,
-                votes: [myId] // автор не голосует, но мы добавим проверку
-            };
+    function vote(voteType) {
+        if (!roomId || !myId || !complaintActive) return;
+        if (myId === complaintAuthor) {
+            messageBox.textContent = 'Вы автор слова и не можете голосовать';
+            return;
+        }
 
-            roomRef.child('complaint').set(complaint);
-            messageBox.textContent = 'Жалоба отправлена!';
+        const roomRef = database.ref(`rooms/${roomId}`);
+        
+        // Проверяем, не голосовал ли уже
+        if (complaintVotes.yes.has(myId) || complaintVotes.no.has(myId)) {
+            messageBox.textContent = 'Вы уже проголосовали';
+            return;
+        }
+
+        const updates = {};
+        if (voteType === 'yes') {
+            updates[`complaint/votes/yes`] = [...complaintVotes.yes, myId];
         } else {
-            // Голосуем
-            if (complaintVotes.has(myId)) {
-                messageBox.textContent = 'Вы уже голосовали';
-                return;
-            }
+            updates[`complaint/votes/no`] = [...complaintVotes.no, myId];
+        }
 
-            if (myId === complaintAuthor) {
-                messageBox.textContent = 'Нельзя жаловаться на своё слово';
-                return;
-            }
+        roomRef.update(updates);
+    }
 
-            const newVotes = [...complaintVotes, myId];
+    function checkVoteResult() {
+        if (!complaintActive) return;
+        
+        const totalPlayers = players.length;
+        const yesVotes = complaintVotes.yes.size;
+        const noVotes = complaintVotes.no.size;
+        const totalVotes = yesVotes + noVotes;
+        
+        // Все игроки (кроме автора) проголосовали
+        if (totalVotes >= totalPlayers - 1) {
+            const roomRef = database.ref(`rooms/${roomId}`);
             
-            // Проверяем, достаточно ли голосов
-            const totalNeeded = players.length - 1; // все кроме автора
-            if (newVotes.length >= totalNeeded) {
-                // Отменяем слово
+            if (yesVotes > noVotes) {
+                // Жалоба подтверждена - слово отменяем
                 const updates = {};
                 
                 // Убираем очко у автора
@@ -669,14 +852,14 @@ try {
                 // Очищаем жалобу и сбрасываем последнее слово
                 updates.complaint = null;
                 updates.lastWord = '';
-                updates.usedWords = []; // для простоты сбрасываем историю
+                updates.usedWords = [];
                 
                 roomRef.update(updates);
                 messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено';
             } else {
-                // Обновляем голоса
-                roomRef.child('complaint/votes').set(newVotes);
-                messageBox.textContent = `Голос учтён (${newVotes.length}/${totalNeeded})`;
+                // Жалоба отклонена - слово засчитывается
+                roomRef.child('complaint').set(null);
+                messageBox.textContent = '❌ Жалоба отклонена! Слово засчитано';
             }
         }
     }
@@ -688,32 +871,68 @@ try {
             const isActive = (p.id === currentPlayerId && !complaintActive);
             const isMe = (p.id === myId);
             let complaintBadge = '';
+            let votingControls = '';
             
             if (complaintActive) {
                 if (p.id === complaintAuthor) {
-                    complaintBadge = '<div class="complaint-badge">⚠️ под вопросом</div>';
-                } else if (complaintVotes.has(p.id)) {
-                    complaintBadge = '<div class="complaint-badge">🗳️ проголосовал</div>';
+                    complaintBadge = '<div class="complaint-badge">⚠️ слово под вопросом</div>';
+                } else {
+                    const hasVotedYes = complaintVotes.yes.has(p.id);
+                    const hasVotedNo = complaintVotes.no.has(p.id);
+                    
+                    if (hasVotedYes) {
+                        complaintBadge = '<div class="complaint-badge" style="background:#2e7d32;">✅ согласен</div>';
+                    } else if (hasVotedNo) {
+                        complaintBadge = '<div class="complaint-badge" style="background:#c62828;">❌ не согласен</div>';
+                    } else if (isMe) {
+                        votingControls = `
+                            <div class="voting-controls">
+                                <button class="vote-btn vote-yes" onclick="voteYes()">✅ Согласен</button>
+                                <button class="vote-btn vote-no" onclick="voteNo()">❌ Не согласен</button>
+                            </div>
+                        `;
+                    }
                 }
             }
             
+            const avatarHtml = p.avatarUrl ? 
+                `<img src="${p.avatarUrl}" style="width:40px;height:40px;border-radius:50%;">` : 
+                `<div class="player-avatar">${p.avatar || '😊'}</div>`;
+            
             html += `
                 <div class="player-card ${isActive ? 'active' : ''} ${isMe ? 'this-player' : ''}">
+                    ${avatarHtml}
                     <div class="player-name">${p.name || 'Игрок'}</div>
                     <div class="player-score">${p.score || 0}</div>
                     ${complaintBadge}
+                    ${votingControls}
                 </div>
             `;
         });
         playersPanel.innerHTML = html;
 
         if (complaintActive) {
-            turnDisplay.innerHTML = `⏳ ГОЛОСОВАНИЕ: слово «${complainedWord}» под вопросом`;
-        } else if (currentPlayerId) {
-            const currentPlayer = players.find(p => p.id === currentPlayerId);
-            turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer ? currentPlayer.name : '...'}`;
+            turnDisplay.innerHTML = `⏳ ГОЛОСОВАНИЕ: слово «${complainedWord}»`;
+            voteStatus.style.display = 'flex';
+            voteYesCount.textContent = complaintVotes.yes.size;
+            voteNoCount.textContent = complaintVotes.no.size;
+            
+            const totalNeeded = players.length - 1;
+            complaintCountDisplay.textContent = `${complaintVotes.yes.size + complaintVotes.no.size} / ${totalNeeded}`;
+            
+            // Проверяем результат голосования
+            checkVoteResult();
         } else {
-            turnDisplay.innerHTML = '⏳ Ожидание игроков...';
+            voteStatus.style.display = 'none';
+            
+            if (currentPlayerId) {
+                const currentPlayer = players.find(p => p.id === currentPlayerId);
+                turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer ? currentPlayer.name : '...'}`;
+            } else {
+                turnDisplay.innerHTML = '⏳ Ожидание игроков...';
+            }
+            
+            complaintCountDisplay.textContent = `0 / 0`;
         }
 
         if (lastWord) {
@@ -722,13 +941,6 @@ try {
         } else {
             lastWordDisplay.textContent = '⏳ пока нет';
             requiredLetterHint.textContent = 'нужная буква: ?';
-        }
-
-        if (complaintActive && players.length > 1) {
-            const totalNeeded = players.length - 1;
-            complaintCountDisplay.textContent = `${complaintVotes.size} / ${totalNeeded}`;
-        } else {
-            complaintCountDisplay.textContent = `0 / 0`;
         }
     }
 
@@ -739,31 +951,33 @@ try {
         wordInput.disabled = !isMyTurn || !isInRoom;
         submitBtn.disabled = !isMyTurn || !isInRoom;
         
-        if (!isInRoom || !lastWord) {
+        // Кнопка жалобы: доступна только если есть слово, нет активной жалобы, и это НЕ автор слова
+        if (!isInRoom || !lastWord || complaintActive || myId === currentPlayerId) {
             complaintBtn.disabled = true;
-            complaintBtn.textContent = '🚫 Пожаловаться';
-        } else if (complaintActive) {
-            const canVote = myId !== complaintAuthor && !complaintVotes.has(myId);
-            complaintBtn.disabled = !canVote;
-            complaintBtn.textContent = complaintVotes.has(myId) ? '✅ Вы проголосовали' : '🗳️ Проголосовать';
         } else {
             complaintBtn.disabled = false;
-            complaintBtn.textContent = '🚫 Пожаловаться';
         }
     }
 
-    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    // Глобальные функции для голосования
+    window.voteYes = function() { vote('yes'); };
+    window.voteNo = function() { vote('no'); };
+
+    // Инициализация
     function init() {
         connectionStatus.textContent = '⚡ Готов к подключению';
         
         createRoomBtn.addEventListener('click', createRoom);
         joinRoomBtn.addEventListener('click', joinRoom);
         submitBtn.addEventListener('click', submitWord);
-        complaintBtn.addEventListener('click', handleComplaint);
+        complaintBtn.addEventListener('click', startComplaint);
         
         wordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') submitWord();
         });
+
+        // Выбираем первый аватар по умолчанию
+        selectAvatar('😊');
     }
 
     init();
