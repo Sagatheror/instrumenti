@@ -1228,20 +1228,20 @@
     }
 
     function updateControls() {
-        const isMyTurn = (myId === currentPlayerId && !complaintActive);
-        const isInRoom = roomId && myId;
-        
-        wordInput.disabled = !isMyTurn || !isInRoom;
-        submitBtn.disabled = !isMyTurn || !isInRoom;
-        
-        // Жаловаться может только текущий игрок (который должен написать слово) и только если это не его слово
-        const canComplain = isInRoom && lastWord && !complaintActive && 
-                           myId === currentPlayerId && myId !== lastWordAuthor;
-        
-        complaintBtn.disabled = !canComplain;
-        
-        document.getElementById('complaintArea').style.display = complaintActive ? 'flex' : 'none';
-    }
+    const isMyTurn = (myId === currentPlayerId && !complaintActive);
+    const isInRoom = roomId && myId;
+    
+    wordInput.disabled = !isMyTurn || !isInRoom;
+    submitBtn.disabled = !isMyTurn || !isInRoom;
+    
+    // Жаловаться может только текущий игрок (который должен написать слово) и только если это не его слово
+    const canComplain = isInRoom && lastWord && !complaintActive && 
+                       myId === currentPlayerId && myId !== lastWordAuthor;
+    
+    complaintBtn.disabled = !canComplain;
+    // Дополнительно: скрываем статус голосования, если нет активной жалобы
+    document.getElementById('voteStatus').style.display = complaintActive ? 'flex' : 'none';
+}
 
     window.voteYes = function() { vote('yes'); };
     window.voteNo = function() { vote('no'); };
