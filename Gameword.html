@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сетевая игра в слова</title>
     <style>
+        /* Стили остаются без изменений */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
@@ -19,9 +20,9 @@
             margin: 0;
         }
         .game-container {
-            max-width: 1200px;
+            max-width: 1400px;
             width: 100%;
-            background: rgba(10, 25, 40, 0.75);
+            background: rgba(10, 25, 40, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 56px;
@@ -37,6 +38,15 @@
             color: #FFE9A7;
             text-shadow: 0 5px 0 #7b5a3b, 0 8px 12px black;
             margin: 0 0 20px;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+        }
+        .game-content {
+            display: flex;
+            flex-direction: column;
         }
         .profile-setup {
             background: #1e3347;
@@ -170,6 +180,9 @@
             gap: 14px;
             justify-content: center;
             margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
         }
         .player-card {
             flex: 1 1 180px;
@@ -413,6 +426,58 @@
             box-shadow: inset 0 -4px 0 #071118;
             text-align: center;
         }
+        .sidebar {
+            background: #1e3347;
+            border-radius: 60px;
+            padding: 20px;
+            border: 2px solid #e9c27c;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .history-title {
+            font-size: 1.5rem;
+            color: #FFE9A7;
+            text-align: center;
+            margin: 0;
+            border-bottom: 2px solid #e9c27c;
+            padding-bottom: 10px;
+        }
+        .words-history {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .words-history li {
+            background: #2b3f54;
+            color: #FFEEBB;
+            padding: 12px 20px;
+            margin-bottom: 8px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #a88444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .word-number {
+            background: #142433;
+            color: #e9c27c;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .word-text {
+            flex: 1;
+        }
         .footer-rules {
             display: flex;
             justify-content: space-between;
@@ -464,50 +529,62 @@
         </div>
     </div>
 
-    <div class="connection-panel">
-        <div class="room-control">
-            <input type="text" id="roomInput" placeholder="Код комнаты" value="game123">
-            <button id="createRoomBtn">🔗 Создать комнату</button>
-            <button id="joinRoomBtn">✨ Присоединиться</button>
-        </div>
-        <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
-    </div>
+    <div class="main-grid">
+        <div class="game-content">
+            <div class="connection-panel">
+                <div class="room-control">
+                    <input type="text" id="roomInput" placeholder="Код комнаты" value="game123">
+                    <button id="createRoomBtn">🔗 Создать комнату</button>
+                    <button id="joinRoomBtn">✨ Присоединиться</button>
+                </div>
+                <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
+            </div>
 
-    <div id="playersPanel" class="players-panel"></div>
+            <div id="playersPanel" class="players-panel"></div>
 
-    <div class="turn-indicator">
-        <span class="turn-text" id="turnDisplay">⏳ Ожидание...</span>
-        <span class="last-word" id="lastWordDisplay">⏳ пока нет</span>
-    </div>
+            <div class="turn-indicator">
+                <span class="turn-text" id="turnDisplay">⏳ Ожидание...</span>
+                <span class="last-word" id="lastWordDisplay">⏳ пока нет</span>
+            </div>
 
-    <div class="game-area">
-        <div class="input-section">
-            <div class="word-row">
-                <div class="word-input-wrapper">
-                    <input type="text" id="wordInput" placeholder="существительное..." autocomplete="off" disabled>
-                    <button id="submitWordBtn" disabled>➤ Отправить</button>
+            <div class="game-area">
+                <div class="input-section">
+                    <div class="word-row">
+                        <div class="word-input-wrapper">
+                            <input type="text" id="wordInput" placeholder="существительное..." autocomplete="off" disabled>
+                            <button id="submitWordBtn" disabled>➤ Отправить</button>
+                        </div>
+                    </div>
+
+                    <div class="complaint-area" id="complaintArea">
+                        <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
+                        <div class="vote-status" id="voteStatus" style="display: none;">
+                            <span class="vote-yes-count" id="voteYesCount">0</span>
+                            <span class="vote-no-count" id="voteNoCount">0</span>
+                        </div>
+                        <div class="complaint-count" id="complaintCountDisplay">0 / 0</div>
+                    </div>
+
+                    <div class="message-area" id="messageBox">
+                        👋 Выберите имя и аватарку, создайте или присоединитесь
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="complaint-area" style="display:none" id="complaintArea">
-                <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
-                <div class="vote-status" id="voteStatus" style="display: none;">
-                    <span class="vote-yes-count" id="voteYesCount">0</span>
-                    <span class="vote-no-count" id="voteNoCount">0</span>
-                </div>
-                <div class="complaint-count" id="complaintCountDisplay">0 / 0</div>
-            </div>
-
-            <div class="message-area" id="messageBox">
-                👋 Выберите имя и аватарку, создайте или присоединитесь
+        <!-- Сайдбар с историей слов -->
+        <div class="sidebar">
+            <h3 class="history-title">📜 История слов</h3>
+            <ul class="words-history" id="wordsHistory">
+                <li style="justify-content: center; color: #999;">Пока нет слов</li>
+            </ul>
+            <div class="footer-rules">
+                <span>📚 Существительные, мин 2 буквы</span>
+                <span class="letter-hint" id="requiredLetterHint">нужная буква: ?</span>
             </div>
         </div>
     </div>
 
-    <div class="footer-rules">
-        <span>📚 Существительные, мин 2 буквы</span>
-        <span class="letter-hint" id="requiredLetterHint">нужная буква: ?</span>
-    </div>
     <div class="cleanup-info" id="cleanupInfo">
         ⏱️ Пустые комнаты удаляются через 1 час
     </div>
@@ -526,7 +603,6 @@
         appId: "1:966216835290:web:bfebbf3b1d13cf80f745e3"
     };
 
-    // Инициализация Firebase
     let app;
     let database;
     let storage;
@@ -536,7 +612,6 @@
         storage = firebase.storage();
         console.log("Firebase initialized");
         
-        // Запускаем автоматическую чистку старых комнат
         startCleanupService();
     } catch (e) {
         console.error("Firebase init error:", e);
@@ -551,7 +626,8 @@
     let players = [];
     let currentPlayerId = null;
     let lastWord = '';
-    let usedWords = new Set();
+    let lastWordAuthor = null; // Кто написал последнее слово
+    let usedWords = [];
     let complaintActive = false;
     let complainedWord = '';
     let complaintAuthor = null;
@@ -559,6 +635,7 @@
         yes: new Set(),
         no: new Set()
     };
+    let lastWordsHistory = [];
 
     // DOM элементы
     const playersPanel = document.getElementById('playersPanel');
@@ -581,22 +658,19 @@
     const avatarPreview = document.getElementById('avatarPreview');
     const avatarFile = document.getElementById('avatarFile');
     const cleanupInfo = document.getElementById('cleanupInfo');
+    const wordsHistory = document.getElementById('wordsHistory');
 
     // ==================== АВТОМАТИЧЕСКАЯ ЧИСТКА КОМНАТ ====================
     function startCleanupService() {
-        // Чистим старые комнаты каждые 15 минут
         setInterval(cleanupOldRooms, 15 * 60 * 1000);
-        
-        // Также чистим при загрузке
         setTimeout(cleanupOldRooms, 5000);
-        
-        // Обновляем информацию о времени
+        setInterval(updateCleanupInfo, 60000);
         updateCleanupInfo();
     }
 
     function cleanupOldRooms() {
         const roomsRef = database.ref('rooms');
-        const oneHourAgo = Date.now() - (60 * 60 * 1000); // 1 час
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
         
         roomsRef.once('value', (snapshot) => {
             const rooms = snapshot.val();
@@ -605,23 +679,16 @@
             let cleanedCount = 0;
             
             Object.entries(rooms).forEach(([roomId, roomData]) => {
-                // Проверяем, есть ли игроки
                 const players = roomData.players;
                 const playerCount = players ? Object.keys(players).length : 0;
                 
-                // Удаляем если:
-                // 1. Нет игроков И комната старая (>1 часа)
-                // 2. Или создана давно и пустая
-                if (playerCount === 0) {
-                    if (roomData.createdAt && roomData.createdAt < oneHourAgo) {
-                        roomsRef.child(roomId).remove();
-                        cleanedCount++;
-                    }
+                if (playerCount === 0 && roomData.createdAt && roomData.createdAt < oneHourAgo) {
+                    roomsRef.child(roomId).remove();
+                    cleanedCount++;
                 }
             });
             
             if (cleanedCount > 0) {
-                console.log(`🧹 Удалено ${cleanedCount} старых комнат`);
                 cleanupInfo.textContent = `🧹 Удалено ${cleanedCount} пустых комнат`;
                 setTimeout(() => updateCleanupInfo(), 3000);
             }
@@ -646,16 +713,11 @@
                     return;
                 }
                 
-                // Проверяем, есть ли игрок с таким именем
                 const existingPlayer = Object.values(players).find(
-                    p => p.name.toLowerCase() === playerName.toLowerCase()
+                    p => p.connected && p.name.toLowerCase() === playerName.toLowerCase()
                 );
                 
-                if (existingPlayer) {
-                    resolve(existingPlayer.id);
-                } else {
-                    resolve(false);
-                }
+                resolve(existingPlayer ? existingPlayer.id : false);
             });
         });
     }
@@ -701,7 +763,6 @@
 
         myName = playerNameInput.value.trim() || 'Игрок';
         
-        // Проверяем, не занято ли имя
         const existingPlayerId = await checkPlayerInRoom(room, myName);
         if (existingPlayerId) {
             messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
@@ -733,6 +794,7 @@
                 },
                 currentPlayerId: myId,
                 lastWord: '',
+                lastWordAuthor: null,
                 usedWords: [],
                 complaint: null,
                 createdAt: Date.now(),
@@ -744,7 +806,7 @@
                     messageBox.textContent = 'Ошибка: ' + error.message;
                 } else {
                     connectionStatus.textContent = `✅ Создано: ${room}`;
-                    messageBox.textContent = 'Комната создана!';
+                    messageBox.textContent = 'Комната создана! Ожидайте игроков...';
                     setupListeners(room);
                     startHeartbeat(room);
                 }
@@ -761,7 +823,6 @@
 
         myName = playerNameInput.value.trim() || 'Игрок';
         
-        // Проверяем, не занято ли имя
         const existingPlayerId = await checkPlayerInRoom(room, myName);
         if (existingPlayerId) {
             messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
@@ -779,6 +840,9 @@
                 return;
             }
 
+            const roomData = snapshot.val();
+            const playerIds = roomData.players ? Object.keys(roomData.players) : [];
+            
             const updates = {};
             updates[`players/${myId}`] = {
                 id: myId,
@@ -789,6 +853,12 @@
                 connected: true,
                 lastSeen: Date.now()
             };
+            
+            // Если это первый игрок после создателя, начинаем игру
+            if (playerIds.length === 1 && !roomData.currentPlayerId) {
+                updates.currentPlayerId = roomData.players ? Object.keys(roomData.players)[0] : myId;
+            }
+            
             updates.lastActivity = Date.now();
 
             roomRef.update(updates, (error) => {
@@ -796,7 +866,7 @@
                     messageBox.textContent = 'Ошибка: ' + error.message;
                 } else {
                     connectionStatus.textContent = `✅ Подключён к ${room}`;
-                    messageBox.textContent = 'Вы присоединились!';
+                    messageBox.textContent = 'Вы присоединились! Игра начинается...';
                     setupListeners(room);
                     startHeartbeat(room);
                 }
@@ -804,11 +874,9 @@
         });
     }
 
-    // Сердцебиение - обновляем статус подключения
     function startHeartbeat(room) {
         const playerRef = database.ref(`rooms/${room}/players/${myId}`);
         
-        // Обновляем статус каждые 10 секунд
         const interval = setInterval(() => {
             if (roomId && myId) {
                 playerRef.update({
@@ -820,16 +888,12 @@
             }
         }, 10000);
 
-        // При закрытии страницы
         window.addEventListener('beforeunload', () => {
             if (roomId && myId) {
                 playerRef.update({
                     connected: false,
                     lastSeen: Date.now()
                 });
-                setTimeout(() => {
-                    playerRef.remove();
-                }, 1000);
             }
         });
     }
@@ -840,29 +904,53 @@
         roomRef.child('players').on('value', (snapshot) => {
             const playersData = snapshot.val() || {};
             
-            // Фильтруем отключившихся игроков (отключены > 30 секунд)
             const now = Date.now();
             const activePlayers = Object.values(playersData).filter(p => {
                 return p.connected || (now - (p.lastSeen || 0)) < 30000;
             });
             
             players = activePlayers;
+            
+            // Если игроков стало больше 1 и нет текущего игрока, устанавливаем первого
+            if (activePlayers.length >= 1 && !currentPlayerId) {
+                const firstPlayerId = activePlayers[0].id;
+                roomRef.child('currentPlayerId').set(firstPlayerId);
+            }
+            
             renderAll();
             updateControls();
-            
-            // Если игроков нет, помечаем комнату для удаления
-            if (activePlayers.length === 0) {
-                roomRef.update({ isEmpty: true, lastActivity: Date.now() });
-            }
         });
 
         roomRef.on('value', (snapshot) => {
             const data = snapshot.val();
-            if (!data) return;
+            if (!data) {
+                roomId = null;
+                myId = null;
+                players = [];
+                currentPlayerId = null;
+                lastWord = '';
+                lastWordAuthor = null;
+                usedWords = [];
+                complaintActive = false;
+                messageBox.textContent = '🏠 Комната была удалена';
+                connectionStatus.textContent = '⚡ Отключён';
+                renderAll();
+                updateControls();
+                return;
+            }
 
             currentPlayerId = data.currentPlayerId;
             lastWord = data.lastWord || '';
-            usedWords = new Set(data.usedWords || []);
+            lastWordAuthor = data.lastWordAuthor || null;
+            usedWords = data.usedWords || [];
+            
+            if (usedWords.length > 0) {
+                lastWordsHistory = usedWords.slice(-10).reverse();
+                renderHistory();
+            } else {
+                lastWordsHistory = [];
+                renderHistory();
+            }
             
             if (data.complaint) {
                 complaintActive = true;
@@ -903,7 +991,7 @@
             return;
         }
 
-        if (usedWords.has(word)) {
+        if (usedWords.includes(word)) {
             messageBox.textContent = `⚠️ Слово "${word}" уже было`;
             wordInput.value = '';
             return;
@@ -925,6 +1013,7 @@
         updates[`players/${myId}/score`] = (players.find(p => p.id === myId).score || 0) + 1;
         updates.currentPlayerId = nextPlayerId;
         updates.lastWord = word;
+        updates.lastWordAuthor = myId; // Запоминаем, кто написал слово
         updates.usedWords = [...usedWords, word];
         updates.lastActivity = Date.now();
 
@@ -940,13 +1029,27 @@
             messageBox.textContent = 'Не на что жаловаться';
             return;
         }
+        
+        // Жаловаться может только тот, кто сейчас должен ходить (получил ход) и видит ошибку
+        // И жаловаться НЕ может автор слова
+        if (myId === lastWordAuthor) {
+            messageBox.textContent = 'Вы не можете жаловаться на своё слово';
+            return;
+        }
+
+        // Жаловаться может текущий игрок (который должен написать следующее слово)
+        if (myId !== currentPlayerId) {
+            messageBox.textContent = 'Сейчас не ваша очередь жаловаться';
+            return;
+        }
 
         const roomRef = database.ref(`rooms/${roomId}`);
         
         const complaint = {
             active: true,
             word: lastWord,
-            authorId: currentPlayerId,
+            authorId: lastWordAuthor, // Автор слова, на которое жалуются
+            complainantId: myId, // Тот, кто жалуется
             votes: {
                 yes: [],
                 no: []
@@ -959,18 +1062,20 @@
 
     function vote(voteType) {
         if (!roomId || !myId || !complaintActive) return;
+        
+        // Автор слова не может голосовать
         if (myId === complaintAuthor) {
             messageBox.textContent = 'Вы автор слова и не можете голосовать';
             return;
         }
 
-        const roomRef = database.ref(`rooms/${roomId}`);
-        
         if (complaintVotes.yes.has(myId) || complaintVotes.no.has(myId)) {
             messageBox.textContent = 'Вы уже проголосовали';
             return;
         }
 
+        const roomRef = database.ref(`rooms/${roomId}`);
+        
         const updates = {};
         if (voteType === 'yes') {
             updates[`complaint/votes/yes`] = [...complaintVotes.yes, myId];
@@ -989,6 +1094,7 @@
         const noVotes = complaintVotes.no.size;
         const totalVotes = yesVotes + noVotes;
         
+        // Голосовать могут все, кроме автора слова
         if (totalVotes >= totalPlayers - 1) {
             const roomRef = database.ref(`rooms/${roomId}`);
             
@@ -996,15 +1102,17 @@
                 const updates = {};
                 const author = players.find(p => p.id === complaintAuthor);
                 if (author) {
+                    // Штрафуем автора слова
                     updates[`players/${complaintAuthor}/score`] = Math.max(0, (author.score || 0) - 1);
                 }
                 
                 updates.complaint = null;
                 updates.lastWord = '';
-                updates.usedWords = [];
+                updates.lastWordAuthor = null;
+                updates.usedWords = usedWords.filter(w => w !== complainedWord);
                 
                 roomRef.update(updates);
-                messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено';
+                messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено, автор оштрафован';
             } else {
                 roomRef.child('complaint').set(null);
                 messageBox.textContent = '❌ Жалоба отклонена! Слово засчитано';
@@ -1013,6 +1121,24 @@
     }
 
     // ==================== ОТРИСОВКА ====================
+    function renderHistory() {
+        if (lastWordsHistory.length === 0) {
+            wordsHistory.innerHTML = '<li style="justify-content: center; color: #999;">Пока нет слов</li>';
+            return;
+        }
+
+        let html = '';
+        lastWordsHistory.slice(0, 10).forEach((word, index) => {
+            html += `
+                <li>
+                    <span class="word-number">${index + 1}</span>
+                    <span class="word-text">${word}</span>
+                </li>
+            `;
+        });
+        wordsHistory.innerHTML = html;
+    }
+
     function renderAll() {
         let html = '';
         players.forEach(p => {
@@ -1028,7 +1154,7 @@
             
             if (complaintActive) {
                 if (p.id === complaintAuthor) {
-                    complaintBadge = '<div class="complaint-badge">⚠️ слово под вопросом</div>';
+                    complaintBadge = '<div class="complaint-badge">⚠️ слово под вопросом (автор)</div>';
                 } else {
                     const hasVotedYes = complaintVotes.yes.has(p.id);
                     const hasVotedNo = complaintVotes.no.has(p.id);
@@ -1037,7 +1163,7 @@
                         complaintBadge = '<div class="complaint-badge" style="background:#2e7d32;">✅ согласен</div>';
                     } else if (hasVotedNo) {
                         complaintBadge = '<div class="complaint-badge" style="background:#c62828;">❌ не согласен</div>';
-                    } else if (isMe && p.connected) {
+                    } else if (isMe && p.connected && myId !== complaintAuthor) {
                         votingControls = `
                             <div class="voting-controls">
                                 <button class="vote-btn vote-yes" onclick="voteYes()">✅ Согласен</button>
@@ -1080,7 +1206,11 @@
             
             if (currentPlayerId) {
                 const currentPlayer = players.find(p => p.id === currentPlayerId);
-                turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer ? currentPlayer.name : '...'}`;
+                if (currentPlayer) {
+                    turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer.name}`;
+                } else {
+                    turnDisplay.innerHTML = '⏳ Ожидание игроков...';
+                }
             } else {
                 turnDisplay.innerHTML = '⏳ Ожидание игроков...';
             }
@@ -1104,11 +1234,13 @@
         wordInput.disabled = !isMyTurn || !isInRoom;
         submitBtn.disabled = !isMyTurn || !isInRoom;
         
-        if (!isInRoom || !lastWord || complaintActive || myId === currentPlayerId) {
-            complaintBtn.disabled = true;
-        } else {
-            complaintBtn.disabled = false;
-        }
+        // Жаловаться может только текущий игрок (который должен написать слово) и только если это не его слово
+        const canComplain = isInRoom && lastWord && !complaintActive && 
+                           myId === currentPlayerId && myId !== lastWordAuthor;
+        
+        complaintBtn.disabled = !canComplain;
+        
+        document.getElementById('complaintArea').style.display = complaintActive ? 'flex' : 'none';
     }
 
     window.voteYes = function() { vote('yes'); };
@@ -1128,6 +1260,12 @@
         });
 
         selectAvatar('😊');
+        
+        window.addEventListener('load', () => {
+            if (myId) {
+                myId = null;
+            }
+        });
     }
 
     init();
