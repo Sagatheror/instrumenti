@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сетевая игра в слова</title>
     <style>
-        /* Стили остаются без изменений */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
@@ -41,62 +40,270 @@
         }
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 320px;
+            grid-template-columns: 350px 1fr 320px;
             gap: 20px;
         }
+        
+        /* Левая колонка - ЧАТ */
+        .chat-sidebar {
+            background: linear-gradient(145deg, #1e3347, #162b3d);
+            border-radius: 60px;
+            padding: 20px;
+            border: 2px solid #e9c27c;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 15px 0 #0f1e2a;
+            height: fit-content;
+            max-height: 700px;
+        }
+        
+        .chat-sidebar .chat-title {
+            color: #FFE9A7;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 0;
+            border-bottom: 2px solid #e9c27c;
+            padding-bottom: 15px;
+            text-shadow: 0 2px 0 #7b5a3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .chat-sidebar .chat-messages {
+            flex: 1;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #0f1e2a;
+            border-radius: 40px;
+            border: 1px solid #a88444;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .chat-sidebar .chat-message {
+            color: #fff;
+            padding: 10px 15px;
+            background: linear-gradient(145deg, #1e3347, #172b3a);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            border: 1px solid #a88444;
+            word-break: break-word;
+            max-width: 95%;
+        }
+        
+        .chat-sidebar .chat-message.mine {
+            background: linear-gradient(145deg, #2a4a6a, #1f3a52);
+            border-color: #ffd966;
+            margin-left: auto;
+        }
+        
+        .chat-sidebar .chat-message .sender {
+            color: #ffd966;
+            font-weight: bold;
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .chat-sidebar .chat-message .time {
+            float: right;
+            color: #999;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            margin-top: 2px;
+        }
+        
+        .chat-sidebar .chat-message .text {
+            display: block;
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+        
+        .chat-sidebar .chat-input-area {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .chat-sidebar .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 40px;
+            border: none;
+            background: #2b3f54;
+            color: white;
+            border: 2px solid #a88444;
+            font-size: 0.95rem;
+        }
+        
+        .chat-sidebar .chat-input:focus {
+            outline: none;
+            border-color: #ffd966;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .chat-sidebar .chat-send-btn {
+            background: linear-gradient(145deg, #fec165, #e5a94a);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 4px solid #a5712b;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.1s;
+            white-space: nowrap;
+        }
+        
+        .chat-sidebar .chat-send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-bottom-width: 5px;
+        }
+        
+        .chat-sidebar .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .chat-sidebar .online-count {
+            color: #a0c0ff;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 5px;
+            background: #142433;
+            border-radius: 30px;
+            border: 1px solid #4a6c8f;
+        }
+        
+        /* Центральная колонка - ИГРА */
         .game-content {
             display: flex;
             flex-direction: column;
         }
+        
+        /* Профиль */
         .profile-setup {
-            background: #1e3347;
+            background: linear-gradient(145deg, #1e3347, #162b3d);
             border-radius: 60px;
-            padding: 20px;
+            padding: 15px 25px;
             margin-bottom: 20px;
             border: 2px solid #e9c27c;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            align-items: center;
-            justify-content: center;
-        }
-        .avatar-selection {
-            display: flex;
             gap: 15px;
             align-items: center;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            box-shadow: 0 10px 0 #0f1e2a;
         }
+        
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar-preview-large {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2b3f54, #1f3348);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 4px solid #ffd966;
+            box-shadow: 0 5px 0 #7b5a3b;
+        }
+        
+        .avatar-selector {
+            position: relative;
+        }
+        
+        .avatar-selector-btn {
+            background: #2b3f54;
+            border: 2px solid #a88444;
+            border-radius: 40px;
+            padding: 10px 25px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+        
+        .avatar-selector-btn:hover {
+            background: #3a5068;
+            border-color: #ffd966;
+        }
+        
+        .avatar-selector-btn .arrow {
+            transition: transform 0.3s;
+        }
+        
+        .avatar-selector-btn.open .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .avatar-grid {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: #1e3347;
+            border: 2px solid #e9c27c;
+            border-radius: 30px;
+            padding: 20px;
+            display: none;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+            min-width: 400px;
+        }
+        
+        .avatar-grid.show {
+            display: grid;
+        }
+        
         .avatar-option {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             cursor: pointer;
             border: 3px solid transparent;
-            transition: 0.2s;
-            font-size: 2.5rem;
+            transition: all 0.2s;
+            font-size: 2.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #2b3f54;
         }
+        
         .avatar-option:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
+            border-color: #ffd966;
+            box-shadow: 0 0 20px gold;
         }
+        
         .avatar-option.selected {
             border-color: #ffd966;
             box-shadow: 0 0 15px gold;
+            background: #3a5068;
         }
-        .avatar-preview {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #2b3f54;
+        
+        .name-input-section {
             display: flex;
+            gap: 10px;
             align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            border: 3px solid #ffd966;
         }
+        
         .name-input {
             padding: 12px 20px;
             border-radius: 40px;
@@ -107,43 +314,50 @@
             color: white;
             border: 2px solid #a88444;
         }
-        .custom-avatar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .file-input {
-            display: none;
-        }
+        
         .file-label {
-            background: #427a5c;
-            padding: 12px 20px;
+            background: linear-gradient(145deg, #427a5c, #2d5a40);
+            padding: 12px 25px;
             border-radius: 40px;
             color: white;
             cursor: pointer;
             border-bottom: 4px solid #1f4d33;
+            transition: 0.1s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
+        .file-label:hover {
+            transform: translateY(-2px);
+            border-bottom-width: 5px;
+        }
+        
         .connection-panel {
-            background: #1e3347;
+            background: linear-gradient(145deg, #1e3347, #162b3d);
             border-radius: 60px;
-            padding: 20px;
+            padding: 15px 25px;
             margin-bottom: 20px;
             border: 2px solid #e9c27c;
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 0 #0f1e2a;
         }
+        
         .room-control {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             align-items: center;
             background: #142433;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 50px;
         }
+        
         .room-control input {
             padding: 12px 20px;
             border-radius: 40px;
@@ -154,8 +368,9 @@
             color: white;
             border: 2px solid #a88444;
         }
+        
         .room-control button {
-            background: #fec165;
+            background: linear-gradient(145deg, #fec165, #e5a94a);
             border: none;
             border-radius: 40px;
             padding: 12px 25px;
@@ -165,15 +380,21 @@
             transition: 0.07s;
             font-size: 1.1rem;
         }
+        
         .room-control button:hover {
-            background: #ffd58c;
+            background: linear-gradient(145deg, #ffd58c, #fec165);
             transform: translateY(-2px);
         }
+        
         .connection-status {
             color: #ffeeaa;
             font-weight: 500;
-            padding: 0 15px;
+            padding: 8px 20px;
+            background: #142433;
+            border-radius: 40px;
+            border: 1px solid #a88444;
         }
+        
         .players-panel {
             display: flex;
             flex-wrap: wrap;
@@ -184,30 +405,51 @@
             overflow-y: auto;
             padding: 10px;
         }
+        
         .player-card {
             flex: 1 1 180px;
             min-width: 160px;
-            background: #f0e5d2;
+            background: linear-gradient(145deg, #f0e5d2, #e5d5bc);
             border-radius: 40px 40px 30px 30px;
             padding: 18px 8px 12px;
             text-align: center;
             box-shadow: 0 12px 0 #8b653b, 0 20px 18px -8px black;
             border: 2px solid #f5c489;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: all 0.2s;
         }
+        
         .player-card.active {
             transform: translateY(-6px);
             box-shadow: 0 8px 0 #b87e3f, 0 25px 25px -8px black;
             border: 3px solid #fbb13c;
-            background: #fff6e6;
+            background: linear-gradient(145deg, #fff6e6, #ffebd0);
         }
+        
         .player-card.this-player {
             outline: 4px solid #4caf92;
+            position: relative;
         }
+        
+        .player-card.this-player::after {
+            content: "👈 Это вы";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #4caf92;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 2px solid #ffd966;
+        }
+        
         .player-avatar {
-            font-size: 3rem;
-            margin-bottom: 5px;
+            font-size: 3.2rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.3));
         }
+        
         .player-name {
             font-size: 1.6rem;
             font-weight: 700;
@@ -218,17 +460,20 @@
             gap: 6px;
             word-break: break-word;
         }
+        
         .player-score {
             font-size: 2.3rem;
             font-weight: 800;
             background: #2f200e;
             color: #ffd966;
             display: inline-block;
-            padding: 0px 22px;
+            padding: 5px 25px;
             border-radius: 40px;
-            margin: 6px 0 4px;
+            margin: 8px 0 4px;
             border: 2px solid #f5b951;
+            box-shadow: inset 0 -3px 0 #1a1207;
         }
+        
         .complaint-badge {
             display: inline-block;
             background: #aa4b4b;
@@ -240,12 +485,14 @@
             margin-top: 5px;
             border: 1px solid #ffaeae;
         }
+        
         .voting-controls {
             display: flex;
             gap: 10px;
             justify-content: center;
             margin-top: 5px;
         }
+        
         .vote-btn {
             padding: 5px 15px;
             border-radius: 20px;
@@ -253,91 +500,155 @@
             cursor: pointer;
             font-weight: bold;
         }
+        
         .vote-yes {
             background: #4caf50;
             color: white;
         }
+        
         .vote-no {
             background: #f44336;
             color: white;
         }
-        .vote-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        
+        /* Индикатор хода */
         .turn-indicator {
-            background: #1e2f3f;
+            background: linear-gradient(145deg, #1e2f3f, #152433);
             border-radius: 60px;
-            padding: 12px 22px;
+            padding: 25px 30px;
             margin: 10px 0 20px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            gap: 20px;
             border: 2px solid #e9c27c;
-            box-shadow: 0 6px 0 #514128;
+            box-shadow: 0 10px 0 #0f1e2a, inset 0 2px 10px rgba(255,215,0,0.2);
         }
+        
         .turn-text {
-            font-size: 1.5rem;
+            font-size: 2.2rem;
             font-weight: 600;
             color: #ffe392;
             background: #232b33;
-            padding: 4px 28px;
-            border-radius: 40px;
+            padding: 12px 50px;
+            border-radius: 50px;
+            text-align: center;
+            border: 2px solid #ffd966;
+            box-shadow: 0 5px 0 #0f1e2a;
         }
+        
         .last-word {
-            font-size: 1.4rem;
-            background: #2f3e52;
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(145deg, #2f3e52, #233241);
             color: #FFEEBB;
-            padding: 6px 24px;
-            border-radius: 40px;
-            font-family: 'Courier New', monospace;
-        }
-        .game-area {
-            background: #26425e;
+            padding: 20px 60px;
             border-radius: 70px;
-            padding: 28px 20px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 8px 0 #0f1e2a;
+            text-shadow: 0 2px 0 #00000080;
+        }
+        
+        /* Подсказка с буквой */
+        .letter-hint-container {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0 10px;
+        }
+        
+        .required-letter-badge {
+            background: linear-gradient(145deg, #ffd700, #ffb347);
+            color: #1a1a1a;
+            font-size: 2.8rem;
+            font-weight: 900;
+            padding: 20px 60px;
+            border-radius: 80px;
+            border: 4px solid white;
+            box-shadow: 0 10px 0 #a5712b, 0 0 30px #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .required-letter-badge span {
+            background: #1a1a1a;
+            color: #ffd700;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.8rem;
+            border: 2px solid white;
+        }
+        
+        .game-area {
+            background: linear-gradient(145deg, #26425e, #1b3349);
+            border-radius: 70px;
+            padding: 30px 25px;
             border: 3px solid #FFD78C;
             box-shadow: inset 0 -8px 0 #0e1e30, 0 20px 25px -5px black;
         }
+        
         .input-section {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 20px;
         }
+        
         .word-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
             justify-content: center;
         }
+        
         .word-input-wrapper {
             display: flex;
-            flex: 3 1 400px;
+            flex: 3 1 450px;
             background: white;
             border-radius: 100px;
             border: 4px solid #dbb174;
-            padding: 4px;
-            box-shadow: 0 7px 0 #785f37;
+            padding: 5px;
+            box-shadow: 0 8px 0 #785f37;
+            transition: all 0.3s;
         }
+        
+        .word-input-wrapper.my-turn-pulse {
+            animation: turnPulse 2s infinite;
+            border-color: #ffd700;
+        }
+        
         .word-input-wrapper input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 1.5rem;
-            padding: 16px 25px;
+            font-size: 1.8rem;
+            padding: 18px 30px;
             background: transparent;
             font-weight: 500;
             color: #131313;
-            min-width: 180px;
+            min-width: 200px;
         }
+        
+        .word-input-wrapper input.my-turn {
+            background: #fff9e6;
+            border-radius: 60px;
+        }
+        
+        .word-input-wrapper input::placeholder {
+            color: #999;
+            font-size: 1.4rem;
+        }
+        
         .word-input-wrapper button {
-            background: #fec165;
+            background: linear-gradient(145deg, #fec165, #e5a94a);
             border: none;
             margin: 6px;
             border-radius: 60px;
-            padding: 0 35px;
-            font-size: 1.7rem;
+            padding: 0 45px;
+            font-size: 2rem;
             font-weight: 700;
             color: #2e2b1f;
             cursor: pointer;
@@ -346,31 +657,36 @@
             box-shadow: 0 4px 12px black;
             white-space: nowrap;
         }
+        
         .word-input-wrapper button:hover:not(:disabled) {
-            background: #ffd894;
+            background: linear-gradient(145deg, #ffd894, #fec165);
             border-bottom-width: 3px;
             transform: scale(0.98);
         }
+        
         .word-input-wrapper button:disabled {
             opacity: 0.4;
             cursor: default;
         }
-        .complaint-area {
+        
+        /* Обновленная область с кнопками */
+        .action-area {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 25px;
-            background: #193045;
+            gap: 15px;
+            background: linear-gradient(145deg, #193045, #122433);
             border-radius: 60px;
-            padding: 14px 20px;
-            border: 1px solid #cfb071;
+            padding: 15px 25px;
+            border: 2px solid #cfb071;
         }
+        
         .complaint-btn {
-            background: #c06c6c;
+            background: linear-gradient(145deg, #c06c6c, #a55252);
             border: none;
             border-radius: 50px;
-            padding: 12px 35px;
+            padding: 15px 35px;
             font-size: 1.4rem;
             font-weight: bold;
             color: #ffe8c7;
@@ -380,69 +696,117 @@
             box-shadow: 0 4px 12px black;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
+        
         .complaint-btn:hover:not(:disabled) {
-            background: #d77e7e;
+            background: linear-gradient(145deg, #d77e7e, #c06c6c);
             border-bottom-width: 3px;
             transform: translateY(2px);
         }
+        
         .complaint-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .complaint-count {
-            background: #341b1b;
-            padding: 5px 18px;
-            border-radius: 40px;
-            font-size: 1.5rem;
-            color: #ffaeae;
-            font-weight: 700;
+        
+        .skip-btn {
+            background: linear-gradient(145deg, #6c8fc0, #4f6f9c);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 45px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffffff;
+            border-bottom: 5px solid #2a3f5a;
+            cursor: pointer;
+            transition: 0.07s;
+            box-shadow: 0 4px 12px black;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
+        
+        .skip-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #7fa0d0, #6c8fc0);
+            border-bottom-width: 3px;
+            transform: translateY(2px);
+        }
+        
+        .skip-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .vote-status {
             display: flex;
             gap: 20px;
             color: white;
+            background: #142433;
+            padding: 10px 20px;
+            border-radius: 50px;
         }
+        
         .vote-yes-count, .vote-no-count {
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 30px;
             font-weight: bold;
+            font-size: 1.2rem;
         }
+        
         .vote-yes-count {
             background: #2e7d32;
         }
+        
         .vote-no-count {
             background: #c62828;
         }
+        
+        .complaint-count {
+            background: #341b1b;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-size: 1.6rem;
+            color: #ffaeae;
+            font-weight: 700;
+            border: 2px solid #c06c6c;
+        }
+        
         .message-area {
-            background: #10212e;
+            background: linear-gradient(145deg, #10212e, #0a1721);
             border-radius: 50px;
-            padding: 16px 30px;
+            padding: 18px 35px;
             color: #ffefa5;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 600;
             border: 2px solid #cbb26a;
             box-shadow: inset 0 -4px 0 #071118;
             text-align: center;
         }
+        
+        /* Правая колонка - История */
         .sidebar {
-            background: #1e3347;
+            background: linear-gradient(145deg, #1e3347, #162b3d);
             border-radius: 60px;
-            padding: 20px;
+            padding: 25px 20px;
             border: 2px solid #e9c27c;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            box-shadow: 0 15px 0 #0f1e2a;
+            height: fit-content;
         }
+        
         .history-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: #FFE9A7;
             text-align: center;
             margin: 0;
             border-bottom: 2px solid #e9c27c;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
+            text-shadow: 0 2px 0 #7b5a3b;
         }
+        
         .words-history {
             list-style: none;
             padding: 0;
@@ -450,57 +814,90 @@
             max-height: 400px;
             overflow-y: auto;
         }
+        
         .words-history li {
-            background: #2b3f54;
+            background: linear-gradient(145deg, #2b3f54, #1f3348);
             color: #FFEEBB;
-            padding: 12px 20px;
-            margin-bottom: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
             border-radius: 40px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-family: 'Courier New', monospace;
             border: 1px solid #a88444;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            box-shadow: 0 4px 0 #0f1e2a;
         }
+        
         .word-number {
             background: #142433;
             color: #e9c27c;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            border: 2px solid #e9c27c;
         }
-        .word-text {
-            flex: 1;
-        }
+        
         .footer-rules {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 10px;
             color: #e2d7b8;
-            margin-top: 22px;
+            margin-top: 15px;
             font-size: 1rem;
-            flex-wrap: wrap;
-            gap: 12px;
         }
-        .letter-hint {
-            background: #182233;
-            padding: 5px 18px;
+        
+        .rule-item {
+            background: #142433;
+            padding: 10px 15px;
             border-radius: 30px;
-            border-left: 6px solid #f6b83e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #f6b83e;
         }
+        
         .cleanup-info {
             background: #142433;
             color: #a0c0ff;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 40px;
-            font-size: 0.9rem;
-            margin-top: 10px;
+            font-size: 0.95rem;
+            margin-top: 20px;
             text-align: center;
+            border: 1px solid #4a6c8f;
+        }
+
+        @keyframes turnPulse {
+            0% { box-shadow: 0 8px 0 #785f37, 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 8px 0 #785f37, 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 8px 0 #785f37, 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        /* Скроллбары */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #142433;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #a88444;
+            border-radius: 10px;
+            border: 2px solid #142433;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e9c27c;
         }
     </style>
     <!-- Firebase SDK -->
@@ -510,31 +907,82 @@
 </head>
 <body>
 <div class="game-container">
-
-    <!-- НАСТРОЙКА ПРОФИЛЯ -->
+    <!-- Верхняя панель с профилем -->
     <div class="profile-setup">
-        <div class="avatar-selection">
-            <div class="avatar-preview" id="avatarPreview">😊</div>
-            <div class="avatar-option" onclick="selectAvatar('😊')">😊</div>
-            <div class="avatar-option" onclick="selectAvatar('😎')">😎</div>
-            <div class="avatar-option" onclick="selectAvatar('🤓')">🤓</div>
-            <div class="avatar-option" onclick="selectAvatar('🦸')">🦸</div>
-            <div class="avatar-option" onclick="selectAvatar('🐉')">🐉</div>
-            <div class="avatar-option" onclick="selectAvatar('👾')">👾</div>
+        <div class="avatar-section">
+            <div class="avatar-preview-large" id="avatarPreview">😊</div>
+            
+            <div class="avatar-selector">
+                <button class="avatar-selector-btn" id="avatarSelectorBtn">
+                    <span>Выбрать смайлик</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="avatar-grid" id="avatarGrid">
+                    <!-- Первая строка -->
+                    <div class="avatar-option" onclick="selectAvatar('😊')">😊</div>
+                    <div class="avatar-option" onclick="selectAvatar('😎')">😎</div>
+                    <div class="avatar-option" onclick="selectAvatar('🤓')">🤓</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦸')">🦸</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐉')">🐉</div>
+                    <div class="avatar-option" onclick="selectAvatar('👾')">👾</div>
+                    <!-- Вторая строка -->
+                    <div class="avatar-option" onclick="selectAvatar('🌟')">🌟</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎮')">🎮</div>
+                    <div class="avatar-option" onclick="selectAvatar('👑')">👑</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐺')">🐺</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦊')">🦊</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐱')">🐱</div>
+                    <!-- Третья строка -->
+                    <div class="avatar-option" onclick="selectAvatar('🐼')">🐼</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐨')">🐨</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦁')">🦁</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐧')">🐧</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐝')">🐝</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦋')">🦋</div>
+                    <!-- Четвертая строка -->
+                    <div class="avatar-option" onclick="selectAvatar('🍕')">🍕</div>
+                    <div class="avatar-option" onclick="selectAvatar('🍔')">🍔</div>
+                    <div class="avatar-option" onclick="selectAvatar('🌮')">🌮</div>
+                    <div class="avatar-option" onclick="selectAvatar('🍣')">🍣</div>
+                    <div class="avatar-option" onclick="selectAvatar('🍩')">🍩</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎂')">🎂</div>
+                </div>
+            </div>
         </div>
-        <div class="custom-avatar">
+        
+        <div class="name-input-section">
             <input type="text" id="playerName" class="name-input" placeholder="Ваше имя" value="Игрок">
             <input type="file" id="avatarFile" class="file-input" accept="image/*">
-            <label for="avatarFile" class="file-label">📷 Своё фото</label>
+            <label for="avatarFile" class="file-label">📷 Загрузить фото</label>
         </div>
     </div>
 
+    <!-- Три колонки: Чат | Игра | История -->
     <div class="main-grid">
+        <!-- Левая колонка - ЧАТ -->
+        <div class="chat-sidebar">
+            <div class="chat-title">
+                <span>💬 Чат комнаты</span>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages"></div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Введите сообщение..." disabled>
+                <button id="chatSendBtn" class="chat-send-btn" disabled>➤</button>
+            </div>
+            
+            <div class="online-count" id="onlineCount">
+                👥 Онлайн: 0
+            </div>
+        </div>
+
+        <!-- Центральная колонка - ИГРА -->
         <div class="game-content">
             <div class="connection-panel">
                 <div class="room-control">
                     <input type="text" id="roomInput" placeholder="Код комнаты" value="game123">
-                    <button id="createRoomBtn">🔗 Создать комнату</button>
+                    <button id="createRoomBtn">🔗 Создать</button>
                     <button id="joinRoomBtn">✨ Присоединиться</button>
                 </div>
                 <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
@@ -547,17 +995,25 @@
                 <span class="last-word" id="lastWordDisplay">⏳ пока нет</span>
             </div>
 
+            <!-- Заметная подсказка с буквой -->
+            <div class="letter-hint-container">
+                <div class="required-letter-badge" id="requiredLetterBadge">
+                    <span>🔤</span> Нужная буква: ?
+                </div>
+            </div>
+
             <div class="game-area">
                 <div class="input-section">
                     <div class="word-row">
                         <div class="word-input-wrapper">
                             <input type="text" id="wordInput" placeholder="существительное..." autocomplete="off" disabled>
-                            <button id="submitWordBtn" disabled>➤ Отправить</button>
+                            <button id="submitWordBtn" disabled>➤</button>
                         </div>
                     </div>
 
-                    <div class="complaint-area" id="complaintArea">
+                    <div class="action-area" id="actionArea">
                         <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
+                        <button class="skip-btn" id="skipBtn" disabled>⏭️ Пропустить</button>
                         <div class="vote-status" id="voteStatus" style="display: none;">
                             <span class="vote-yes-count" id="voteYesCount">0</span>
                             <span class="vote-no-count" id="voteNoCount">0</span>
@@ -572,15 +1028,28 @@
             </div>
         </div>
 
-        <!-- Сайдбар с историей слов -->
+        <!-- Правая колонка - ИСТОРИЯ СЛОВ -->
         <div class="sidebar">
             <h3 class="history-title">📜 История слов</h3>
             <ul class="words-history" id="wordsHistory">
                 <li style="justify-content: center; color: #999;">Пока нет слов</li>
             </ul>
             <div class="footer-rules">
-                <span>📚 Существительные, мин 2 буквы</span>
-                <span class="letter-hint" id="requiredLetterHint">нужная буква: ?</span>
+                <div class="rule-item">
+                    <span>📚</span> Только существительные
+                </div>
+                <div class="rule-item">
+                    <span>🔤</span> Минимум 2 буквы
+                </div>
+                <div class="rule-item">
+                    <span>🔄</span> Слова не должны повторяться
+                </div>
+                <div class="rule-item">
+                    <span>📝</span> Можно с дефисом и пробелом
+                </div>
+                <div class="rule-item">
+                    <span>⏭️</span> Можно пропустить ход
+                </div>
             </div>
         </div>
     </div>
@@ -626,7 +1095,7 @@
     let players = [];
     let currentPlayerId = null;
     let lastWord = '';
-    let lastWordAuthor = null; // Кто написал последнее слово
+    let lastWordAuthor = null;
     let usedWords = [];
     let complaintActive = false;
     let complainedWord = '';
@@ -636,15 +1105,19 @@
         no: new Set()
     };
     let lastWordsHistory = [];
+    let pageTitle = document.title;
+    let isTabActive = true;
+    let notificationInterval = null;
 
     // DOM элементы
     const playersPanel = document.getElementById('playersPanel');
     const turnDisplay = document.getElementById('turnDisplay');
     const lastWordDisplay = document.getElementById('lastWordDisplay');
-    const requiredLetterHint = document.getElementById('requiredLetterHint');
+    const requiredLetterBadge = document.getElementById('requiredLetterBadge');
     const wordInput = document.getElementById('wordInput');
     const submitBtn = document.getElementById('submitWordBtn');
     const complaintBtn = document.getElementById('complaintBtn');
+    const skipBtn = document.getElementById('skipBtn');
     const complaintCountDisplay = document.getElementById('complaintCountDisplay');
     const voteStatus = document.getElementById('voteStatus');
     const voteYesCount = document.getElementById('voteYesCount');
@@ -659,6 +1132,48 @@
     const avatarFile = document.getElementById('avatarFile');
     const cleanupInfo = document.getElementById('cleanupInfo');
     const wordsHistory = document.getElementById('wordsHistory');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const onlineCount = document.getElementById('onlineCount');
+    const avatarSelectorBtn = document.getElementById('avatarSelectorBtn');
+    const avatarGrid = document.getElementById('avatarGrid');
+
+    // ==================== УПРАВЛЕНИЕ СМАЙЛИКАМИ ====================
+    avatarSelectorBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        avatarGrid.classList.toggle('show');
+        avatarSelectorBtn.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!avatarSelectorBtn.contains(e.target) && !avatarGrid.contains(e.target)) {
+            avatarGrid.classList.remove('show');
+            avatarSelectorBtn.classList.remove('open');
+        }
+    });
+
+    // ==================== ОТСЛЕЖИВАНИЕ ВКЛАДКИ ====================
+    document.addEventListener('visibilitychange', () => {
+        isTabActive = !document.hidden;
+        if (isTabActive) {
+            document.title = pageTitle;
+            if (notificationInterval) {
+                clearInterval(notificationInterval);
+                notificationInterval = null;
+            }
+        }
+    });
+
+    function notifyTurn() {
+        if (!isTabActive && myId === currentPlayerId && !complaintActive) {
+            let count = 0;
+            notificationInterval = setInterval(() => {
+                document.title = count % 2 === 0 ? '🎮 ВАШ ХОД!' : pageTitle;
+                count++;
+            }, 1000);
+        }
+    }
 
     // ==================== АВТОМАТИЧЕСКАЯ ЧИСТКА КОМНАТ ====================
     function startCleanupService() {
@@ -701,6 +1216,62 @@
         cleanupInfo.textContent = `⏱️ Пустые комнаты удаляются через 1 час | Последняя проверка: ${timeString}`;
     }
 
+    // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ СО СЛОВАМИ ====================
+    
+    // Очистка слова от дефисов и пробелов для проверки уникальности
+    function normalizeWord(word) {
+        return word.toLowerCase().replace(/[-\s]/g, '');
+    }
+    
+    // Проверка, что слово содержит только русские буквы, дефисы и пробелы
+    function isValidRussianWord(word) {
+        // Разрешаем русские буквы, дефисы и пробелы
+        return /^[а-яё\s-]+$/i.test(word);
+    }
+    
+    // Получение первой буквы слова (игнорируя дефисы и пробелы в начале)
+    function getFirstLetter(word) {
+        const cleanWord = word.toLowerCase();
+        for (let i = 0; i < cleanWord.length; i++) {
+            const char = cleanWord[i];
+            if (/[а-яё]/.test(char)) {
+                return char;
+            }
+        }
+        return '';
+    }
+    
+    // Получение последней значимой буквы (с учетом мягких знаков)
+    function getLastSignificantLetter(word) {
+        if (!word) return '';
+        
+        // Ищем последнюю букву в слове (игнорируя дефисы и пробелы в конце)
+        const cleanWord = word.toLowerCase();
+        let lastChar = '';
+        
+        for (let i = cleanWord.length - 1; i >= 0; i--) {
+            const char = cleanWord[i];
+            if (/[а-яё]/.test(char)) {
+                lastChar = char;
+                break;
+            }
+        }
+        
+        if (!lastChar) return '';
+        
+        const softChars = ['ь', 'ъ', 'ы'];
+        if (softChars.includes(lastChar)) {
+            // Ищем предыдущую букву
+            for (let i = word.toLowerCase().indexOf(lastChar) - 1; i >= 0; i--) {
+                const prevChar = word.toLowerCase()[i];
+                if (/[а-яё]/.test(prevChar)) {
+                    return prevChar;
+                }
+            }
+        }
+        return lastChar;
+    }
+
     // ==================== ПРОВЕРКА ПОДКЛЮЧЕНИЯ ====================
     function checkPlayerInRoom(room, playerName) {
         return new Promise((resolve) => {
@@ -726,12 +1297,15 @@
     window.selectAvatar = function(emoji) {
         myAvatar = emoji;
         myAvatarUrl = null;
-        avatarPreview.textContent = emoji;
+        avatarPreview.innerHTML = emoji;
         
         document.querySelectorAll('.avatar-option').forEach(opt => {
             opt.classList.remove('selected');
             if (opt.textContent === emoji) opt.classList.add('selected');
         });
+        
+        avatarGrid.classList.remove('show');
+        avatarSelectorBtn.classList.remove('open');
     };
 
     // Загрузка фото
@@ -743,9 +1317,12 @@
         reader.onload = function(event) {
             myAvatarUrl = event.target.result;
             myAvatar = '📷';
-            avatarPreview.innerHTML = `<img src="${event.target.result}" style="width:50px;height:50px;border-radius:50%;">`;
+            avatarPreview.innerHTML = `<img src="${event.target.result}" style="width:60px;height:60px;border-radius:50%;">`;
         };
         reader.readAsDataURL(file);
+        
+        avatarGrid.classList.remove('show');
+        avatarSelectorBtn.classList.remove('open');
     });
 
     // Генерация ID
@@ -797,6 +1374,7 @@
                 lastWordAuthor: null,
                 usedWords: [],
                 complaint: null,
+                messages: [],
                 createdAt: Date.now(),
                 lastActivity: Date.now()
             };
@@ -809,6 +1387,8 @@
                     messageBox.textContent = 'Комната создана! Ожидайте игроков...';
                     setupListeners(room);
                     startHeartbeat(room);
+                    chatInput.disabled = false;
+                    chatSendBtn.disabled = false;
                 }
             });
         });
@@ -854,7 +1434,6 @@
                 lastSeen: Date.now()
             };
             
-            // Если это первый игрок после создателя, начинаем игру
             if (playerIds.length === 1 && !roomData.currentPlayerId) {
                 updates.currentPlayerId = roomData.players ? Object.keys(roomData.players)[0] : myId;
             }
@@ -869,6 +1448,8 @@
                     messageBox.textContent = 'Вы присоединились! Игра начинается...';
                     setupListeners(room);
                     startHeartbeat(room);
+                    chatInput.disabled = false;
+                    chatSendBtn.disabled = false;
                 }
             });
         });
@@ -911,7 +1492,9 @@
             
             players = activePlayers;
             
-            // Если игроков стало больше 1 и нет текущего игрока, устанавливаем первого
+            // Обновляем счетчик онлайн
+            onlineCount.textContent = `👥 Онлайн: ${activePlayers.length}`;
+            
             if (activePlayers.length >= 1 && !currentPlayerId) {
                 const firstPlayerId = activePlayers[0].id;
                 roomRef.child('currentPlayerId').set(firstPlayerId);
@@ -919,6 +1502,11 @@
             
             renderAll();
             updateControls();
+        });
+
+        roomRef.child('messages').on('value', (snapshot) => {
+            const messages = snapshot.val() || [];
+            renderChat(messages);
         });
 
         roomRef.on('value', (snapshot) => {
@@ -934,6 +1522,9 @@
                 complaintActive = false;
                 messageBox.textContent = '🏠 Комната была удалена';
                 connectionStatus.textContent = '⚡ Отключён';
+                chatInput.disabled = true;
+                chatSendBtn.disabled = true;
+                onlineCount.textContent = '👥 Онлайн: 0';
                 renderAll();
                 updateControls();
                 return;
@@ -968,7 +1559,58 @@
 
             renderAll();
             updateControls();
+            notifyTurn();
         });
+    }
+
+    // ==================== ЧАТ ====================
+    function sendChatMessage() {
+        if (!roomId || !myId) return;
+        
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        const roomRef = database.ref(`rooms/${roomId}`);
+        
+        roomRef.child('messages').once('value', (snapshot) => {
+            const messages = snapshot.val() || [];
+            const newMessage = {
+                sender: myName,
+                senderId: myId,
+                text: message,
+                timestamp: Date.now()
+            };
+            
+            messages.push(newMessage);
+            if (messages.length > 50) messages.shift();
+            
+            roomRef.child('messages').set(messages);
+            chatInput.value = '';
+        });
+    }
+
+    function renderChat(messages) {
+        if (!chatMessages) return;
+        
+        if (!messages || messages.length === 0) {
+            chatMessages.innerHTML = '<div class="chat-message" style="color: #999; text-align: center; background: transparent; border: none;">Нет сообщений</div>';
+            return;
+        }
+        
+        let html = '';
+        messages.forEach(msg => {
+            const isMine = msg.senderId === myId;
+            const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            html += `
+                <div class="chat-message ${isMine ? 'mine' : ''}">
+                    <span class="sender">${msg.sender}</span>
+                    <span class="time">${time}</span>
+                    <div class="text">${msg.text}</div>
+                </div>
+            `;
+        });
+        chatMessages.innerHTML = html;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     // ==================== ИГРА ====================
@@ -985,22 +1627,39 @@
             return;
         }
 
-        if (!/^[а-яё]+$/i.test(word) || word.length < 2) {
-            messageBox.textContent = '❌ Только русские буквы, мин 2';
+        // Проверка на допустимые символы (русские буквы, дефис, пробел)
+        if (!isValidRussianWord(word)) {
+            messageBox.textContent = '❌ Только русские буквы, дефис и пробел';
             wordInput.value = '';
             return;
         }
 
-        if (usedWords.includes(word)) {
+        // Проверка длины (очищенное слово должно быть минимум 2 буквы)
+        const normalizedWord = normalizeWord(word);
+        if (normalizedWord.length < 2) {
+            messageBox.textContent = '❌ Минимум 2 буквы (без учета дефисов)';
+            wordInput.value = '';
+            return;
+        }
+
+        // Проверка на уникальность (сравниваем очищенные слова)
+        const isWordUsed = usedWords.some(w => normalizeWord(w) === normalizedWord);
+        if (isWordUsed) {
             messageBox.textContent = `⚠️ Слово "${word}" уже было`;
             wordInput.value = '';
             return;
         }
 
-        if (lastWord && word[0] !== lastWord.slice(-1)) {
-            messageBox.textContent = `🔤 Должно начинаться с «${lastWord.slice(-1)}»`;
-            wordInput.value = '';
-            return;
+        // Проверка на соответствие последней букве
+        if (lastWord) {
+            const requiredLetter = getLastSignificantLetter(lastWord);
+            const firstLetter = getFirstLetter(word);
+            
+            if (requiredLetter && firstLetter !== requiredLetter) {
+                messageBox.textContent = `🔤 Должно начинаться с «${requiredLetter}»`;
+                wordInput.value = '';
+                return;
+            }
         }
 
         const roomRef = database.ref(`rooms/${roomId}`);
@@ -1013,7 +1672,7 @@
         updates[`players/${myId}/score`] = (players.find(p => p.id === myId).score || 0) + 1;
         updates.currentPlayerId = nextPlayerId;
         updates.lastWord = word;
-        updates.lastWordAuthor = myId; // Запоминаем, кто написал слово
+        updates.lastWordAuthor = myId;
         updates.usedWords = [...usedWords, word];
         updates.lastActivity = Date.now();
 
@@ -1023,6 +1682,30 @@
         messageBox.textContent = `✅ Слово "${word}" принято!`;
     }
 
+    // Новая функция для пропуска хода
+    function skipTurn() {
+        if (!roomId || !myId || complaintActive) return;
+        if (myId !== currentPlayerId) {
+            messageBox.textContent = 'Сейчас не ваш ход';
+            return;
+        }
+
+        const roomRef = database.ref(`rooms/${roomId}`);
+        const playerIds = players.map(p => p.id);
+        const currentIndex = playerIds.indexOf(myId);
+        const nextIndex = (currentIndex + 1) % playerIds.length;
+        const nextPlayerId = playerIds[nextIndex];
+
+        const updates = {
+            currentPlayerId: nextPlayerId,
+            lastActivity: Date.now()
+        };
+
+        roomRef.update(updates);
+        
+        messageBox.textContent = `⏭️ Вы пропустили ход. Ход переходит к следующему игроку.`;
+    }
+
     function startComplaint() {
         if (!roomId || !myId) return;
         if (!lastWord) {
@@ -1030,14 +1713,11 @@
             return;
         }
         
-        // Жаловаться может только тот, кто сейчас должен ходить (получил ход) и видит ошибку
-        // И жаловаться НЕ может автор слова
         if (myId === lastWordAuthor) {
             messageBox.textContent = 'Вы не можете жаловаться на своё слово';
             return;
         }
 
-        // Жаловаться может текущий игрок (который должен написать следующее слово)
         if (myId !== currentPlayerId) {
             messageBox.textContent = 'Сейчас не ваша очередь жаловаться';
             return;
@@ -1048,8 +1728,8 @@
         const complaint = {
             active: true,
             word: lastWord,
-            authorId: lastWordAuthor, // Автор слова, на которое жалуются
-            complainantId: myId, // Тот, кто жалуется
+            authorId: lastWordAuthor,
+            complainantId: myId,
             votes: {
                 yes: [],
                 no: []
@@ -1063,7 +1743,6 @@
     function vote(voteType) {
         if (!roomId || !myId || !complaintActive) return;
         
-        // Автор слова не может голосовать
         if (myId === complaintAuthor) {
             messageBox.textContent = 'Вы автор слова и не можете голосовать';
             return;
@@ -1094,7 +1773,6 @@
         const noVotes = complaintVotes.no.size;
         const totalVotes = yesVotes + noVotes;
         
-        // Голосовать могут все, кроме автора слова
         if (totalVotes >= totalPlayers - 1) {
             const roomRef = database.ref(`rooms/${roomId}`);
             
@@ -1102,7 +1780,6 @@
                 const updates = {};
                 const author = players.find(p => p.id === complaintAuthor);
                 if (author) {
-                    // Штрафуем автора слова
                     updates[`players/${complaintAuthor}/score`] = Math.max(0, (author.score || 0) - 1);
                 }
                 
@@ -1175,7 +1852,7 @@
             }
             
             const avatarHtml = p.avatarUrl ? 
-                `<img src="${p.avatarUrl}" style="width:40px;height:40px;border-radius:50%;">` : 
+                `<img src="${p.avatarUrl}" style="width:50px;height:50px;border-radius:50%;">` : 
                 `<div class="player-avatar">${p.avatar || '😊'}</div>`;
             
             html += `
@@ -1219,29 +1896,63 @@
         }
 
         if (lastWord) {
+            const lastLetter = getLastSignificantLetter(lastWord);
             lastWordDisplay.textContent = `« ${lastWord.toUpperCase()} »`;
-            requiredLetterHint.textContent = `нужная буква: «${lastWord.slice(-1)}»`;
+            requiredLetterBadge.innerHTML = `<span>🔤</span> Нужная буква: «${lastLetter}»`;
+            
+            if (myId === currentPlayerId && !complaintActive) {
+                wordInput.classList.add('my-turn');
+                wordInput.parentElement.classList.add('my-turn-pulse');
+            } else {
+                wordInput.classList.remove('my-turn');
+                wordInput.parentElement.classList.remove('my-turn-pulse');
+            }
         } else {
             lastWordDisplay.textContent = '⏳ пока нет';
-            requiredLetterHint.textContent = 'нужная буква: ?';
+            requiredLetterBadge.innerHTML = `<span>🔤</span> Нужная буква: ?`;
+            wordInput.classList.remove('my-turn');
+            wordInput.parentElement.classList.remove('my-turn-pulse');
         }
     }
 
     function updateControls() {
-    const isMyTurn = (myId === currentPlayerId && !complaintActive);
-    const isInRoom = roomId && myId;
-    
-    wordInput.disabled = !isMyTurn || !isInRoom;
-    submitBtn.disabled = !isMyTurn || !isInRoom;
-    
-    // Жаловаться может только текущий игрок (который должен написать слово) и только если это не его слово
-    const canComplain = isInRoom && lastWord && !complaintActive && 
-                       myId === currentPlayerId && myId !== lastWordAuthor;
-    
-    complaintBtn.disabled = !canComplain;
-    // Дополнительно: скрываем статус голосования, если нет активной жалобы
-    document.getElementById('voteStatus').style.display = complaintActive ? 'flex' : 'none';
-}
+        const isMyTurn = (myId === currentPlayerId && !complaintActive);
+        const isInRoom = roomId && myId;
+        
+        wordInput.disabled = !isMyTurn || !isInRoom;
+        submitBtn.disabled = !isMyTurn || !isInRoom;
+        
+        const canComplain = isInRoom && lastWord && !complaintActive && 
+                           myId === currentPlayerId && myId !== lastWordAuthor;
+        
+        complaintBtn.disabled = !canComplain;
+        
+        // Кнопка пропуска доступна, когда ваш ход и нет активной жалобы
+        skipBtn.disabled = !isMyTurn || !isInRoom;
+        
+        if (!canComplain) {
+            if (!lastWord) complaintBtn.title = 'Нет слова для жалобы';
+            else if (!isInRoom) complaintBtn.title = 'Не в комнате';
+            else if (complaintActive) complaintBtn.title = 'Идет голосование';
+            else if (myId !== currentPlayerId) complaintBtn.title = 'Сейчас не ваш ход';
+            else if (myId === lastWordAuthor) complaintBtn.title = 'Нельзя жаловаться на свое слово';
+            else complaintBtn.title = 'Пожаловаться на последнее слово';
+        } else {
+            complaintBtn.title = 'Пожаловаться на последнее слово';
+        }
+        
+        // Подсказка для кнопки пропуска
+        if (!skipBtn.disabled) {
+            skipBtn.title = 'Пропустить ход';
+        } else {
+            if (!isInRoom) skipBtn.title = 'Не в комнате';
+            else if (complaintActive) skipBtn.title = 'Идет голосование';
+            else if (myId !== currentPlayerId) skipBtn.title = 'Сейчас не ваш ход';
+            else skipBtn.title = 'Пропустить ход';
+        }
+        
+        document.getElementById('voteStatus').style.display = complaintActive ? 'flex' : 'none';
+    }
 
     window.voteYes = function() { vote('yes'); };
     window.voteNo = function() { vote('no'); };
@@ -1249,14 +1960,21 @@
     // Инициализация
     function init() {
         connectionStatus.textContent = '⚡ Готов к подключению';
+        pageTitle = document.title;
         
         createRoomBtn.addEventListener('click', createRoom);
         joinRoomBtn.addEventListener('click', joinRoom);
         submitBtn.addEventListener('click', submitWord);
         complaintBtn.addEventListener('click', startComplaint);
+        skipBtn.addEventListener('click', skipTurn);
         
         wordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') submitWord();
+        });
+
+        chatSendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
         });
 
         selectAvatar('😊');
