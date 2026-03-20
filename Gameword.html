@@ -48,7 +48,6 @@ body::before {
     transition: all 0.3s ease;
 }
 
-/* Внешнее свечение (опционально) */
 .game-container::after {
     content: '';
     position: absolute;
@@ -359,6 +358,7 @@ body::before {
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 10px 0 #0f1e2a;
+            position: relative;
         }
         .profile-setup::before {
     content: '';
@@ -587,10 +587,6 @@ body::before {
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Скрытый input file */
-#file-upload {
-    display: none;
-}
         .connection-panel {
             background: linear-gradient(165deg, rgba(30, 50, 70, 0.9), rgba(18, 38, 55, 0.95));
     backdrop-filter: blur(12px);
@@ -723,6 +719,39 @@ body::before {
     flex: 0 1 auto;
     position: relative;
     overflow: hidden;
+        }
+        
+        /* Кнопка переподключения */
+        .reconnect-btn {
+            background: linear-gradient(145deg, #4caf92, #2e7d64);
+            border: none;
+            border-radius: 45px;
+            padding: 12px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 5px solid #1e5a48;
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        
+        .reconnect-btn:hover {
+            background: linear-gradient(145deg, #5ec9aa, #3a9b7d);
+            transform: translateY(-3px);
+            border-bottom-width: 6px;
+            box-shadow: 0 10px 20px rgba(76, 175, 146, 0.3);
+        }
+        
+        .reconnect-btn:active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
         }
         
         .players-panel {
@@ -1400,6 +1429,23 @@ body::before {
             <div class="online-count" id="onlineCount">
                 👥 Онлайн: 0
             </div>
+            <div class="music-player" style="margin-top: 15px; background: linear-gradient(145deg, #1e3347, #162b3d); border-radius: 60px; padding: 15px; border: 2px solid #e9c27c;">
+    <div style="display: flex; align-items: center; gap: 15px; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.8rem;">🎧</span>
+            <div>
+                <div style="color: #FFE9A7; font-size: 1.1rem; font-weight: bold;">Lo-Fi Radio</div>
+                <div id="nowPlaying" style="color: #a0c0ff; font-size: 0.8rem;">lofi hip hop radio</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button id="playPauseBtn" style="background: linear-gradient(145deg, #fec165, #e5a94a); border: none; border-radius: 40px; padding: 10px 20px; cursor: pointer; border-bottom: 3px solid #a5712b; font-size: 1.2rem; min-width: 80px;">▶️ Play</button>
+            <button id="stopBtn" style="background: linear-gradient(145deg, #c06c6c, #a55252); border: none; border-radius: 40px; padding: 10px 20px; cursor: pointer; border-bottom: 3px solid #6f3636; font-size: 1.2rem;">⏹️ Stop</button>
+        </div>
+    </div>
+    <!-- Индикатор загрузки -->
+    <div id="playerStatus" style="color: #ffeeaa; font-size: 0.8rem; margin-top: 8px; text-align: center;">⚡ Готов к воспроизведению</div>
+</div>
         </div>
 
         <!-- Центральная колонка - ИГРА -->
@@ -1410,7 +1456,10 @@ body::before {
                     <button id="createRoomBtn">🔗 Создать</button>
                     <button id="joinRoomBtn">✨ Присоединиться</button>
                 </div>
-                <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
+                    <button id="reconnectBtn" class="reconnect-btn">🔄 Переподключиться</button>
+                </div>
             </div>
 
             <div id="playersPanel" class="players-panel"></div>
@@ -1483,7 +1532,7 @@ body::before {
         ⏱️ Пустые комнаты удаляются через 1 час
     </div>
 </div>
-
+<div id="youtube-player" style="display: none;"></div>
 <script>
 (function() {
     // ==================== НАСТРОЙКА FIREBASE ====================
@@ -1533,6 +1582,11 @@ body::before {
     let pageTitle = document.title;
     let isTabActive = true;
     let notificationInterval = null;
+    let heartbeatInterval = null;
+
+    // Константы для таймаутов
+    const PLAYER_TIMEOUT = 45000; // 45 секунд
+    const NAME_RELEASE_TIMEOUT = 60000; // 60 секунд
 
     // DOM элементы
     const playersPanel = document.getElementById('playersPanel');
@@ -1552,6 +1606,7 @@ body::before {
     const roomInput = document.getElementById('roomInput');
     const createRoomBtn = document.getElementById('createRoomBtn');
     const joinRoomBtn = document.getElementById('joinRoomBtn');
+    const reconnectBtn = document.getElementById('reconnectBtn');
     const playerNameInput = document.getElementById('playerName');
     const avatarPreview = document.getElementById('avatarPreview');
     const avatarFile = document.getElementById('avatarFile');
@@ -1643,18 +1698,14 @@ body::before {
 
     // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ СО СЛОВАМИ ====================
     
-    // Очистка слова от дефисов и пробелов для проверки уникальности
     function normalizeWord(word) {
         return word.toLowerCase().replace(/[-\s]/g, '');
     }
     
-    // Проверка, что слово содержит только русские буквы, дефисы и пробелы
     function isValidRussianWord(word) {
-        // Разрешаем русские буквы, дефисы и пробелы
         return /^[а-яё\s-]+$/i.test(word);
     }
     
-    // Получение первой буквы слова (игнорируя дефисы и пробелы в начале)
     function getFirstLetter(word) {
         const cleanWord = word.toLowerCase();
         for (let i = 0; i < cleanWord.length; i++) {
@@ -1666,11 +1717,9 @@ body::before {
         return '';
     }
     
-    // Получение последней значимой буквы (с учетом мягких знаков)
     function getLastSignificantLetter(word) {
         if (!word) return '';
         
-        // Ищем последнюю букву в слове (игнорируя дефисы и пробелы в конце)
         const cleanWord = word.toLowerCase();
         let lastChar = '';
         
@@ -1686,7 +1735,6 @@ body::before {
         
         const softChars = ['ь', 'ъ', 'ы'];
         if (softChars.includes(lastChar)) {
-            // Ищем предыдущую букву
             for (let i = word.toLowerCase().indexOf(lastChar) - 1; i >= 0; i--) {
                 const prevChar = word.toLowerCase()[i];
                 if (/[а-яё]/.test(prevChar)) {
@@ -1697,10 +1745,11 @@ body::before {
         return lastChar;
     }
 
-    // ==================== ПРОВЕРКА ПОДКЛЮЧЕНИЯ ====================
-    function checkPlayerInRoom(room, playerName) {
+    // ==================== УЛУЧШЕННАЯ ПРОВЕРКА ПОДКЛЮЧЕНИЯ ====================
+    async function checkPlayerInRoom(room, playerName) {
         return new Promise((resolve) => {
             const roomRef = database.ref(`rooms/${room}/players`);
+            const now = Date.now();
             
             roomRef.once('value', (snapshot) => {
                 const players = snapshot.val();
@@ -1709,50 +1758,46 @@ body::before {
                     return;
                 }
                 
-                const existingPlayer = Object.values(players).find(
-                    p => p.connected && p.name.toLowerCase() === playerName.toLowerCase()
-                );
+                const existingPlayer = Object.entries(players).find(([id, p]) => {
+                    const isActive = p.connected || (now - (p.lastSeen || 0)) < 30000;
+                    return isActive && p.name.toLowerCase() === playerName.toLowerCase();
+                });
                 
-                resolve(existingPlayer ? existingPlayer.id : false);
+                resolve(existingPlayer ? existingPlayer[0] : false);
             });
         });
     }
 
-    // Выбор аватара
-    window.selectAvatar = function(emoji) {
-        myAvatar = emoji;
-        myAvatarUrl = null;
-        avatarPreview.innerHTML = emoji;
-        
-        document.querySelectorAll('.avatar-option').forEach(opt => {
-            opt.classList.remove('selected');
-            if (opt.textContent === emoji) opt.classList.add('selected');
+    // Функция для переподключения с тем же именем
+    async function reconnectToRoom(room, playerName, oldPlayerId) {
+        return new Promise((resolve) => {
+            const roomRef = database.ref(`rooms/${room}`);
+            
+            roomRef.child('players').once('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                const now = Date.now();
+                
+                if (oldPlayerId && players[oldPlayerId]) {
+                    const oldPlayer = players[oldPlayerId];
+                    const timeSinceLastSeen = now - (oldPlayer.lastSeen || 0);
+                    
+                    if (timeSinceLastSeen < 60000) {
+                        roomRef.child(`players/${oldPlayerId}`).update({
+                            connected: true,
+                            lastSeen: now,
+                            reconnected: true
+                        }).then(() => {
+                            resolve(oldPlayerId);
+                        }).catch(() => {
+                            resolve(false);
+                        });
+                        return;
+                    }
+                }
+                
+                resolve(false);
+            });
         });
-        
-        avatarGrid.classList.remove('show');
-        avatarSelectorBtn.classList.remove('open');
-    };
-
-    // Загрузка фото
-    avatarFile.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            myAvatarUrl = event.target.result;
-            myAvatar = '📷';
-            avatarPreview.innerHTML = `<img src="${event.target.result}" style="width:60px;height:60px;border-radius:50%;">`;
-        };
-        reader.readAsDataURL(file);
-        
-        avatarGrid.classList.remove('show');
-        avatarSelectorBtn.classList.remove('open');
-    });
-
-    // Генерация ID
-    function generatePlayerId() {
-        return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
     // ==================== FIREBASE ====================
@@ -1764,6 +1809,8 @@ body::before {
         }
 
         myName = playerNameInput.value.trim() || 'Игрок';
+        
+        localStorage.removeItem(`lastPlayer_${room}`);
         
         const existingPlayerId = await checkPlayerInRoom(room, myName);
         if (existingPlayerId) {
@@ -1791,7 +1838,8 @@ body::before {
                         avatarUrl: myAvatarUrl,
                         score: 0,
                         connected: true,
-                        lastSeen: Date.now()
+                        lastSeen: Date.now(),
+                        joinedAt: Date.now()
                     }
                 },
                 currentPlayerId: myId,
@@ -1814,6 +1862,8 @@ body::before {
                     startHeartbeat(room);
                     chatInput.disabled = false;
                     chatSendBtn.disabled = false;
+                    
+                    localStorage.setItem(`lastPlayer_${room}`, myId);
                 }
             });
         });
@@ -1827,6 +1877,26 @@ body::before {
         }
 
         myName = playerNameInput.value.trim() || 'Игрок';
+        
+        const oldPlayerId = localStorage.getItem(`lastPlayer_${room}`);
+        
+        if (oldPlayerId) {
+            const reconnected = await reconnectToRoom(room, myName, oldPlayerId);
+            if (reconnected) {
+                myId = reconnected;
+                roomId = room;
+                
+                connectionStatus.textContent = `✅ Переподключён к ${room}`;
+                messageBox.textContent = 'Вы переподключились! Игра продолжается...';
+                setupListeners(room);
+                startHeartbeat(room);
+                chatInput.disabled = false;
+                chatSendBtn.disabled = false;
+                
+                localStorage.setItem(`lastPlayer_${room}`, myId);
+                return;
+            }
+        }
         
         const existingPlayerId = await checkPlayerInRoom(room, myName);
         if (existingPlayerId) {
@@ -1856,7 +1926,8 @@ body::before {
                 avatarUrl: myAvatarUrl,
                 score: 0,
                 connected: true,
-                lastSeen: Date.now()
+                lastSeen: Date.now(),
+                joinedAt: Date.now()
             };
             
             if (playerIds.length === 1 && !roomData.currentPlayerId) {
@@ -1875,33 +1946,73 @@ body::before {
                     startHeartbeat(room);
                     chatInput.disabled = false;
                     chatSendBtn.disabled = false;
+                    
+                    localStorage.setItem(`lastPlayer_${room}`, myId);
                 }
             });
         });
     }
 
     function startHeartbeat(room) {
-        const playerRef = database.ref(`rooms/${room}/players/${myId}`);
+        if (!room || !myId) return;
         
-        const interval = setInterval(() => {
-            if (roomId && myId) {
-                playerRef.update({
-                    connected: true,
-                    lastSeen: Date.now()
-                });
-            } else {
-                clearInterval(interval);
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+        }
+        
+        const playerRef = database.ref(`rooms/${room}/players/${myId}`);
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+        
+        const sendHeartbeat = () => {
+            if (!roomId || !myId) {
+                clearInterval(heartbeatInterval);
+                return;
             }
-        }, 10000);
+            
+            playerRef.update({
+                connected: true,
+                lastSeen: Date.now()
+            }).then(() => {
+                reconnectAttempts = 0;
+            }).catch((error) => {
+                console.error('Heartbeat error:', error);
+                reconnectAttempts++;
+                
+                if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
+                    setTimeout(() => {
+                        if (roomId && myId) {
+                            playerRef.update({
+                                connected: true,
+                                lastSeen: Date.now(),
+                                reconnect: true
+                            }).catch(e => console.log('Reconnect failed:', e));
+                        }
+                    }, 2000 * reconnectAttempts);
+                } else {
+                    messageBox.textContent = '⚠️ Проблемы с соединением. Нажмите кнопку переподключения.';
+                }
+            });
+        };
+        
+        heartbeatInterval = setInterval(sendHeartbeat, 8000);
+        setTimeout(sendHeartbeat, 1000);
 
         window.addEventListener('beforeunload', () => {
             if (roomId && myId) {
-                playerRef.update({
+                const data = JSON.stringify({
                     connected: false,
-                    lastSeen: Date.now()
+                    lastSeen: Date.now(),
+                    offline: true
                 });
+                navigator.sendBeacon(
+                    `https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/rooms/${room}/players/${myId}.json`,
+                    data
+                );
             }
         });
+
+        return heartbeatInterval;
     }
 
     function setupListeners(room) {
@@ -1909,20 +2020,54 @@ body::before {
 
         roomRef.child('players').on('value', (snapshot) => {
             const playersData = snapshot.val() || {};
-            
             const now = Date.now();
-            const activePlayers = Object.values(playersData).filter(p => {
-                return p.connected || (now - (p.lastSeen || 0)) < 30000;
+            
+            const activePlayers = [];
+            const inactivePlayers = [];
+            
+            Object.entries(playersData).forEach(([playerId, playerData]) => {
+                const timeSinceLastSeen = now - (playerData.lastSeen || 0);
+                
+                if (playerData.connected || timeSinceLastSeen < PLAYER_TIMEOUT) {
+                    activePlayers.push({
+                        ...playerData,
+                        id: playerId
+                    });
+                } else {
+                    inactivePlayers.push(playerId);
+                }
+            });
+            
+            inactivePlayers.forEach(playerId => {
+                const playerData = playersData[playerId];
+                const timeSinceLastSeen = now - (playerData.lastSeen || 0);
+                
+                if (timeSinceLastSeen > NAME_RELEASE_TIMEOUT) {
+                    database.ref(`rooms/${room}/players/${playerId}`).remove()
+                        .then(() => {
+                            console.log(`Игрок ${playerData.name} удален из комнаты (неактивен)`);
+                        })
+                        .catch(error => {
+                            console.error('Ошибка удаления игрока:', error);
+                        });
+                }
             });
             
             players = activePlayers;
             
-            // Обновляем счетчик онлайн
             onlineCount.textContent = `👥 Онлайн: ${activePlayers.length}`;
             
             if (activePlayers.length >= 1 && !currentPlayerId) {
                 const firstPlayerId = activePlayers[0].id;
                 roomRef.child('currentPlayerId').set(firstPlayerId);
+            }
+            
+            if (currentPlayerId && !activePlayers.some(p => p.id === currentPlayerId)) {
+                if (activePlayers.length > 0) {
+                    roomRef.child('currentPlayerId').set(activePlayers[0].id);
+                } else {
+                    roomRef.child('currentPlayerId').set(null);
+                }
             }
             
             renderAll();
@@ -2052,14 +2197,12 @@ body::before {
             return;
         }
 
-        // Проверка на допустимые символы (русские буквы, дефис, пробел)
         if (!isValidRussianWord(word)) {
             messageBox.textContent = '❌ Только русские буквы, дефис и пробел';
             wordInput.value = '';
             return;
         }
 
-        // Проверка длины (очищенное слово должно быть минимум 2 буквы)
         const normalizedWord = normalizeWord(word);
         if (normalizedWord.length < 2) {
             messageBox.textContent = '❌ Минимум 2 буквы (без учета дефисов)';
@@ -2067,7 +2210,6 @@ body::before {
             return;
         }
 
-        // Проверка на уникальность (сравниваем очищенные слова)
         const isWordUsed = usedWords.some(w => normalizeWord(w) === normalizedWord);
         if (isWordUsed) {
             messageBox.textContent = `⚠️ Слово "${word}" уже было`;
@@ -2075,7 +2217,6 @@ body::before {
             return;
         }
 
-        // Проверка на соответствие последней букве
         if (lastWord) {
             const requiredLetter = getLastSignificantLetter(lastWord);
             const firstLetter = getFirstLetter(word);
@@ -2107,7 +2248,6 @@ body::before {
         messageBox.textContent = `✅ Слово "${word}" принято!`;
     }
 
-    // Новая функция для пропуска хода
     function skipTurn() {
         if (!roomId || !myId || complaintActive) return;
         if (myId !== currentPlayerId) {
@@ -2351,8 +2491,6 @@ body::before {
                            myId === currentPlayerId && myId !== lastWordAuthor;
         
         complaintBtn.disabled = !canComplain;
-        
-        // Кнопка пропуска доступна, когда ваш ход и нет активной жалобы
         skipBtn.disabled = !isMyTurn || !isInRoom;
         
         if (!canComplain) {
@@ -2366,7 +2504,6 @@ body::before {
             complaintBtn.title = 'Пожаловаться на последнее слово';
         }
         
-        // Подсказка для кнопки пропуска
         if (!skipBtn.disabled) {
             skipBtn.title = 'Пропустить ход';
         } else {
@@ -2379,6 +2516,36 @@ body::before {
         document.getElementById('voteStatus').style.display = complaintActive ? 'flex' : 'none';
     }
 
+    // Функция ручного переподключения
+    window.reconnect = function() {
+        if (roomId && myName) {
+            joinRoom();
+        } else if (roomInput.value.trim()) {
+            joinRoom();
+        } else {
+            messageBox.textContent = 'Введите код комнаты для переподключения';
+        }
+    };
+
+    // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+    window.selectAvatar = function(emoji) {
+        myAvatar = emoji;
+        myAvatarUrl = null;
+        avatarPreview.innerHTML = emoji;
+        
+        document.querySelectorAll('.avatar-option').forEach(opt => {
+            opt.classList.remove('selected');
+            if (opt.textContent === emoji) opt.classList.add('selected');
+        });
+        
+        avatarGrid.classList.remove('show');
+        avatarSelectorBtn.classList.remove('open');
+    };
+
+    function generatePlayerId() {
+        return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
     window.voteYes = function() { vote('yes'); };
     window.voteNo = function() { vote('no'); };
 
@@ -2389,6 +2556,7 @@ body::before {
         
         createRoomBtn.addEventListener('click', createRoom);
         joinRoomBtn.addEventListener('click', joinRoom);
+        reconnectBtn.addEventListener('click', reconnect);
         submitBtn.addEventListener('click', submitWord);
         complaintBtn.addEventListener('click', startComplaint);
         skipBtn.addEventListener('click', skipTurn);
@@ -2412,6 +2580,164 @@ body::before {
     }
 
     init();
+})();
+</script>
+<!-- Скрытый div для YouTube плеера уже есть выше -->
+<script>
+// ==================== LOFI ПЛЕЕР ====================
+(function() {
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const playerStatus = document.getElementById('playerStatus');
+    
+    if (!playPauseBtn || !stopBtn || !playerStatus) {
+        console.log('Элементы плеера не найдены');
+        return;
+    }
+
+    let player;
+    let isPlayerReady = false;
+    let isPlaying = false;
+    
+    function updateStatus(text) {
+        if (playerStatus) playerStatus.textContent = text;
+    }
+    
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    window.onYouTubeIframeAPIReady = function() {
+        try {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'jfKfPfyJRdk',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'autoplay': 0,
+                    'enablejsapi': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+            console.log('YouTube плеер создан');
+        } catch (e) {
+            console.error('Ошибка создания плеера:', e);
+            updateStatus('❌ Ошибка создания плеера');
+        }
+    };
+
+    function onPlayerReady(event) {
+        isPlayerReady = true;
+        updateStatus('🎵 Готов к воспроизведению');
+        console.log('YouTube плеер готов');
+        
+        try {
+            player.setVolume(30);
+        } catch (e) {
+            console.log('Не удалось установить громкость');
+        }
+    }
+
+    function onPlayerStateChange(event) {
+        if (!event || !event.data) return;
+        
+        try {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                if (playPauseBtn) playPauseBtn.innerHTML = '⏸️ Пауза';
+                updateStatus('🎵 Сейчас играет: lofi hip hop radio');
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                isPlaying = false;
+                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
+                updateStatus('⏸️ На паузе');
+            } else if (event.data === YT.PlayerState.ENDED) {
+                isPlaying = false;
+                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
+                updateStatus('⏹️ Воспроизведение закончено');
+            } else if (event.data === YT.PlayerState.BUFFERING) {
+                updateStatus('⏳ Загрузка...');
+            } else if (event.data === YT.PlayerState.CUED) {
+                updateStatus('🎵 Видео загружено');
+            }
+        } catch (e) {
+            console.error('Ошибка обработки состояния:', e);
+        }
+    }
+
+    function onPlayerError(event) {
+        console.error('Ошибка плеера:', event.data);
+        let errorMessage = '❌ Ошибка воспроизведения';
+        
+        switch(event.data) {
+            case 2:
+                errorMessage = '❌ Неверный ID видео';
+                break;
+            case 5:
+                errorMessage = '❌ Ошибка HTML5 плеера';
+                break;
+            case 100:
+                errorMessage = '❌ Видео не найдено';
+                break;
+            case 101:
+            case 150:
+                errorMessage = '❌ Воспроизведение запрещено';
+                break;
+        }
+        updateStatus(errorMessage);
+    }
+
+    if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', function() {
+            if (!isPlayerReady) {
+                updateStatus('⏳ Плеер еще не готов...');
+                return;
+            }
+            
+            try {
+                if (isPlaying) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            } catch (e) {
+                console.error('Ошибка управления плеером:', e);
+                updateStatus('❌ Ошибка управления');
+            }
+        });
+    }
+
+    if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+            if (!isPlayerReady) return;
+            
+            try {
+                player.stopVideo();
+                isPlaying = false;
+                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
+                updateStatus('⏹️ Остановлено');
+            } catch (e) {
+                console.error('Ошибка остановки:', e);
+            }
+        });
+    }
+
+    setTimeout(function() {
+        if (!isPlayerReady) {
+            updateStatus('⚠️ Загрузка плеера... попробуйте позже');
+        }
+    }, 5000);
 })();
 </script>
 </body>
