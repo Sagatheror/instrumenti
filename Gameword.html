@@ -1,2589 +1,1313 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Сетевая игра в слова</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
+
         body {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    margin: 0;
-    position: relative;
-}
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            position: relative;
+        }
 
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.06) 0%, transparent 45%),
-        repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 8px);
-    pointer-events: none;
-}
-       .game-container {
-    max-width: 1600px;
-    width: 100%;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 48px;
-    padding: 28px 32px;
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(139, 92, 246, 0.2) inset;
-    border: 1px solid rgba(139, 92, 246, 0.15);
-    transition: all 0.3s ease;
-}
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 8px),
+                radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.1), transparent 70%);
+            pointer-events: none;
+        }
 
-.game-container::after {
-    display: none;
-}
+        .game-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
+            padding: 24px 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s;
+        }
+
         h1 {
             text-align: center;
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            color: #FFE9A7;
-            text-shadow: 0 5px 0 #7b5a3b, 0 8px 12px black;
-            margin: 0 0 20px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
         }
+
         .main-grid {
             display: grid;
-    grid-template-columns: 340px 1fr 300px;
-    gap: 24px;
+            grid-template-columns: 320px 1fr 290px;
+            gap: 24px;
         }
-        
-        /* Левая колонка - ЧАТ */
+
+        /* ========= ЧАТ СТИЛИ ========= */
         .chat-sidebar {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(12px);
-    border-radius: 32px;
-    padding: 20px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: fit-content;
-    max-height: 780px;
-    transition: all 0.2s ease;
-}
-
-.chat-sidebar:hover {
-    border-color: rgba(139, 92, 246, 0.4);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-}
-        .chat-sidebar .chat-title {
-       color: #f1f5f9;
-    font-size: 1.35rem;
-    font-weight: 600;
-    text-align: center;
-    margin: 0;
-    padding-bottom: 12px;
-    border-bottom: 2px solid rgba(139, 92, 246, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: fit-content;
+            max-height: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-        .chat-sidebar .chat-title i, 
-.chat-sidebar .chat-title svg {
-    font-size: 1.8rem;
-    color: #e9c27c;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-        .chat-sidebar .chat-messages {
-       flex: 1;
-    max-height: 480px;
-    overflow-y: auto;
-    padding: 12px 8px;
-    background: rgba(15, 23, 42, 0.5);
-    border-radius: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    scrollbar-width: thin;
-        }
-        .chat-messages::-webkit-scrollbar {
-    width: 6px;
-}
 
-.chat-messages::-webkit-scrollbar-track {
-    background: rgba(233, 194, 124, 0.1);
-    border-radius: 10px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-    background: #e9c27c;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
-        .chat-sidebar .chat-message {
-    color: #e2e8f0;
-    padding: 10px 14px;
-    background: rgba(51, 65, 85, 0.6);
-    border-radius: 20px;
-    font-size: 1rem;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    word-break: break-word;
-    max-width: 90%;
-    transition: all 0.2s;
-}
-
-.chat-sidebar .chat-message:hover {
-    transform: translateX(4px);
-    border-color: rgba(139, 92, 246, 0.5);
-    background: rgba(71, 85, 105, 0.7);
-}
-        
-        .chat-sidebar .chat-message.mine {
-       background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(99, 102, 241, 0.8));
-    border-color: rgba(139, 92, 246, 0.5);
-    border-radius: 20px 20px 8px 20px;
-    margin-left: auto;
+        .chat-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
         }
-        
-        .chat-sidebar .chat-message .sender {
-       color: #c4b5fd;
-    font-weight: 600;
-    font-size: 0.85rem;
+
+        .chat-messages {
+            flex: 1;
+            max-height: 440px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 8px;
         }
-        
-        .chat-sidebar .chat-message .time {
+
+        .chat-message {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: #212529;
+            font-size: 0.9rem;
+            max-width: 90%;
+            word-break: break-word;
+            border-left: 3px solid #667eea;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-message.mine {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-left: auto;
+            border-left: none;
+            border-right: 3px solid #ffd93d;
+            color: white;
+        }
+
+        .sender {
+            font-weight: bold;
+            color: #ffd93d;
+            font-size: 0.8rem;
+        }
+
+        .mine .sender {
+            color: #ffd93d;
+        }
+
+        .time {
             float: right;
-    color: #94a3b8;
-    font-size: 0.7rem;
-    margin-left: 10px;
+            font-size: 0.65rem;
+            color: #868e96;
+            margin-left: 12px;
         }
-        
-        .chat-sidebar .chat-message .text {
-            margin-top: 4px;
-    line-height: 1.4;
-        }
-        
-        .chat-sidebar .chat-input-area {
-        display: flex;
-    gap: 10px;
-    background: rgba(15, 23, 42, 0.5);
-    padding: 6px;
-    border-radius: 60px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-        
-        .chat-sidebar .chat-input {
-       flex: 1;
-    padding: 12px 18px;
-    border-radius: 40px;
-    border: none;
-    background: rgba(51, 65, 85, 0.6);
-    color: #f1f5f9;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-        }
-        
-        .chat-sidebar .chat-input:focus {
-       outline: none;
-    background: rgba(71, 85, 105, 0.8);
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
-        }
-        .chat-sidebar .chat-input::placeholder {
-    color: rgba(200, 200, 200, 0.5);
-    font-style: italic;
-}
-        .chat-sidebar .chat-send-btn {
-        background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    border: none;
-    border-radius: 40px;
-    padding: 12px 28px;
-    cursor: pointer;
-    color: white;
-    font-weight: 600;
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-        }
-        
-        .chat-sidebar .chat-send-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-    background: linear-gradient(135deg, #9b6ef6, #7c7ef1);
-        }
-           
-.chat-sidebar .chat-send-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 0 4px 0 #5f4a2b;
-    background: linear-gradient(145deg, #a0a0a0, #808080);
-}
-        
-        .chat-sidebar .online-count {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 8px 16px;
-    background: rgba(15, 23, 42, 0.5);
-    border-radius: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: fit-content;
-    margin: 0 auto;
-}
 
-.online-count::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    background: #22c55e;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #22c55e;
-    margin-right: 4px;
-}
-        .chat-send-btn:active:not(:disabled) {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #8b6938, 0 4px 12px rgba(233, 194, 124, 0.3);
-}
+        .mine .time {
+            color: rgba(255, 255, 255, 0.7);
+        }
 
-/* Анимация появления новых сообщений */
-@keyframes messageAppear {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.chat-message {
-    animation: messageAppear 0.3s ease;
-}
-.typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 8px 16px;
-    background: rgba(30, 45, 60, 0.6);
-    border-radius: 30px;
-    width: fit-content;
-    margin: 5px 0;
-}
-
-.typing-indicator span {
-    width: 6px;
-    height: 6px;
-    background: #e9c27c;
-    border-radius: 50%;
-    animation: typingBounce 1.4s infinite ease-in-out;
-}
-
-.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-8px); }
-}
-        /* Центральная колонка - ИГРА */
-        .game-content {
+        .chat-input-area {
             display: flex;
-    flex-direction: column;
-    gap: 20px;
+            gap: 8px;
+            background: white;
+            border-radius: 60px;
+            padding: 4px;
+            border: 1px solid #dee2e6;
         }
-        
-        /* Профиль */
+
+        .chat-input {
+            flex: 1;
+            background: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 60px;
+            color: #212529;
+            font-size: 0.9rem;
+        }
+
+        .chat-input:focus { outline: none; border-color: #667eea; }
+        .chat-send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 60px;
+            padding: 0 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.1s;
+        }
+        .chat-send-btn:hover { transform: scale(1.02); }
+
+        .online-count {
+            background: #e9ecef;
+            text-align: center;
+            padding: 10px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        /* ========= ПРОФИЛЬ ========= */
         .profile-setup {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
-    border-radius: 32px;
-    padding: 20px 24px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: center;
-    justify-content: space-between;
-        }
-        .profile-setup::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(145deg, rgba(233, 194, 124, 0.2), transparent 40%);
-    border-radius: 32px;
-    z-index: -1;
-    opacity: 0.5;
-}
-        .avatar-section {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 20px 24px;
             display: flex;
-    align-items: center;
-    gap: 20px;
-    background: rgba(15, 23, 42, 0.5);
-    padding: 12px 20px;
-    border-radius: 60px;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
         }
-        
+
         .avatar-preview-large {
-            width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    border: 3px solid #c4b5fd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 3px solid #ffd93d;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .avatar-selector {
             position: relative;
-    flex: 1;
-    min-width: 250px;
         }
-        
-        .avatar-selector-btn {
-        background: rgba(51, 65, 85, 0.8);
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    border-radius: 40px;
-    padding: 10px 28px;
-    color: #f1f5f9;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.2s;
-        }
-        
-        .avatar-selector-btn:hover {
-        background: rgba(71, 85, 105, 0.9);
-    border-color: #8b5cf6;
-    transform: translateY(-1px);
-        }
-        
-        .avatar-selector-btn .arrow {
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    font-size: 1.4rem;
-    display: inline-block;
-        }
-        
-        .avatar-selector-btn.open .arrow {
-            transform: rotate(180deg);
-        }
-        
-        .avatar-grid {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    background: rgba(30, 41, 59, 0.98);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    border-radius: 28px;
-    padding: 20px;
-    display: none;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    z-index: 1000;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    min-width: 420px;
-    animation: gridAppear 0.3s ease;
-}
 
-@keyframes gridAppear {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-        
-        .avatar-grid.show {
-            display: grid;
+        .avatar-selector-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: #495057;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-        
+        .avatar-selector-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .avatar-grid {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            display: none;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            z-index: 100;
+            border: 1px solid #dee2e6;
+            min-width: 380px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-grid.show { display: grid; }
         .avatar-option {
-            width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-size: 2.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(145deg, #2e4b6b, #1f3853);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+            font-size: 2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.1s;
+            border-radius: 50%;
+            padding: 6px;
         }
-        .avatar-option::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-        .avatar-option:hover {
-            transform: scale(1.1);
-    border-color: #8b5cf6;
-    background: rgba(139, 92, 246, 0.2);
-        }
-        
-        .avatar-option.selected {
-            border-color: #8b5cf6;
-    background: rgba(139, 92, 246, 0.3);
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
-        }
-        
-        .name-input-section {
-        display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    background: rgba(15, 23, 42, 0.5);
-    padding: 8px 16px;
-    border-radius: 60px;
-    flex: 2;
-        }
-        
+        .avatar-option:hover { transform: scale(1.2); background: #e9ecef; }
+
         .name-input {
-       padding: 12px 20px;
-    border-radius: 40px;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    font-size: 1rem;
-    flex: 1;
-    background: rgba(51, 65, 85, 0.6);
-    color: #f1f5f9;
-    transition: all 0.2s;
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 12px 20px;
+            border-radius: 40px;
+            color: #212529;
+            width: 220px;
+            font-size: 1rem;
         }
         .name-input:focus {
-    outline: none;
-    border-color: #8b5cf6;
-    background: rgba(71, 85, 105, 0.8);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-}
+            outline: none;
+            border-color: #667eea;
+        }
 
-.name-input::placeholder {
-    color: rgba(200, 200, 200, 0.5);
-    font-style: italic;
-}
         .file-label {
-        background: linear-gradient(135deg, #10b981, #059669);
-    padding: 12px 24px;
-    border-radius: 40px;
-    color: white;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-        
         .file-label:hover {
+            background: #218838;
             transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
-        .file-label:active {
-    transform: translateY(3px);
-    border-bottom-width: 2px;
-}
 
-.file-label i, .file-label svg {
-    font-size: 1.3rem;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
-}
-
+        /* ========= ИГРОВАЯ ЗОНА ========= */
+        .game-content { display: flex; flex-direction: column; gap: 20px; }
+        
         .connection-panel {
-        background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 28px;
-    padding: 16px 24px;
-    border: 1px solid rgba(139, 92, 246, 0.25);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: center;
-    justify-content: space-between;
-        }
-        .connection-panel::before {
-    content: '';
-    position: absolute;
-    top: -30%;
-    left: -10%;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(233, 194, 124, 0.15), transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: panelGlow 8s infinite alternate;
-}
-
-@keyframes panelGlow {
-    0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-    100% { transform: translate(30px, 20px) scale(1.3); opacity: 0.8; }
-}
-.connection-panel:hover {
-    border-color: rgba(233, 194, 124, 0.7);
-    box-shadow: 
-        0 25px 35px -15px rgba(0, 0, 0, 0.7),
-        0 0 0 1.5px rgba(233, 194, 124, 0.3) inset,
-        0 8px 0 #0f1e2a;
-    transform: translateY(-2px);
-}
-        .room-control {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            border-radius: 20px;
             display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            border: 1px solid #e9ecef;
         }
         
-        .room-control input {
-        padding: 12px 20px;
-    border-radius: 40px;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    font-size: 0.95rem;
-    width: 180px;
-    background: rgba(51, 65, 85, 0.6);
-    color: #f1f5f9;
+        .room-control { display: flex; gap: 10px; }
+        .room-control input { 
+            background: white; 
+            border: 1px solid #dee2e6; 
+            padding: 10px 16px; 
+            border-radius: 40px; 
+            color: #212529; 
+            width: 150px;
+            font-size: 0.9rem;
         }
         .room-control input:focus {
-    outline: none;
-    border-color: #8b5cf6;
-}
-
-.room-control input::placeholder {
-    color: rgba(200, 200, 200, 0.5);
-    font-style: italic;
-}
-        .room-control button {
-       background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    border: none;
-    border-radius: 40px;
-    padding: 10px 20px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.9rem;
+            outline: none;
+            border-color: #667eea;
         }
         
-        .room-control button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
-
-.room-control button:active {
-    transform: translateY(3px);
-    border-bottom-width: 2px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-}
-        
-        .connection-status {
-        color: #94a3b8;
-    padding: 10px 20px;
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: 40px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
-        
-        /* Кнопка переподключения */
-        .reconnect-btn {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-    border: none;
-    border-radius: 40px;
-    padding: 10px 20px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-        }
-        
-        .reconnect-btn:hover {
+        button:hover {
             transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-        
-        .reconnect-btn:active {
-            transform: translateY(3px);
-            border-bottom-width: 2px;
+        button:active { transform: translateY(0); }
+
+        .connection-status {
+            background: #e9ecef;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #495057;
         }
-        
+
         .players-panel {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 25px;
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 15px 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #e9c27c rgba(233, 194, 124, 0.1);
-}
-
-.players-panel::-webkit-scrollbar {
-    width: 6px;
-}
-
-.players-panel::-webkit-scrollbar-track {
-    background: rgba(233, 194, 124, 0.1);
-    border-radius: 10px;
-}
-
-.players-panel::-webkit-scrollbar-thumb {
-    background: #e9c27c;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding: 8px;
+        }
         
         .player-card {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    border-radius: 24px;
-    padding: 20px 12px 16px;
-    text-align: center;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    transition: all 0.25s;
-    position: relative;
-}
-
-.player-card:hover {
-    transform: translateY(-4px);
-    border-color: #8b5cf6;
-    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.4);
-}
-
-.player-card.active {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-    background: linear-gradient(135deg, #2d3a5e, #1a2335);
-}
-
-/* Индикация текущего игрока */
-.player-card.this-player {
-    position: relative;
-    border-color: #f59e0b;
-}
-
-.player-card.this-player::before {
-    content: "👑";
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.6rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.player-card.this-player::after {
-    content: "ВЫ";
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-}
-   
-        .player-avatar {
-    font-size: 3rem;
-    margin-bottom: 8px;
-}
-
-.player-card:hover .player-avatar {
-    transform: scale(1.1) rotate(3deg);
-}
-        
-        .player-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #f1f5f9;
-    word-break: break-word;
-}
-
-.player-name .player-level {
-    font-size: 1rem;
-    background: rgba(0, 0, 0, 0.1);
-    padding: 3px 8px;
-    border-radius: 30px;
-    color: #4a3a2a;
-    font-weight: 600;
-}
-        
-        .player-score {
-    font-size: 2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    display: inline-block;
-    padding: 4px 20px;
-    border-radius: 40px;
-    margin: 8px 0 4px;
-    color: white;
-}
-        
-        .complaint-badge {
-            display: inline-block;
-            background: #aa4b4b;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 3px 12px;
-            border-radius: 30px;
-            margin-top: 5px;
-            border: 1px solid #ffaeae;
-        }
-        
-        .voting-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 5px;
-        }
-        
-        .vote-btn {
-            padding: 5px 15px;
+            background: white;
             border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.2s;
+            position: relative;
         }
-        
-        .vote-yes {
-            background: #4caf50;
-            color: white;
+        .player-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
-        
-        .vote-no {
-            background: #f44336;
-            color: white;
+        .player-card.active { 
+            border: 2px solid #ffd93d;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
         }
-        
-        /* Индикатор хода */
+        .player-card.this-player {
+            border: 2px solid #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+        }
+        .player-avatar { font-size: 3rem; margin-bottom: 8px; }
+        .player-name { font-weight: bold; color: #212529; font-size: 1.1rem; margin: 8px 0; }
+        .player-score { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
         .turn-indicator {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-    border-radius: 28px;
-    padding: 20px;
-    text-align: center;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            color: white;
         }
-        
         .turn-text {
-            font-size: 1.4rem;
-    font-weight: 600;
-    color: #c4b5fd;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
-        
-        .last-word {
-            font-size: 2rem;
-    font-weight: 700;
-    background: rgba(139, 92, 246, 0.2);
-    color: #f1f5f9;
-    padding: 12px 24px;
-    border-radius: 60px;
-    display: inline-block;
-    margin-top: 12px;
-    font-family: monospace;
-    letter-spacing: 2px;
-        }
-        
-        /* Подсказка с буквой */
-        .letter-hint-container {
-            display: flex;
-    justify-content: center;
+        .last-word { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 60px;
+            margin-top: 12px;
+            letter-spacing: 2px;
         }
         
         .required-letter-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-    font-size: 1.8rem;
-    font-weight: 700;
-    padding: 12px 32px;
-    border-radius: 60px;
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    color: #0f172a;
+            background: #ffd93d;
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 60px;
+            margin: 10px auto;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #495057;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        
-        .required-letter-badge span {
-            background: #0f172a;
-    color: #f59e0b;
-    padding: 6px 18px;
-    border-radius: 40px;
-    font-size: 1.2rem;
-        }
-        
+
         .game-area {
-            background: rgba(30, 41, 59, 0.5);
-    border-radius: 32px;
-    padding: 24px;
-    border: 1px solid rgba(139, 92, 246, 0.25);
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #e9ecef;
         }
-        
-        .input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .word-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
-        
+
         .word-input-wrapper {
             display: flex;
-    background: #0f172a;
-    border-radius: 60px;
-    border: 2px solid rgba(139, 92, 246, 0.4);
-    overflow: hidden;
-    transition: all 0.2s;
+            background: white;
+            border-radius: 60px;
+            border: 2px solid #dee2e6;
+            overflow: hidden;
+            transition: all 0.2s;
         }
-        
-        .word-input-wrapper.my-turn-pulse {
-    border-color: #f59e0b;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-    50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-}
-        
+        .word-input-wrapper:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
         .word-input-wrapper input {
             flex: 1;
-    border: none;
-    outline: none;
-    font-size: 1.2rem;
-    padding: 16px 24px;
-    background: transparent;
-    color: #f1f5f9;
-        }
-        
-        .word-input-wrapper input.my-turn {
-            border-radius: 60px;
-        }
-        
-        .word-input-wrapper input::placeholder {
-            color: #64748b;
-        }
-        
-        .word-input-wrapper button {
-            background: linear-gradient(145deg, #fec165, #e5a94a);
+            background: transparent;
             border: none;
-            margin: 6px;
+            padding: 18px 24px;
+            font-size: 1.2rem;
+            color: #212529;
+        }
+        .word-input-wrapper input:focus { outline: none; }
+        .word-input-wrapper button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 60px;
-            padding: 0 45px;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2e2b1f;
-            cursor: pointer;
-            border-bottom: 5px solid #b17e3b;
-            transition: 0.08s;
-            box-shadow: 0 4px 12px black;
-            white-space: nowrap;
-        }
-        
-        .word-input-wrapper button:hover:not(:disabled) {
-            background: linear-gradient(145deg, #ffd894, #fec165);
-            border-bottom-width: 3px;
-            transform: scale(0.98);
-        }
-        
-        .word-input-wrapper button:disabled {
-            opacity: 0.4;
-            cursor: default;
-        }
-        
-        /* Обновленная область с кнопками */
-        .action-area {
-            display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-        }
-        
-        .complaint-btn {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-    border: none;
-    border-radius: 40px;
-    padding: 12px 28px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-        }
-        
-        .complaint-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-        }
-        
-        .complaint-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .skip-btn {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-    border: none;
-    border-radius: 40px;
-    padding: 12px 32px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-        }
-        
-        .skip-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
-        
-        .skip-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .vote-status {
-            display: flex;
-    gap: 12px;
-    background: rgba(15, 23, 42, 0.6);
-    padding: 8px 16px;
-    border-radius: 40px;
-        }
-        
-        .vote-yes-count, .vote-no-count {
-            padding: 6px 16px;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 1rem;
-        }
-        
-        .vote-yes-count {
-            background: #22c55e;
-        }
-        
-        .vote-no-count {
-            background: #ef4444;
-        }
-        
-        .complaint-count {
-            background: rgba(239, 68, 68, 0.2);
-    padding: 8px 20px;
-    border-radius: 40px;
-    font-size: 1.1rem;
-    color: #f87171;
-    font-weight: 600;
-    border: 1px solid #ef4444;
-        }
-        
-        .message-area {
-            background: rgba(15, 23, 42, 0.6);
-    border-radius: 28px;
-    padding: 14px 24px;
-    color: #94a3b8;
-    font-size: 0.95rem;
-    text-align: center;
-    margin-top: 16px;
-        }
-        
-        /* Правая колонка - История */
-        .sidebar {
-            background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 32px;
-    padding: 20px;
-    border: 1px solid rgba(139, 92, 246, 0.25);
-    height: fit-content;
-        }
-        
-        .history-title {
+            margin: 6px;
+            padding: 0 36px;
             font-size: 1.3rem;
-    color: #c4b5fd;
-    text-align: center;
-    margin: 0 0 16px 0;
-    padding-bottom: 12px;
-    border-bottom: 2px solid rgba(139, 92, 246, 0.3);
-        }
-        
-        .words-history {
-            list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 420px;
-    overflow-y: auto;
-        }
-        
-        .words-history li {
-            background: rgba(15, 23, 42, 0.5);
-    color: #e2e8f0;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-    border-radius: 20px;
-    font-size: 1rem;
-    font-family: monospace;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-        
-        .word-number {
-            background: #8b5cf6;
-    color: white;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: bold;
-        }
-        
-        .footer-rules {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            color: #e2d7b8;
-            margin-top: 15px;
-            font-size: 1rem;
-        }
-        
-        .rule-item {
-            background: rgba(15, 23, 42, 0.5);
-    padding: 8px 14px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.95rem;
-    color: #94a3b8;
-    border-left: 3px solid #8b5cf6;
-        }
-        
-        .cleanup-info {
-            background: rgba(15, 23, 42, 0.5);
-    color: #64748b;
-    padding: 10px 20px;
-    border-radius: 28px;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-top: 20px;
         }
 
-        @keyframes turnPulse {
-            0% { box-shadow: 0 8px 0 #785f37, 0 0 0 0 rgba(255, 215, 0, 0.7); }
-            70% { box-shadow: 0 8px 0 #785f37, 0 0 0 15px rgba(255, 215, 0, 0); }
-            100% { box-shadow: 0 8px 0 #785f37, 0 0 0 0 rgba(255, 215, 0, 0); }
+        .action-area { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .complaint-btn { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+        .skip-btn { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #495057; }
+        
+        .vote-status { 
+            display: flex; 
+            gap: 12px; 
+            background: white; 
+            padding: 8px 20px; 
+            border-radius: 60px; 
+            border: 1px solid #dee2e6;
+        }
+        .vote-yes-count { 
+            background: #28a745; 
+            color: white;
+            padding: 6px 16px; 
+            border-radius: 40px; 
+            font-weight: bold;
+        }
+        .vote-no-count { 
+            background: #dc3545; 
+            color: white;
+            padding: 6px 16px; 
+            border-radius: 40px; 
+            font-weight: bold;
+        }
+        .complaint-count {
+            background: #e9ecef;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .message-area {
+            background: #e9ecef;
+            padding: 14px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .sidebar h3 {
+            color: #495057;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .words-history { 
+            list-style: none; 
+            max-height: 380px; 
+            overflow-y: auto;
+        }
+        .words-history li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-weight: 500;
+            color: #212529;
+            border-left: 3px solid #667eea;
+        }
+        .rule-item { 
+            margin: 12px 0; 
+            color: #6c757d; 
+            font-size: 0.85rem;
+            padding: 8px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .music-player {
+            margin-top: 15px;
+            background: white;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        @keyframes pulseTurn { 
+            0% { border-color: #ffd93d; box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.4); }
+            100% { border-color: #ffc107; box-shadow: 0 0 0 8px rgba(255, 217, 61, 0); }
+        }
+        .my-turn-pulse { animation: pulseTurn 1.5s infinite; }
+        
+        .vote-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0 4px;
+            transition: all 0.1s;
+            color: black;
+        }
+        .vote-btn:hover {
+            background: #f8f9fa;
+            transform: scale(1.05);
         }
         
         ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1e293b;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #8b5cf6;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a78bfa;
-}
-        .music-player {
-    background: rgba(30, 41, 59, 0.6) !important;
-    border-radius: 28px !important;
-    padding: 12px 16px !important;
-    border: 1px solid rgba(139, 92, 246, 0.3) !important;
-}
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .game-container {
+                padding: 16px;
+            }
+        }
     </style>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 <div class="game-container">
-    <!-- Верхняя панель с профилем -->
+    
     <div class="profile-setup">
-        <div class="avatar-section">
-            <div class="avatar-preview-large" id="avatarPreview">😊</div>
-            
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div class="avatar-preview-large" id="avatarPreview">😎</div>
             <div class="avatar-selector">
-                <button class="avatar-selector-btn" id="avatarSelectorBtn">
-                    <span>Выбрать смайлик</span>
-                    <span class="arrow">▼</span>
-                </button>
-                <div class="avatar-grid" id="avatarGrid">
-                    <!-- Первая строка -->
-                    <div class="avatar-option" onclick="selectAvatar('😊')">😊</div>
-                    <div class="avatar-option" onclick="selectAvatar('😎')">😎</div>
-                    <div class="avatar-option" onclick="selectAvatar('🤓')">🤓</div>
-                    <div class="avatar-option" onclick="selectAvatar('🦸')">🦸</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐉')">🐉</div>
-                    <div class="avatar-option" onclick="selectAvatar('👾')">👾</div>
-                    <!-- Вторая строка -->
-                    <div class="avatar-option" onclick="selectAvatar('🌟')">🌟</div>
-                    <div class="avatar-option" onclick="selectAvatar('🎮')">🎮</div>
-                    <div class="avatar-option" onclick="selectAvatar('👑')">👑</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐺')">🐺</div>
-                    <div class="avatar-option" onclick="selectAvatar('🦊')">🦊</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐱')">🐱</div>
-                    <!-- Третья строка -->
-                    <div class="avatar-option" onclick="selectAvatar('🐼')">🐼</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐨')">🐨</div>
-                    <div class="avatar-option" onclick="selectAvatar('🦁')">🦁</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐧')">🐧</div>
-                    <div class="avatar-option" onclick="selectAvatar('🐝')">🐝</div>
-                    <div class="avatar-option" onclick="selectAvatar('🦋')">🦋</div>
-                    <!-- Четвертая строка -->
-                    <div class="avatar-option" onclick="selectAvatar('🍕')">🍕</div>
-                    <div class="avatar-option" onclick="selectAvatar('🍔')">🍔</div>
-                    <div class="avatar-option" onclick="selectAvatar('🌮')">🌮</div>
-                    <div class="avatar-option" onclick="selectAvatar('🍣')">🍣</div>
-                    <div class="avatar-option" onclick="selectAvatar('🍩')">🍩</div>
-                    <div class="avatar-option" onclick="selectAvatar('🎂')">🎂</div>
-                </div>
+                <button class="avatar-selector-btn" id="avatarSelectorBtn">🎭 Выбрать смайлик ▼</button>
+                <div class="avatar-grid" id="avatarGrid"></div>
             </div>
         </div>
-        
-        <div class="name-input-section">
-            <input type="text" id="playerName" class="name-input" placeholder="Ваше имя" value="Игрок">
-            <input type="file" id="avatarFile" style="display:none" class="file-input" accept="image/*">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="playerName" class="name-input" placeholder="Ваше имя" value="МастерСлова">
             <label for="avatarFile" class="file-label">📷 Загрузить фото</label>
+            <input type="file" id="avatarFile" style="display:none" accept="image/*">
         </div>
     </div>
 
-    <!-- Три колонки: Чат | Игра | История -->
     <div class="main-grid">
-        <!-- Левая колонка - ЧАТ -->
+        <!-- Левый чат -->
         <div class="chat-sidebar">
-            <div class="chat-title">
-                <span>💬 Чат комнаты</span>
-            </div>
-            
+            <div class="chat-title">💬 Боевой чат</div>
             <div class="chat-messages" id="chatMessages"></div>
-            
             <div class="chat-input-area">
-                <input type="text" id="chatInput" class="chat-input" placeholder="Введите сообщение..." disabled>
-                <button id="chatSendBtn" class="chat-send-btn" disabled>➤</button>
+                <input type="text" id="chatInput" class="chat-input" placeholder="Напишите сообщение...">
+                <button id="chatSendBtn" class="chat-send-btn">➤</button>
             </div>
-            
-            <div class="online-count" id="onlineCount">
-                👥 Онлайн: 0
+            <div class="online-count" id="onlineCount">👥 Онлайн: 0</div>
+            <div class="music-player">
+                <div style="font-weight: bold; color: #495057;">🎧 Lo-Fi Radio</div>
+                <div style="margin: 8px 0;">
+                    <button id="playPauseBtn" style="background: #28a745; margin: 0 5px;">▶️ Play</button>
+                    <button id="stopBtn" style="background: #dc3545;">⏹️ Stop</button>
+                </div>
+                <div id="playerStatus" style="font-size: 0.75rem; color: #6c757d;">⚡ Готов к воспроизведению</div>
             </div>
-            <div class="music-player" style="margin-top: 15px; background: linear-gradient(145deg, #1e3347, #162b3d); border-radius: 60px; padding: 15px; border: 2px solid #e9c27c;">
-    <div style="display: flex; align-items: center; gap: 15px; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.8rem;">🎧</span>
-            <div>
-                <div style="color: #FFE9A7; font-size: 1.1rem; font-weight: bold;">Lo-Fi Radio</div>
-                <div id="nowPlaying" style="color: #a0c0ff; font-size: 0.8rem;">lofi hip hop radio</div>
-            </div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button id="playPauseBtn" style="background: linear-gradient(145deg, #fec165, #e5a94a); border: none; border-radius: 40px; padding: 10px 20px; cursor: pointer; border-bottom: 3px solid #a5712b; font-size: 1.2rem; min-width: 80px;">▶️ Play</button>
-            <button id="stopBtn" style="background: linear-gradient(145deg, #c06c6c, #a55252); border: none; border-radius: 40px; padding: 10px 20px; cursor: pointer; border-bottom: 3px solid #6f3636; font-size: 1.2rem;">⏹️ Stop</button>
-        </div>
-    </div>
-    <!-- Индикатор загрузки -->
-    <div id="playerStatus" style="color: #ffeeaa; font-size: 0.8rem; margin-top: 8px; text-align: center;">⚡ Готов к воспроизведению</div>
-</div>
         </div>
 
-        <!-- Центральная колонка - ИГРА -->
+        <!-- Центр игра -->
         <div class="game-content">
             <div class="connection-panel">
                 <div class="room-control">
-                    <input type="text" id="roomInput" placeholder="Код комнаты" value="game123">
-                    <button id="createRoomBtn">🔗 Создать</button>
-                    <button id="joinRoomBtn">✨ Присоединиться</button>
+                    <input type="text" id="roomInput" placeholder="Код битвы" value="assortea">
+                    <button id="createRoomBtn">🏆 СОЗДАТЬ</button>
+                    <button id="joinRoomBtn">⚔️ ВСТУПИТЬ</button>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <div class="connection-status" id="connectionStatus">⚡ Настройка...</div>
-                    <button id="reconnectBtn" class="reconnect-btn">🔄 Переподключиться</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="connection-status" id="connectionStatus">⚡ Ожидание</div>
+                    <button id="reconnectBtn" style="background: #17a2b8;">🔄 Переподключиться</button>
                 </div>
             </div>
-
+            
             <div id="playersPanel" class="players-panel"></div>
-
+            
             <div class="turn-indicator">
-                <span class="turn-text" id="turnDisplay">⏳ Ожидание...</span>
-                <span class="last-word" id="lastWordDisplay">⏳ пока нет</span>
+                <div class="turn-text" id="turnDisplay">🎲 Ожидание игроков...</div>
+                <div class="last-word" id="lastWordDisplay">---</div>
             </div>
-
-            <!-- Заметная подсказка с буквой -->
-            <div class="letter-hint-container">
-                <div class="required-letter-badge" id="requiredLetterBadge">
-                    <span>🔤</span> Нужная буква: ?
-                </div>
+            
+            <div style="text-align: center;">
+                <div class="required-letter-badge" id="requiredLetterBadge">🔤 Нужная буква: ?</div>
             </div>
-
+            
             <div class="game-area">
-                <div class="input-section">
-                    <div class="word-row">
-                        <div class="word-input-wrapper">
-                            <input type="text" id="wordInput" placeholder="существительное..." autocomplete="off" disabled>
-                            <button id="submitWordBtn" disabled>➤</button>
-                        </div>
+                <div class="word-input-wrapper" id="wordWrapper">
+                    <input type="text" id="wordInput" placeholder="Введите слово-удар..." autocomplete="off">
+                    <button id="submitWordBtn">⚡ ОТВЕТИТЬ</button>
+                </div>
+                
+                <div class="action-area">
+                    <button class="complaint-btn" id="complaintBtn">🚫 Пожаловаться</button>
+                    <button class="skip-btn" id="skipBtn">⏭️ Пропустить ход</button>
+                    <div class="vote-status" id="voteStatus" style="display: none;">
+                        <span class="vote-yes-count" id="voteYesCount">0</span>
+                        <span class="vote-no-count" id="voteNoCount">0</span>
                     </div>
-
-                    <div class="action-area" id="actionArea">
-                        <button class="complaint-btn" id="complaintBtn" disabled>🚫 Пожаловаться</button>
-                        <button class="skip-btn" id="skipBtn" disabled>⏭️ Пропустить</button>
-                        <div class="vote-status" id="voteStatus" style="display: none;">
-                            <span class="vote-yes-count" id="voteYesCount">0</span>
-                            <span class="vote-no-count" id="voteNoCount">0</span>
-                        </div>
-                        <div class="complaint-count" id="complaintCountDisplay">0 / 0</div>
-                    </div>
-
-                    <div class="message-area" id="messageBox">
-                        👋 Выберите имя и аватарку, создайте или присоединитесь
-                    </div>
+                    <div class="complaint-count" id="complaintCountDisplay">⚖️ 0/0</div>
+                </div>
+                
+                <div class="message-area" id="messageBox">
+                    🔥 Готов к битве слов! Создайте или присоединитесь к комнате
                 </div>
             </div>
         </div>
 
-        <!-- Правая колонка - ИСТОРИЯ СЛОВ -->
+        <!-- Правая история -->
         <div class="sidebar">
-            <h3 class="history-title">📜 История слов</h3>
+            <h3>📜 История слов</h3>
             <ul class="words-history" id="wordsHistory">
-                <li style="justify-content: center; color: #999;">Пока нет слов</li>
+                <li style="text-align: center; color: #adb5bd;">⚔️ Слова будут здесь</li>
             </ul>
-            <div class="footer-rules">
-                <div class="rule-item">
-                    <span>📚</span> Только существительные
-                </div>
-                <div class="rule-item">
-                    <span>🔤</span> Минимум 2 буквы
-                </div>
-                <div class="rule-item">
-                    <span>🔄</span> Слова не должны повторяться
-                </div>
-                <div class="rule-item">
-                    <span>📝</span> Можно с дефисом и пробелом
-                </div>
-                <div class="rule-item">
-                    <span>⏭️</span> Можно пропустить ход
-                </div>
+            <div style="margin-top: 20px;">
+                <div class="rule-item">📖 Только существительные, ед.ч (именительный)</div>
+                <div class="rule-item">🔤 Минимум 3 буквы, нельзя повторяться</div>
+                <div class="rule-item">🔄 Ход: последняя буква → первая буква</div>
+                <div class="rule-item">💀 Жалоба = голосование, при успехе - штраф</div>
+                <div class="rule-item">⏭️ Можно пропустить ход без штрафа</div>
             </div>
         </div>
-    </div>
-
-    <div class="cleanup-info" id="cleanupInfo">
-        ⏱️ Пустые комнаты удаляются через 1 час
     </div>
 </div>
 <div id="youtube-player" style="display: none;"></div>
+
 <script>
-(function() {
-    // ==================== НАСТРОЙКА FIREBASE ====================
+    // Firebase конфигурация
     const firebaseConfig = {
         apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E",
         authDomain: "word-game-multiplayer-43c82.firebaseapp.com",
         databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/",
         projectId: "word-game-multiplayer-43c82",
         storageBucket: "word-game-multiplayer-43c82.firebasestorage.app",
-        messagingSenderId: "966216835290",
-        appId: "1:966216835290:web:bfebbf3b1d13cf80f745e3"
     };
+    
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    let app;
-    let database;
-    let storage;
-    try {
-        app = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        storage = firebase.storage();
-        console.log("Firebase initialized");
-        
-        startCleanupService();
-    } catch (e) {
-        console.error("Firebase init error:", e);
-    }
-
-    // ==================== СОСТОЯНИЕ ИГРЫ ====================
-    let myId = null;
-    let myName = 'Игрок';
-    let myAvatar = '😊';
-    let myAvatarUrl = null;
-    let roomId = null;
-    let players = [];
-    let currentPlayerId = null;
-    let lastWord = '';
-    let lastWordAuthor = null;
-    let usedWords = [];
-    let complaintActive = false;
-    let complainedWord = '';
-    let complaintAuthor = null;
-    let complaintVotes = {
-        yes: new Set(),
-        no: new Set()
-    };
-    let lastWordsHistory = [];
-    let pageTitle = document.title;
-    let isTabActive = true;
-    let notificationInterval = null;
+    // Глобальное состояние
+    let myId = null, roomId = null, myName = "МастерСлова", myAvatar = "😎", myAvatarUrl = null;
+    let players = [], currentPlayerId = null, lastWord = "", lastWordAuthor = null, usedWords = [];
+    let complaintActive = false, complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] };
     let heartbeatInterval = null;
-
-    // Константы для таймаутов
-    const PLAYER_TIMEOUT = 45000; // 45 секунд
-    const NAME_RELEASE_TIMEOUT = 60000; // 60 секунд
+    const TIMEOUT_MS = 50000;
 
     // DOM элементы
-    const playersPanel = document.getElementById('playersPanel');
-    const turnDisplay = document.getElementById('turnDisplay');
-    const lastWordDisplay = document.getElementById('lastWordDisplay');
-    const requiredLetterBadge = document.getElementById('requiredLetterBadge');
+    const playersPanelDiv = document.getElementById('playersPanel');
+    const turnDisplaySpan = document.getElementById('turnDisplay');
+    const lastWordSpan = document.getElementById('lastWordDisplay');
+    const requiredBadge = document.getElementById('requiredLetterBadge');
     const wordInput = document.getElementById('wordInput');
     const submitBtn = document.getElementById('submitWordBtn');
     const complaintBtn = document.getElementById('complaintBtn');
     const skipBtn = document.getElementById('skipBtn');
-    const complaintCountDisplay = document.getElementById('complaintCountDisplay');
-    const voteStatus = document.getElementById('voteStatus');
-    const voteYesCount = document.getElementById('voteYesCount');
-    const voteNoCount = document.getElementById('voteNoCount');
-    const messageBox = document.getElementById('messageBox');
-    const connectionStatus = document.getElementById('connectionStatus');
-    const roomInput = document.getElementById('roomInput');
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    const joinRoomBtn = document.getElementById('joinRoomBtn');
+    const messageBoxDiv = document.getElementById('messageBox');
+    const connectionStatusSpan = document.getElementById('connectionStatus');
+    const roomInputEl = document.getElementById('roomInput');
+    const createBtn = document.getElementById('createRoomBtn');
+    const joinBtn = document.getElementById('joinRoomBtn');
     const reconnectBtn = document.getElementById('reconnectBtn');
     const playerNameInput = document.getElementById('playerName');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarFile = document.getElementById('avatarFile');
-    const cleanupInfo = document.getElementById('cleanupInfo');
-    const wordsHistory = document.getElementById('wordsHistory');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const chatSendBtn = document.getElementById('chatSendBtn');
-    const onlineCount = document.getElementById('onlineCount');
+    const avatarPreviewDiv = document.getElementById('avatarPreview');
+    const avatarGridDiv = document.getElementById('avatarGrid');
     const avatarSelectorBtn = document.getElementById('avatarSelectorBtn');
-    const avatarGrid = document.getElementById('avatarGrid');
+    const chatMessagesDiv = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSendBtn');
+    const onlineCountSpan = document.getElementById('onlineCount');
+    const voteStatusDiv = document.getElementById('voteStatus');
+    const voteYesSpan = document.getElementById('voteYesCount');
+    const voteNoSpan = document.getElementById('voteNoCount');
+    const complaintCountSpan = document.getElementById('complaintCountDisplay');
+    const wordsHistoryUl = document.getElementById('wordsHistory');
 
-    // ==================== УПРАВЛЕНИЕ СМАЙЛИКАМИ ====================
-    avatarSelectorBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        avatarGrid.classList.toggle('show');
-        avatarSelectorBtn.classList.toggle('open');
+    // Эмодзи грид
+    const emojis = [
+  // Лица и эмоции (10)
+  '😀', '😂', '😎', '🤓', '😍', '🥶', '🤯', '🥳',
+  
+  // Супергерои и фэнтези (8)
+  '🦸', '🦹', '🧙', '🐉', '👾', '🤖', '👻', '🎃',
+  
+  // Животные (12)
+  '🐺', '🦊', '🐱', '🐼', '🦁', '🐧', '🐨', '🦄', '🐙', '🦇', '🐉', '🦅',
+  
+  // Еда (10)
+  '🍕', '🍔', '🌮', '🍣', '🍩', '🍦', '🥑', '🍇', '🍿', '🥨',
+  
+  // Игры и активность (8)
+  '🎮', '⚽', '🏀', '🎸', '🎧', '📸', '✈️', '🚀',
+  
+  // Природа и погода (6)
+  '🌟', '⭐', '☀️', '🌈', '⚡', '🔥',
+  
+  // Предметы и символы (10)
+  '👑', '💎', '💰', '🔮', '⚙️', '💡', '🔑', '💀', '🎭', '🎨'
+];
+    emojis.forEach(emo => {
+        const div = document.createElement('div');
+        div.className = 'avatar-option';
+        div.textContent = emo;
+        div.onclick = () => selectAvatar(emo);
+        avatarGridDiv.appendChild(div);
     });
-
-    document.addEventListener('click', (e) => {
-        if (!avatarSelectorBtn.contains(e.target) && !avatarGrid.contains(e.target)) {
-            avatarGrid.classList.remove('show');
-            avatarSelectorBtn.classList.remove('open');
-        }
-    });
-
-    // ==================== ОТСЛЕЖИВАНИЕ ВКЛАДКИ ====================
-    document.addEventListener('visibilitychange', () => {
-        isTabActive = !document.hidden;
-        if (isTabActive) {
-            document.title = pageTitle;
-            if (notificationInterval) {
-                clearInterval(notificationInterval);
-                notificationInterval = null;
-            }
-        }
-    });
-
-    function notifyTurn() {
-        if (!isTabActive && myId === currentPlayerId && !complaintActive) {
-            let count = 0;
-            notificationInterval = setInterval(() => {
-                document.title = count % 2 === 0 ? '🎮 ВАШ ХОД!' : pageTitle;
-                count++;
-            }, 1000);
-        }
-    }
-
-    // ==================== АВТОМАТИЧЕСКАЯ ЧИСТКА КОМНАТ ====================
-    function startCleanupService() {
-        setInterval(cleanupOldRooms, 15 * 60 * 1000);
-        setTimeout(cleanupOldRooms, 5000);
-        setInterval(updateCleanupInfo, 60000);
-        updateCleanupInfo();
-    }
-
-    function cleanupOldRooms() {
-        const roomsRef = database.ref('rooms');
-        const oneHourAgo = Date.now() - (60 * 60 * 1000);
-        
-        roomsRef.once('value', (snapshot) => {
-            const rooms = snapshot.val();
-            if (!rooms) return;
-            
-            let cleanedCount = 0;
-            
-            Object.entries(rooms).forEach(([roomId, roomData]) => {
-                const players = roomData.players;
-                const playerCount = players ? Object.keys(players).length : 0;
-                
-                if (playerCount === 0 && roomData.createdAt && roomData.createdAt < oneHourAgo) {
-                    roomsRef.child(roomId).remove();
-                    cleanedCount++;
-                }
-            });
-            
-            if (cleanedCount > 0) {
-                cleanupInfo.textContent = `🧹 Удалено ${cleanedCount} пустых комнат`;
-                setTimeout(() => updateCleanupInfo(), 3000);
-            }
-        });
-    }
-
-    function updateCleanupInfo() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-        cleanupInfo.textContent = `⏱️ Пустые комнаты удаляются через 1 час | Последняя проверка: ${timeString}`;
-    }
-
-    // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ СО СЛОВАМИ ====================
     
-    function normalizeWord(word) {
-        return word.toLowerCase().replace(/[-\s]/g, '');
-    }
+    avatarSelectorBtn.onclick = (e) => { e.stopPropagation(); avatarGridDiv.classList.toggle('show'); };
+    document.addEventListener('click', () => avatarGridDiv.classList.remove('show'));
     
-    function isValidRussianWord(word) {
-        return /^[а-яё\s-]+$/i.test(word);
+    function selectAvatar(emo) { 
+        myAvatar = emo; 
+        myAvatarUrl = null; 
+        avatarPreviewDiv.textContent = emo; 
+        avatarGridDiv.classList.remove('show');
     }
-    
-    function getFirstLetter(word) {
-        const cleanWord = word.toLowerCase();
-        for (let i = 0; i < cleanWord.length; i++) {
-            const char = cleanWord[i];
-            if (/[а-яё]/.test(char)) {
-                return char;
-            }
+
+    // Функции работы со словами
+    function getLastLetter(word) {
+        if (!word) return '';
+        const clean = word.toLowerCase().replace(/[ъьы]/g, '');
+        for (let i = clean.length-1; i >= 0; i--) {
+            if (/[а-яё]/.test(clean[i])) return clean[i];
         }
         return '';
     }
     
-    function getLastSignificantLetter(word) {
-        if (!word) return '';
+    function getFirstLetter(word) {
+        for (let ch of word.toLowerCase()) {
+            if (/[а-яё]/.test(ch)) return ch;
+        }
+        return '';
+    }
+    
+    function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
+    
+    function isValidWord(w) { 
+        return /^[а-яё\s-]{2,}$/i.test(w) && normalize(w).length >= 3; 
+    }
+
+    function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
+
+    // Создание комнаты
+    async function createRoom() {
+        const room = roomInputEl.value.trim();
+        if (!room) { messageBoxDiv.textContent = '❌ Введите код комнаты!'; return; }
+        myName = playerNameInput.value.trim() || "Воин";
+        myId = generateId();
+        roomId = room;
+        const roomRef = db.ref(`rooms/${room}`);
+        const snapshot = await roomRef.once('value');
+        if (snapshot.exists()) { 
+            messageBoxDiv.textContent = '❌ Комната уже существует, используйте "ВСТУПИТЬ"'; 
+            return; 
+        }
         
-        const cleanWord = word.toLowerCase();
-        let lastChar = '';
+        const initState = {
+            players: { 
+                [myId]: { 
+                    id: myId, 
+                    name: myName, 
+                    avatar: myAvatar, 
+                    avatarUrl: myAvatarUrl, 
+                    score: 0, 
+                    connected: true, 
+                    lastSeen: Date.now() 
+                } 
+            },
+            currentPlayerId: myId, 
+            lastWord: '', 
+            lastWordAuthor: null, 
+            usedWords: [], 
+            complaint: null, 
+            messages: [], 
+            createdAt: Date.now()
+        };
         
-        for (let i = cleanWord.length - 1; i >= 0; i--) {
-            const char = cleanWord[i];
-            if (/[а-яё]/.test(char)) {
-                lastChar = char;
+        await roomRef.set(initState);
+        connectionStatusSpan.textContent = `✅ Комната "${room}"`;
+        messageBoxDiv.textContent = '🏰 Комната создана! Ожидайте соперников.';
+        setupListeners(room);
+        startHeartbeat(room);
+        enableChat();
+    }
+
+    // Присоединение к комнате
+    async function joinRoom() {
+        const room = roomInputEl.value.trim();
+        if (!room) { messageBoxDiv.textContent = '❌ Введите код комнаты!'; return; }
+        myName = playerNameInput.value.trim() || "Воин";
+        
+        const roomRef = db.ref(`rooms/${room}`);
+        const snap = await roomRef.once('value');
+        if (!snap.exists()) { 
+            messageBoxDiv.textContent = '❌ Комната не найдена, создайте новую'; 
+            return; 
+        }
+        
+        const data = snap.val();
+        const existingPlayers = data.players || {};
+        let existingId = null;
+        
+        for (let [pid, p] of Object.entries(existingPlayers)) {
+            if (p.name === myName && (p.connected || (Date.now() - (p.lastSeen||0) < 30000))) {
+                existingId = pid; 
                 break;
             }
         }
         
-        if (!lastChar) return '';
-        
-        const softChars = ['ь', 'ъ', 'ы'];
-        if (softChars.includes(lastChar)) {
-            for (let i = word.toLowerCase().indexOf(lastChar) - 1; i >= 0; i--) {
-                const prevChar = word.toLowerCase()[i];
-                if (/[а-яё]/.test(prevChar)) {
-                    return prevChar;
-                }
-            }
-        }
-        return lastChar;
-    }
-
-    // ==================== УЛУЧШЕННАЯ ПРОВЕРКА ПОДКЛЮЧЕНИЯ ====================
-    async function checkPlayerInRoom(room, playerName) {
-    return new Promise((resolve) => {
-        const roomRef = database.ref(`rooms/${room}/players`);
-        const now = Date.now();
-        
-        roomRef.once('value', (snapshot) => {
-            const players = snapshot.val();
-            if (!players) {
-                resolve(false);
-                return;
-            }
-            
-            // Ищем активных игроков с таким же именем
-            const existingPlayer = Object.entries(players).find(([id, p]) => {
-                const isActive = p.connected || (now - (p.lastSeen || 0)) < 30000;
-                return isActive && p.name.toLowerCase() === playerName.toLowerCase();
+        if (existingId) {
+            myId = existingId;
+            await roomRef.child(`players/${myId}`).update({ 
+                connected: true, 
+                lastSeen: Date.now(), 
+                avatar: myAvatar, 
+                name: myName 
             });
-            
-            resolve(existingPlayer ? existingPlayer[0] : false);
-        });
-    });
-}
-
-    // Функция для переподключения с тем же именем
-    async function reconnectToRoom(room, playerName, oldPlayerId) {
-    return new Promise((resolve) => {
-        const roomRef = database.ref(`rooms/${room}`);
-        
-        roomRef.child('players').once('value', (snapshot) => {
-            const players = snapshot.val() || {};
-            const now = Date.now();
-            
-            // Проверяем, существует ли игрок с таким ID
-            if (oldPlayerId && players[oldPlayerId]) {
-                const oldPlayer = players[oldPlayerId];
-                
-                // Обновляем данные старого игрока
-                roomRef.child(`players/${oldPlayerId}`).update({
-                    connected: true,
-                    lastSeen: now,
-                    name: playerName, // Обновляем имя (на случай если изменилось)
-                    avatar: myAvatar,
-                    avatarUrl: myAvatarUrl
-                }).then(() => {
-                    console.log(`Переподключён как ${oldPlayerId}`);
-                    resolve(oldPlayerId);
-                }).catch((error) => {
-                    console.error('Ошибка переподключения:', error);
-                    resolve(false);
-                });
-                return;
-            }
-            
-            // Если нет старого ID, ищем игрока с таким же именем
-            const existingPlayer = Object.entries(players).find(([id, p]) => {
-                const isInactive = !p.connected || (now - (p.lastSeen || 0)) > 30000;
-                return isInactive && p.name.toLowerCase() === playerName.toLowerCase();
+            messageBoxDiv.textContent = '♻️ Переподключение успешно!';
+        } else {
+            myId = generateId();
+            await roomRef.child(`players/${myId}`).set({ 
+                id: myId, 
+                name: myName, 
+                avatar: myAvatar, 
+                avatarUrl: myAvatarUrl, 
+                score: 0, 
+                connected: true, 
+                lastSeen: Date.now() 
             });
-            
-            if (existingPlayer) {
-                const [existingId, existingData] = existingPlayer;
-                roomRef.child(`players/${existingId}`).update({
-                    connected: true,
-                    lastSeen: now,
-                    avatar: myAvatar,
-                    avatarUrl: myAvatarUrl
-                }).then(() => {
-                    console.log(`Восстановлен игрок ${existingId} с именем ${playerName}`);
-                    resolve(existingId);
-                }).catch(() => resolve(false));
-                return;
-            }
-            
-            resolve(false);
-        });
-    });
-}
-
-    // ==================== FIREBASE ====================
-    async function createRoom() {
-        const room = roomInput.value.trim();
-        if (!room) {
-            messageBox.textContent = 'Введите код комнаты';
-            return;
+            if (!data.currentPlayerId) await roomRef.child('currentPlayerId').set(myId);
+            messageBoxDiv.textContent = '✅ Вы присоединились к битве!';
         }
-
-        myName = playerNameInput.value.trim() || 'Игрок';
         
-        localStorage.removeItem(`lastPlayer_${room}`);
-        
-        const existingPlayerId = await checkPlayerInRoom(room, myName);
-        if (existingPlayerId) {
-            messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
-            return;
-        }
-
-        myId = generatePlayerId();
         roomId = room;
-
-        const roomRef = database.ref(`rooms/${room}`);
-        
-        roomRef.once('value', (snapshot) => {
-            if (snapshot.exists()) {
-                messageBox.textContent = 'Комната уже существует';
-                return;
-            }
-
-            const gameState = {
-                players: {
-                    [myId]: {
-                        id: myId,
-                        name: myName,
-                        avatar: myAvatar,
-                        avatarUrl: myAvatarUrl,
-                        score: 0,
-                        connected: true,
-                        lastSeen: Date.now(),
-                        joinedAt: Date.now()
-                    }
-                },
-                currentPlayerId: myId,
-                lastWord: '',
-                lastWordAuthor: null,
-                usedWords: [],
-                complaint: null,
-                messages: [],
-                createdAt: Date.now(),
-                lastActivity: Date.now()
-            };
-
-            roomRef.set(gameState, (error) => {
-                if (error) {
-                    messageBox.textContent = 'Ошибка: ' + error.message;
-                } else {
-                    connectionStatus.textContent = `✅ Создано: ${room}`;
-                    messageBox.textContent = 'Комната создана! Ожидайте игроков...';
-                    setupListeners(room);
-                    startHeartbeat(room);
-                    chatInput.disabled = false;
-                    chatSendBtn.disabled = false;
-                    
-                    localStorage.setItem(`lastPlayer_${room}`, myId);
-                }
-            });
-        });
+        connectionStatusSpan.textContent = `🔗 В комнате "${room}"`;
+        setupListeners(room);
+        startHeartbeat(room);
+        enableChat();
     }
 
-    async function joinRoom() {
-    const room = roomInput.value.trim();
-    if (!room) {
-        messageBox.textContent = 'Введите код комнаты';
-        return;
+    function enableChat() { 
+        chatInput.disabled = false; 
+        chatSend.disabled = false; 
     }
-
-    myName = playerNameInput.value.trim() || 'Игрок';
-    
-    // Получаем сохранённый ID игрока для этой комнаты
-    const savedPlayerId = localStorage.getItem(`lastPlayer_${room}`);
-    
-    // Сначала пытаемся переподключиться
-    if (savedPlayerId) {
-        const reconnected = await reconnectToRoom(room, myName, savedPlayerId);
-        if (reconnected) {
-            myId = reconnected;
-            roomId = room;
-            
-            connectionStatus.textContent = `✅ Переподключён к ${room}`;
-            messageBox.textContent = 'Вы переподключились! Игра продолжается...';
-            setupListeners(room);
-            startHeartbeat(room);
-            chatInput.disabled = false;
-            chatSendBtn.disabled = false;
-            
-            localStorage.setItem(`lastPlayer_${room}`, myId);
-            return;
-        }
-    }
-    
-    // Если переподключиться не удалось, проверяем, есть ли активный игрок с таким именем
-    const activePlayerId = await checkPlayerInRoom(room, myName);
-    if (activePlayerId) {
-        // Пытаемся переподключить активного игрока
-        const reconnected = await reconnectToRoom(room, myName, activePlayerId);
-        if (reconnected) {
-            myId = reconnected;
-            roomId = room;
-            
-            connectionStatus.textContent = `✅ Восстановлено подключение к ${room}`;
-            messageBox.textContent = 'Ваше подключение восстановлено!';
-            setupListeners(room);
-            startHeartbeat(room);
-            chatInput.disabled = false;
-            chatSendBtn.disabled = false;
-            
-            localStorage.setItem(`lastPlayer_${room}`, myId);
-            return;
-        }
-        
-        messageBox.textContent = `❌ Игрок с именем "${myName}" уже в комнате!`;
-        return;
-    }
-
-    // Создаём нового игрока
-    myId = generatePlayerId();
-    roomId = room;
-
-    const roomRef = database.ref(`rooms/${room}`);
-    
-    roomRef.once('value', (snapshot) => {
-        if (!snapshot.exists()) {
-            messageBox.textContent = 'Комната не найдена';
-            return;
-        }
-
-        const roomData = snapshot.val();
-        const playerIds = roomData.players ? Object.keys(roomData.players) : [];
-        
-        const updates = {};
-        updates[`players/${myId}`] = {
-            id: myId,
-            name: myName,
-            avatar: myAvatar,
-            avatarUrl: myAvatarUrl,
-            score: 0,
-            connected: true,
-            lastSeen: Date.now(),
-            joinedAt: Date.now()
-        };
-        
-        // Если это первый игрок, делаем его текущим
-        if (playerIds.length === 0) {
-            updates.currentPlayerId = myId;
-        }
-        
-        updates.lastActivity = Date.now();
-
-        roomRef.update(updates, (error) => {
-            if (error) {
-                messageBox.textContent = 'Ошибка: ' + error.message;
-            } else {
-                connectionStatus.textContent = `✅ Подключён к ${room}`;
-                messageBox.textContent = 'Вы присоединились! Игра начинается...';
-                setupListeners(room);
-                startHeartbeat(room);
-                chatInput.disabled = false;
-                chatSendBtn.disabled = false;
-                
-                localStorage.setItem(`lastPlayer_${room}`, myId);
-            }
-        });
-    });
-}
 
     function startHeartbeat(room) {
-        if (!room || !myId) return;
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        const playerRef = db.ref(`rooms/${room}/players/${myId}`);
+        const beat = () => playerRef.update({ connected: true, lastSeen: Date.now() }).catch(e => console.warn);
+        beat();
+        heartbeatInterval = setInterval(beat, 10000);
         
-        if (heartbeatInterval) {
-            clearInterval(heartbeatInterval);
-        }
-        
-        const playerRef = database.ref(`rooms/${room}/players/${myId}`);
-        let reconnectAttempts = 0;
-        const MAX_RECONNECT_ATTEMPTS = 5;
-        
-        const sendHeartbeat = () => {
-            if (!roomId || !myId) {
-                clearInterval(heartbeatInterval);
-                return;
-            }
-            
-            playerRef.update({
-                connected: true,
-                lastSeen: Date.now()
-            }).then(() => {
-                reconnectAttempts = 0;
-            }).catch((error) => {
-                console.error('Heartbeat error:', error);
-                reconnectAttempts++;
-                
-                if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
-                    setTimeout(() => {
-                        if (roomId && myId) {
-                            playerRef.update({
-                                connected: true,
-                                lastSeen: Date.now(),
-                                reconnect: true
-                            }).catch(e => console.log('Reconnect failed:', e));
-                        }
-                    }, 2000 * reconnectAttempts);
-                } else {
-                    messageBox.textContent = '⚠️ Проблемы с соединением. Нажмите кнопку переподключения.';
-                }
-            });
-        };
-        
-        heartbeatInterval = setInterval(sendHeartbeat, 8000);
-        setTimeout(sendHeartbeat, 1000);
-
-        window.addEventListener('beforeunload', () => {
-            if (roomId && myId) {
-                const data = JSON.stringify({
-                    connected: false,
-                    lastSeen: Date.now(),
-                    offline: true
-                });
-                navigator.sendBeacon(
-                    `https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/rooms/${room}/players/${myId}.json`,
-                    data
-                );
-            }
+        window.addEventListener('beforeunload', () => { 
+            playerRef.update({ connected: false, lastSeen: Date.now() }); 
         });
-
-        return heartbeatInterval;
     }
 
+    // Листенеры
     function setupListeners(room) {
-        const roomRef = database.ref(`rooms/${room}`);
-
-        roomRef.child('players').on('value', (snapshot) => {
-            const playersData = snapshot.val() || {};
+        const roomRef = db.ref(`rooms/${room}`);
+        
+        roomRef.child('players').on('value', (snap) => {
+            const data = snap.val() || {};
             const now = Date.now();
+            let active = [];
             
-            const activePlayers = [];
-            const inactivePlayers = [];
-            
-            Object.entries(playersData).forEach(([playerId, playerData]) => {
-                const timeSinceLastSeen = now - (playerData.lastSeen || 0);
-                
-                if (playerData.connected || timeSinceLastSeen < PLAYER_TIMEOUT) {
-                    activePlayers.push({
-                        ...playerData,
-                        id: playerId
-                    });
+            for (let [id, p] of Object.entries(data)) {
+                if (p.connected || (now - (p.lastSeen||0) < TIMEOUT_MS)) {
+                    active.push({ ...p, id });
                 } else {
-                    inactivePlayers.push(playerId);
-                }
-            });
-            
-            inactivePlayers.forEach(playerId => {
-                const playerData = playersData[playerId];
-                const timeSinceLastSeen = now - (playerData.lastSeen || 0);
-                
-                if (timeSinceLastSeen > NAME_RELEASE_TIMEOUT) {
-                    database.ref(`rooms/${room}/players/${playerId}`).remove()
-                        .then(() => {
-                            console.log(`Игрок ${playerData.name} удален из комнаты (неактивен)`);
-                        })
-                        .catch(error => {
-                            console.error('Ошибка удаления игрока:', error);
-                        });
-                }
-            });
-            
-            players = activePlayers;
-            
-            onlineCount.textContent = `👥 Онлайн: ${activePlayers.length}`;
-            
-            if (activePlayers.length >= 1 && !currentPlayerId) {
-                const firstPlayerId = activePlayers[0].id;
-                roomRef.child('currentPlayerId').set(firstPlayerId);
-            }
-            
-            if (currentPlayerId && !activePlayers.some(p => p.id === currentPlayerId)) {
-                if (activePlayers.length > 0) {
-        roomRef.child('currentPlayerId').set(activePlayers[0].id);
-        messageBox.textContent = `Ход передан игроку ${activePlayers[0].name}`;
-                } else {
-                    roomRef.child('currentPlayerId').set(null);
+                    db.ref(`rooms/${room}/players/${id}`).remove();
                 }
             }
             
-            renderAll();
+            players = active;
+            onlineCountSpan.textContent = `👥 Онлайн: ${players.length}`;
+            
+            if (players.length === 0 && roomId) {
+                db.ref(`rooms/${room}`).remove();
+            }
+            
+            if (currentPlayerId && !players.find(p => p.id === currentPlayerId) && players.length) {
+                roomRef.child('currentPlayerId').set(players[0].id);
+            }
+            
+            renderPlayers();
             updateControls();
         });
-
-        roomRef.child('messages').on('value', (snapshot) => {
-            const messages = snapshot.val() || [];
-            renderChat(messages);
-        });
-
-        roomRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                roomId = null;
-                myId = null;
-                players = [];
-                currentPlayerId = null;
-                lastWord = '';
-                lastWordAuthor = null;
-                usedWords = [];
-                complaintActive = false;
-                messageBox.textContent = '🏠 Комната была удалена';
-                connectionStatus.textContent = '⚡ Отключён';
-                chatInput.disabled = true;
-                chatSendBtn.disabled = true;
-                onlineCount.textContent = '👥 Онлайн: 0';
-                renderAll();
-                updateControls();
-                return;
-            }
-
-            currentPlayerId = data.currentPlayerId;
-            lastWord = data.lastWord || '';
-            lastWordAuthor = data.lastWordAuthor || null;
-            usedWords = data.usedWords || [];
-            
-            if (usedWords.length > 0) {
-                lastWordsHistory = usedWords.slice(-10).reverse();
-                renderHistory();
-            } else {
-                lastWordsHistory = [];
-                renderHistory();
+        
+        roomRef.child('messages').on('value', (snap) => renderChat(snap.val() || []));
+        
+        roomRef.on('value', (snap) => {
+            const game = snap.val();
+            if (!game) { 
+                resetGameState(); 
+                return; 
             }
             
-            if (data.complaint) {
+            currentPlayerId = game.currentPlayerId;
+            lastWord = game.lastWord || '';
+            lastWordAuthor = game.lastWordAuthor;
+            usedWords = game.usedWords || [];
+            
+            if (game.complaint) {
                 complaintActive = true;
-                complainedWord = data.complaint.word;
-                complaintAuthor = data.complaint.authorId;
-                complaintVotes.yes = new Set(data.complaint.votes?.yes || []);
-                complaintVotes.no = new Set(data.complaint.votes?.no || []);
-            } else {
-                complaintActive = false;
-                complainedWord = '';
-                complaintAuthor = null;
-                complaintVotes.yes.clear();
-                complaintVotes.no.clear();
+                complaintData = { 
+                    word: game.complaint.word, 
+                    authorId: game.complaint.authorId, 
+                    votesYes: game.complaint.votesYes || [], 
+                    votesNo: game.complaint.votesNo || [] 
+                };
+            } else { 
+                complaintActive = false; 
+                complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] }; 
             }
-
-            renderAll();
+            
+            renderGameUI();
             updateControls();
-            notifyTurn();
+            notifyMyTurn();
         });
     }
 
-    // ==================== ЧАТ ====================
-    function sendChatMessage() {
-        if (!roomId || !myId) return;
-        
-        const message = chatInput.value.trim();
-        if (!message) return;
-        
-        const roomRef = database.ref(`rooms/${roomId}`);
-        
-        roomRef.child('messages').once('value', (snapshot) => {
-            const messages = snapshot.val() || [];
-            const newMessage = {
-                sender: myName,
-                senderId: myId,
-                text: message,
-                timestamp: Date.now()
-            };
-            
-            messages.push(newMessage);
-            if (messages.length > 50) messages.shift();
-            
-            roomRef.child('messages').set(messages);
-            chatInput.value = '';
-        });
+    function resetGameState() {
+        roomId = null; 
+        players = []; 
+        currentPlayerId = null; 
+        lastWord = ""; 
+        usedWords = []; 
+        complaintActive = false;
+        messageBoxDiv.textContent = '🏠 Комната удалена. Создайте новую.';
+        connectionStatusSpan.textContent = '⚡ Отключён';
+        renderPlayers();
+        renderGameUI();
     }
 
-    function renderChat(messages) {
-        if (!chatMessages) return;
-        
-        if (!messages || messages.length === 0) {
-            chatMessages.innerHTML = '<div class="chat-message" style="color: #999; text-align: center; background: transparent; border: none;">Нет сообщений</div>';
-            return;
-        }
-        
-        let html = '';
-        messages.forEach(msg => {
-            const isMine = msg.senderId === myId;
-            const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            html += `
-                <div class="chat-message ${isMine ? 'mine' : ''}">
-                    <span class="sender">${msg.sender}</span>
-                    <span class="time">${time}</span>
-                    <div class="text">${msg.text}</div>
-                </div>
-            `;
-        });
-        chatMessages.innerHTML = html;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // ==================== ИГРА ====================
-    function submitWord() {
-        if (!roomId || !myId || complaintActive) return;
-        if (myId !== currentPlayerId) {
-            messageBox.textContent = 'Сейчас не ваш ход';
-            return;
-        }
-
-        const word = wordInput.value.trim().toLowerCase();
-        if (!word) {
-            messageBox.textContent = 'Введите слово';
-            return;
-        }
-
-        if (!isValidRussianWord(word)) {
-            messageBox.textContent = '❌ Только русские буквы, дефис и пробел';
-            wordInput.value = '';
-            return;
-        }
-
-        const normalizedWord = normalizeWord(word);
-        if (normalizedWord.length < 2) {
-            messageBox.textContent = '❌ Минимум 2 буквы (без учета дефисов)';
-            wordInput.value = '';
-            return;
-        }
-
-        const isWordUsed = usedWords.some(w => normalizeWord(w) === normalizedWord);
-        if (isWordUsed) {
-            messageBox.textContent = `⚠️ Слово "${word}" уже было`;
-            wordInput.value = '';
-            return;
-        }
-
-        if (lastWord) {
-            const requiredLetter = getLastSignificantLetter(lastWord);
-            const firstLetter = getFirstLetter(word);
-            
-            if (requiredLetter && firstLetter !== requiredLetter) {
-                messageBox.textContent = `🔤 Должно начинаться с «${requiredLetter}»`;
-                wordInput.value = '';
-                return;
-            }
-        }
-
-        const roomRef = database.ref(`rooms/${roomId}`);
-        const playerIds = players.map(p => p.id);
-        const currentIndex = playerIds.indexOf(myId);
-        const nextIndex = (currentIndex + 1) % playerIds.length;
-        const nextPlayerId = playerIds[nextIndex];
-
-        const updates = {};
-        updates[`players/${myId}/score`] = (players.find(p => p.id === myId).score || 0) + 1;
-        updates.currentPlayerId = nextPlayerId;
-        updates.lastWord = word;
-        updates.lastWordAuthor = myId;
-        updates.usedWords = [...usedWords, word];
-        updates.lastActivity = Date.now();
-
-        roomRef.update(updates);
-        
-        wordInput.value = '';
-        messageBox.textContent = `✅ Слово "${word}" принято!`;
-    }
-
-    function skipTurn() {
-        if (!roomId || !myId || complaintActive) return;
-        if (myId !== currentPlayerId) {
-            messageBox.textContent = 'Сейчас не ваш ход';
-            return;
-        }
-
-        const roomRef = database.ref(`rooms/${roomId}`);
-        const playerIds = players.map(p => p.id);
-        const currentIndex = playerIds.indexOf(myId);
-        const nextIndex = (currentIndex + 1) % playerIds.length;
-        const nextPlayerId = playerIds[nextIndex];
-
-        const updates = {
-            currentPlayerId: nextPlayerId,
-            lastActivity: Date.now()
-        };
-
-        roomRef.update(updates);
-        
-        messageBox.textContent = `⏭️ Вы пропустили ход. Ход переходит к следующему игроку.`;
-    }
-
-    function startComplaint() {
-        if (!roomId || !myId) return;
-        if (!lastWord) {
-            messageBox.textContent = 'Не на что жаловаться';
-            return;
-        }
-        
-        if (myId === lastWordAuthor) {
-            messageBox.textContent = 'Вы не можете жаловаться на своё слово';
-            return;
-        }
-
-        if (myId !== currentPlayerId) {
-            messageBox.textContent = 'Сейчас не ваша очередь жаловаться';
-            return;
-        }
-
-        const roomRef = database.ref(`rooms/${roomId}`);
-        
-        const complaint = {
-            active: true,
-            word: lastWord,
-            authorId: lastWordAuthor,
-            complainantId: myId,
-            votes: {
-                yes: [],
-                no: []
-            }
-        };
-
-        roomRef.child('complaint').set(complaint);
-        messageBox.textContent = 'Жалоба отправлена! Голосуйте!';
-    }
-
-    function vote(voteType) {
-        if (!roomId || !myId || !complaintActive) return;
-        
-        if (myId === complaintAuthor) {
-            messageBox.textContent = 'Вы автор слова и не можете голосовать';
-            return;
-        }
-
-        if (complaintVotes.yes.has(myId) || complaintVotes.no.has(myId)) {
-            messageBox.textContent = 'Вы уже проголосовали';
-            return;
-        }
-
-        const roomRef = database.ref(`rooms/${roomId}`);
-        
-        const updates = {};
-        if (voteType === 'yes') {
-            updates[`complaint/votes/yes`] = [...complaintVotes.yes, myId];
-        } else {
-            updates[`complaint/votes/no`] = [...complaintVotes.no, myId];
-        }
-
-        roomRef.update(updates);
-    }
-
-    function checkVoteResult() {
-        if (!complaintActive) return;
-        
-        const totalPlayers = players.length;
-        const yesVotes = complaintVotes.yes.size;
-        const noVotes = complaintVotes.no.size;
-        const totalVotes = yesVotes + noVotes;
-        
-        if (totalVotes >= totalPlayers - 1) {
-            const roomRef = database.ref(`rooms/${roomId}`);
-            
-            if (yesVotes > noVotes) {
-                const updates = {};
-                const author = players.find(p => p.id === complaintAuthor);
-                if (author) {
-                    updates[`players/${complaintAuthor}/score`] = Math.max(0, (author.score || 0) - 1);
-                }
-                
-                updates.complaint = null;
-                updates.lastWord = '';
-                updates.lastWordAuthor = null;
-                updates.usedWords = usedWords.filter(w => w !== complainedWord);
-                
-                roomRef.update(updates);
-                messageBox.textContent = '✅ Жалоба подтверждена! Слово отменено, автор оштрафован';
-            } else {
-                roomRef.child('complaint').set(null);
-                messageBox.textContent = '❌ Жалоба отклонена! Слово засчитано';
-            }
-        }
-    }
-
-    // ==================== ОТРИСОВКА ====================
-    function renderHistory() {
-        if (lastWordsHistory.length === 0) {
-            wordsHistory.innerHTML = '<li style="justify-content: center; color: #999;">Пока нет слов</li>';
-            return;
-        }
-
-        let html = '';
-        lastWordsHistory.slice(0, 10).forEach((word, index) => {
-            html += `
-                <li>
-                    <span class="word-number">${index + 1}</span>
-                    <span class="word-text">${word}</span>
-                </li>
-            `;
-        });
-        wordsHistory.innerHTML = html;
-    }
-
-    function renderAll() {
+    function renderPlayers() {
         let html = '';
         players.forEach(p => {
-            const isActive = (p.id === currentPlayerId && !complaintActive);
+            const isActiveTurn = (p.id === currentPlayerId && !complaintActive);
             const isMe = (p.id === myId);
-            let complaintBadge = '';
-            let votingControls = '';
-            let connectionBadge = '';
+            let voteBadge = '';
             
-            if (!p.connected) {
-                connectionBadge = '<div class="complaint-badge" style="background:#666;">📴 отключён</div>';
+            if (complaintActive && p.id !== complaintData.authorId && isMe && !complaintData.votesYes.includes(myId) && !complaintData.votesNo.includes(myId)) {
+                voteBadge = `<div style="margin-top: 8px;">
+                    <button class="vote-btn" onclick="castVote('yes')">✅ За</button>
+                    <button class="vote-btn" onclick="castVote('no')">❌ Против</button>
+                </div>`;
+            } else if (complaintActive && complaintData.votesYes.includes(p.id)) {
+                voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #28a745;">✅ Проголосовал ЗА</div>';
+            } else if (complaintActive && complaintData.votesNo.includes(p.id)) {
+                voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #dc3545;">❌ Проголосовал ПРОТИВ</div>';
             }
             
-            if (complaintActive) {
-                if (p.id === complaintAuthor) {
-                    complaintBadge = '<div class="complaint-badge">⚠️ слово под вопросом (автор)</div>';
-                } else {
-                    const hasVotedYes = complaintVotes.yes.has(p.id);
-                    const hasVotedNo = complaintVotes.no.has(p.id);
-                    
-                    if (hasVotedYes) {
-                        complaintBadge = '<div class="complaint-badge" style="background:#2e7d32;">✅ согласен</div>';
-                    } else if (hasVotedNo) {
-                        complaintBadge = '<div class="complaint-badge" style="background:#c62828;">❌ не согласен</div>';
-                    } else if (isMe && p.connected && myId !== complaintAuthor) {
-                        votingControls = `
-                            <div class="voting-controls">
-                                <button class="vote-btn vote-yes" onclick="voteYes()">✅ Согласен</button>
-                                <button class="vote-btn vote-no" onclick="voteNo()">❌ Не согласен</button>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            
-            const avatarHtml = p.avatarUrl ? 
-                `<img src="${p.avatarUrl}" style="width:50px;height:50px;border-radius:50%;">` : 
-                `<div class="player-avatar">${p.avatar || '😊'}</div>`;
-            
-            html += `
-                <div class="player-card ${isActive ? 'active' : ''} ${isMe ? 'this-player' : ''}">
-                    ${avatarHtml}
-                    <div class="player-name">${p.name || 'Игрок'}</div>
-                    <div class="player-score">${p.score || 0}</div>
-                    ${connectionBadge}
-                    ${complaintBadge}
-                    ${votingControls}
-                </div>
-            `;
+            html += `<div class="player-card ${isActiveTurn ? 'active' : ''} ${isMe ? 'this-player' : ''}">
+                        <div class="player-avatar">${p.avatar || '😎'}</div>
+                        <div class="player-name">${p.name} ${isMe ? '(Вы)' : ''}</div>
+                        <div class="player-score">🏆 ${p.score || 0}</div>
+                        ${voteBadge}
+                    </div>`;
         });
-        playersPanel.innerHTML = html;
+        playersPanelDiv.innerHTML = html || '<div style="text-align: center; padding: 20px;">Нет игроков</div>';
+    }
 
+    function renderGameUI() {
         if (complaintActive) {
-            turnDisplay.innerHTML = `⏳ ГОЛОСОВАНИЕ: слово «${complainedWord}»`;
-            voteStatus.style.display = 'flex';
-            voteYesCount.textContent = complaintVotes.yes.size;
-            voteNoCount.textContent = complaintVotes.no.size;
-            
-            const totalNeeded = players.length - 1;
-            complaintCountDisplay.textContent = `${complaintVotes.yes.size + complaintVotes.no.size} / ${totalNeeded}`;
-            
+            turnDisplaySpan.innerHTML = `⚖️ ГОЛОСОВАНИЕ за слово "${complaintData.word}"`;
+            voteStatusDiv.style.display = 'flex';
+            voteYesSpan.innerText = complaintData.votesYes.length;
+            voteNoSpan.innerText = complaintData.votesNo.length;
+            complaintCountSpan.innerText = `${complaintData.votesYes.length + complaintData.votesNo.length}/${players.length - 1}`;
             checkVoteResult();
         } else {
-            voteStatus.style.display = 'none';
+            voteStatusDiv.style.display = 'none';
+            const cur = players.find(p => p.id === currentPlayerId);
+            turnDisplaySpan.innerHTML = cur ? `🎤 Ход игрока: ${cur.name}` : '⏳ Ожидание игроков...';
             
-            if (currentPlayerId) {
-                const currentPlayer = players.find(p => p.id === currentPlayerId);
-                if (currentPlayer) {
-                    turnDisplay.innerHTML = `🎤 Ходит ${currentPlayer.name}`;
-                } else {
-                    turnDisplay.innerHTML = '⏳ Ожидание игроков...';
-                }
-            } else {
-                turnDisplay.innerHTML = '⏳ Ожидание игроков...';
+            if (lastWord) {
+                lastWordSpan.innerHTML = `«${lastWord.toUpperCase()}»`;
+                const needLetter = getLastLetter(lastWord);
+                requiredBadge.innerHTML = needLetter ? `🔤 Нужная буква: "${needLetter.toUpperCase()}"` : '🔤 Начните игру!';
+            } else { 
+                lastWordSpan.innerHTML = '---'; 
+                requiredBadge.innerHTML = '🔤 Первое слово любое!'; 
             }
-            
-            complaintCountDisplay.textContent = `0 / 0`;
         }
-
-        if (lastWord) {
-            const lastLetter = getLastSignificantLetter(lastWord);
-            lastWordDisplay.textContent = `« ${lastWord.toUpperCase()} »`;
-            requiredLetterBadge.innerHTML = `<span>🔤</span> Нужная буква: «${lastLetter}»`;
-            
-            if (myId === currentPlayerId && !complaintActive) {
-                wordInput.classList.add('my-turn');
-                wordInput.parentElement.classList.add('my-turn-pulse');
-            } else {
-                wordInput.classList.remove('my-turn');
-                wordInput.parentElement.classList.remove('my-turn-pulse');
-            }
+        
+        // История слов
+        let historyHtml = '';
+        if (usedWords.length === 0) {
+            historyHtml = '<li style="text-align: center; color: #adb5bd;">⚔️ История пуста</li>';
         } else {
-            lastWordDisplay.textContent = '⏳ пока нет';
-            requiredLetterBadge.innerHTML = `<span>🔤</span> Нужная буква: ?`;
-            wordInput.classList.remove('my-turn');
-            wordInput.parentElement.classList.remove('my-turn-pulse');
+            [...usedWords].reverse().slice(0, 12).forEach(w => { 
+                historyHtml += `<li>📖 ${w}</li>`; 
+            });
+        }
+        wordsHistoryUl.innerHTML = historyHtml;
+        
+        // Анимация хода
+        if (myId === currentPlayerId && !complaintActive && roomId) {
+            document.getElementById('wordWrapper').classList.add('my-turn-pulse');
+        } else {
+            document.getElementById('wordWrapper').classList.remove('my-turn-pulse');
         }
     }
 
     function updateControls() {
-        const isMyTurn = (myId === currentPlayerId && !complaintActive);
-        const isInRoom = roomId && myId;
-        
-        wordInput.disabled = !isMyTurn || !isInRoom;
-        submitBtn.disabled = !isMyTurn || !isInRoom;
-        
-        const canComplain = isInRoom && lastWord && !complaintActive && 
-                           myId === currentPlayerId && myId !== lastWordAuthor;
-        
+        const isMyTurn = (myId === currentPlayerId && !complaintActive && roomId);
+        wordInput.disabled = !isMyTurn;
+        submitBtn.disabled = !isMyTurn;
+        skipBtn.disabled = !isMyTurn;
+        const canComplain = (myId === currentPlayerId && lastWord && myId !== lastWordAuthor && !complaintActive && roomId);
         complaintBtn.disabled = !canComplain;
-        skipBtn.disabled = !isMyTurn || !isInRoom;
         
-        if (!canComplain) {
-            if (!lastWord) complaintBtn.title = 'Нет слова для жалобы';
-            else if (!isInRoom) complaintBtn.title = 'Не в комнате';
-            else if (complaintActive) complaintBtn.title = 'Идет голосование';
-            else if (myId !== currentPlayerId) complaintBtn.title = 'Сейчас не ваш ход';
-            else if (myId === lastWordAuthor) complaintBtn.title = 'Нельзя жаловаться на свое слово';
-            else complaintBtn.title = 'Пожаловаться на последнее слово';
+        if (canComplain) {
+            complaintBtn.style.opacity = '1';
         } else {
-            complaintBtn.title = 'Пожаловаться на последнее слово';
+            complaintBtn.style.opacity = '0.6';
         }
-        
-        if (!skipBtn.disabled) {
-            skipBtn.title = 'Пропустить ход';
-        } else {
-            if (!isInRoom) skipBtn.title = 'Не в комнате';
-            else if (complaintActive) skipBtn.title = 'Идет голосование';
-            else if (myId !== currentPlayerId) skipBtn.title = 'Сейчас не ваш ход';
-            else skipBtn.title = 'Пропустить ход';
-        }
-        
-        document.getElementById('voteStatus').style.display = complaintActive ? 'flex' : 'none';
     }
 
-    // Функция ручного переподключения
-    window.reconnect = function() {
-        if (roomId && myName) {
-            joinRoom();
-        } else if (roomInput.value.trim()) {
-            joinRoom();
-        } else {
-            messageBox.textContent = 'Введите код комнаты для переподключения';
+    function notifyMyTurn() { 
+        if (myId === currentPlayerId && !complaintActive && roomId && !document.hasFocus()) {
+            messageBoxDiv.textContent = '🔔 ВАШ ХОД! Напишите слово!';
+            setTimeout(() => {
+                if (messageBoxDiv.textContent === '🔔 ВАШ ХОД! Напишите слово!') {
+                    messageBoxDiv.textContent = '🔥 Введите слово и нажмите "ОТВЕТИТЬ"';
+                }
+            }, 3000);
         }
-    };
-
-    // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
-    window.selectAvatar = function(emoji) {
-        myAvatar = emoji;
-        myAvatarUrl = null;
-        avatarPreview.innerHTML = emoji;
-        
-        document.querySelectorAll('.avatar-option').forEach(opt => {
-            opt.classList.remove('selected');
-            if (opt.textContent === emoji) opt.classList.add('selected');
-        });
-        
-        avatarGrid.classList.remove('show');
-        avatarSelectorBtn.classList.remove('open');
-    };
-
-    function generatePlayerId() {
-        return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    window.voteYes = function() { vote('yes'); };
-    window.voteNo = function() { vote('no'); };
-
-    // Инициализация
-    function init() {
-        connectionStatus.textContent = '⚡ Готов к подключению';
-        pageTitle = document.title;
+    // Игровые действия
+    async function submitWordAction() {
+        if (!roomId || myId !== currentPlayerId || complaintActive) return;
         
-        createRoomBtn.addEventListener('click', createRoom);
-        joinRoomBtn.addEventListener('click', joinRoom);
-        reconnectBtn.addEventListener('click', reconnect);
-        submitBtn.addEventListener('click', submitWord);
-        complaintBtn.addEventListener('click', startComplaint);
-        skipBtn.addEventListener('click', skipTurn);
+        const raw = wordInput.value.trim().toLowerCase();
+        if (!isValidWord(raw)) { 
+            messageBoxDiv.textContent = '❌ Только русские существительные, минимум 3 буквы!'; 
+            wordInput.value = ''; 
+            return; 
+        }
         
-        wordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitWord();
-        });
-
-        chatSendBtn.addEventListener('click', sendChatMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendChatMessage();
-        });
-
-        selectAvatar('😊');
+        const norm = normalize(raw);
+        if (usedWords.some(w => normalize(w) === norm)) { 
+            messageBoxDiv.textContent = '⚠️ Это слово уже было в игре!'; 
+            wordInput.value = ''; 
+            return; 
+        }
         
-        window.addEventListener('load', () => {
-            if (myId) {
-                myId = null;
+        if (lastWord) {
+            const needed = getLastLetter(lastWord);
+            const first = getFirstLetter(raw);
+            if (!needed || first !== needed) { 
+                messageBoxDiv.textContent = `🔤 Слово должно начинаться на букву "${needed.toUpperCase()}"`; 
+                wordInput.value = ''; 
+                return; 
             }
-        });
+        }
+        
+        const roomRef = db.ref(`rooms/${roomId}`);
+        const playersArr = players.map(p => p.id);
+        const idx = playersArr.indexOf(myId);
+        const nextId = playersArr[(idx + 1) % playersArr.length];
+        
+        const updates = {
+            [`players/${myId}/score`]: (players.find(p => p.id === myId)?.score || 0) + 1,
+            currentPlayerId: nextId,
+            lastWord: raw,
+            lastWordAuthor: myId,
+            usedWords: [...usedWords, raw],
+        };
+        
+        await roomRef.update(updates);
+        wordInput.value = '';
+        messageBoxDiv.textContent = `✅ Слово "${raw}" принято! +1 очко`;
     }
 
-    init();
-})();
-</script>
-<!-- Скрытый div для YouTube плеера уже есть выше -->
-<script>
-// ==================== LOFI ПЛЕЕР ====================
-(function() {
+    async function skipTurnAction() {
+        if (!roomId || myId !== currentPlayerId || complaintActive) return;
+        
+        const playersArr = players.map(p => p.id);
+        const idx = playersArr.indexOf(myId);
+        const nextId = playersArr[(idx + 1) % playersArr.length];
+        await db.ref(`rooms/${roomId}`).update({ currentPlayerId: nextId });
+        messageBoxDiv.textContent = `⏭️ Ход пропущен → ход переходит следующему игроку`;
+    }
+
+    async function startComplaint() {
+        if (!roomId || !lastWord || myId === lastWordAuthor || complaintActive || myId !== currentPlayerId) return;
+        
+        const complaintObj = { 
+            word: lastWord, 
+            authorId: lastWordAuthor, 
+            votesYes: [], 
+            votesNo: [] 
+        };
+        await db.ref(`rooms/${roomId}/complaint`).set(complaintObj);
+        messageBoxDiv.textContent = '🚨 Жалоба отправлена! Начинается голосование!';
+    }
+
+    window.castVote = async (type) => {
+        if (!complaintActive || !roomId) return;
+        if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { 
+            messageBoxDiv.textContent = 'Вы уже проголосовали'; 
+            return; 
+        }
+        
+        const roomRef = db.ref(`rooms/${roomId}`);
+        if (type === 'yes') {
+            await roomRef.child('complaint/votesYes').set([...complaintData.votesYes, myId]);
+            messageBoxDiv.textContent = '✅ Вы проголосовали ЗА удаление слова';
+        } else {
+            await roomRef.child('complaint/votesNo').set([...complaintData.votesNo, myId]);
+            messageBoxDiv.textContent = '❌ Вы проголосовали ПРОТИВ удаления слова';
+        }
+    };
+
+    async function checkVoteResult() {
+        if (!complaintActive) return;
+        
+        const total = players.length;
+        const totalVotes = complaintData.votesYes.length + complaintData.votesNo.length;
+        
+        if (totalVotes >= total - 1) {
+            const roomRef = db.ref(`rooms/${roomId}`);
+            
+            if (complaintData.votesYes.length > complaintData.votesNo.length) {
+                const author = players.find(p => p.id === complaintData.authorId);
+                if (author) {
+                    await roomRef.child(`players/${complaintData.authorId}/score`).set(Math.max(0, (author.score || 0) - 1));
+                }
+                const filteredWords = usedWords.filter(w => w !== complaintData.word);
+                await roomRef.update({ 
+                    usedWords: filteredWords, 
+                    lastWord: '', 
+                    lastWordAuthor: null, 
+                    complaint: null 
+                });
+                messageBoxDiv.textContent = '⚖️ Жалоба подтверждена! Слово удалено, автор оштрафован на -1 очко';
+            } else {
+                await roomRef.child('complaint').set(null);
+                messageBoxDiv.textContent = '❌ Жалоба отклонена! Слово остаётся в игре';
+            }
+        }
+    }
+
+    // Чат
+    async function sendChat() {
+        if (!roomId || !myId) return;
+        const text = chatInput.value.trim();
+        if (!text) return;
+        
+        const msg = { sender: myName, senderId: myId, text, timestamp: Date.now() };
+        const msgsRef = db.ref(`rooms/${roomId}/messages`);
+        const snap = await msgsRef.once('value');
+        let arr = snap.val() || [];
+        arr.push(msg);
+        if (arr.length > 50) arr = arr.slice(-50);
+        await msgsRef.set(arr);
+        chatInput.value = '';
+    }
+
+    function renderChat(messages) {
+        if (!messages.length) { 
+            chatMessagesDiv.innerHTML = '<div class="chat-message" style="text-align: center;">💬 Чат пуст, напишите первое сообщение</div>'; 
+            return; 
+        }
+        
+        let html = '';
+        messages.forEach(m => {
+            const isMine = m.senderId === myId;
+            const time = new Date(m.timestamp).toLocaleTimeString().slice(0, 5);
+            html += `<div class="chat-message ${isMine ? 'mine' : ''}">
+                        <span class="sender">${m.sender}</span>
+                        <span class="time">${time}</span>
+                        <div style="margin-top: 4px;">${m.text}</div>
+                    </div>`;
+        });
+        chatMessagesDiv.innerHTML = html;
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+
+    // Подключение кнопок
+    reconnectBtn.onclick = () => { if(roomId) joinRoom(); else joinRoom(); };
+    createBtn.onclick = createRoom;
+    joinBtn.onclick = joinRoom;
+    submitBtn.onclick = submitWordAction;
+    skipBtn.onclick = skipTurnAction;
+    complaintBtn.onclick = startComplaint;
+    chatSend.onclick = sendChat;
+    chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChat(); };
+    wordInput.onkeypress = (e) => { if(e.key === 'Enter') submitWordAction(); };
+    playerNameInput.onchange = () => { myName = playerNameInput.value.trim() || "Воин"; };
+    
+    document.getElementById('avatarFile').onchange = (e) => { 
+        const file = e.target.files[0]; 
+        if(file) { 
+            const url = URL.createObjectURL(file); 
+            myAvatarUrl = url; 
+            avatarPreviewDiv.innerHTML = `<img src="${url}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">`; 
+        } 
+    };
+
+    // YouTube плеер
+    let player, isReady = false, isPlaying = false;
+    const tag = document.createElement('script'); 
+    tag.src = 'https://www.youtube.com/iframe_api'; 
+    document.head.appendChild(tag);
+    
+    window.onYouTubeIframeAPIReady = () => {
+        player = new YT.Player('youtube-player', { 
+            height: '0', 
+            width: '0', 
+            videoId: 'jfKfPfyJRdk', 
+            playerVars: { 'autoplay': 0, 'controls': 0 },
+            events: { 
+                onReady: () => { 
+                    isReady = true; 
+                    document.getElementById('playerStatus').innerHTML = '🎵 Готов к воспроизведению'; 
+                }, 
+                onStateChange: (e) => { 
+                    if (e.data === 1) { 
+                        isPlaying = true; 
+                        playPauseBtn.innerHTML = '⏸️ Пауза'; 
+                        document.getElementById('playerStatus').innerHTML = '🎵 Сейчас играет: Lo-Fi Radio';
+                    } else { 
+                        isPlaying = false; 
+                        playPauseBtn.innerHTML = '▶️ Play';
+                        if (e.data === 0) document.getElementById('playerStatus').innerHTML = '⏹️ Воспроизведение завершено';
+                        else if (e.data === 2) document.getElementById('playerStatus').innerHTML = '⏸️ На паузе';
+                    }
+                } 
+            } 
+        });
+    };
+    
     const playPauseBtn = document.getElementById('playPauseBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const playerStatus = document.getElementById('playerStatus');
-    
-    if (!playPauseBtn || !stopBtn || !playerStatus) {
-        console.log('Элементы плеера не найдены');
-        return;
-    }
-
-    let player;
-    let isPlayerReady = false;
-    let isPlaying = false;
-    
-    function updateStatus(text) {
-        if (playerStatus) playerStatus.textContent = text;
-    }
-    
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    window.onYouTubeIframeAPIReady = function() {
-        try {
-            player = new YT.Player('youtube-player', {
-                height: '0',
-                width: '0',
-                videoId: 'jfKfPfyJRdk',
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'fs': 0,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'autoplay': 0,
-                    'enablejsapi': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
-            });
-            console.log('YouTube плеер создан');
-        } catch (e) {
-            console.error('Ошибка создания плеера:', e);
-            updateStatus('❌ Ошибка создания плеера');
+    const stopBtnYt = document.getElementById('stopBtn');
+    playPauseBtn.onclick = () => { 
+        if (isReady) { 
+            if (isPlaying) player.pauseVideo(); 
+            else player.playVideo(); 
+        } else {
+            document.getElementById('playerStatus').innerHTML = '⏳ Плеер загружается...';
         }
     };
-
-    function onPlayerReady(event) {
-        isPlayerReady = true;
-        updateStatus('🎵 Готов к воспроизведению');
-        console.log('YouTube плеер готов');
-        
-        try {
-            player.setVolume(30);
-        } catch (e) {
-            console.log('Не удалось установить громкость');
-        }
-    }
-
-    function onPlayerStateChange(event) {
-        if (!event || !event.data) return;
-        
-        try {
-            if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true;
-                if (playPauseBtn) playPauseBtn.innerHTML = '⏸️ Пауза';
-                updateStatus('🎵 Сейчас играет: lofi hip hop radio');
-            } else if (event.data === YT.PlayerState.PAUSED) {
-                isPlaying = false;
-                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
-                updateStatus('⏸️ На паузе');
-            } else if (event.data === YT.PlayerState.ENDED) {
-                isPlaying = false;
-                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
-                updateStatus('⏹️ Воспроизведение закончено');
-            } else if (event.data === YT.PlayerState.BUFFERING) {
-                updateStatus('⏳ Загрузка...');
-            } else if (event.data === YT.PlayerState.CUED) {
-                updateStatus('🎵 Видео загружено');
-            }
-        } catch (e) {
-            console.error('Ошибка обработки состояния:', e);
-        }
-    }
-
-    function onPlayerError(event) {
-        console.error('Ошибка плеера:', event.data);
-        let errorMessage = '❌ Ошибка воспроизведения';
-        
-        switch(event.data) {
-            case 2:
-                errorMessage = '❌ Неверный ID видео';
-                break;
-            case 5:
-                errorMessage = '❌ Ошибка HTML5 плеера';
-                break;
-            case 100:
-                errorMessage = '❌ Видео не найдено';
-                break;
-            case 101:
-            case 150:
-                errorMessage = '❌ Воспроизведение запрещено';
-                break;
-        }
-        updateStatus(errorMessage);
-    }
-
-    if (playPauseBtn) {
-        playPauseBtn.addEventListener('click', function() {
-            if (!isPlayerReady) {
-                updateStatus('⏳ Плеер еще не готов...');
-                return;
-            }
-            
-            try {
-                if (isPlaying) {
-                    player.pauseVideo();
-                } else {
-                    player.playVideo();
-                }
-            } catch (e) {
-                console.error('Ошибка управления плеером:', e);
-                updateStatus('❌ Ошибка управления');
-            }
-        });
-    }
-
-    if (stopBtn) {
-        stopBtn.addEventListener('click', function() {
-            if (!isPlayerReady) return;
-            
-            try {
-                player.stopVideo();
-                isPlaying = false;
-                if (playPauseBtn) playPauseBtn.innerHTML = '▶️ Play';
-                updateStatus('⏹️ Остановлено');
-            } catch (e) {
-                console.error('Ошибка остановки:', e);
-            }
-        });
-    }
-
-    setTimeout(function() {
-        if (!isPlayerReady) {
-            updateStatus('⚠️ Загрузка плеера... попробуйте позже');
-        }
-    }, 5000);
-})();
+    stopBtnYt.onclick = () => { 
+        if (isReady) player.stopVideo(); 
+    };
+    
+    // Инициализация
+    connectionStatusSpan.textContent = '🟢 Готов к битве';
+    selectAvatar('😎');
 </script>
 </body>
 </html>
