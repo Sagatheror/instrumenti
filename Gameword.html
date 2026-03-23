@@ -1169,7 +1169,7 @@ body::after {
             </ul>
             <div style="margin-top: 20px;">
                 <div class="rule-item">📖 Только существительные, ед.ч (именительный)</div>
-                <div class="rule-item">🔤 Минимум 3 буквы, нельзя повторяться</div>
+                <div class="rule-item">🔤 Минимум 2 буквы, нельзя повторяться</div>
                 <div class="rule-item">🔄 Ход: последняя буква → первая буква</div>
                 <div class="rule-item">💀 Жалоба = голосование, при успехе - штраф</div>
                 <div class="rule-item">⏭️ Можно пропустить ход без штрафа</div>
@@ -1289,8 +1289,18 @@ body::after {
     function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
     
     function isValidWord(w) { 
-        return /^[а-яё\s-]{2,}$/i.test(w) && normalize(w).length >= 3; 
-    }
+    // Проверяем, что слово состоит только из русских букв, дефисов и пробелов
+    if (!/^[а-яё\s-]+$/i.test(w)) return false;
+    
+    // Очищаем от пробелов и дефисов для подсчета букв
+    const clean = w.toLowerCase().replace(/[\s-]/g, '');
+    
+    // Считаем только русские буквы (игнорируем ъ, ь, ы для подсчета длины)
+    const letters = clean.replace(/[ъьы]/g, '');
+    
+    // Минимум 2 буквы (для слов типа "ум", "он", "як")
+    return letters.length >= 2;
+}
 
     function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
 
@@ -1589,7 +1599,7 @@ body::after {
         
         const raw = wordInput.value.trim().toLowerCase();
         if (!isValidWord(raw)) { 
-            messageBoxDiv.textContent = '❌ Только русские существительные, минимум 3 буквы!'; 
+            messageBoxDiv.textContent = '❌ Только русские существительные, минимум 2 буквы!'; 
             wordInput.value = ''; 
             return; 
         }
