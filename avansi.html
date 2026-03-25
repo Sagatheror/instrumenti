@@ -1226,54 +1226,24 @@ tr:hover::before {
             return match ? parseInt(match[2]) - 1 : 0;
         };
         
-        const baseNumbersCol = getCol(ranges.numbers);
-        const baseDatesCol = getCol(ranges.dates);
-        const baseAmountsCol = getCol(ranges.amounts);
+        const numbersCol = getCol(ranges.numbers);
+        const datesCol = getCol(ranges.dates);
+        const amountsCol = getCol(ranges.amounts);
         const startRow = getStartRow(ranges.numbers);
         const endRow = getEndRow(ranges.numbers);
         
         console.log(`Range: ${ranges.numbers} (rows ${startRow+1} to ${endRow+1})`);
-        console.log(`Base columns: numbers=${baseNumbersCol}, dates=${baseDatesCol}, amounts=${baseAmountsCol}`);
+        console.log(`Columns: numbers=${numbersCol}, dates=${datesCol}, amounts=${amountsCol}`);
 
         for (let i = startRow; i <= endRow; i++) {
             if (i < lines.length) {
                 const cols = lines[i].split(',');
                 
-                let billNumber = '';
-                let date = '';
-                let amount = null;
+                let billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
+                let date = cols[datesCol] ? cols[datesCol].trim() : '';
+                let amount = parseNum(cols[amountsCol]);
                 
-                for (let offset = -3; offset <= 3; offset++) {
-                    const testNumCol = baseNumbersCol + offset;
-                    const testDateCol = baseDatesCol + offset;
-                    const testAmountCol = baseAmountsCol + offset;
-                    
-                    if (testNumCol >= 0 && testDateCol >= 0 && testAmountCol >= 0 &&
-                        testNumCol < cols.length && testDateCol < cols.length && testAmountCol < cols.length) {
-                        
-                        const testNumber = cols[testNumCol] ? cols[testNumCol].trim() : '';
-                        const testDate = cols[testDateCol] ? cols[testDateCol].trim() : '';
-                        const testAmount = parseNum(cols[testAmountCol]);
-                        
-                        const isDateString = testNumber && testNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
-                        const hasAmount = testAmount !== null;
-                        
-                        if (testNumber && !isDateString && hasAmount) {
-                            billNumber = testNumber;
-                            date = testDate;
-                            amount = testAmount;
-                            console.log(`Row ${i+1}: Found at offset ${offset}: "${billNumber}", "${date}", ${amount}`);
-                            break;
-                        }
-                    }
-                }
-                
-                if (!billNumber) {
-                    billNumber = cols[baseNumbersCol] ? cols[baseNumbersCol].trim() : '';
-                    date = cols[baseDatesCol] ? cols[baseDatesCol].trim() : '';
-                    amount = parseNum(cols[baseAmountsCol]);
-                    console.log(`Row ${i+1}: Trying base columns: "${billNumber}", "${date}", ${amount}`);
-                }
+                console.log(`Row ${i+1}: "${billNumber}", "${date}", ${amount}`);
                 
                 if (billNumber && amount !== null) {
                     const looksLikeDate = billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
