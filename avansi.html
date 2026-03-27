@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1206,6 +1207,35 @@ tr:hover::before {
         return index - 1;
     }
     
+    // Функция для правильного парсинга CSV строки с учётом кавычек
+    function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        result.push(current);
+        
+        // Убираем кавычки из значений
+        return result.map(cell => {
+            if (cell.startsWith('"') && cell.endsWith('"')) {
+                return cell.slice(1, -1);
+            }
+            return cell;
+        });
+    }
+    
     for (const [supplier, ranges] of Object.entries(BILLS_RANGES)) {
         console.log(`\n=== Processing ${supplier} ===`);
         
@@ -1235,28 +1265,49 @@ tr:hover::before {
         console.log(`Range: ${ranges.numbers} (rows ${startRow+1} to ${endRow+1})`);
         console.log(`Columns: numbers=${numbersCol}, dates=${datesCol}, amounts=${amountsCol}`);
 
-        for (let i = startRow; i <= endRow; i++) {
-            if (i < lines.length) {
-                const cols = lines[i].split(',');
-                
-                let billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
-                let date = cols[datesCol] ? cols[datesCol].trim() : '';
-                let amount = parseNum(cols[amountsCol]);
-                
-                console.log(`Row ${i+1}: "${billNumber}", "${date}", ${amount}`);
-                
-                if (billNumber && amount !== null) {
-                    const looksLikeDate = billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
-                    if (!looksLikeDate) {
-                        bills.push({
-                            number: billNumber,
-                            date: date,
-                            amount: amount
-                        });
-                        console.log(`  ✓ Added bill #${billNumber}`);
-                    } else {
-                        console.log(`  ✗ Skipped: "${billNumber}" looks like a date`);
-                    }
+        for (let i = startRow; i <= endRow && i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            
+            // Получаем значения с правильными индексами
+            let billNumber = cols[numbersCol] ? cols[numbersCol].trim() : '';
+            let date = cols[datesCol] ? cols[datesCol].trim() : '';
+            let amount = parseNum(cols[amountsCol]);
+            
+            console.log(`Row ${i+1}: "${billNumber}", "${date}", ${amount}`);
+            
+            // Проверяем, что номер счёта не пустой и не выглядит как дата
+            if (billNumber && amount !== null) {
+                // Проверяем, не является ли номер счёта датой
+                const looksLikeDate = billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/);
+                if (!looksLikeDate) {
+                    bills.push({
+                        number: billNumber,
+                        date: date,
+                        amount: amount
+                    });
+                    console.log(`  ✓ Added bill #${billNumber}`);
+                } else {
+                    console.log(`  ✗ Skipped: "${billNumber}" looks like a date`);
+                }
+            } else {
+                // Если номер счёта пустой, но есть дата и сумма, возможно, номер в другой колонке
+                // Проверяем, не попал ли номер счёта в колонку с датой
+                if (!billNumber && date && amount !== null && !date.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/)) {
+                    console.log(`  → Found bill number in date column: "${date}"`);
+                    bills.push({
+                        number: date, // Используем значение из колонки даты как номер счёта
+                        date: '',     // Даты нет
+                        amount: amount
+                    });
+                    console.log(`  ✓ Added bill with number from date column`);
+                } else if (billNumber && !date && amount !== null && !billNumber.match(/^\d{1,2}[\.\/\-]\d{1,2}[\.\/\-]\d{4}$/)) {
+                    console.log(`  → Using bill number from number column, no date`);
+                    bills.push({
+                        number: billNumber,
+                        date: '',
+                        amount: amount
+                    });
+                    console.log(`  ✓ Added bill with number but no date`);
                 } else {
                     console.log(`  ✗ Skipped: invalid data (number="${billNumber}", amount=${amount})`);
                 }
