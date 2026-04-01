@@ -111,7 +111,7 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    height: fit-content;
+    height: auto;
     max-height: 800px;
     box-shadow: 
         0 20px 35px -10px rgba(0, 0, 0, 0.1),
@@ -187,7 +187,7 @@ body::after {
 }
         .chat-messages {
     flex: 1;
-    max-height: 440px;
+    max-height: 400px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -977,7 +977,8 @@ body::after {
 }
         
         .music-player {
-    margin-top: 20px;
+    margin-top: auto;
+    flex-shrink: 0;
     background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
     border-radius: 24px;
     padding: 16px;
@@ -987,6 +988,25 @@ body::after {
     position: relative;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.music-player .play-btn,
+.music-player .stop-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px;
+    min-width: 80px;
+}
+
+@media (max-width: 768px) {
+    .music-player .play-btn,
+    .music-player .stop-btn {
+        min-width: 70px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
 }
         
         @keyframes pulseTurn { 
@@ -1584,6 +1604,103 @@ body.dark-theme .player-card.this-player {
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Русский словарь и проверка орфографии
+    let russianDictionary = new Set();
+    let dictionaryReady = true;
+
+    // База русских слов (базовый словарь)
+    const basicRussianWords = [
+        'дом', 'лес', 'мост', 'город', 'река', 'гора', 'поле', 'море', 'окно', 'дверь',
+        'стол', 'стул', 'кровать', 'лампа', 'книга', 'ручка', 'карандаш', 'тетрадь',
+        'машина', 'поезд', 'самолет', 'корабль', 'велосипед', 'автобус', 'троллейбус',
+        'собака', 'кошка', 'корова', 'лошадь', 'птица', 'рыба', 'волк', 'лиса', 'медведь',
+        'яблоко', 'груша', 'апельсин', 'банан', 'лимон', 'вишня', 'клубника', 'арбуз',
+        'хлеб', 'молоко', 'масло', 'сыр', 'мясо', 'суп', 'каша', 'пирог', 'торт', 'конфета',
+        'мама', 'папа', 'брат', 'сестра', 'дедушка', 'бабушка', 'друг', 'подруга',
+        'учитель', 'врач', 'инженер', 'строитель', 'художник', 'музыкант', 'певец',
+        'небо', 'солнце', 'луна', 'звезда', 'облако', 'дождь', 'снег', 'ветер', 'гроза',
+        'утро', 'день', 'вечер', 'ночь', 'понедельник', 'вторник', 'среда'
+    ];
+
+    // Загрузка словаря
+    async function loadRussianDictionary() {
+        basicRussianWords.forEach(word => russianDictionary.add(word.toLowerCase()));
+        
+        try {
+            const response = await fetch('https://raw.githubusercontent.com/danakt/russian-words/master/russian.txt');
+            if (response.ok) {
+                const text = await response.text();
+                const words = text.split('\n');
+                words.forEach(word => {
+                    const cleanWord = word.trim().toLowerCase();
+                    if (cleanWord && /^[а-яё]+$/.test(cleanWord)) {
+                        russianDictionary.add(cleanWord);
+                    }
+                });
+                console.log(`Загружено ${russianDictionary.size} русских слов`);
+            }
+        } catch (error) {
+            console.warn('Не удалось загрузить внешний словарь, используем базовый');
+        }
+    }
+
+    // Проверка существования слова
+    function isWordInDictionary(word) {
+        const normalized = word.toLowerCase().replace(/[ъь]/g, '');
+        return russianDictionary.has(normalized);
+    }
+
+    // Поиск похожих слов
+    function findSimilarWords(word) {
+        const suggestions = [];
+        for (const dictWord of russianDictionary) {
+            if (Math.abs(dictWord.length - word.length) > 2) continue;
+            
+            let diffCount = 0;
+            let maxDiff = word.length <= 4 ? 1 : 2;
+            
+            for (let i = 0; i < Math.min(dictWord.length, word.length); i++) {
+                if (dictWord[i] !== word[i]) diffCount++;
+                if (diffCount > maxDiff) break;
+            }
+            
+            diffCount += Math.abs(dictWord.length - word.length);
+            
+            if (diffCount <= maxDiff && dictWord !== word) {
+                suggestions.push(dictWord);
+                if (suggestions.length >= 5) break;
+            }
+        }
+        return suggestions;
+    }
+
+    // Обновленная функция проверки слова со словарем
+    function isValidWordWithDictionary(word) {
+        if (!/^[а-яё\s-]+$/i.test(word)) {
+            return { valid: false, message: '❌ Только русские буквы!' };
+        }
+        
+        const clean = word.toLowerCase().replace(/[\s-]/g, '');
+        const letters = clean.replace(/[ъьы]/g, '');
+        
+        if (letters.length < 2) {
+            return { valid: false, message: '❌ Слово должно содержать минимум 2 буквы!' };
+        }
+        
+        if (!isWordInDictionary(clean)) {
+            const suggestions = findSimilarWords(clean);
+            if (suggestions.length > 0) {
+                return { 
+                    valid: false, 
+                    message: `❌ Слово "${word}" не найдено в словаре. Возможно, вы имели в виду: ${suggestions.slice(0, 3).join(', ')}?` 
+                };
+            }
+            return { valid: false, message: `❌ Слово "${word}" не найдено в русском словаре!` };
+        }
+        
+        return { valid: true, message: '' };
+    }
+
     // Глобальное состояние
     let myId = null, roomId = null, myName = "МастерСлова", myAvatar = "😎", myAvatarUrl = null;
     let players = [], currentPlayerId = null, lastWord = "", lastWordAuthor = null, usedWords = [];
@@ -1622,27 +1739,14 @@ body.dark-theme .player-card.this-player {
 
     // Эмодзи грид
     const emojis = [
-  // Лица и эмоции (10)
-  '😀', '😂', '😎', '🤓', '😍', '🥶', '🤯', '🥳',
-  
-  // Супергерои и фэнтези (8)
-  '🦸', '🦹', '🧙', '🐉', '👾', '🤖', '👻', '🎃',
-  
-  // Животные (12)
-  '🐺', '🦊', '🐱', '🐼', '🦁', '🐧', '🐨', '🦄', '🐙', '🦇', '🐉', '🦅',
-  
-  // Еда (10)
-  '🍕', '🍔', '🌮', '🍣', '🍩', '🍦', '🥑', '🍇', '🍿', '🥨',
-  
-  // Игры и активность (8)
-  '🎮', '⚽', '🏀', '🎸', '🎧', '📸', '✈️', '🚀',
-  
-  // Природа и погода (6)
-  '🌟', '⭐', '☀️', '🌈', '⚡', '🔥',
-  
-  // Предметы и символы (10)
-  '👑', '💎', '💰', '🔮', '⚙️', '💡', '🔑', '💀', '🎭', '🎨'
-];
+        '😀', '😂', '😎', '🤓', '😍', '🥶', '🤯', '🥳',
+        '🦸', '🦹', '🧙', '🐉', '👾', '🤖', '👻', '🎃',
+        '🐺', '🦊', '🐱', '🐼', '🦁', '🐧', '🐨', '🦄', '🐙', '🦇', '🐉', '🦅',
+        '🍕', '🍔', '🌮', '🍣', '🍩', '🍦', '🥑', '🍇', '🍿', '🥨',
+        '🎮', '⚽', '🏀', '🎸', '🎧', '📸', '✈️', '🚀',
+        '🌟', '⭐', '☀️', '🌈', '⚡', '🔥',
+        '👑', '💎', '💰', '🔮', '⚙️', '💡', '🔑', '💀', '🎭', '🎨'
+    ];
     emojis.forEach(emo => {
         const div = document.createElement('div');
         div.className = 'avatar-option';
@@ -1657,7 +1761,7 @@ body.dark-theme .player-card.this-player {
     function selectAvatar(emo) { 
         myAvatar = emo; 
         myAvatarUrl = null; 
-        avatarPreviewDiv.textContent = emo; 
+        avatarPreviewDiv.innerHTML = emo; 
         avatarGridDiv.classList.remove('show');
     }
 
@@ -1681,18 +1785,11 @@ body.dark-theme .player-card.this-player {
     function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
     
     function isValidWord(w) { 
-    // Проверяем, что слово состоит только из русских букв, дефисов и пробелов
-    if (!/^[а-яё\s-]+$/i.test(w)) return false;
-    
-    // Очищаем от пробелов и дефисов для подсчета букв
-    const clean = w.toLowerCase().replace(/[\s-]/g, '');
-    
-    // Считаем только русские буквы (игнорируем ъ, ь, ы для подсчета длины)
-    const letters = clean.replace(/[ъьы]/g, '');
-    
-    // Минимум 2 буквы (для слов типа "ум", "он", "як")
-    return letters.length >= 2;
-}
+        if (!/^[а-яё\s-]+$/i.test(w)) return false;
+        const clean = w.toLowerCase().replace(/[\s-]/g, '');
+        const letters = clean.replace(/[ъьы]/g, '');
+        return letters.length >= 2;
+    }
 
     function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
 
@@ -1829,7 +1926,8 @@ body.dark-theme .player-card.this-player {
             }
             
             players = active;
-            onlineCountSpan.textContent = `👥 Онлайн: ${players.length}`;
+            const onlineCountSpan = document.getElementById('onlineCount');
+            if (onlineCountSpan) onlineCountSpan.innerHTML = `<i class="fas fa-users"></i> Онлайн: ${players.length}`;
             
             if (players.length === 0 && roomId) {
                 db.ref(`rooms/${room}`).remove();
@@ -1923,12 +2021,17 @@ body.dark-theme .player-card.this-player {
             voteStatusDiv.style.display = 'flex';
             voteYesSpan.innerText = complaintData.votesYes.length;
             voteNoSpan.innerText = complaintData.votesNo.length;
-            complaintCountSpan.innerText = `${complaintData.votesYes.length + complaintData.votesNo.length}/${players.length - 1}`;
+            const complaintCountSpan = document.getElementById('complaintCount');
+            const complaintMaxSpan = document.getElementById('complaintMax');
+            if (complaintCountSpan) complaintCountSpan.innerText = complaintData.votesYes.length + complaintData.votesNo.length;
+            if (complaintMaxSpan) complaintMaxSpan.innerText = players.length - 1;
             checkVoteResult();
         } else {
             voteStatusDiv.style.display = 'none';
             const cur = players.find(p => p.id === currentPlayerId);
-            turnDisplaySpan.innerHTML = `<i class="fas fa-microphone-alt"></i> Ход игрока: ${cur.name}`;
+            if (cur) {
+                turnDisplaySpan.innerHTML = `<i class="fas fa-microphone-alt"></i> Ход игрока: ${cur.name}`;
+            }
             
             if (lastWord) {
                 lastWordSpan.innerHTML = `«${lastWord.toUpperCase()}»`;
@@ -1940,7 +2043,6 @@ body.dark-theme .player-card.this-player {
             }
         }
         
-        // История слов
         let historyHtml = '';
         if (usedWords.length === 0) {
             historyHtml = '<li style="text-align: center; color: #adb5bd;">⚔️ История пуста</li>';
@@ -1951,7 +2053,6 @@ body.dark-theme .player-card.this-player {
         }
         wordsHistoryUl.innerHTML = historyHtml;
         
-        // Анимация хода
         if (myId === currentPlayerId && !complaintActive && roomId) {
             document.getElementById('wordWrapper').classList.add('my-turn-pulse');
         } else {
@@ -1985,14 +2086,25 @@ body.dark-theme .player-card.this-player {
         }
     }
 
-    // Игровые действия
+    // Игровые действия с проверкой словаря
     async function submitWordAction() {
-        if (!roomId || myId !== currentPlayerId || complaintActive) return;
-        
-        const raw = wordInput.value.trim().toLowerCase();
-        if (!isValidWord(raw)) { 
-            messageBoxDiv.textContent = '❌ Только русские существительные, минимум 2 буквы!'; 
+    if (!roomId || myId !== currentPlayerId || complaintActive) return;
+    
+    const raw = wordInput.value.trim().toLowerCase();
+    
+    // Показываем индикатор загрузки
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Проверка...';
+    submitBtn.disabled = true;
+    
+    try {
+        // Проверка слова через API
+        const validation = await isValidWordWithDictionary(raw);
+        if (!validation.valid) { 
+            messageBoxDiv.textContent = validation.message; 
             wordInput.value = ''; 
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
             return; 
         }
         
@@ -2000,6 +2112,8 @@ body.dark-theme .player-card.this-player {
         if (usedWords.some(w => normalize(w) === norm)) { 
             messageBoxDiv.textContent = '⚠️ Это слово уже было в игре!'; 
             wordInput.value = ''; 
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
             return; 
         }
         
@@ -2009,6 +2123,8 @@ body.dark-theme .player-card.this-player {
             if (!needed || first !== needed) { 
                 messageBoxDiv.textContent = `🔤 Слово должно начинаться на букву "${needed.toUpperCase()}"`; 
                 wordInput.value = ''; 
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
                 return; 
             }
         }
@@ -2029,7 +2145,14 @@ body.dark-theme .player-card.this-player {
         await roomRef.update(updates);
         wordInput.value = '';
         messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Слово "${raw}" принято! +1 очко`;
+    } catch (error) {
+        console.error('Ошибка при проверке слова:', error);
+        messageBoxDiv.textContent = '❌ Ошибка при проверке слова. Попробуйте еще раз.';
+    } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
     }
+}
 
     async function skipTurnAction() {
         if (!roomId || myId !== currentPlayerId || complaintActive) return;
@@ -2083,7 +2206,9 @@ body.dark-theme .player-card.this-player {
             if (complaintData.votesYes.length > complaintData.votesNo.length) {
                 const author = players.find(p => p.id === complaintData.authorId);
                 if (author) {
-                    await roomRef.child(`players/${complaintData.authorId}/score`).set(Math.max(0, (author.score || 0) - 1));
+                    const currentScore = author.score || 0;
+                    const newScore = Math.max(0, currentScore - 1);
+                    await roomRef.child(`players/${complaintData.authorId}/score`).set(newScore);
                 }
                 const filteredWords = usedWords.filter(w => w !== complaintData.word);
                 await roomRef.update({ 
@@ -2153,6 +2278,7 @@ body.dark-theme .player-card.this-player {
         if(file) { 
             const url = URL.createObjectURL(file); 
             myAvatarUrl = url; 
+            myAvatar = '';
             avatarPreviewDiv.innerHTML = `<img src="${url}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">`; 
         } 
     };
@@ -2172,18 +2298,21 @@ body.dark-theme .player-card.this-player {
             events: { 
                 onReady: () => { 
                     isReady = true; 
-                    document.getElementById('playerStatus').innerHTML = '<i class="fas fa-check-circle"></i> Готов к воспроизведению';
+                    const playerStatus = document.getElementById('playerStatus');
+                    if (playerStatus) playerStatus.innerHTML = '<i class="fas fa-check-circle"></i> Готов к воспроизведению';
                 }, 
                 onStateChange: (e) => { 
+                    const playPauseBtn = document.getElementById('playPauseBtn');
+                    const playerStatus = document.getElementById('playerStatus');
                     if (e.data === 1) { 
                         isPlaying = true; 
-                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза'; 
-document.getElementById('playerStatus').innerHTML = '<i class="fas fa-music"></i> Сейчас играет: Lo-Fi Radio';
+                        if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза'; 
+                        if (playerStatus) playerStatus.innerHTML = '<i class="fas fa-music"></i> Сейчас играет: Lo-Fi Radio';
                     } else { 
                         isPlaying = false; 
-                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play';
-                        if (e.data === 0) document.getElementById('playerStatus').innerHTML = '<i class="fas fa-stop-circle"></i> Воспроизведение завершено';
-                        else if (e.data === 2) document.getElementById('playerStatus').innerHTML = '<i class="fas fa-pause-circle"></i> На паузе';
+                        if (playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play';
+                        if (e.data === 0 && playerStatus) playerStatus.innerHTML = '<i class="fas fa-stop-circle"></i> Воспроизведение завершено';
+                        else if (e.data === 2 && playerStatus) playerStatus.innerHTML = '<i class="fas fa-pause-circle"></i> На паузе';
                     }
                 } 
             } 
@@ -2192,55 +2321,162 @@ document.getElementById('playerStatus').innerHTML = '<i class="fas fa-music"></i
     
     const playPauseBtn = document.getElementById('playPauseBtn');
     const stopBtnYt = document.getElementById('stopBtn');
-    playPauseBtn.onclick = () => { 
-        if (isReady) { 
-            if (isPlaying) player.pauseVideo(); 
-            else player.playVideo(); 
-        } else {
-            document.getElementById('playerStatus').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Плеер загружается...';
-        }
-    };
-    stopBtnYt.onclick = () => { 
-        if (isReady) player.stopVideo(); 
-    };
+    if (playPauseBtn) {
+        playPauseBtn.onclick = () => { 
+            if (isReady) { 
+                if (isPlaying) player.pauseVideo(); 
+                else player.playVideo(); 
+            } else {
+                const playerStatus = document.getElementById('playerStatus');
+                if (playerStatus) playerStatus.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Плеер загружается...';
+            }
+        };
+    }
+    if (stopBtnYt) {
+        stopBtnYt.onclick = () => { 
+            if (isReady) player.stopVideo(); 
+        };
+    }
     
     // Инициализация
     connectionStatusSpan.textContent = '🟢 Готов к битве';
     selectAvatar('😎');
+    
     function initTheme() {
-    const savedTheme = localStorage.getItem('gameTheme') || 'light';
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        document.body.classList.add('light-theme');
-        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+        const savedTheme = localStorage.getItem('gameTheme') || 'light';
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.body.classList.add('light-theme');
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    }
+
+    function toggleTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (document.body.classList.contains('dark-theme')) {
+            document.body.classList.remove('dark-theme');
+            document.body.classList.add('light-theme');
+            localStorage.setItem('gameTheme', 'light');
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            document.body.classList.remove('light-theme');
+            document.body.classList.add('dark-theme');
+            localStorage.setItem('gameTheme', 'dark');
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+    });
+    
+    // Загружаем русский словарь
+    loadRussianDictionary().then(() => {
+        console.log('Словарь загружен, готов к игре');
+    }).catch(console.warn);
+    // Функция проверки орфографии через API Яндекса.Спеллера
+async function checkRussianSpelling(word) {
+    try {
+        // Используем API Яндекса.Спеллера для проверки русских слов
+        const response = await fetch(`https://speller.yandex.net/services/spellservice.json/checkText?text=${encodeURIComponent(word)}&lang=ru&options=4`);
+        
+        if (!response.ok) {
+            console.warn('API недоступно, используем базовую проверку');
+            return { valid: true, suggestions: [] }; // Если API недоступно, пропускаем проверку
+        }
+        
+        const data = await response.json();
+        
+        if (data.length === 0) {
+            // Слово написано правильно
+            return { valid: true, suggestions: [] };
+        } else {
+            // Слово содержит ошибки
+            const suggestions = data[0].s || [];
+            return { valid: false, suggestions: suggestions };
+        }
+    } catch (error) {
+        console.warn('Ошибка при проверке орфографии:', error);
+        // В случае ошибки API, пропускаем проверку
+        return { valid: true, suggestions: [] };
     }
 }
 
-function toggleTheme() {
-    const themeToggle = document.getElementById('themeToggle');
-    if (document.body.classList.contains('dark-theme')) {
-        document.body.classList.remove('dark-theme');
-        document.body.classList.add('light-theme');
-        localStorage.setItem('gameTheme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    } else {
-        document.body.classList.remove('light-theme');
-        document.body.classList.add('dark-theme');
-        localStorage.setItem('gameTheme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+// Локальный кэш проверенных слов для уменьшения количества запросов
+const spellingCache = new Map();
+
+// Функция проверки слова с кэшированием
+async function isWordCorrect(word) {
+    const normalized = word.toLowerCase().replace(/[\s-]/g, '');
+    
+    // Проверяем кэш
+    if (spellingCache.has(normalized)) {
+        return spellingCache.get(normalized);
+    }
+    
+    // Проверяем через API
+    const result = await checkRussianSpelling(normalized);
+    spellingCache.set(normalized, result.valid);
+    
+    return result.valid;
+}
+
+// Получение исправлений для слова
+async function getSpellingSuggestions(word) {
+    const normalized = word.toLowerCase().replace(/[\s-]/g, '');
+    const result = await checkRussianSpelling(normalized);
+    return result.suggestions || [];
+}
+async function isValidWordWithDictionary(word) {
+    // Базовые проверки
+    if (!/^[а-яё\s-]+$/i.test(word)) {
+        return { valid: false, message: '❌ Только русские буквы!' };
+    }
+    
+    const clean = word.toLowerCase().replace(/[\s-]/g, '');
+    const letters = clean.replace(/[ъьы]/g, '');
+    
+    if (letters.length < 2) {
+        return { valid: false, message: '❌ Слово должно содержать минимум 2 буквы!' };
+    }
+    
+    // Проверка через API Яндекса
+    const suggestions = await getSpellingSuggestions(word);
+    const isValid = await isWordCorrect(word);
+    
+    if (!isValid) {
+        if (suggestions && suggestions.length > 0) {
+            return { 
+                valid: false, 
+                message: `❌ Слово "${word}" не найдено. Возможно, вы имели в виду: ${suggestions.slice(0, 3).join(', ')}?` 
+            };
+        }
+        return { valid: false, message: `❌ Слово "${word}" не найдено в русском языке!` };
+    }
+    
+    return { valid: true, message: '' };
+}
+// Функция для показа статуса загрузки
+function updateDictionaryStatus() {
+    const messageBoxDiv = document.getElementById('messageBox');
+    if (messageBoxDiv && !dictionaryReady) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка словаря...';
     }
 }
 
-// Добавьте после инициализации
-document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-    }
-});
+updateDictionaryStatus();
+dictionaryReady = true;
+if (messageBoxDiv && messageBoxDiv.innerHTML.includes('Загрузка')) {
+    messageBoxDiv.innerHTML = '<i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате';
+}
 </script>
 </body>
 </html>
