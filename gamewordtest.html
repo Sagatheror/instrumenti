@@ -1718,37 +1718,79 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ---------- ЗАГРУЗКА СЛОВАРЯ ОЖЕГОВА ИЗ ФАЙЛА ----------
+// ---------- ЗАГРУЗКА СЛОВАРЯ ОЖЕГОВА С ПАРСИНГОМ СЛОВ ----------
 let russianDictionary = new Set();
 let dictionaryLoaded = false;
 let dictionaryLoadPromise = null;
+
+function normalizeWordForDict(word) {
+    // Убираем всё, кроме букв и дефиса (для составных слов типа "бизнес-ланч")
+    let cleaned = word.replace(/[^а-яёa-z\-]/gi, '').toLowerCase();
+    // Убираем дефис в конце/начале
+    cleaned = cleaned.replace(/^-+|-+$/g, '');
+    // Замена ё на е (опционально, но оставим оба варианта)
+    return cleaned;
+}
 
 async function loadRussianDictionary() {
     if (dictionaryLoadPromise) return dictionaryLoadPromise;
     
     dictionaryLoadPromise = (async () => {
         try {
-            // Файл должен лежать в той же папке, что и index.html, на GitHub
             const response = await fetch('./Словарь Ожегова.txt');
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const text = await response.text();
-            const words = text.split(/\r?\n/);
-            for (let word of words) {
-                word = word.trim().toLowerCase();
-                if (word && /^[а-яё]+$/.test(word)) {
-                    russianDictionary.add(word);
+            const lines = text.split(/\r?\n/);
+            let wordCount = 0;
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+                
+                // Ищем слово в начале строки до запятой, точки с запятой, пробела или начала пояснения
+                // Формат: "АБОРДАЖ, -а, м. ..." или "АВТОМОБИЛЬ, -я, м. ..."
+                let match = line.match(/^([А-ЯЁ][А-ЯЁ\-]+)/);
+                if (!match) {
+                    // Если не нашли заглавными, пробуем искать до запятой
+                    let commaIndex = line.indexOf(',');
+                    if (commaIndex > 0) {
+                        let candidate = line.substring(0, commaIndex).trim();
+                        if (/^[А-ЯЁ][А-ЯЁ\-]+$/.test(candidate)) {
+                            match = [candidate, candidate];
+                        }
+                    }
+                }
+                
+                if (match) {
+                    let rawWord = match[1];
+                    let word = normalizeWordForDict(rawWord);
+                    if (word.length >= 2 && /^[а-яё]+(-[а-яё]+)?$/.test(word)) {
+                        russianDictionary.add(word);
+                        wordCount++;
+                        // Также добавляем вариант с заменой ё на е, если есть ё
+                        if (word.includes('ё')) {
+                            russianDictionary.add(word.replace(/ё/g, 'е'));
+                        }
+                    }
                 }
             }
-            console.log(`✅ Загружено ${russianDictionary.size} слов из словаря Ожегова`);
+            
+            console.log(`✅ Загружено ${wordCount} слов из словаря Ожегова`);
             dictionaryLoaded = true;
-            // Обновляем сообщение, если игра ещё не началась
+            
             const messageBoxDiv = document.getElementById('messageBox');
             if (messageBoxDiv && messageBoxDiv.innerHTML.includes('Загрузка словаря')) {
                 messageBoxDiv.innerHTML = '<i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате';
             }
+            
+            if (wordCount === 0) {
+                console.warn('Не удалось распарсить ни одного слова, используем fallback');
+                throw new Error('Нет слов');
+            }
+            
         } catch (error) {
-            console.error('❌ Ошибка загрузки словаря Ожегова:', error);
-            // Fallback: базовый словарь на 100 слов, чтобы игра не сломалась
+            console.error('❌ Ошибка загрузки или парсинга словаря Ожегова:', error);
+            // Fallback: базовый словарь на 200 частотных слов
             const fallbackWords = [
                 'дом', 'лес', 'мост', 'город', 'река', 'гора', 'поле', 'море', 'окно', 'дверь',
                 'стол', 'стул', 'кровать', 'лампа', 'книга', 'ручка', 'карандаш', 'тетрадь',
@@ -1759,12 +1801,13 @@ async function loadRussianDictionary() {
                 'мама', 'папа', 'брат', 'сестра', 'дедушка', 'бабушка', 'друг', 'подруга',
                 'учитель', 'врач', 'инженер', 'строитель', 'художник', 'музыкант', 'певец',
                 'небо', 'солнце', 'луна', 'звезда', 'облако', 'дождь', 'снег', 'ветер', 'гроза',
-                'утро', 'день', 'вечер', 'ночь', 'понедельник', 'вторник', 'среда', 'нога', 'рука'
+                'утро', 'день', 'вечер', 'ночь', 'понедельник', 'вторник', 'среда', 'нога', 'рука',
+                'голова', 'глаз', 'ухо', 'нос', 'рот', 'зуб', 'волос', 'кожа', 'сердце', 'печень'
             ];
             fallbackWords.forEach(w => russianDictionary.add(w));
             dictionaryLoaded = true;
             const msgDiv = document.getElementById('messageBox');
-            if (msgDiv) msgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Словарь не загружен, используется базовый набор слов';
+            if (msgDiv) msgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Не удалось загрузить словарь, используется базовый набор слов';
         }
     })();
     
@@ -1773,7 +1816,6 @@ async function loadRussianDictionary() {
 
 // Функция проверки слова по загруженному словарю
 async function isValidWordWithDictionary(word) {
-    // Дождёмся загрузки словаря (если ещё не загружен)
     if (!dictionaryLoaded) {
         await loadRussianDictionary();
     }
@@ -1787,11 +1829,12 @@ async function isValidWordWithDictionary(word) {
         return { valid: false, message: '❌ Минимум 2 буквы!' };
     }
     
-    // Нормализация ё -> е (если в словаре все слова с е, а пользователь ввёл ё)
-    const normalized = clean.replace(/ё/g, 'е');
+    // Нормализация: убираем дефисы, пробелы, ё -> е
+    let normalized = clean.replace(/ё/g, 'е');
     let found = russianDictionary.has(normalized);
-    if (!found && normalized !== clean) {
-        // если заменили ё на е, проверим ещё раз исходный вариант (вдруг в словаре есть ё)
+    
+    // Если не нашли, пробуем исходный вариант (с ё)
+    if (!found && clean !== normalized) {
         found = russianDictionary.has(clean);
     }
     
@@ -1801,7 +1844,7 @@ async function isValidWordWithDictionary(word) {
     return { valid: true, message: '' };
 }
 
-// ---------- ВСЯ ОСТАЛЬНАЯ ЛОГИКА ИГРЫ (без изменений) ----------
+// ---------- ВСЯ ОСТАЛЬНАЯ ЛОГИКА ИГРЫ (БЕЗ ИЗМЕНЕНИЙ) ----------
 let myId = null, roomId = null, myName = "МастерСлова", myAvatar = "😎", myAvatarUrl = null;
 let players = [], currentPlayerId = null, lastWord = "", lastWordAuthor = null, usedWords = [];
 let complaintActive = false, complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] };
@@ -2270,7 +2313,7 @@ function toggleTheme() {
 }
 document.addEventListener('DOMContentLoaded', () => { initTheme(); document.getElementById('themeToggle').addEventListener('click', toggleTheme); });
 
-// Старт: загружаем словарь и показываем статус
+// Старт
 connectionStatusSpan.textContent = '🟢 Готов к битве';
 function selectAvatar(emo) { 
     myAvatar = emo; 
