@@ -1,0 +1,2292 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Сетевая игра в слова</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Анимированный фон с движущимися частицами */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 8px),
+        radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.1), transparent 70%);
+    pointer-events: none;
+    animation: slowMove 20s ease-in-out infinite alternate;
+}
+
+/* Дополнительные плавающие блики */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08), transparent 50%);
+    pointer-events: none;
+    animation: pulseGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes slowMove {
+    0% {
+        background-position: 0% 0%;
+        transform: scale(1);
+    }
+    100% {
+        background-position: 100% 100%;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+        .game-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(0px);
+    border-radius: 48px;
+    padding: 32px 36px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+        0 0 0 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    position: relative;
+    overflow: hidden;
+}
+
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .main-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr 320px;
+    gap: 28px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+        /* ========= ЧАТ СТИЛИ ========= */
+        .chat-sidebar {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(248, 249, 250, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: auto;
+    max-height: 800px;
+    box-shadow: 
+        0 20px 35px -10px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Анимированный градиентный фон при наведении */
+.chat-sidebar::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, 
+        rgba(102, 126, 234, 0.05) 0%,
+        transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+
+.chat-sidebar:hover::after {
+    opacity: 1;
+    animation: rotateGlow 8s linear infinite;
+}
+
+@keyframes rotateGlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+        .chat-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #495057 0%, #667eea 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    padding-bottom: 14px;
+    position: relative;
+    letter-spacing: -0.3px;
+}
+.chat-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        #667eea, 
+        #764ba2, 
+        #f093fb);
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.chat-title:hover::after {
+    width: 100px;
+    background: linear-gradient(90deg, 
+        #f093fb, 
+        #764ba2, 
+        #667eea);
+}
+        .chat-messages {
+    flex: 1;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 12px;
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+/* Кастомный скроллбар */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2, #f093fb);
+    transform: scaleX(1.1);
+}
+
+        .chat-message {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 14px 18px;
+    border-radius: 20px;
+    color: #212529;
+    font-size: 0.95rem;
+    max-width: 85%;
+    word-break: break-word;
+    position: relative;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
+}
+
+/* Эффект при наведении */
+.chat-message:hover {
+    transform: translateX(4px) translateY(-2px);
+    box-shadow: 
+        0 8px 20px rgba(102, 126, 234, 0.12),
+        0 2px 4px rgba(0, 0, 0, 0.05);
+    background: white;
+}
+
+        .chat-message.mine {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-left: auto;
+    border-left: none;
+    color: white;
+    position: relative;
+    box-shadow: 
+        0 4px 15px rgba(102, 126, 234, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+        .sender {
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffd93d, #ffb347);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 0.85rem;
+    letter-spacing: -0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+        .mine .sender {
+    background: linear-gradient(120deg, #ffd93d, #ffe174, #ffd93d);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-shadow: 0 0 8px rgba(255, 217, 61, 0.3);
+    transition: all 0.3s ease;
+}
+
+        .time {
+    float: right;
+    font-size: 0.65rem;
+    color: #868e96;
+    margin-left: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+        .mine .time {
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+        .chat-input-area {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 60px;
+    padding: 6px 6px 6px 20px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+        .chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 60px;
+    color: #212529;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    letter-spacing: -0.2px;
+}
+
+        .chat-input:focus {
+    outline: none;
+    border-color: #667eea;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+        .chat-send-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 60px;
+    padding: 0 28px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    letter-spacing: 0.3px;
+}
+        .chat-send-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+        .online-count {
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+    text-align: center;
+    padding: 10px 16px;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
+}
+
+        /* ========= ПРОФИЛЬ ========= */
+        .profile-setup {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 32px;
+    padding: 20px 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+        .avatar-preview-large {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    border: 3px solid #ffd93d;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+        .avatar-selector {
+            position: relative;
+        }
+
+        .avatar-selector-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: #495057;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .avatar-selector-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .avatar-grid {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 20px;
+    display: none;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    z-index: 100;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    min-width: 400px;
+    box-shadow: 
+        0 20px 35px -10px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Анимация появления */
+@keyframes gridAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.avatar-grid.show {
+    display: grid;
+    animation: gridAppear 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+        .avatar-option {
+            font-size: 2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.1s;
+            border-radius: 50%;
+            padding: 6px;
+        }
+        .avatar-option:hover { transform: scale(1.2); background: #e9ecef; }
+
+        .name-input {
+    background: white;
+    border: 1px solid #e9ecef;
+    padding: 12px 24px;
+    border-radius: 60px;
+    color: #212529;
+    width: 240px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+        .name-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+        .file-label {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 60px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+        .file-label:hover {
+    background: linear-gradient(135deg, #34ce57 0%, #2ecc71 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    gap: 10px;
+}
+
+        /* ========= ИГРОВАЯ ЗОНА ========= */
+        .game-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+}
+        
+        .connection-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 18px 24px;
+    border-radius: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+        
+        .room-control {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+}
+        .room-control input {
+    background: white;
+    border: 1px solid #e9ecef;
+    padding: 10px 20px;
+    border-radius: 60px;
+    color: #212529;
+    width: 160px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+        .room-control input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+        
+        button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 28px;
+    border-radius: 60px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    letter-spacing: 0.3px;
+}
+        button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    gap: 10px;
+}
+        button:active {
+    transform: translateY(0);
+    transition: transform 0.05s;
+}
+
+        .connection-status {
+    background: rgba(233, 236, 239, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #495057;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+        .players-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 12px 8px;
+    position: relative;
+    scroll-behavior: smooth;
+}
+        
+        .player-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border-radius: 24px;
+    padding: 20px 12px;
+    text-align: center;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+        .player-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+        .player-card.active {
+    border: 2px solid #ffd93d;
+    background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+    box-shadow: 0 8px 20px rgba(255, 217, 61, 0.25);
+    transform: scale(1.02);
+    position: relative;
+    animation: activePulse 2s ease-in-out infinite;
+}
+
+/* Анимация пульсации */
+@keyframes activePulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(255, 217, 61, 0.25);
+        border-color: #ffd93d;
+    }
+    50% {
+        box-shadow: 0 12px 28px rgba(255, 217, 61, 0.4);
+        border-color: #ffb347;
+    }
+}
+        .player-card.this-player {
+    border: 2px solid #667eea;
+    background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    position: relative;
+    animation: thisPlayerGlow 2s ease-in-out infinite;
+}
+
+/* Анимация свечения */
+@keyframes thisPlayerGlow {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        border-color: #667eea;
+    }
+    50% {
+        box-shadow: 0 12px 28px rgba(102, 126, 234, 0.35);
+        border-color: #764ba2;
+    }
+}
+        .player-avatar {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    position: relative;
+}
+        .player-name {
+    font-weight: 700;
+    color: #212529;
+    font-size: 1.1rem;
+    margin: 10px 0 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(120deg, #212529, #495057);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+        .player-score {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+        .turn-indicator {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 28px;
+    padding: 20px 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+        .turn-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .last-word {
+    font-size: 2rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 80px;
+    margin-top: 12px;
+    letter-spacing: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+        
+        .required-letter-badge {
+    background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 80px;
+    margin: 10px auto;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #495057;
+    box-shadow: 0 8px 20px rgba(255, 217, 61, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 2px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+        .game-area {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 32px;
+    padding: 28px;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+        .word-input-wrapper {
+    display: flex;
+    background: white;
+    border-radius: 60px;
+    border: 2px solid #e9ecef;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    position: relative;
+}
+        .word-input-wrapper:focus-within {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+        .word-input-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 18px 24px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #212529;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.3px;
+}
+        .word-input-wrapper input:focus {
+    outline: none;
+    caret-color: #667eea;
+    transition: all 0.2s ease;
+}
+        .word-input-wrapper button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 60px;
+    margin: 6px;
+    padding: 0 36px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+        .action-area { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .complaint-btn { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+        .skip-btn { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #495057; }
+        
+        .vote-status { 
+            display: flex; 
+            gap: 12px; 
+            background: white; 
+            padding: 8px 20px; 
+            border-radius: 60px; 
+            border: 1px solid #dee2e6;
+        }
+        .vote-yes-count { 
+            background: #28a745; 
+            color: white;
+            padding: 6px 16px; 
+            border-radius: 40px; 
+            font-weight: bold;
+        }
+        .vote-no-count { 
+            background: #dc3545; 
+            color: white;
+            padding: 6px 16px; 
+            border-radius: 40px; 
+            font-weight: bold;
+        }
+        .complaint-count {
+            background: #e9ecef;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .message-area {
+            background: #e9ecef;
+            padding: 14px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 24px;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+        .sidebar h3 {
+    background: linear-gradient(135deg, #495057 0%, #667eea 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 12px;
+    transition: all 0.3s ease;
+    letter-spacing: -0.3px;
+}
+.sidebar h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar:hover h3::after {
+    width: 80px;
+    background: linear-gradient(90deg, #764ba2, #f093fb, #667eea);
+}
+        .words-history {
+    list-style: none;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 8px 4px;
+    margin: 0;
+    scroll-behavior: smooth;
+    position: relative;
+}
+.words-history::-webkit-scrollbar {
+    width: 6px;
+}
+
+.words-history::-webkit-scrollbar-track {
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.words-history::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.words-history::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2, #f093fb);
+}
+
+        .words-history li {
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    margin: 10px 0;
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-weight: 500;
+    color: #212529;
+    font-size: 14px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+        .rule-item {
+    margin: 12px 0;
+    color: #6c757d;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-left: 3px solid transparent;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    animation: ruleAppear 0.3s ease forwards;
+}
+        
+        .music-player {
+    margin-top: auto;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border-radius: 24px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.music-player .play-btn,
+.music-player .stop-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px;
+    min-width: 80px;
+}
+
+@media (max-width: 768px) {
+    .music-player .play-btn,
+    .music-player .stop-btn {
+        min-width: 70px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+}
+        
+        @keyframes pulseTurn { 
+            0% { border-color: #ffd93d; box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.4); }
+            100% { border-color: #ffc107; box-shadow: 0 0 0 8px rgba(255, 217, 61, 0); }
+        }
+        .my-turn-pulse { animation: pulseTurn 1.5s infinite; }
+        
+        .vote-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0 4px;
+            transition: all 0.1s;
+            color: black;
+        }
+        .vote-btn:hover {
+            background: #f8f9fa;
+            transform: scale(1.05);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+            background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1) rotate(15deg);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Светлая тема (по умолчанию) */
+body.light-theme {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.light-theme .game-container {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+body.light-theme .chat-sidebar {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 100%);
+}
+
+body.light-theme .sidebar {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* Тёмная тема */
+body.dark-theme {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-theme .game-container {
+    background: rgba(26, 26, 46, 0.95);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme h1 {
+    background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+body.dark-theme .chat-sidebar {
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95) 0%, rgba(20, 20, 40, 0.98) 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .chat-title {
+    background: linear-gradient(135deg, #a8c0ff 0%, #9b59b6 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.dark-theme .chat-message {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    color: #e0e0e0;
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .chat-message.mine {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+}
+
+body.dark-theme .chat-input {
+    color: #e0e0e0;
+}
+
+body.dark-theme .chat-input-area {
+    background: rgba(30, 30, 50, 0.95);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .sidebar {
+    background: rgba(30, 30, 50, 0.9);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .sidebar h3 {
+    background: linear-gradient(135deg, #a8c0ff 0%, #9b59b6 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.dark-theme .words-history li {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    color: #e0e0e0;
+    border-left: 4px solid #9b59b6;
+}
+
+body.dark-theme .rule-item {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    color: #b0b0b0;
+}
+
+body.dark-theme .profile-setup {
+    background: rgba(30, 30, 50, 0.9);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .name-input {
+    background: #2a2a3e;
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    color: #e0e0e0;
+}
+
+body.dark-theme .name-input:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 0 0 4px rgba(155, 89, 182, 0.15);
+}
+
+body.dark-theme .connection-panel {
+    background: rgba(30, 30, 50, 0.9);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .room-control input {
+    background: #2a2a3e;
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    color: #e0e0e0;
+}
+
+body.dark-theme .connection-status {
+    background: rgba(42, 42, 62, 0.9);
+    color: #b0b0b0;
+}
+
+body.dark-theme .player-card {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .player-name {
+    background: linear-gradient(120deg, #e0e0e0, #a8c0ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.dark-theme .game-area {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .word-input-wrapper {
+    background: #2a2a3e;
+    border: 2px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .word-input-wrapper input {
+    color: #e0e0e0;
+}
+
+body.dark-theme .message-area {
+    background: #2a2a3e;
+    color: #b0b0b0;
+}
+
+body.dark-theme .music-player {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .avatar-grid {
+    background: rgba(30, 30, 50, 0.98);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .avatar-option:hover {
+    background: #3a3a5e;
+}
+
+body.dark-theme .avatar-selector-btn {
+    background: #2a2a3e;
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    color: #e0e0e0;
+}
+
+body.dark-theme .avatar-selector-btn:hover {
+    background: #3a3a5e;
+    border-color: #9b59b6;
+}
+
+body.dark-theme .vote-btn {
+    background: #2a2a3e;
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    color: #e0e0e0;
+}
+
+body.dark-theme .vote-btn:hover {
+    background: #3a3a5e;
+}
+body.dark-theme button:not(.vote-btn):not(.avatar-selector-btn):not(.play-btn):not(.stop-btn) {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+    color: #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme button:not(.vote-btn):not(.avatar-selector-btn):not(.play-btn):not(.stop-btn):hover {
+    background: linear-gradient(135deg, #5a5a9a 0%, #6a6aaa 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 74, 138, 0.4);
+}
+body.dark-theme .create-room-btn,
+body.dark-theme .join-room-btn,
+body.dark-theme .reconnect-btn,
+body.dark-theme .submit-word-btn {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+}
+body.dark-theme .complaint-btn {
+    background: linear-gradient(135deg, #8b3a3a 0%, #a04a4a 100%);
+}
+
+body.dark-theme .skip-btn {
+    background: linear-gradient(135deg, #b8860b 0%, #d4a017 100%);
+    color: #1a1a2e;
+}
+
+/* Поле хода (turn-indicator) */
+body.dark-theme .turn-indicator {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .turn-text {
+    color: #e0e0e0;
+}
+
+body.dark-theme .last-word {
+    background: rgba(42, 42, 62, 0.8);
+    backdrop-filter: blur(8px);
+    color: #a8c0ff;
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Контейнер с последней буквой (required-letter-badge) */
+body.dark-theme .required-letter-badge {
+    background: linear-gradient(135deg, #4a4a6a 0%, #3a3a5a 100%);
+    color: #ffd966;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 217, 61, 0.3);
+}
+
+/* Кнопки плеера */
+body.dark-theme .play-btn,
+body.dark-theme .stop-btn {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+    color: #e0e0e0;
+    border: none;
+}
+
+body.dark-theme .play-btn:hover,
+body.dark-theme .stop-btn:hover {
+    background: linear-gradient(135deg, #5a5a9a 0%, #6a6aaa 100%);
+}
+
+/* Текст статуса плеера */
+body.dark-theme .player-status {
+    color: #b0b0b0;
+}
+
+body.dark-theme .radio-title {
+    color: #a8c0ff;
+}
+
+/* Кнопка отправки чата */
+body.dark-theme .chat-send-btn {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+}
+
+body.dark-theme .chat-send-btn:hover {
+    background: linear-gradient(135deg, #5a5a9a 0%, #6a6aaa 100%);
+}
+
+/* Статус подключения */
+body.dark-theme .connection-status {
+    background: rgba(42, 42, 62, 0.9);
+    color: #b0b0b0;
+}
+
+/* Счетчик онлайн */
+body.dark-theme .online-count {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    color: #b0b0b0;
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+/* Аватар превью */
+body.dark-theme .avatar-preview-large {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+    border: 3px solid #ffd966;
+}
+
+/* Кнопка выбора аватара */
+body.dark-theme .avatar-selector-btn {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+    color: #e0e0e0;
+    border: none;
+}
+
+body.dark-theme .avatar-selector-btn:hover {
+    background: linear-gradient(135deg, #5a5a9a 0%, #6a6aaa 100%);
+}
+
+/* Кнопка загрузки фото */
+body.dark-theme .file-label {
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+}
+
+body.dark-theme .file-label:hover {
+    background: linear-gradient(135deg, #40916c 0%, #52b788 100%);
+}
+
+/* Иконки в правилах и истории */
+body.dark-theme .rule-item i,
+body.dark-theme .words-history li i,
+body.dark-theme .sidebar h3 i {
+    color: #a8c0ff;
+}
+
+/* Кнопка переключения темы в тёмной теме */
+body.dark-theme .theme-toggle-btn {
+    background: rgba(42, 42, 62, 0.8);
+    border: 1px solid rgba(168, 192, 255, 0.3);
+    color: #ffd966;
+}
+
+body.dark-theme .theme-toggle-btn:hover {
+    background: rgba(74, 74, 138, 0.8);
+}
+
+/* Голосование */
+body.dark-theme .vote-status {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .vote-yes-count {
+    background: #2d6a4f;
+    color: #e0e0e0;
+}
+
+body.dark-theme .vote-no-count {
+    background: #8b3a3a;
+    color: #e0e0e0;
+}
+
+body.dark-theme .complaint-count {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    color: #e0e0e0;
+    border: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+/* Счетчик жалоб */
+body.dark-theme #complaintCount,
+body.dark-theme #complaintMax {
+    color: #ffd966;
+}
+
+/* Поле ввода слова */
+body.dark-theme .word-input-wrapper input::placeholder {
+    color: #6c6c8c;
+}
+
+/* Карточки игроков при голосовании */
+body.dark-theme .player-card.active {
+    border: 2px solid #ffd966;
+    background: linear-gradient(135deg, #2a2a4a 0%, #252545 100%);
+}
+
+body.dark-theme .player-card.this-player {
+    border: 2px solid #a8c0ff;
+    background: linear-gradient(135deg, #2a2a5a 0%, #252555 100%);
+}
+/* ---------- Панель смайликов (как в VK) ---------- */
+.emoji-toggle-btn {
+    background: rgba(102, 126, 234, 0.1);
+    border: none;
+    border-radius: 60px;
+    margin-right: -40px;
+    width: 48px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #667eea;
+    top: 0px;
+    left: -15px;
+}
+.emoji-toggle-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: scale(1.05);
+}
+
+.emoji-panel {
+    display: none;
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+    width: 330px;
+    max-width: 80vw;
+    z-index: 200;
+    border: 1px solid rgba(102,126,234,0.3);
+    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.98);
+}
+.emoji-panel.show {
+    display: block;
+    animation: fadeInUp 0.2s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.emoji-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+}
+.emoji-cat-btn {
+    background: #f8f9fa;
+    border: none;
+    border-radius: 40px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.1s;
+    color: #495057;
+}
+.emoji-cat-btn:hover {
+    background: #667eea;
+    color: white;
+}
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    padding: 16px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+.emoji-item {
+    font-size: 1.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.1s;
+    border-radius: 12px;
+    padding: 4px;
+}
+.emoji-item:hover {
+    background: #e9ecef;
+    transform: scale(1.2);
+}
+
+/* Тёмная тема для панели смайликов */
+body.dark-theme .emoji-panel {
+    background: rgba(30,30,50,0.98);
+    border-color: rgba(168,192,255,0.3);
+}
+body.dark-theme .emoji-categories {
+    border-bottom-color: #2a2a3e;
+}
+body.dark-theme .emoji-cat-btn {
+    background: #2a2a3e;
+    color: #e0e0e0;
+}
+body.dark-theme .emoji-cat-btn:hover {
+    background: #667eea;
+}
+body.dark-theme .emoji-item:hover {
+    background: #3a3a5e;
+}
+body.dark-theme .emoji-toggle-btn {
+    color: #a8c0ff;
+}
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .game-container {
+                padding: 16px;
+            }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="game-container">
+    <div style="position: absolute; top: 2px; right: 30px; z-index: 100;">
+    <button id="themeToggle" class="theme-toggle-btn">
+        <i class="fas fa-moon"></i>
+    </button>
+</div>
+    <div class="profile-setup">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div class="avatar-preview-large" id="avatarPreview">😎</div>
+            <div class="avatar-selector">
+                <button class="avatar-selector-btn" id="avatarSelectorBtn">
+    <i class="fas fa-user-astronaut"></i> Выбрать смайлик <i class="fas fa-chevron-down"></i>
+</button>
+                <div class="avatar-grid" id="avatarGrid"></div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="playerName" class="name-input" placeholder="Ваше имя" value="МастерСлова">
+            <label for="avatarFile" class="file-label">
+    <i class="fas fa-camera"></i> Загрузить фото
+</label>
+            <input type="file" id="avatarFile" style="display:none" accept="image/*">
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- Левый чат -->
+        <div class="chat-sidebar">
+            <div class="chat-title">
+    <i class="fas fa-comment-dots"></i> Боевой чат
+</div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+    <button type="button" id="emojiBtn" class="emoji-toggle-btn">
+        <i class="far fa-smile-wink"></i>
+    </button>
+    <input type="text" id="chatInput" class="chat-input" placeholder="Напишите сообщение...">
+    <button id="chatSendBtn" class="chat-send-btn">➤</button>
+</div>
+<!-- Панель смайликов (добавить сразу после chat-input-area) -->
+<div id="emojiPanel" class="emoji-panel">
+    <div id="emojiCategories" class="emoji-categories"></div>
+    <div id="emojiGrid" class="emoji-grid"></div>
+</div>
+            <div class="online-count" id="onlineCount">
+    <i class="fas fa-users"></i> Онлайн: <span id="onlineCountNumber">0</span>
+</div>
+            <div class="music-player">
+                <div class="radio-title">
+    <i class="fas fa-headphones"></i> Lo-Fi Radio
+</div>
+                <div style="margin: 8px 0;">
+                    <button id="playPauseBtn" class="play-btn">
+        <i class="fas fa-play"></i> Play
+    </button>
+                     <button id="stopBtn" class="stop-btn">
+        <i class="fas fa-stop"></i> Stop
+    </button>
+                </div>
+                <div id="playerStatus" class="player-status">
+    <i class="fas fa-bolt"></i> Готов к воспроизведению
+</div>
+            </div>
+        </div>
+
+        <!-- Центр игра -->
+        <div class="game-content">
+            <div class="connection-panel">
+                <div class="room-control">
+                    <input type="text" id="roomInput" placeholder="Код битвы" value="assortea">
+                    <button id="createRoomBtn" class="create-room-btn">
+        <i class="fas fa-trophy"></i> СОЗДАТЬ
+    </button>
+                    <button id="joinRoomBtn" class="join-room-btn">
+        <i class="fas fa-crosshairs"></i> ВСТУПИТЬ
+    </button>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="connection-status" id="connectionStatus">
+    <i class="fas fa-bolt"></i> Ожидание
+</div>
+                    <button id="reconnectBtn" class="reconnect-btn">
+    <i class="fas fa-sync-alt"></i> Переподключиться
+</button>
+                </div>
+            </div>
+            
+            <div id="playersPanel" class="players-panel"></div>
+            
+            <div class="turn-indicator">
+                <div class="turn-text" id="turnDisplay">
+    <i class="fas fa-dice-d6"></i> Ожидание игроков...
+</div>
+                <div class="last-word" id="lastWordDisplay">---</div>
+            </div>
+            
+            <div style="text-align: center;">
+                <div class="required-letter-badge" id="requiredLetterBadge">
+    <i class="fas fa-font"></i> Нужная буква: ?
+</div>
+            </div>
+            
+            <div class="game-area">
+                <div class="word-input-wrapper" id="wordWrapper">
+                    <input type="text" id="wordInput" placeholder="Введите слово..." autocomplete="off">
+                    <button id="submitWordBtn" class="submit-word-btn">
+    <i class="fas fa-bolt"></i> ОТВЕТИТЬ
+</button>
+                </div>
+                
+                <div class="action-area">
+                    <button class="complaint-btn" id="complaintBtn">
+        <i class="fas fa-ban"></i> Пожаловаться
+    </button>
+                     <button class="skip-btn" id="skipBtn">
+        <i class="fas fa-forward"></i> Пропустить ход
+    </button>
+                    <div class="vote-status" id="voteStatus" style="display: none;">
+                        <span class="vote-yes-count" id="voteYesCount">0</span>
+                        <span class="vote-no-count" id="voteNoCount">0</span>
+                    </div>
+                    <div class="complaint-count" id="complaintCountDisplay">
+    <i class="fas fa-gavel"></i> <span id="complaintCount">0</span>/<span id="complaintMax">0</span>
+</div>
+                </div>
+                
+                <div class="message-area" id="messageBox">
+    <i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате
+</div>
+            </div>
+        </div>
+
+        <!-- Правая история -->
+        <div class="sidebar">
+            <h3><i class="fas fa-scroll"></i> История слов</h3>
+            <ul class="words-history" id="wordsHistory">
+                <li style="text-align: center; color: #adb5bd;"><i class="fas fa-swords"></i> Слова будут здесь</li>
+            </ul>
+            <div style="margin-top: 20px;">
+                <div class="rule-item"><i class="fas fa-book"></i> Только существительные, ед.ч (именительный)</div>
+<div class="rule-item"><i class="fas fa-font"></i> Минимум 2 буквы, нельзя повторяться</div>
+<div class="rule-item"><i class="fas fa-exchange-alt"></i> Ход: последняя буква → первая буква</div>
+<div class="rule-item"><i class="fas fa-gavel"></i> Жалоба = голосование, при успехе - штраф</div>
+<div class="rule-item"><i class="fas fa-forward"></i> Можно пропустить ход без штрафа</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="youtube-player" style="display: none;"></div>
+
+<script>
+// Firebase конфигурация
+const firebaseConfig = {
+    apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E",
+    authDomain: "word-game-multiplayer-43c82.firebaseapp.com",
+    databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "word-game-multiplayer-43c82",
+    storageBucket: "word-game-multiplayer-43c82.firebasestorage.app",
+};
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ---------- ЗАГРУЗКА СЛОВАРЯ ОЖЕГОВА ИЗ ФАЙЛА ----------
+let russianDictionary = new Set();
+let dictionaryLoaded = false;
+let dictionaryLoadPromise = null;
+
+async function loadRussianDictionary() {
+    if (dictionaryLoadPromise) return dictionaryLoadPromise;
+    
+    dictionaryLoadPromise = (async () => {
+        try {
+            // Файл должен лежать в той же папке, что и index.html, на GitHub
+            const response = await fetch('./Словарь Ожегова.txt');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            const words = text.split(/\r?\n/);
+            for (let word of words) {
+                word = word.trim().toLowerCase();
+                if (word && /^[а-яё]+$/.test(word)) {
+                    russianDictionary.add(word);
+                }
+            }
+            console.log(`✅ Загружено ${russianDictionary.size} слов из словаря Ожегова`);
+            dictionaryLoaded = true;
+            // Обновляем сообщение, если игра ещё не началась
+            const messageBoxDiv = document.getElementById('messageBox');
+            if (messageBoxDiv && messageBoxDiv.innerHTML.includes('Загрузка словаря')) {
+                messageBoxDiv.innerHTML = '<i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате';
+            }
+        } catch (error) {
+            console.error('❌ Ошибка загрузки словаря Ожегова:', error);
+            // Fallback: базовый словарь на 100 слов, чтобы игра не сломалась
+            const fallbackWords = [
+                'дом', 'лес', 'мост', 'город', 'река', 'гора', 'поле', 'море', 'окно', 'дверь',
+                'стол', 'стул', 'кровать', 'лампа', 'книга', 'ручка', 'карандаш', 'тетрадь',
+                'машина', 'поезд', 'самолет', 'корабль', 'велосипед', 'автобус', 'троллейбус',
+                'собака', 'кошка', 'корова', 'лошадь', 'птица', 'рыба', 'волк', 'лиса', 'медведь',
+                'яблоко', 'груша', 'апельсин', 'банан', 'лимон', 'вишня', 'клубника', 'арбуз',
+                'хлеб', 'молоко', 'масло', 'сыр', 'мясо', 'суп', 'каша', 'пирог', 'торт', 'конфета',
+                'мама', 'папа', 'брат', 'сестра', 'дедушка', 'бабушка', 'друг', 'подруга',
+                'учитель', 'врач', 'инженер', 'строитель', 'художник', 'музыкант', 'певец',
+                'небо', 'солнце', 'луна', 'звезда', 'облако', 'дождь', 'снег', 'ветер', 'гроза',
+                'утро', 'день', 'вечер', 'ночь', 'понедельник', 'вторник', 'среда', 'нога', 'рука'
+            ];
+            fallbackWords.forEach(w => russianDictionary.add(w));
+            dictionaryLoaded = true;
+            const msgDiv = document.getElementById('messageBox');
+            if (msgDiv) msgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Словарь не загружен, используется базовый набор слов';
+        }
+    })();
+    
+    return dictionaryLoadPromise;
+}
+
+// Функция проверки слова по загруженному словарю
+async function isValidWordWithDictionary(word) {
+    // Дождёмся загрузки словаря (если ещё не загружен)
+    if (!dictionaryLoaded) {
+        await loadRussianDictionary();
+    }
+    
+    if (!/^[а-яё\s-]+$/i.test(word)) {
+        return { valid: false, message: '❌ Только русские буквы!' };
+    }
+    const clean = word.toLowerCase().replace(/[\s-]/g, '');
+    const letters = clean.replace(/[ъьы]/g, '');
+    if (letters.length < 2) {
+        return { valid: false, message: '❌ Минимум 2 буквы!' };
+    }
+    
+    // Нормализация ё -> е (если в словаре все слова с е, а пользователь ввёл ё)
+    const normalized = clean.replace(/ё/g, 'е');
+    let found = russianDictionary.has(normalized);
+    if (!found && normalized !== clean) {
+        // если заменили ё на е, проверим ещё раз исходный вариант (вдруг в словаре есть ё)
+        found = russianDictionary.has(clean);
+    }
+    
+    if (!found) {
+        return { valid: false, message: `❌ Слово "${word}" не найдено в словаре Ожегова.` };
+    }
+    return { valid: true, message: '' };
+}
+
+// ---------- ВСЯ ОСТАЛЬНАЯ ЛОГИКА ИГРЫ (без изменений) ----------
+let myId = null, roomId = null, myName = "МастерСлова", myAvatar = "😎", myAvatarUrl = null;
+let players = [], currentPlayerId = null, lastWord = "", lastWordAuthor = null, usedWords = [];
+let complaintActive = false, complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] };
+let heartbeatInterval = null;
+const TIMEOUT_MS = 50000;
+
+// DOM элементы
+const playersPanelDiv = document.getElementById('playersPanel');
+const turnDisplaySpan = document.getElementById('turnDisplay');
+const lastWordSpan = document.getElementById('lastWordDisplay');
+const requiredBadge = document.getElementById('requiredLetterBadge');
+const wordInput = document.getElementById('wordInput');
+const submitBtn = document.getElementById('submitWordBtn');
+const complaintBtn = document.getElementById('complaintBtn');
+const skipBtn = document.getElementById('skipBtn');
+const messageBoxDiv = document.getElementById('messageBox');
+const connectionStatusSpan = document.getElementById('connectionStatus');
+const roomInputEl = document.getElementById('roomInput');
+const createBtn = document.getElementById('createRoomBtn');
+const joinBtn = document.getElementById('joinRoomBtn');
+const reconnectBtn = document.getElementById('reconnectBtn');
+const playerNameInput = document.getElementById('playerName');
+const avatarPreviewDiv = document.getElementById('avatarPreview');
+const avatarGridDiv = document.getElementById('avatarGrid');
+const avatarSelectorBtn = document.getElementById('avatarSelectorBtn');
+const chatMessagesDiv = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSendBtn');
+const onlineCountSpan = document.getElementById('onlineCount');
+const voteStatusDiv = document.getElementById('voteStatus');
+const voteYesSpan = document.getElementById('voteYesCount');
+const voteNoSpan = document.getElementById('voteNoCount');
+const complaintCountSpan = document.getElementById('complaintCountDisplay');
+const wordsHistoryUl = document.getElementById('wordsHistory');
+
+// ---------- СМАЙЛИКИ В ЧАТЕ ----------
+const emojiBtn = document.getElementById('emojiBtn');
+const emojiPanel = document.getElementById('emojiPanel');
+const emojiCategories = document.getElementById('emojiCategories');
+const emojiGrid = document.getElementById('emojiGrid');
+
+const emojiLibrary = {
+    "😀 Смайлы": ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥸','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾'],
+    "🐶 Животные": ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🕷️','🦂','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🐠','🐟','🐡','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🐇','🦝','🦨','🦡','🦔','🐿️'],
+    "🍕 Еда": ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🍵','🧃','🥤','🧋','🧊','🍶','🍺','🍻','🥂','🥃','🥄','🔪','🍽️','🏺'],
+    "🚗 Транспорт": ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🚚','🚛','🚜','🏍️','🛵','🚲','🛴','🛹','🛼','🚏','🛣️','🛤️','✈️','🛩️','🚀','🛸','🚁','🚂','🚆','🚇','🚉','🚊','🚝','🚈','🚞','🚋','🚃','🚄','🚅','🚈','🚝','🚲','🛥️','🚤','⛵','🛶','🚢','⚓','🛟','🚡','🚠','🚟','🪂','🚦','🚥','🗺️'],
+    "⚽ Спорт": ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','🤺','⛹️','🤾','🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴'],
+    "🎵 Музыка": ['🎵','🎶','🎤','🎧','📯','🎷','🎺','🎸','🪕','🎻','🥁','🎹','🪘','🎙️','📻','🎛️','🎚️','🎚️','📀','💿','📼','🎬','🎞️','📽️','🎥','📹','📸','📷','🖥️','💻','🖨️','⌨️','🖱️','🖲️','📡','🔊','🔉','🔈','📢','📣','🔔','🔕','🎼','🎹']
+};
+
+function buildEmojiPanel() {
+    emojiCategories.innerHTML = '';
+    for (let catName of Object.keys(emojiLibrary)) {
+        const btn = document.createElement('button');
+        btn.textContent = catName;
+        btn.classList.add('emoji-cat-btn');
+        btn.addEventListener('click', () => showCategory(catName));
+        emojiCategories.appendChild(btn);
+    }
+    if (Object.keys(emojiLibrary).length) showCategory(Object.keys(emojiLibrary)[0]);
+}
+
+function showCategory(category) {
+    const emojis = emojiLibrary[category];
+    if (!emojis) return;
+    emojiGrid.innerHTML = '';
+    emojis.forEach(emo => {
+        const span = document.createElement('span');
+        span.textContent = emo;
+        span.classList.add('emoji-item');
+        span.addEventListener('click', () => {
+            chatInput.value += emo;
+            emojiPanel.classList.remove('show');
+            chatInput.focus();
+        });
+        emojiGrid.appendChild(span);
+    });
+}
+
+if (emojiBtn && emojiPanel) {
+    emojiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emojiPanel.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+        if (!emojiPanel.contains(e.target) && e.target !== emojiBtn) {
+            emojiPanel.classList.remove('show');
+        }
+    });
+}
+buildEmojiPanel();
+
+// ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ИГРЫ ----------
+function getLastLetter(word) {
+    if (!word) return '';
+    const clean = word.toLowerCase().replace(/[ъьы]/g, '');
+    for (let i = clean.length-1; i >= 0; i--) {
+        if (/[а-яё]/.test(clean[i])) return clean[i];
+    }
+    return '';
+}
+function getFirstLetter(word) {
+    for (let ch of word.toLowerCase()) {
+        if (/[а-яё]/.test(ch)) return ch;
+    }
+    return '';
+}
+function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
+function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
+
+// СОЗДАНИЕ / ПРИСОЕДИНЕНИЕ
+async function createRoom() {
+    const room = roomInputEl.value.trim();
+    if (!room) { messageBoxDiv.textContent = '❌ Введите код комнаты!'; return; }
+    myName = playerNameInput.value.trim() || "Воин";
+    myId = generateId();
+    roomId = room;
+    const roomRef = db.ref(`rooms/${room}`);
+    const snapshot = await roomRef.once('value');
+    if (snapshot.exists()) { messageBoxDiv.textContent = '❌ Комната уже существует'; return; }
+    const initState = {
+        players: { [myId]: { id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() } },
+        currentPlayerId: myId, lastWord: '', lastWordAuthor: null, usedWords: [], complaint: null, messages: [], createdAt: Date.now()
+    };
+    await roomRef.set(initState);
+    connectionStatusSpan.textContent = `✅ Комната "${room}"`;
+    messageBoxDiv.textContent = '🏰 Комната создана!';
+    setupListeners(room);
+    startHeartbeat(room);
+}
+
+async function joinRoom() {
+    const room = roomInputEl.value.trim();
+    if (!room) { messageBoxDiv.textContent = '❌ Введите код комнаты!'; return; }
+    myName = playerNameInput.value.trim() || "Воин";
+    const roomRef = db.ref(`rooms/${room}`);
+    const snap = await roomRef.once('value');
+    if (!snap.exists()) { messageBoxDiv.textContent = '❌ Комната не найдена'; return; }
+    const data = snap.val();
+    const existingPlayers = data.players || {};
+    let existingId = null;
+    for (let [pid, p] of Object.entries(existingPlayers)) {
+        if (p.name === myName && (p.connected || (Date.now() - (p.lastSeen||0) < 30000))) {
+            existingId = pid; break;
+        }
+    }
+    if (existingId) {
+        myId = existingId;
+        await roomRef.child(`players/${myId}`).update({ connected: true, lastSeen: Date.now(), avatar: myAvatar, name: myName });
+        messageBoxDiv.textContent = '♻️ Переподключение успешно!';
+    } else {
+        myId = generateId();
+        await roomRef.child(`players/${myId}`).set({ id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() });
+        if (!data.currentPlayerId) await roomRef.child('currentPlayerId').set(myId);
+        messageBoxDiv.textContent = '✅ Вы присоединились к битве!';
+    }
+    roomId = room;
+    connectionStatusSpan.textContent = `🔗 В комнате "${room}"`;
+    setupListeners(room);
+    startHeartbeat(room);
+}
+
+function startHeartbeat(room) {
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    const playerRef = db.ref(`rooms/${room}/players/${myId}`);
+    const beat = () => playerRef.update({ connected: true, lastSeen: Date.now() }).catch(e => console.warn);
+    beat();
+    heartbeatInterval = setInterval(beat, 10000);
+    window.addEventListener('beforeunload', () => { playerRef.update({ connected: false, lastSeen: Date.now() }); });
+}
+
+function setupListeners(room) {
+    const roomRef = db.ref(`rooms/${room}`);
+    roomRef.child('players').on('value', (snap) => {
+        const data = snap.val() || {};
+        const now = Date.now();
+        let active = [];
+        for (let [id, p] of Object.entries(data)) {
+            if (p.connected || (now - (p.lastSeen||0) < TIMEOUT_MS)) active.push({ ...p, id });
+            else db.ref(`rooms/${room}/players/${id}`).remove();
+        }
+        players = active;
+        const onlineSpan = document.getElementById('onlineCount');
+        if (onlineSpan) onlineSpan.innerHTML = `<i class="fas fa-users"></i> Онлайн: ${players.length}`;
+        if (players.length === 0 && roomId) db.ref(`rooms/${room}`).remove();
+        if (currentPlayerId && !players.find(p => p.id === currentPlayerId) && players.length) roomRef.child('currentPlayerId').set(players[0].id);
+        renderPlayers();
+        updateControls();
+    });
+    roomRef.child('messages').on('value', (snap) => renderChat(snap.val() || []));
+    roomRef.on('value', (snap) => {
+        const game = snap.val();
+        if (!game) { resetGameState(); return; }
+        currentPlayerId = game.currentPlayerId;
+        lastWord = game.lastWord || '';
+        lastWordAuthor = game.lastWordAuthor;
+        usedWords = game.usedWords || [];
+        if (game.complaint) {
+            complaintActive = true;
+            complaintData = { word: game.complaint.word, authorId: game.complaint.authorId, votesYes: game.complaint.votesYes || [], votesNo: game.complaint.votesNo || [] };
+        } else { complaintActive = false; complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] }; }
+        renderGameUI();
+        updateControls();
+        notifyMyTurn();
+    });
+}
+
+function resetGameState() {
+    roomId = null; players = []; currentPlayerId = null; lastWord = ""; usedWords = []; complaintActive = false;
+    messageBoxDiv.textContent = '🏠 Комната удалена. Создайте новую.';
+    connectionStatusSpan.textContent = '⚡ Отключён';
+    renderPlayers();
+    renderGameUI();
+}
+
+function renderPlayers() {
+    let html = '';
+    players.forEach(p => {
+        const isActiveTurn = (p.id === currentPlayerId && !complaintActive);
+        const isMe = (p.id === myId);
+        let voteBadge = '';
+        if (complaintActive && p.id !== complaintData.authorId && isMe && !complaintData.votesYes.includes(myId) && !complaintData.votesNo.includes(myId)) {
+            voteBadge = `<div style="margin-top: 8px;"><button class="vote-btn" onclick="castVote('yes')">✅ За</button><button class="vote-btn" onclick="castVote('no')">❌ Против</button></div>`;
+        } else if (complaintActive && complaintData.votesYes.includes(p.id)) {
+            voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #28a745;">✅ Проголосовал ЗА</div>';
+        } else if (complaintActive && complaintData.votesNo.includes(p.id)) {
+            voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #dc3545;">❌ Проголосовал ПРОТИВ</div>';
+        }
+        html += `<div class="player-card ${isActiveTurn ? 'active' : ''} ${isMe ? 'this-player' : ''}">
+                    <div class="player-avatar">${p.avatar || '😎'}</div>
+                    <div class="player-name">${p.name} ${isMe ? '(Вы)' : ''}</div>
+                    <div class="player-score">🏆 ${p.score || 0}</div>
+                    ${voteBadge}
+                </div>`;
+    });
+    playersPanelDiv.innerHTML = html || '<div style="text-align: center; padding: 20px;">Нет игроков</div>';
+}
+
+function renderGameUI() {
+    if (complaintActive) {
+        turnDisplaySpan.innerHTML = `⚖️ ГОЛОСОВАНИЕ за слово "${complaintData.word}"`;
+        voteStatusDiv.style.display = 'flex';
+        voteYesSpan.innerText = complaintData.votesYes.length;
+        voteNoSpan.innerText = complaintData.votesNo.length;
+        const complaintCountSpan = document.getElementById('complaintCount');
+        const complaintMaxSpan = document.getElementById('complaintMax');
+        if (complaintCountSpan) complaintCountSpan.innerText = complaintData.votesYes.length + complaintData.votesNo.length;
+        if (complaintMaxSpan) complaintMaxSpan.innerText = players.length - 1;
+        checkVoteResult();
+    } else {
+        voteStatusDiv.style.display = 'none';
+        const cur = players.find(p => p.id === currentPlayerId);
+        if (cur) turnDisplaySpan.innerHTML = `<i class="fas fa-microphone-alt"></i> Ход игрока: ${cur.name}`;
+        if (lastWord) {
+            lastWordSpan.innerHTML = `«${lastWord.toUpperCase()}»`;
+            const needLetter = getLastLetter(lastWord);
+            requiredBadge.innerHTML = needLetter ? `<i class="fas fa-font"></i> Нужная буква: "${needLetter.toUpperCase()}"` : '<i class="fas fa-play"></i> Начните игру!';
+        } else { lastWordSpan.innerHTML = '---'; requiredBadge.innerHTML = '🔤 Первое слово любое!'; }
+    }
+    let historyHtml = '';
+    if (usedWords.length === 0) historyHtml = '<li style="text-align: center; color: #adb5bd;">⚔️ История пуста</li>';
+    else [...usedWords].reverse().slice(0, 12).forEach(w => { historyHtml += `<li>📖 ${w}</li>`; });
+    wordsHistoryUl.innerHTML = historyHtml;
+    if (myId === currentPlayerId && !complaintActive && roomId) document.getElementById('wordWrapper').classList.add('my-turn-pulse');
+    else document.getElementById('wordWrapper').classList.remove('my-turn-pulse');
+}
+
+function updateControls() {
+    const isMyTurn = (myId === currentPlayerId && !complaintActive && roomId);
+    wordInput.disabled = !isMyTurn;
+    submitBtn.disabled = !isMyTurn;
+    skipBtn.disabled = !isMyTurn;
+    const canComplain = (myId === currentPlayerId && lastWord && myId !== lastWordAuthor && !complaintActive && roomId);
+    complaintBtn.disabled = !canComplain;
+    complaintBtn.style.opacity = canComplain ? '1' : '0.6';
+}
+
+function notifyMyTurn() {
+    if (myId === currentPlayerId && !complaintActive && roomId && !document.hasFocus()) {
+        messageBoxDiv.textContent = '🔔 ВАШ ХОД! Напишите слово!';
+        setTimeout(() => { if (messageBoxDiv.textContent === '🔔 ВАШ ХОД! Напишите слово!') messageBoxDiv.textContent = '🔥 Введите слово и нажмите "ОТВЕТИТЬ"'; }, 3000);
+    }
+}
+
+async function submitWordAction() {
+    if (!roomId || myId !== currentPlayerId || complaintActive) return;
+    const raw = wordInput.value.trim().toLowerCase();
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Проверка...';
+    submitBtn.disabled = true;
+    try {
+        const validation = await isValidWordWithDictionary(raw);
+        if (!validation.valid) { messageBoxDiv.textContent = validation.message; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-bolt"></i> ОТВЕТИТЬ'; submitBtn.disabled = false; return; }
+        const norm = normalize(raw);
+        if (usedWords.some(w => normalize(w) === norm)) { messageBoxDiv.textContent = '⚠️ Это слово уже было в игре!'; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-bolt"></i> ОТВЕТИТЬ'; submitBtn.disabled = false; return; }
+        if (lastWord) {
+            const needed = getLastLetter(lastWord);
+            const first = getFirstLetter(raw);
+            if (!needed || first !== needed) { messageBoxDiv.textContent = `🔤 Слово должно начинаться на букву "${needed.toUpperCase()}"`; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-bolt"></i> ОТВЕТИТЬ'; submitBtn.disabled = false; return; }
+        }
+        const roomRef = db.ref(`rooms/${roomId}`);
+        const playersArr = players.map(p => p.id);
+        const idx = playersArr.indexOf(myId);
+        const nextId = playersArr[(idx + 1) % playersArr.length];
+        const updates = {
+            [`players/${myId}/score`]: (players.find(p => p.id === myId)?.score || 0) + 1,
+            currentPlayerId: nextId,
+            lastWord: raw,
+            lastWordAuthor: myId,
+            usedWords: [...usedWords, raw],
+        };
+        await roomRef.update(updates);
+        wordInput.value = '';
+        messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Слово "${raw}" принято! +1 очко`;
+    } catch (error) {
+        console.error(error);
+        messageBoxDiv.textContent = '❌ Ошибка при проверке слова. Попробуйте еще раз.';
+    } finally {
+        submitBtn.innerHTML = '<i class="fas fa-bolt"></i> ОТВЕТИТЬ';
+        submitBtn.disabled = false;
+    }
+}
+
+async function skipTurnAction() {
+    if (!roomId || myId !== currentPlayerId || complaintActive) return;
+    const playersArr = players.map(p => p.id);
+    const idx = playersArr.indexOf(myId);
+    const nextId = playersArr[(idx + 1) % playersArr.length];
+    await db.ref(`rooms/${roomId}`).update({ currentPlayerId: nextId });
+    messageBoxDiv.innerHTML = `<i class="fas fa-forward"></i> Ход пропущен → ход переходит следующему игроку`;
+}
+
+async function startComplaint() {
+    if (!roomId || !lastWord || myId === lastWordAuthor || complaintActive || myId !== currentPlayerId) return;
+    await db.ref(`rooms/${roomId}/complaint`).set({ word: lastWord, authorId: lastWordAuthor, votesYes: [], votesNo: [] });
+    messageBoxDiv.innerHTML = `<i class="fas fa-gavel"></i> Жалоба отправлена! Начинается голосование!`;
+}
+
+window.castVote = async (type) => {
+    if (!complaintActive || !roomId) return;
+    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { messageBoxDiv.textContent = 'Вы уже проголосовали'; return; }
+    const roomRef = db.ref(`rooms/${roomId}`);
+    if (type === 'yes') {
+        await roomRef.child('complaint/votesYes').set([...complaintData.votesYes, myId]);
+        messageBoxDiv.textContent = '✅ Вы проголосовали ЗА удаление слова';
+    } else {
+        await roomRef.child('complaint/votesNo').set([...complaintData.votesNo, myId]);
+        messageBoxDiv.textContent = '❌ Вы проголосовали ПРОТИВ удаления слова';
+    }
+};
+
+async function checkVoteResult() {
+    if (!complaintActive) return;
+    const total = players.length;
+    const totalVotes = complaintData.votesYes.length + complaintData.votesNo.length;
+    if (totalVotes >= total - 1) {
+        const roomRef = db.ref(`rooms/${roomId}`);
+        if (complaintData.votesYes.length > complaintData.votesNo.length) {
+            const author = players.find(p => p.id === complaintData.authorId);
+            if (author) {
+                const currentScore = author.score || 0;
+                await roomRef.child(`players/${complaintData.authorId}/score`).set(Math.max(0, currentScore - 1));
+            }
+            const filteredWords = usedWords.filter(w => w !== complaintData.word);
+            await roomRef.update({ usedWords: filteredWords, lastWord: '', lastWordAuthor: null, complaint: null });
+            messageBoxDiv.innerHTML = `<i class="fas fa-balance-scale"></i> Жалоба подтверждена! Слово удалено, автор оштрафован на -1 очко`;
+        } else {
+            await roomRef.child('complaint').set(null);
+            messageBoxDiv.innerHTML = `<i class="fas fa-times-circle"></i> Жалоба отклонена! Слово остаётся в игре`;
+        }
+    }
+}
+
+async function sendChat() {
+    if (!roomId || !myId) return;
+    const text = chatInput.value.trim();
+    if (!text) return;
+    const msg = { sender: myName, senderId: myId, text, timestamp: Date.now() };
+    const msgsRef = db.ref(`rooms/${roomId}/messages`);
+    const snap = await msgsRef.once('value');
+    let arr = snap.val() || [];
+    arr.push(msg);
+    if (arr.length > 50) arr = arr.slice(-50);
+    await msgsRef.set(arr);
+    chatInput.value = '';
+}
+
+function renderChat(messages) {
+    if (!messages.length) { chatMessagesDiv.innerHTML = '<div class="chat-message" style="text-align: center;"><i class="fas fa-comment"></i> Чат пуст, напишите первое сообщение</div>'; return; }
+    let html = '';
+    messages.forEach(m => {
+        const isMine = m.senderId === myId;
+        const time = new Date(m.timestamp).toLocaleTimeString().slice(0, 5);
+        html += `<div class="chat-message ${isMine ? 'mine' : ''}">
+                    <span class="sender">${m.sender}</span>
+                    <span class="time">${time}</span>
+                    <div style="margin-top: 4px;">${m.text}</div>
+                </div>`;
+    });
+    chatMessagesDiv.innerHTML = html;
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+}
+
+// Подключение кнопок
+reconnectBtn.onclick = () => { if(roomId) joinRoom(); else joinRoom(); };
+createBtn.onclick = createRoom;
+joinBtn.onclick = joinRoom;
+submitBtn.onclick = submitWordAction;
+skipBtn.onclick = skipTurnAction;
+complaintBtn.onclick = startComplaint;
+chatSend.onclick = sendChat;
+chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChat(); };
+wordInput.onkeypress = (e) => { if(e.key === 'Enter') submitWordAction(); };
+playerNameInput.onchange = () => { myName = playerNameInput.value.trim() || "Воин"; };
+document.getElementById('avatarFile').onchange = (e) => { 
+    const file = e.target.files[0]; 
+    if(file) { 
+        const url = URL.createObjectURL(file); 
+        myAvatarUrl = url; 
+        myAvatar = '';
+        avatarPreviewDiv.innerHTML = `<img src="${url}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">`; 
+    } 
+};
+
+// YouTube плеер
+let player, isReady = false, isPlaying = false;
+const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(tag);
+window.onYouTubeIframeAPIReady = () => {
+    player = new YT.Player('youtube-player', { height: '0', width: '0', videoId: 'jfKfPfyJRdk', playerVars: { autoplay: 0, controls: 0 },
+        events: { onReady: () => { isReady = true; document.getElementById('playerStatus').innerHTML = '<i class="fas fa-check-circle"></i> Готов к воспроизведению'; },
+                  onStateChange: (e) => { const playPauseBtn = document.getElementById('playPauseBtn'); const playerStatus = document.getElementById('playerStatus');
+                      if (e.data === 1) { isPlaying = true; if(playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза'; if(playerStatus) playerStatus.innerHTML = '<i class="fas fa-music"></i> Сейчас играет: Lo-Fi Radio'; }
+                      else { isPlaying = false; if(playPauseBtn) playPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play';
+                             if(e.data === 0 && playerStatus) playerStatus.innerHTML = '<i class="fas fa-stop-circle"></i> Воспроизведение завершено';
+                             else if(e.data === 2 && playerStatus) playerStatus.innerHTML = '<i class="fas fa-pause-circle"></i> На паузе'; }
+        } }
+    });
+};
+const playPauseBtn = document.getElementById('playPauseBtn');
+const stopBtnYt = document.getElementById('stopBtn');
+if (playPauseBtn) playPauseBtn.onclick = () => { if(isReady) { if(isPlaying) player.pauseVideo(); else player.playVideo(); } else document.getElementById('playerStatus').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Плеер загружается...'; };
+if (stopBtnYt) stopBtnYt.onclick = () => { if(isReady) player.stopVideo(); };
+
+// Тема
+function initTheme() {
+    const savedTheme = localStorage.getItem('gameTheme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.classList.add('light-theme');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+function toggleTheme() {
+    if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('gameTheme', 'light');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('gameTheme', 'dark');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
+document.addEventListener('DOMContentLoaded', () => { initTheme(); document.getElementById('themeToggle').addEventListener('click', toggleTheme); });
+
+// Старт: загружаем словарь и показываем статус
+connectionStatusSpan.textContent = '🟢 Готов к битве';
+function selectAvatar(emo) { 
+    myAvatar = emo; 
+    myAvatarUrl = null; 
+    avatarPreviewDiv.innerHTML = emo; 
+    avatarGridDiv.classList.remove('show');
+}
+selectAvatar('😎');
+
+// Показываем сообщение о загрузке словаря
+messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка словаря Ожегова...';
+loadRussianDictionary().then(() => {
+    if (messageBoxDiv.innerHTML.includes('Загрузка словаря')) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате';
+    }
+}).catch(console.warn);
+</script>
+</body>
+</html>
