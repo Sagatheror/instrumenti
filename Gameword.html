@@ -2333,6 +2333,49 @@ function selectAvatar(emo) {
     avatarPreviewDiv.innerHTML = emo; 
     avatarGridDiv.classList.remove('show');
 }
+function initAvatarGrid() {
+    const emojisForAvatar = [
+        '😀', '😂', '😎', '🤓', '😍', '🥶', '🤯', '🥳',
+        '🦸', '🦹', '🧙', '🐉', '👾', '🤖', '👻', '🎃',
+        '🐺', '🦊', '🐱', '🐼', '🦁', '🐧', '🐨', '🦄', '🐙', '🦇', '🐉', '🦅',
+        '🍕', '🍔', '🌮', '🍣', '🍩', '🍦', '🥑', '🍇', '🍿', '🥨',
+        '🎮', '⚽', '🏀', '🎸', '🎧', '📸', '✈️', '🚀',
+        '🌟', '⭐', '☀️', '🌈', '⚡', '🔥',
+        '👑', '💎', '💰', '🔮', '⚙️', '💡', '🔑', '💀', '🎭', '🎨'
+    ];
+    
+    avatarGridDiv.innerHTML = '';
+    emojisForAvatar.forEach(emo => {
+        const div = document.createElement('div');
+        div.className = 'avatar-option';
+        div.textContent = emo;
+        div.onclick = (e) => {
+            e.stopPropagation();
+            selectAvatar(emo);
+        };
+        avatarGridDiv.appendChild(div);
+    });
+}
+
+// Инициализация аватарок при загрузке
+initAvatarGrid();
+
+// Правильный обработчик для кнопки выбора аватара
+if (avatarSelectorBtn) {
+    avatarSelectorBtn.onclick = (e) => { 
+        e.stopPropagation(); 
+        avatarGridDiv.classList.toggle('show'); 
+    };
+}
+
+// Закрытие панели аватарок при клике вне её
+document.addEventListener('click', function(e) {
+    if (avatarGridDiv && !avatarGridDiv.contains(e.target) && e.target !== avatarSelectorBtn) {
+        avatarGridDiv.classList.remove('show');
+    }
+});
+
+// Убедитесь, что selectAvatar вызывается после инициализации
 selectAvatar('😎');
 
 // Показываем сообщение о загрузке словаря
