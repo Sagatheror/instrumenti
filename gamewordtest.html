@@ -1718,17 +1718,34 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ---------- ЗАГРУЗКА СЛОВАРЯ ОЖЕГОВА С ПАРСИНГОМ СЛОВ ----------
+// ---------- ЗАГРУЗКА СЛОВАРЯ ОЖЕГОВА С ПАРСИНГОМ И ТРАНСЛИТЕРАЦИЕЙ ----------
 let russianDictionary = new Set();
 let dictionaryLoaded = false;
 let dictionaryLoadPromise = null;
 
+// Преобразование латинских букв в русские (для слов типа ABTOP -> АВТОР)
+function latinToCyrillic(word) {
+    const map = {
+        'A': 'А', 'B': 'В', 'C': 'С', 'E': 'Е', 'H': 'Н',
+        'K': 'К', 'M': 'М', 'O': 'О', 'P': 'Р', 'T': 'Т',
+        'X': 'Х', 'Y': 'У', 'a': 'а', 'b': 'в', 'c': 'с',
+        'e': 'е', 'h': 'н', 'k': 'к', 'm': 'м', 'o': 'о',
+        'p': 'р', 't': 'т', 'x': 'х', 'y': 'у'
+    };
+    let result = '';
+    for (let ch of word) {
+        result += map[ch] || ch;
+    }
+    return result;
+}
+
 function normalizeWordForDict(word) {
-    // Убираем всё, кроме букв и дефиса (для составных слов типа "бизнес-ланч")
-    let cleaned = word.replace(/[^а-яёa-z\-]/gi, '').toLowerCase();
+    // Сначала конвертируем латиницу в кириллицу
+    let cyrillic = latinToCyrillic(word);
+    // Убираем всё, кроме букв и дефиса
+    let cleaned = cyrillic.replace(/[^а-яё\-]/gi, '').toLowerCase();
     // Убираем дефис в конце/начале
     cleaned = cleaned.replace(/^-+|-+$/g, '');
-    // Замена ё на е (опционально, но оставим оба варианта)
     return cleaned;
 }
 
@@ -1747,15 +1764,13 @@ async function loadRussianDictionary() {
                 line = line.trim();
                 if (!line) continue;
                 
-                // Ищем слово в начале строки до запятой, точки с запятой, пробела или начала пояснения
-                // Формат: "АБОРДАЖ, -а, м. ..." или "АВТОМОБИЛЬ, -я, м. ..."
-                let match = line.match(/^([А-ЯЁ][А-ЯЁ\-]+)/);
+                // Ищем слово в начале строки до запятой или пробела
+                let match = line.match(/^([A-ZА-ЯЁ][A-ZА-ЯЁ\-]+)/i);
                 if (!match) {
-                    // Если не нашли заглавными, пробуем искать до запятой
                     let commaIndex = line.indexOf(',');
                     if (commaIndex > 0) {
                         let candidate = line.substring(0, commaIndex).trim();
-                        if (/^[А-ЯЁ][А-ЯЁ\-]+$/.test(candidate)) {
+                        if (/^[A-ZА-ЯЁ][A-ZА-ЯЁ\-]+$/i.test(candidate)) {
                             match = [candidate, candidate];
                         }
                     }
@@ -1767,7 +1782,7 @@ async function loadRussianDictionary() {
                     if (word.length >= 2 && /^[а-яё]+(-[а-яё]+)?$/.test(word)) {
                         russianDictionary.add(word);
                         wordCount++;
-                        // Также добавляем вариант с заменой ё на е, если есть ё
+                        // Также добавляем вариант с заменой ё на е
                         if (word.includes('ё')) {
                             russianDictionary.add(word.replace(/ё/g, 'е'));
                         }
@@ -1784,13 +1799,12 @@ async function loadRussianDictionary() {
             }
             
             if (wordCount === 0) {
-                console.warn('Не удалось распарсить ни одного слова, используем fallback');
                 throw new Error('Нет слов');
             }
             
         } catch (error) {
             console.error('❌ Ошибка загрузки или парсинга словаря Ожегова:', error);
-            // Fallback: базовый словарь на 200 частотных слов
+            // Fallback: базовый словарь
             const fallbackWords = [
                 'дом', 'лес', 'мост', 'город', 'река', 'гора', 'поле', 'море', 'окно', 'дверь',
                 'стол', 'стул', 'кровать', 'лампа', 'книга', 'ручка', 'карандаш', 'тетрадь',
@@ -1802,7 +1816,8 @@ async function loadRussianDictionary() {
                 'учитель', 'врач', 'инженер', 'строитель', 'художник', 'музыкант', 'певец',
                 'небо', 'солнце', 'луна', 'звезда', 'облако', 'дождь', 'снег', 'ветер', 'гроза',
                 'утро', 'день', 'вечер', 'ночь', 'понедельник', 'вторник', 'среда', 'нога', 'рука',
-                'голова', 'глаз', 'ухо', 'нос', 'рот', 'зуб', 'волос', 'кожа', 'сердце', 'печень'
+                'голова', 'глаз', 'ухо', 'нос', 'рот', 'зуб', 'волос', 'кожа', 'сердце', 'печень',
+                'автор', 'работа', 'завод', 'трактор', 'компьютер'
             ];
             fallbackWords.forEach(w => russianDictionary.add(w));
             dictionaryLoaded = true;
@@ -1829,11 +1844,8 @@ async function isValidWordWithDictionary(word) {
         return { valid: false, message: '❌ Минимум 2 буквы!' };
     }
     
-    // Нормализация: убираем дефисы, пробелы, ё -> е
     let normalized = clean.replace(/ё/g, 'е');
     let found = russianDictionary.has(normalized);
-    
-    // Если не нашли, пробуем исходный вариант (с ё)
     if (!found && clean !== normalized) {
         found = russianDictionary.has(clean);
     }
