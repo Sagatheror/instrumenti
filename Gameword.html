@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -188,6 +187,7 @@ body::after {
 }
         .chat-messages {
     flex: 1;
+    font-size: 1rem;
     max-height: 400px;
     overflow-y: auto;
     display: flex;
@@ -1542,6 +1542,197 @@ body.dark-theme .emoji-item:hover {
 body.dark-theme .emoji-toggle-btn {
     color: #a8c0ff;
 }
+.notify-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notify-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    gap: 10px;
+}
+.vote-buttons {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.vote-yes-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.vote-no-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.vote-yes-btn:hover, .vote-no-btn:hover {
+    transform: translateY(-2px);
+    gap: 10px;
+}
+
+/* Тёмная тема для кнопок голосования */
+body.dark-theme .vote-yes-btn {
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%) !important;
+}
+
+body.dark-theme .vote-no-btn {
+    background: linear-gradient(135deg, #8b3a3a 0%, #a04a4a 100%) !important;
+}
+.sounds-player {
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border-radius: 24px;
+    padding: 12px;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s ease;
+}
+
+.sounds-toggle-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sounds-toggle-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.05);
+}
+
+.sounds-categories {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.sound-cat-btn {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #495057;
+}
+
+.sound-cat-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-color: transparent;
+}
+
+.sound-cat-btn:hover {
+    transform: translateY(-1px);
+    background: #e9ecef;
+}
+
+.sounds-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sound-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.sound-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.sound-item.active {
+    background: rgba(102, 126, 234, 0.15);
+    border-left: 3px solid #667eea;
+}
+
+.sound-icon {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+}
+
+.sound-info {
+    flex: 1;
+}
+
+.sound-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.sound-volume {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sound-volume input {
+    width: 80px;
+    height: 3px;
+    -webkit-appearance: none;
+    background: #dee2e6;
+    border-radius: 3px;
+    outline: none;
+}
+
+.sound-volume input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.sound-volume span {
+    font-size: 0.7rem;
+    color: #6c757d;
+    min-width: 35px;
+}
+
+/* Тёмная тема */
+body.dark-theme .sounds-player {
+    background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
+    border-color: rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .sound-cat-btn {
+    background: #2a2a3e;
+    color: #e0e0e0;
+    border-color: #3a3a5e;
+}
+
+body.dark-theme .sound-item {
+    background: rgba(42, 42, 62, 0.8);
+}
+
+body.dark-theme .sound-name {
+    color: #e0e0e0;
+}
+
+body.dark-theme .sound-volume input {
+    background: #3a3a5e;
+}
         @media (max-width: 1100px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -1619,6 +1810,23 @@ body.dark-theme .emoji-toggle-btn {
     <i class="fas fa-bolt"></i> Готов к воспроизведению
 </div>
             </div>
+            <div class="sounds-player" style="margin-top: 16px;">
+    <div class="sounds-header" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" id="soundsHeader">
+        <div class="radio-title">
+            <i class="fas fa-tree"></i> Звуки природы
+        </div>
+        <button id="toggleSoundsPanel" class="sounds-toggle-btn" style="background: none; border: none; color: #667eea;">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div id="soundsPanel" style="display: none; margin-top: 12px;">
+        <!-- Список звуков будет заполнен через JS -->
+        <div id="soundsList" class="sounds-list"></div>
+        <div style="font-size: 0.7rem; color: #6c757d; text-align: center; margin-top: 12px; padding: 8px;">
+            <i class="fas fa-info-circle"></i> Нажмите на звук, чтобы включить/выключить
+        </div>
+    </div>
+</div>
         </div>
 
         <!-- Центр игра -->
@@ -1639,6 +1847,9 @@ body.dark-theme .emoji-toggle-btn {
 </div>
                     <button id="reconnectBtn" class="reconnect-btn">
     <i class="fas fa-sync-alt"></i> Переподключиться
+</button>
+<button id="enableNotificationsBtn" class="notify-btn" style="background: linear-gradient(135deg, #28a745, #20c997);">
+    <i class="fas fa-bell"></i> Вкл. уведомления
 </button>
                 </div>
             </div>
@@ -1667,20 +1878,31 @@ body.dark-theme .emoji-toggle-btn {
                 </div>
                 
                 <div class="action-area">
-                    <button class="complaint-btn" id="complaintBtn">
+    <button class="complaint-btn" id="complaintBtn">
         <i class="fas fa-ban"></i> Пожаловаться
     </button>
-                     <button class="skip-btn" id="skipBtn">
+    <button class="skip-btn" id="skipBtn">
         <i class="fas fa-forward"></i> Пропустить ход
     </button>
-                    <div class="vote-status" id="voteStatus" style="display: none;">
-                        <span class="vote-yes-count" id="voteYesCount">0</span>
-                        <span class="vote-no-count" id="voteNoCount">0</span>
-                    </div>
-                    <div class="complaint-count" id="complaintCountDisplay">
-    <i class="fas fa-gavel"></i> <span id="complaintCount">0</span>/<span id="complaintMax">0</span>
+    
+    <!-- НОВЫЙ БЛОК: Кнопки голосования (появляются при жалобе) -->
+    <div class="vote-buttons" id="voteButtons" style="display: none;">
+        <button class="vote-yes-btn" id="voteYesBtn">
+            <i class="fas fa-check-circle"></i> За (удалить слово)
+        </button>
+        <button class="vote-no-btn" id="voteNoBtn">
+            <i class="fas fa-times-circle"></i> Против (оставить слово)
+        </button>
+    </div>
+    
+    <div class="vote-status" id="voteStatus" style="display: none;">
+        <span class="vote-yes-count" id="voteYesCount">0</span>
+        <span class="vote-no-count" id="voteNoCount">0</span>
+    </div>
+    <div class="complaint-count" id="complaintCountDisplay">
+        <i class="fas fa-gavel"></i> <span id="complaintCount">0</span>/<span id="complaintMax">0</span>
+    </div>
 </div>
-                </div>
                 
                 <div class="message-area" id="messageBox">
     <i class="fas fa-fire"></i> Готов к битве слов! Создайте или присоединитесь к комнате
@@ -1891,6 +2113,9 @@ const voteYesSpan = document.getElementById('voteYesCount');
 const voteNoSpan = document.getElementById('voteNoCount');
 const complaintCountSpan = document.getElementById('complaintCountDisplay');
 const wordsHistoryUl = document.getElementById('wordsHistory');
+const voteButtons = document.getElementById('voteButtons');
+const voteYesBtn = document.getElementById('voteYesBtn');
+const voteNoBtn = document.getElementById('voteNoBtn');
 
 // ---------- СМАЙЛИКИ В ЧАТЕ ----------
 const emojiBtn = document.getElementById('emojiBtn');
@@ -2077,19 +2302,11 @@ function renderPlayers() {
     players.forEach(p => {
         const isActiveTurn = (p.id === currentPlayerId && !complaintActive);
         const isMe = (p.id === myId);
-        let voteBadge = '';
-        if (complaintActive && p.id !== complaintData.authorId && isMe && !complaintData.votesYes.includes(myId) && !complaintData.votesNo.includes(myId)) {
-            voteBadge = `<div style="margin-top: 8px;"><button class="vote-btn" onclick="castVote('yes')">✅ За</button><button class="vote-btn" onclick="castVote('no')">❌ Против</button></div>`;
-        } else if (complaintActive && complaintData.votesYes.includes(p.id)) {
-            voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #28a745;">✅ Проголосовал ЗА</div>';
-        } else if (complaintActive && complaintData.votesNo.includes(p.id)) {
-            voteBadge = '<div style="margin-top: 8px; font-size: 0.8rem; color: #dc3545;">❌ Проголосовал ПРОТИВ</div>';
-        }
+        
         html += `<div class="player-card ${isActiveTurn ? 'active' : ''} ${isMe ? 'this-player' : ''}">
                     <div class="player-avatar">${p.avatar || '😎'}</div>
                     <div class="player-name">${p.name} ${isMe ? '(Вы)' : ''}</div>
                     <div class="player-score">🏆 ${p.score || 0}</div>
-                    ${voteBadge}
                 </div>`;
     });
     playersPanelDiv.innerHTML = html || '<div style="text-align: center; padding: 20px;">Нет игроков</div>';
@@ -2101,6 +2318,19 @@ function renderGameUI() {
         voteStatusDiv.style.display = 'flex';
         voteYesSpan.innerText = complaintData.votesYes.length;
         voteNoSpan.innerText = complaintData.votesNo.length;
+        
+        // Управление кнопками голосования
+        if (voteButtons) {
+            const hasVoted = complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId);
+            const isAuthor = complaintData.authorId === myId;
+            // Показываем кнопки только если игрок ещё не голосовал и он не автор слова
+            if (!hasVoted && !isAuthor && complaintActive) {
+                voteButtons.style.display = 'inline-flex';
+            } else {
+                voteButtons.style.display = 'none';
+            }
+        }
+        
         const complaintCountSpan = document.getElementById('complaintCount');
         const complaintMaxSpan = document.getElementById('complaintMax');
         if (complaintCountSpan) complaintCountSpan.innerText = complaintData.votesYes.length + complaintData.votesNo.length;
@@ -2108,13 +2338,18 @@ function renderGameUI() {
         checkVoteResult();
     } else {
         voteStatusDiv.style.display = 'none';
+        if (voteButtons) voteButtons.style.display = 'none';
+        
         const cur = players.find(p => p.id === currentPlayerId);
         if (cur) turnDisplaySpan.innerHTML = `<i class="fas fa-microphone-alt"></i> Ход игрока: ${cur.name}`;
         if (lastWord) {
             lastWordSpan.innerHTML = `«${lastWord.toUpperCase()}»`;
             const needLetter = getLastLetter(lastWord);
             requiredBadge.innerHTML = needLetter ? `<i class="fas fa-font"></i> Нужная буква: "${needLetter.toUpperCase()}"` : '<i class="fas fa-play"></i> Начните игру!';
-        } else { lastWordSpan.innerHTML = '---'; requiredBadge.innerHTML = '🔤 Первое слово любое!'; }
+        } else { 
+            lastWordSpan.innerHTML = '---'; 
+            requiredBadge.innerHTML = '🔤 Первое слово любое!'; 
+        }
     }
     let historyHtml = '';
     if (usedWords.length === 0) historyHtml = '<li style="text-align: center; color: #adb5bd;">⚔️ История пуста</li>';
@@ -2123,7 +2358,41 @@ function renderGameUI() {
     if (myId === currentPlayerId && !complaintActive && roomId) document.getElementById('wordWrapper').classList.add('my-turn-pulse');
     else document.getElementById('wordWrapper').classList.remove('my-turn-pulse');
 }
+if (voteYesBtn) {
+    voteYesBtn.onclick = async () => {
+        if (!complaintActive || !roomId) return;
+        if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { 
+            messageBoxDiv.textContent = 'Вы уже проголосовали'; 
+            return; 
+        }
+        if (complaintData.authorId === myId) {
+            messageBoxDiv.textContent = 'Вы не можете голосовать за своё слово'; 
+            return;
+        }
+        const roomRef = db.ref(`rooms/${roomId}`);
+        await roomRef.child('complaint/votesYes').set([...complaintData.votesYes, myId]);
+        messageBoxDiv.textContent = '✅ Вы проголосовали ЗА удаление слова';
+        if (voteButtons) voteButtons.style.display = 'none';
+    };
+}
 
+if (voteNoBtn) {
+    voteNoBtn.onclick = async () => {
+        if (!complaintActive || !roomId) return;
+        if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { 
+            messageBoxDiv.textContent = 'Вы уже проголосовали'; 
+            return; 
+        }
+        if (complaintData.authorId === myId) {
+            messageBoxDiv.textContent = 'Вы не можете голосовать за своё слово'; 
+            return;
+        }
+        const roomRef = db.ref(`rooms/${roomId}`);
+        await roomRef.child('complaint/votesNo').set([...complaintData.votesNo, myId]);
+        messageBoxDiv.textContent = '❌ Вы проголосовали ПРОТИВ удаления слова';
+        if (voteButtons) voteButtons.style.display = 'none';
+    };
+}
 function updateControls() {
     const isMyTurn = (myId === currentPlayerId && !complaintActive && roomId);
     wordInput.disabled = !isMyTurn;
@@ -2135,10 +2404,46 @@ function updateControls() {
 }
 
 function notifyMyTurn() {
-    if (myId === currentPlayerId && !complaintActive && roomId && !document.hasFocus()) {
-        messageBoxDiv.textContent = '🔔 ВАШ ХОД! Напишите слово!';
-        setTimeout(() => { if (messageBoxDiv.textContent === '🔔 ВАШ ХОД! Напишите слово!') messageBoxDiv.textContent = '🔥 Введите слово и нажмите "ОТВЕТИТЬ"'; }, 3000);
+    if (myId === currentPlayerId && !complaintActive && roomId) {
+        // Находим имя текущего игрока для уведомления
+        const currentPlayer = players.find(p => p.id === currentPlayerId);
+        const playerName = currentPlayer ? currentPlayer.name : "Игрок";
+        
+        // Показываем уведомление Windows
+        showTurnNotification(playerName);
+        
+        // Меняем текст в интерфейсе
+        if (!document.hasFocus()) {
+            messageBoxDiv.textContent = '🔔 ВАШ ХОД! Напишите слово!';
+            setTimeout(() => { 
+                if (messageBoxDiv.textContent === '🔔 ВАШ ХОД! Напишите слово!') {
+                    messageBoxDiv.textContent = '🔥 Введите слово и нажмите "ОТВЕТИТЬ"'; 
+                }
+            }, 3000);
+        } else {
+            messageBoxDiv.textContent = '🔥 Ваш ход! Введите слово';
+        }
     }
+}
+const notifyBtn = document.getElementById('enableNotificationsBtn');
+if (notifyBtn) {
+    notifyBtn.onclick = () => {
+        if (Notification.permission === "default") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    messageBoxDiv.textContent = '✅ Уведомления включены!';
+                    showTurnNotification("Тест");
+                } else {
+                    messageBoxDiv.textContent = '❌ Уведомления отклонены';
+                }
+            });
+        } else if (Notification.permission === "granted") {
+            messageBoxDiv.textContent = '✅ Уведомления уже включены';
+            showTurnNotification("Тест");
+        } else {
+            messageBoxDiv.textContent = '❌ Уведомления заблокированы в настройках браузера';
+        }
+    };
 }
 
 async function submitWordAction() {
@@ -2193,19 +2498,6 @@ async function startComplaint() {
     await db.ref(`rooms/${roomId}/complaint`).set({ word: lastWord, authorId: lastWordAuthor, votesYes: [], votesNo: [] });
     messageBoxDiv.innerHTML = `<i class="fas fa-gavel"></i> Жалоба отправлена! Начинается голосование!`;
 }
-
-window.castVote = async (type) => {
-    if (!complaintActive || !roomId) return;
-    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { messageBoxDiv.textContent = 'Вы уже проголосовали'; return; }
-    const roomRef = db.ref(`rooms/${roomId}`);
-    if (type === 'yes') {
-        await roomRef.child('complaint/votesYes').set([...complaintData.votesYes, myId]);
-        messageBoxDiv.textContent = '✅ Вы проголосовали ЗА удаление слова';
-    } else {
-        await roomRef.child('complaint/votesNo').set([...complaintData.votesNo, myId]);
-        messageBoxDiv.textContent = '❌ Вы проголосовали ПРОТИВ удаления слова';
-    }
-};
 
 async function checkVoteResult() {
     if (!complaintActive) return;
@@ -2356,7 +2648,319 @@ function initAvatarGrid() {
         avatarGridDiv.appendChild(div);
     });
 }
+function showTurnNotification(playerName) {
+    // Проверяем, поддерживает ли браузер уведомления
+    if (!("Notification" in window)) {
+        console.log("Браузер не поддерживает уведомления");
+        return;
+    }
+    
+    // Если разрешение ещё не запрошено, запрашиваем
+    if (Notification.permission === "default") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                sendNotification(playerName);
+            }
+        });
+    } 
+    // Если разрешено, показываем уведомление
+    else if (Notification.permission === "granted") {
+        sendNotification(playerName);
+    }
+    // Если запрещено, ничего не делаем
+    else {
+        console.log("Уведомления запрещены пользователем");
+    }
+}
 
+// Вспомогательная функция для отправки уведомления
+function sendNotification(playerName) {
+    const notification = new Notification("🎮 Ваш ход в игре Слова!", {
+        body: `${playerName}, сейчас ваша очередь! Придумайте слово на букву...`,
+        icon: "https://cdn-icons-png.flaticon.com/512/1946/1946425.png", // можно заменить на свою иконку
+        tag: "word-game-turn", // чтобы не дублировать уведомления
+        requireInteraction: true, // уведомление висит до взаимодействия
+        silent: false,
+        vibrate: [200, 100, 200] // для мобильных устройств
+    });
+    
+    // При клике на уведомление фокусируемся на вкладке с игрой
+    notification.onclick = function() {
+        window.focus();
+        notification.close();
+    };
+    
+    // Автоматически закрыть через 10 секунд
+    setTimeout(() => notification.close(), 10000);
+}
+// ========== ЗВУКИ ДЛЯ ПОГРУЖЕНИЯ (Moodist) ==========
+// ========== ЗВУКИ ДЛЯ ПОГРУЖЕНИЯ (ИСПРАВЛЕННАЯ ВЕРСИЯ) ==========
+class SoundMixer {
+    constructor() {
+        this.sounds = {};
+        this.audioContext = null;
+        this.isInitialized = false;
+    }
+    
+    // Инициализация AudioContext (только по клику пользователя)
+    async initAudioContext() {
+        if (this.isInitialized) return;
+        
+        // Создаём контекст только когда пользователь явно нажал кнопку
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.isInitialized = true;
+        
+        // Важно: контекст изначально приостановлен, пока пользователь не взаимодействовал со страницей
+        if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+        }
+    }
+    
+    // Загрузка звука (без автоматического воспроизведения!)
+    async loadSound(soundId, url, volume = 0.5) {
+        if (this.sounds[soundId]) return this.sounds[soundId];
+        
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            
+            this.sounds[soundId] = {
+                buffer: audioBuffer,
+                source: null,
+                volume: volume,
+                isPlaying: false,
+                gainNode: null
+            };
+            return this.sounds[soundId];
+        } catch (error) {
+            console.error(`Ошибка загрузки звука ${soundId}:`, error);
+            return null;
+        }
+    }
+    
+    // Воспроизведение звука (только по явному вызову)
+    async play(soundId) {
+        const sound = this.sounds[soundId];
+        if (!sound || sound.isPlaying) return;
+        
+        // Убеждаемся, что AudioContext активен
+        if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+        }
+        
+        // Создаём источник
+        const source = this.audioContext.createBufferSource();
+        source.buffer = sound.buffer;
+        source.loop = true;
+        
+        // Создаём узел громкости
+        const gainNode = this.audioContext.createGain();
+        gainNode.gain.value = sound.volume;
+        
+        source.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        source.start();
+        
+        sound.source = source;
+        sound.gainNode = gainNode;
+        sound.isPlaying = true;
+    }
+    
+    // Остановка звука
+    stop(soundId) {
+        const sound = this.sounds[soundId];
+        if (!sound || !sound.isPlaying) return;
+        
+        try {
+            sound.source.stop();
+            sound.source.disconnect();
+            sound.gainNode.disconnect();
+        } catch (e) {
+            console.warn(`Ошибка при остановке ${soundId}:`, e);
+        }
+        
+        sound.source = null;
+        sound.gainNode = null;
+        sound.isPlaying = false;
+    }
+    
+    // Изменение громкости
+    setVolume(soundId, volume) {
+        const sound = this.sounds[soundId];
+        if (!sound) return;
+        
+        sound.volume = Math.max(0, Math.min(1, volume));
+        if (sound.gainNode) {
+            sound.gainNode.gain.value = sound.volume;
+        }
+    }
+    
+    // Переключение звука (вкл/выкл) – только по явному вызову
+    async toggle(soundId) {
+        const sound = this.sounds[soundId];
+        if (!sound) return false;
+        
+        if (sound.isPlaying) {
+            this.stop(soundId);
+            return false;
+        } else {
+            await this.play(soundId);
+            return true;
+        }
+    }
+}
+
+// Библиотека звуков (URL-адреса с Moodist)
+const soundLibrary = {
+    nature: [
+        { id: 'campfire', name: 'Костер', icon: '🔥', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/campfire.mp3' },
+        { id: 'droplets', name: 'Капли', icon: '💧', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/droplets.mp3' },
+        { id: 'howling-wind', name: 'Воющий ветер', icon: '🌬️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/howling-wind.mp3' },
+        { id: 'jungle', name: 'Джунгли', icon: '🌴', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/jungle.mp3' },
+        { id: 'river', name: 'Река', icon: '🏞️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/river.mp3' },
+        { id: 'walk-in-snow', name: 'Ходьба по снегу', icon: '❄️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/walk-in-snow.mp3' },
+        { id: 'walk-on-gravel', name: 'Ходьба по гравию', icon: '🪨', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/walk-on-gravel.mp3' },
+        { id: 'walk-on-leaves', name: 'Ходьба по листьям', icon: '🍂', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/walk-on-leaves.mp3' },
+        { id: 'waterfall', name: 'Водопад', icon: '💦', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/waterfall.mp3' },
+        { id: 'waves', name: 'Волны', icon: '🌊', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/waves.mp3' },
+        { id: 'wind-in-trees', name: 'Ветер в деревьях', icon: '🍃', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/wind-in-trees.mp3' },
+        { id: 'wind', name: 'Ветер', icon: '💨', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/wind.mp3' }
+    ]
+};
+
+// Инициализация микшера
+const soundMixer = new SoundMixer();
+let currentSoundElements = {};
+
+// Функция рендеринга списка звуков
+function renderSounds(category) {
+    const soundsList = document.getElementById('soundsList');
+    if (!soundsList) return;
+    
+    const sounds = soundLibrary.nature;
+    
+    soundsList.innerHTML = '';
+    sounds.forEach(sound => {
+        const soundDiv = document.createElement('div');
+        soundDiv.className = 'sound-item';
+        soundDiv.dataset.soundId = sound.id;
+        
+        soundDiv.innerHTML = `
+            <div class="sound-icon">${sound.icon}</div>
+            <div class="sound-info">
+                <div class="sound-name">${sound.name}</div>
+                <div class="sound-volume">
+                    <input type="range" min="0" max="1" step="0.01" value="0.5" data-sound-id="${sound.id}">
+                    <span>50%</span>
+                </div>
+            </div>
+            <div class="sound-play-btn" data-sound-id="${sound.id}">
+                <i class="fas fa-play-circle" style="font-size: 1.3rem; color: #667eea;"></i>
+            </div>
+        `;
+        
+        // Обработчик клика по звуку (только здесь включается звук!)
+        const playBtn = soundDiv.querySelector('.sound-play-btn');
+        playBtn.onclick = async (e) => {
+            e.stopPropagation();
+            
+            try {
+                // Инициализируем AudioContext при первом клике
+                if (!soundMixer.isInitialized) {
+                    await soundMixer.initAudioContext();
+                    console.log('AudioContext инициализирован');
+                }
+                
+                // Загружаем звук, если ещё не загружен
+                if (!soundMixer.sounds[sound.id]) {
+                    console.log(`Загрузка звука: ${sound.name}`);
+                    await soundMixer.loadSound(sound.id, sound.url, 0.5);
+                }
+                
+                // Переключаем воспроизведение
+                const isPlaying = await soundMixer.toggle(sound.id);
+                
+                // Меняем иконку
+                const icon = playBtn.querySelector('i');
+                if (isPlaying) {
+                    icon.className = 'fas fa-stop-circle';
+                    icon.style.color = '#dc3545';
+                    soundDiv.classList.add('active');
+                    console.log(`🔊 Включен звук: ${sound.name}`);
+                } else {
+                    icon.className = 'fas fa-play-circle';
+                    icon.style.color = '#667eea';
+                    soundDiv.classList.remove('active');
+                    console.log(`🔇 Выключен звук: ${sound.name}`);
+                }
+            } catch (error) {
+                console.error(`Ошибка при воспроизведении ${sound.name}:`, error);
+                const messageBox = document.getElementById('messageBox');
+                if (messageBox) {
+                    messageBox.textContent = `❌ Не удалось воспроизвести звук "${sound.name}". Проверьте подключение к интернету.`;
+                    setTimeout(() => {
+                        if (messageBox.textContent.includes('Не удалось воспроизвести')) {
+                            messageBox.textContent = '🔥 Введите слово и нажмите "ОТВЕТИТЬ"';
+                        }
+                    }, 3000);
+                }
+            }
+        };
+        
+        // Обработчик изменения громкости
+        const volumeSlider = soundDiv.querySelector('input[type="range"]');
+        const volumeSpan = soundDiv.querySelector('.sound-volume span');
+        volumeSlider.oninput = (e) => {
+            const vol = parseFloat(e.target.value);
+            volumeSpan.textContent = Math.round(vol * 100) + '%';
+            if (soundMixer.sounds[sound.id]) {
+                soundMixer.setVolume(sound.id, vol);
+            }
+        };
+        
+        soundsList.appendChild(soundDiv);
+    });
+}
+
+// Инициализация панели звуков
+function initSoundsPanel() {
+    const soundsHeader = document.getElementById('soundsHeader');
+    const soundsPanel = document.getElementById('soundsPanel');
+    const toggleBtn = document.getElementById('toggleSoundsPanel');
+    
+    if (soundsHeader && soundsPanel) {
+        toggleBtn.onclick = () => {
+            if (soundsPanel.style.display === 'none') {
+                soundsPanel.style.display = 'block';
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            } else {
+                soundsPanel.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            }
+        };
+    }
+    
+    // Сразу рендерим звуки природы
+    renderSounds('nature');
+}
+
+
+// Запускаем инициализацию после загрузки DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSoundsPanel);
+} else {
+    initSoundsPanel();
+}
+
+// Останавливаем все звуки при выгрузке страницы
+window.addEventListener('beforeunload', () => {
+    if (soundMixer) {
+        Object.keys(soundMixer.sounds).forEach(id => {
+            soundMixer.stop(id);
+        });
+    }
+});
 // Инициализация аватарок при загрузке
 initAvatarGrid();
 
