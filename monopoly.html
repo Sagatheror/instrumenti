@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Monopoly Online - Мультиплеер</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a2f1f, #030c07);
+            font-family: 'Segoe UI', 'Poppins', 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            display: flex;
+            gap: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        .game-area {
+            flex: 3;
+            min-width: 0;
+        }
+
+        .chat-panel {
+            flex: 1;
+            min-width: 300px;
+            max-width: 360px;
+            background: rgba(30, 25, 20, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 20px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            max-height: 900px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .chat-header h3 {
+            color: #ffcd7e;
+            font-size: 1.3rem;
+        }
+
+        .chat-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 36px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #c9b896;
+            transition: 0.15s;
+        }
+
+        .tab-btn.active {
+            background: #d4af37;
+            color: #2c2c2c;
+        }
+
+        .chat-messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .chat-messages-container.active {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            animation: fadeInUp 0.2s ease;
+        }
+
+        .chat-message.system {
+            border-left: 3px solid #d4af37;
+        }
+
+        .chat-message .sender {
+            color: #ffcd7e;
+            font-weight: bold;
+        }
+
+        .chat-message .text {
+            color: #f0e6d0;
+            word-break: break-word;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #2a2418;
+            border: 1px solid #d4af37;
+            border-radius: 40px;
+            padding: 12px 16px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #d4af37;
+            border: none;
+            border-radius: 40px;
+            padding: 0 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .room-screen {
+            background: linear-gradient(145deg, #fff7ea, #f7ebd2);
+            border-radius: 56px;
+            padding: 40px;
+            text-align: center;
+            max-width: 650px;
+            margin: 30px auto;
+        }
+
+        .room-screen h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 25px;
+        }
+
+        .room-input-group {
+            margin: 20px 0;
+        }
+
+        .room-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            border: 2px solid #d4af37;
+            border-radius: 60px;
+            text-align: center;
+            background: #fffbf0;
+        }
+
+        .room-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .room-btn {
+            background: #d4af37;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .room-btn:active {
+            transform: scale(0.96);
+        }
+
+        .player-name-input-room {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            border: 2px solid #e2caa1;
+            border-radius: 60px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .waiting-players {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9dccd;
+            border-radius: 32px;
+        }
+
+        .start-game-btn-lobby {
+            background: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 30px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start-game-btn-lobby:disabled {
+            background: #888;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .game-wrapper {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 56px;
+            padding: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            background: #f3e5c0;
+            border-radius: 32px;
+            box-shadow: inset 0 0 0 6px #e9d09c;
+            width: min(70vw, 70vh);
+            height: min(70vw, 70vh);
+            margin: 0 auto;
+        }
+
+        .cell {
+            background: radial-gradient(ellipse at 30% 35%, #fff5e6, #ffefd3);
+            border: 1px solid #cfb27c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 3px 1px;
+            position: relative;
+        }
+
+        .color-brown { border-top: 6px solid #9b5e2c; }
+        .color-lightblue { border-top: 6px solid #6fcbdf; }
+        .color-pink { border-top: 6px solid #f77fbe; }
+        .color-orange { border-top: 6px solid #f39c12; }
+        .color-red { border-top: 6px solid #e63946; }
+        .color-yellow { border-top: 6px solid #ffd966; }
+        .color-green { border-top: 6px solid #2ecc71; }
+        .color-blue { border-top: 6px solid #5499ff; }
+        .railroad { border-top: 6px solid #6c6f6c; }
+        .utility { border-top: 6px solid #48c9b0; }
+
+        .owner-token { position: absolute; bottom: 2px; right: 2px; font-size: 0.65rem; background: rgba(0,0,0,0.7); border-radius: 20px; padding: 0px 4px; color: gold; }
+        .players-on-cell { position: absolute; top: 2px; left: 2px; display: flex; gap: 2px; font-size: 0.7rem; background: rgba(0,0,0,0.55); border-radius: 20px; padding: 0px 4px; }
+
+        .game-panel {
+            background: #25201ab3;
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #fcf3e0;
+        }
+
+        .players-info { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .player-card {
+            background: #322a1ed9;
+            border-radius: 28px;
+            padding: 8px 12px;
+            flex: 1;
+            cursor: pointer;
+            border: 2px solid #a8864b;
+        }
+        .player-card.active { background: #6b4e2ad9; border-color: #ffce89; box-shadow: 0 0 0 2px #ffbc60; }
+        .controls { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; align-items: center; }
+        button {
+            background: #ffcd7e;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:active { transform: scale(0.96); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .dice-area { background: #1f1a13b3; padding: 6px 18px; border-radius: 60px; display: inline-flex; align-items: center; gap: 12px; }
+        .dice { font-size: 1.8rem; background: #fcf3e0; color: #2a2418; width: 55px; text-align: center; border-radius: 20px; }
+
+        @media (max-width: 900px) {
+            .app-container { flex-direction: column; }
+            .chat-panel { max-width: 100%; height: 350px; order: 2; }
+            .game-area { order: 1; }
+            .board { width: min(85vw, 85vh); height: min(85vw, 85vh); }
+            .cell-name { font-size: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container" id="appContainer">
+    <div class="game-area" id="gameArea"></div>
+    <div class="chat-panel" id="chatPanel" style="display: none;">
+        <div class="chat-header">
+            <span style="font-size: 1.8rem;">💬</span>
+            <h3>Чат комнаты <span id="roomNameDisplay"></span></h3>
+        </div>
+        <div class="chat-tabs">
+            <button class="tab-btn active" data-tab="player">👥 Игровой чат</button>
+            <button class="tab-btn" data-tab="system">🎲 Лог событий</button>
+        </div>
+        <div class="chat-messages-container" id="playerChatContainer"></div>
+        <div class="chat-messages-container" id="systemChatContainer"></div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Написать сообщение...">
+            <button class="send-btn" id="sendChatBtn">➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== КОНФИГУРАЦИЯ FIREBASE ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPV9-uUkRa-siCKpKYwLDEjV_kd83tHwc",
+        authDomain: "monopoly-multiplayer.firebaseapp.com",
+        projectId: "monopoly-multiplayer",
+        storageBucket: "monopoly-multiplayer.firebasestorage.app",
+        messagingSenderId: "49002223534",
+        appId: "1:49002223534:web:2e1266b6e4450a8923da3f",
+        measurementId: "G-BM5PJ238N2",
+        databaseURL: "https://monopoly-multiplayer-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+    
+    let db = null;
+    
+    function initFirebase() {
+        try {
+            if (firebase.apps.length === 0) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.database();
+            console.log("✅ Firebase подключён");
+            return true;
+        } catch(e) {
+            console.error("❌ Ошибка Firebase:", e);
+            alert("Ошибка подключения к Firebase: " + e.message);
+            return false;
+        }
+    }
+    
+    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+    let currentRoomId = null;
+    let currentPlayerId = null;
+    let currentPlayerName = "";
+    let currentPlayerAvatar = "🐧";
+    let isRoomCreator = false;
+    let gameActive = false;
+    let myTurn = false;
+    let playersMap = new Map();
+    let localGameState = null;
+    let gameStateListener = null;
+    let syncInterval = null;
+    let gameStartedFlag = false;
+    
+    const avatarList = ["🐧", "🐱", "🐶", "🦊", "🐸", "🐼", "🦁", "🐨"];
+    
+    // ========== ПОЛНЫЕ ДАННЫЕ КЛЕТОК ==========
+    const TILES_FULL = [
+        { id: 0, name: "СТАРТ", type: "start", price: 0, color: null },
+        { id: 1, name: "Балтийская ул.", type: "property", price: 60, rent: [2,10,30,90,160,250], color: "brown", houseCost: 50 },
+        { id: 2, name: "Общественная казна", type: "chest", price: 0, color: null },
+        { id: 3, name: "Восточная ул.", type: "property", price: 60, rent: [4,20,60,180,320,450], color: "brown", houseCost: 50 },
+        { id: 4, name: "Налог", type: "tax", price: 0, tax: 200, color: null },
+        { id: 5, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
+        { id: 6, name: "Вермонт авеню", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50 },
+        { id: 7, name: "Шанс", type: "chance", price: 0, color: null },
+        { id: 8, name: "Коннектикут авеню", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50 },
+        { id: 9, name: "Восток авеню", type: "property", price: 120, rent: [8,40,100,300,450,600], color: "lightblue", houseCost: 50 },
+        { id: 10, name: "Тюрьма", type: "jail", price: 0, color: null },
+        { id: 11, name: "Сент-Чарльз пл.", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100 },
+        { id: 12, name: "Электрическая компания", type: "utility", price: 150, rent: [4,10], color: null },
+        { id: 13, name: "Атлантик авеню", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100 },
+        { id: 14, name: "Вирджиния авеню", type: "property", price: 160, rent: [12,60,180,500,700,900], color: "pink", houseCost: 100 },
+        { id: 15, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
+        { id: 16, name: "Стейт авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100 },
+        { id: 17, name: "Общественная казна", type: "chest", price: 0, color: null },
+        { id: 18, name: "Вирджиния авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100 },
+        { id: 19, name: "Сент-Джеймс пл.", type: "property", price: 200, rent: [16,80,220,600,800,1000], color: "orange", houseCost: 100 },
+        { id: 20, name: "Бесплатная парковка", type: "parking", price: 0, color: null },
+        { id: 21, name: "Теннесси авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150 },
+        { id: 22, name: "Шанс", type: "chance", price: 0, color: null },
+        { id: 23, name: "Нью-Йорк авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150 },
+        { id: 24, name: "Кентукки авеню", type: "property", price: 220, rent: [20,100,300,750,925,1100], color: "red", houseCost: 150 },
+        { id: 25, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
+        { id: 26, name: "Индиана авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150 },
+        { id: 27, name: "Иллинойс авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150 },
+        { id: 28, name: "Атлантик авеню", type: "property", price: 260, rent: [24,120,360,850,1025,1200], color: "yellow", houseCost: 150 },
+        { id: 29, name: "Водопровод", type: "utility", price: 150, rent: [4,10], color: null },
+        { id: 30, name: "Отправляйтесь в тюрьму", type: "goToJail", price: 0, color: null },
+        { id: 31, name: "Пасифик авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200 },
+        { id: 32, name: "Каролина авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200 },
+        { id: 33, name: "Общественная казна", type: "chest", price: 0, color: null },
+        { id: 34, name: "Пенсильвания авеню", type: "property", price: 320, rent: [28,150,450,1000,1200,1400], color: "green", houseCost: 200 },
+        { id: 35, name: "Шанс", type: "chance", price: 0, color: null },
+        { id: 36, name: "Парк Плейс", type: "property", price: 350, rent: [35,175,500,1100,1300,1500], color: "blue", houseCost: 200 },
+        { id: 37, name: "Налог на роскошь", type: "tax", price: 0, tax: 100, color: null },
+        { id: 38, name: "Бродвей", type: "property", price: 400, rent: [50,200,600,1400,1700,2000], color: "blue", houseCost: 200 },
+        { id: 39, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null }
+    ];
+    
+    // Карты шанса и общественной казны
+    const CHANCE_CARDS = [
+        { text: "Продвиньтесь до СТАРТА", type: "move", value: 0 },
+        { text: "Банк выплачивает вам дивиденды $50", type: "money", value: 50 },
+        { text: "Ваша постройка окупается, получите $100", type: "money", value: 100 },
+        { text: "Отправляйтесь вперёд на 3 клетки", type: "moveForward", value: 3 },
+        { text: "Штраф за превышение скорости $15", type: "money", value: -15 },
+        { text: "Платите за страхование $20", type: "money", value: -20 }
+    ];
+    
+    const CHEST_CARDS = [
+        { text: "Вы выиграли в лотерею $100", type: "money", value: 100 },
+        { text: "Ошибка в вашу пользу, получите $50", type: "money", value: 50 },
+        { text: "Оплатите счёт за доктора $50", type: "money", value: -50 },
+        { text: "Благотворительность $25", type: "money", value: -25 }
+    ];
+    
+    // Позиции на доске 11x11
+    const positionsMap = new Array(40);
+    const layout = [];
+    for(let i = 0; i < 11; i++) layout.push([0, i]);
+    for(let i = 1; i < 11; i++) layout.push([i, 10]);
+    for(let i = 9; i >= 0; i--) layout.push([10, i]);
+    for(let i = 9; i >= 1; i--) layout.push([i, 0]);
+    for(let i = 0; i < 40; i++) positionsMap[i] = layout[i];
+    
+    // ========== ЭКРАН КОМНАТЫ ==========
+    function showRoomScreen() {
+        document.getElementById("chatPanel").style.display = "none";
+        document.getElementById("gameArea").innerHTML = `
+            <div class="room-screen">
+                <h1>🎩 MONOPOLY ONLINE</h1>
+                <div class="room-input-group">
+                    <input type="text" id="playerNameInput" class="player-name-input-room" placeholder="Ваше имя" value="Игрок${Math.floor(Math.random()*100)}">
+                </div>
+                <div class="avatar-selector" id="roomAvatarSelector" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0;"></div>
+                <div class="room-input-group">
+                    <input type="text" id="customRoomId" class="room-input" placeholder="Название комнаты (оставьте пустым для генерации)">
+                </div>
+                <div class="room-buttons">
+                    <button class="room-btn" id="createRoomBtn">✨ Создать комнату</button>
+                    <button class="room-btn" id="joinRoomBtn">🔗 Подключиться</button>
+                </div>
+                <input type="text" id="roomIdInput" class="room-input" placeholder="Или введите ID комнаты для подключения">
+                <div id="roomStatus"></div>
+            </div>
+        `;
+        
+        const avatarContainer = document.getElementById("roomAvatarSelector");
+        avatarList.forEach((av, idx) => {
+            const div = document.createElement("div");
+            div.className = "avatar-option";
+            div.style.cssText = "font-size:2rem; cursor:pointer; padding:8px; border-radius:50px; background:#f2e5d4; width:55px; text-align:center; transition:0.1s;";
+            div.innerText = av;
+            div.onclick = () => {
+                document.querySelectorAll("#roomAvatarSelector .avatar-option").forEach(el => el.style.background = "#f2e5d4");
+                div.style.background = "#ffcd7e";
+                currentPlayerAvatar = av;
+            };
+            if(idx === 0) div.style.background = "#ffcd7e";
+            avatarContainer.appendChild(div);
+        });
+        currentPlayerAvatar = "🐧";
+        
+        document.getElementById("createRoomBtn").onclick = () => createRoom();
+        document.getElementById("joinRoomBtn").onclick = () => joinRoom();
+    }
+    
+    // ========== СОЗДАНИЕ КОМНАТЫ ==========
+    async function createRoom() {
+        if (!initFirebase()) return;
+        
+        currentPlayerName = document.getElementById("playerNameInput").value.trim() || "Аноним";
+        let customId = document.getElementById("customRoomId").value.trim();
+        
+        if (customId) {
+            customId = customId.toUpperCase().replace(/[^A-Z0-9]/g, "");
+            if (customId.length < 3) {
+                alert("Название комнаты должно содержать минимум 3 символа");
+                return;
+            }
+            currentRoomId = customId;
+        } else {
+            currentRoomId = generateRoomId();
+        }
+        
+        currentPlayerId = generatePlayerId();
+        isRoomCreator = true;
+        gameStartedFlag = false;
+        
+        const roomRef = db.ref(`rooms/${currentRoomId}`);
+        const snapshot = await roomRef.get();
+        if (snapshot.exists()) {
+            alert(`Комната "${currentRoomId}" уже существует!`);
+            return;
+        }
+        
+        const roomData = {
+            id: currentRoomId,
+            creatorId: currentPlayerId,
+            players: {
+                [currentPlayerId]: {
+                    id: currentPlayerId,
+                    name: currentPlayerName,
+                    avatar: currentPlayerAvatar,
+                    joinedAt: Date.now()
+                }
+            },
+            gameState: null,
+            createdAt: Date.now(),
+            status: "waiting",
+            gameStarted: false
+        };
+        
+        try {
+            await roomRef.set(roomData);
+            console.log("✅ Комната создана");
+            setupGameListeners();
+            showGameLobby();
+        } catch(e) {
+            alert("Ошибка создания: " + e.message);
+        }
+    }
+    
+    // ========== ПОДКЛЮЧЕНИЕ ==========
+    async function joinRoom() {
+        if (!initFirebase()) return;
+        
+        const roomId = document.getElementById("roomIdInput").value.trim();
+        if (!roomId) {
+            alert("Введите ID комнаты");
+            return;
+        }
+        
+        currentPlayerName = document.getElementById("playerNameInput").value.trim() || "Аноним";
+        currentRoomId = roomId.toUpperCase();
+        currentPlayerId = generatePlayerId();
+        isRoomCreator = false;
+        gameStartedFlag = false;
+        
+        const roomRef = db.ref(`rooms/${currentRoomId}`);
+        const snapshot = await roomRef.get();
+        
+        if (!snapshot.exists()) {
+            alert(`Комната "${currentRoomId}" не найдена!`);
+            return;
+        }
+        
+        const room = snapshot.val();
+        if (room.gameStarted) {
+            alert("Игра уже началась!");
+            return;
+        }
+        
+        const playerCount = Object.keys(room.players || {}).length;
+        if (playerCount >= 4) {
+            alert("Комната полна (максимум 4 игрока)");
+            return;
+        }
+        
+        try {
+            await roomRef.child(`players/${currentPlayerId}`).set({
+                id: currentPlayerId,
+                name: currentPlayerName,
+                avatar: currentPlayerAvatar,
+                joinedAt: Date.now()
+            });
+            console.log("✅ Подключено к комнате");
+            setupGameListeners();
+            showGameLobby();
+        } catch(e) {
+            alert("Ошибка подключения: " + e.message);
+        }
+    }
+    
+    function generateRoomId() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+    
+    function generatePlayerId() {
+        return Date.now() + "-" + Math.random().toString(36).substring(2, 8);
+    }
+    
+    // ========== НАСТРОЙКА СЛУШАТЕЛЕЙ ==========
+    function setupGameListeners() {
+        const roomRef = db.ref(`rooms/${currentRoomId}`);
+        
+        roomRef.child("players").on("value", (snapshot) => {
+            const players = snapshot.val() || {};
+            playersMap.clear();
+            const playerList = [];
+            for (let id in players) {
+                playersMap.set(id, players[id]);
+                playerList.push(players[id]);
+            }
+            if (!gameStartedFlag && !localGameState) {
+                updateLobbyPlayers(playerList);
+            }
+        });
+        
+        if (gameStateListener) {
+            gameStateListener.off();
+        }
+        
+        gameStateListener = roomRef.child("gameState");
+        gameStateListener.on("value", (snapshot) => {
+            const state = snapshot.val();
+            console.log("📡 gameState обновлён:", state ? "есть данные" : "нет данных");
+            
+            if (!state) return;
+            
+            if (state.gameStarted === true) {
+                if (!state.players || !Array.isArray(state.players) || state.players.length === 0) {
+                    console.log("⏳ Ждем загрузки players...");
+                    return;
+                }
+                
+                console.log("✅ Игроки загружены:", state.players.length);
+                gameStartedFlag = true;
+                localGameState = state;
+                gameActive = true;
+                myTurn = (state.currentPlayer === currentPlayerId);
+                renderGameFromState();
+            } else if (!state.gameStarted && gameStartedFlag) {
+                gameStartedFlag = false;
+                localGameState = null;
+                showGameLobby();
+            }
+        });
+        
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(async () => {
+            if (gameStartedFlag) return;
+            
+            const snapshot = await roomRef.child("gameState").get();
+            const state = snapshot.val();
+            if (state && state.gameStarted === true && state.players && state.players.length > 0 && !gameStartedFlag) {
+                console.log("🔄 Принудительная синхронизация: загружаем игру");
+                gameStartedFlag = true;
+                localGameState = state;
+                gameActive = true;
+                myTurn = (state.currentPlayer === currentPlayerId);
+                renderGameFromState();
+            }
+        }, 2000);
+        
+        roomRef.child("chat").on("child_added", (snapshot) => {
+            const msg = snapshot.val();
+            if (msg && msg.type === "player") {
+                addPlayerMessageUI(msg.sender, msg.text);
+            } else if (msg && msg.type === "system") {
+                addSystemMessageUI(msg.text);
+            }
+        });
+    }
+    
+    function updateLobbyPlayers(players) {
+        const statusDiv = document.getElementById("roomStatus");
+        if (!statusDiv) return;
+        
+        const canStart = players.length >= 2 && players.length <= 4;
+        
+        statusDiv.innerHTML = `<div class="waiting-players">
+            <h3>👥 В комнате (${players.length}/4):</h3>
+            ${players.map(p => `<p>${p.avatar} ${p.name} ${p.id === currentPlayerId ? '(Вы)' : ''}</p>`).join('')}
+            <p style="margin-top:10px;">${players.length < 2 ? '⏳ Ожидание игроков... (нужно минимум 2)' : '✅ Достаточно игроков!'}</p>
+            ${isRoomCreator ? `<button id="startGameBtn" class="start-game-btn-lobby" ${!canStart ? 'disabled' : ''}>🚀 СТАРТ ИГРЫ</button>` : `<p style="margin-top:10px; color:#d4af37;">🎲 Ожидайте начала игры от создателя комнаты...</p>`}
+        </div>`;
+        
+        if (isRoomCreator) {
+            const startBtn = document.getElementById("startGameBtn");
+            if (startBtn) {
+                startBtn.onclick = () => startGameManually();
+            }
+        }
+    }
+    
+    function showGameLobby() {
+        document.getElementById("chatPanel").style.display = "flex";
+        document.getElementById("roomNameDisplay").innerText = currentRoomId;
+        document.getElementById("gameArea").innerHTML = `
+            <div class="game-wrapper">
+                <div style="text-align:center; padding:50px; background:rgba(0,0,0,0.5); border-radius:48px;">
+                    <h2 style="color:#ffcd7e;">🎲 ЛОББИ</h2>
+                    <p style="color:white;">ID комнаты: <strong style="font-size:1.5rem;">${currentRoomId}</strong></p>
+                    <p style="color:white;">Поделитесь этим кодом с друзьями!</p>
+                    <div id="roomStatus"></div>
+                </div>
+            </div>
+        `;
+        
+        db.ref(`rooms/${currentRoomId}/players`).get().then(snapshot => {
+            const players = snapshot.val() || {};
+            updateLobbyPlayers(Object.values(players));
+        });
+    }
+    
+    // ========== ЗАПУСК ИГРЫ ==========
+    async function startGameManually() {
+        if (!isRoomCreator) {
+            addSystemMessageUI("Только создатель комнаты может начать игру!");
+            return;
+        }
+        
+        const players = Array.from(playersMap.values());
+        if (players.length < 2) {
+            alert("Нужно минимум 2 игрока для начала игры!");
+            return;
+        }
+        
+        addSystemMessageUI("🎮 Создатель комнаты начинает игру!");
+        
+        const gamePlayers = players.map((p, idx) => ({
+            id: p.id,
+            name: p.name,
+            avatar: p.avatar,
+            money: 1500,
+            position: 0,
+            properties: [],
+            houses: {}, // { tileId: количество домов (0-5, где 5 = отель) }
+            inJail: false,
+            jailTurns: 0,
+            order: idx
+        }));
+        
+        const initialState = {
+            gameStarted: true,
+            players: gamePlayers,
+            currentPlayer: gamePlayers[0].id,
+            diceRolled: false,
+            currentDiceSum: 0,
+            doublesCount: 0,
+            waitingForPurchase: false,
+            purchaseTileId: null,
+            lastUpdate: Date.now()
+        };
+        
+        const roomRef = db.ref(`rooms/${currentRoomId}`);
+        
+        try {
+            await roomRef.update({
+                gameStarted: true,
+                gameState: initialState
+            });
+            
+            addSystemMessageUI("🎉 Игра началась! Ход первого игрока!");
+            
+            gameStartedFlag = true;
+            localGameState = initialState;
+            gameActive = true;
+            myTurn = (initialState.currentPlayer === currentPlayerId);
+            renderGameFromState();
+        } catch(e) {
+            console.error("Ошибка при старте игры:", e);
+            addSystemMessageUI("❌ Ошибка при старте игры!");
+        }
+    }
+    
+    // ========== ОТРИСОВКА ИГРЫ ==========
+    function renderGameFromState() {
+        if (!localGameState) {
+            console.log("Нет состояния игры для отображения");
+            return;
+        }
+        
+        if (!localGameState.players || !Array.isArray(localGameState.players)) {
+            console.log("Нет players в состоянии игры, ждем загрузки...", localGameState);
+            return;
+        }
+        
+        if (localGameState.players.length === 0) {
+            console.log("players пустой, ждем загрузки...");
+            return;
+        }
+        
+        console.log("🎨 Рендеринг игры...", localGameState.players.length, "игроков");
+        const players = localGameState.players;
+        const currentPlayerIdGame = localGameState.currentPlayer;
+        
+        let boardHtml = `<div class="board" id="board">`;
+        for(let i = 0; i < 40; i++) {
+            const tile = TILES_FULL[i];
+            const [row, col] = positionsMap[i];
+            let colorClass = "";
+            if (tile.color) colorClass = `color-${tile.color}`;
+            if (tile.type === "railroad") colorClass = "railroad";
+            if (tile.type === "utility") colorClass = "utility";
+            
+            const playersOnCell = players.filter(p => p && p.position === i);
+            const playersAvatars = playersOnCell.map(p => p.avatar || "?").join('');
+            
+            const owner = players.find(p => p.properties && p.properties.includes(i));
+            const housesCount = owner?.houses?.[i] || 0;
+            const housesDisplay = housesCount > 0 ? (housesCount === 5 ? '🏨' : '🏠'.repeat(housesCount)) : '';
+            
+            boardHtml += `<div class="cell ${colorClass}" style="grid-row:${row+1};grid-column:${col+1}">
+                <div class="cell-name">${tile.name.length > 12 ? tile.name.substring(0,10)+".." : tile.name}</div>
+                ${tile.price ? `<div class="cell-price">$${tile.price}</div>` : ''}
+                ${owner ? `<div class="owner-token">👑 ${owner.avatar} ${housesDisplay}</div>` : ''}
+                <div class="players-on-cell">${playersAvatars}</div>
+            </div>`;
+        }
+        boardHtml += `</div>`;
+        
+        const playersHtml = players.map(p => {
+            if (!p) return '';
+            return `
+                <div class="player-card ${currentPlayerIdGame === p.id ? 'active' : ''}" onclick="selectPlayerForBuilding('${p.id}')">
+                    <div class="player-name">${p.avatar || '?'} ${p.name || '???'}</div>
+                    <div class="player-money">💰 $${p.money || 0}</div>
+                    <div>🏠 ${(p.properties && p.properties.length) || 0}</div>
+                    ${p.id === currentPlayerId && myTurn ? '<span style="font-size:0.7rem;">🎲 ВАШ ХОД</span>' : ''}
+                </div>
+            `;
+        }).join('');
+        
+        const chatPanel = document.getElementById("chatPanel");
+        if (chatPanel && chatPanel.style.display === "none") {
+            chatPanel.style.display = "flex";
+        }
+        
+        // Диалог покупки недвижимости
+        let purchaseDialog = '';
+        if (localGameState.waitingForPurchase && myTurn) {
+            const tile = TILES_FULL[localGameState.purchaseTileId];
+            if (tile && tile.price > 0) {
+                purchaseDialog = `
+                    <div style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#2a2418; padding:20px; border-radius:20px; z-index:1000; border:2px solid #d4af37;">
+                        <h3 style="color:#ffcd7e;">Купить ${tile.name}?</h3>
+                        <p style="color:white;">Цена: $${tile.price}</p>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button id="buyPropertyBtn">✅ Купить</button>
+                            <button id="skipPurchaseBtn">❌ Пропустить</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Меню улучшений (показывается когда выбран игрок и ход не закончен)
+        let upgradeMenu = '';
+        if (selectedPlayerForBuilding === currentPlayerId && myTurn && !localGameState.diceRolled) {
+            const player = players.find(p => p.id === currentPlayerId);
+            const ownProperties = player?.properties || [];
+            const upgradableProperties = ownProperties.filter(propId => {
+                const tile = TILES_FULL[propId];
+                return tile.type === "property";
+            });
+            
+            if (upgradableProperties.length > 0) {
+                upgradeMenu = `
+                    <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#2a2418; padding:15px; border-radius:20px; z-index:1000; border:2px solid #d4af37; min-width:300px;">
+                        <h3 style="color:#ffcd7e; margin-bottom:10px;">🏗️ Улучшение недвижимости</h3>
+                        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                            ${upgradableProperties.map(propId => {
+                                const tile = TILES_FULL[propId];
+                                const currentHouses = player.houses?.[propId] || 0;
+                                const canUpgrade = currentHouses < 5;
+                                const upgradeCost = tile.houseCost;
+                                const canAfford = player.money >= upgradeCost;
+                                const upgradeText = currentHouses === 5 ? 'Максимум' : (currentHouses === 4 ? '🏨 Отель' : `🏠 Дом ${currentHouses+1}/4`);
+                                
+                                return `
+                                    <div style="text-align:center; padding:10px; background:#3a3022; border-radius:15px;">
+                                        <div>${tile.name}</div>
+                                        <div>${currentHouses === 5 ? '🏨' : '🏠'.repeat(currentHouses) || '🚫'}</div>
+                                        <div style="font-size:0.8rem;">Стоимость: $${upgradeCost}</div>
+                                        <button onclick="upgradeProperty(${propId})" ${!canUpgrade || !canAfford ? 'disabled' : ''} style="margin-top:5px; padding:5px 10px; font-size:0.8rem;">
+                                            ${upgradeText}
+                                        </button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <button onclick="closeUpgradeMenu()" style="margin-top:10px; width:100%;">Закрыть</button>
+                    </div>
+                `;
+            }
+        }
+        
+        document.getElementById("gameArea").innerHTML = `
+            <div class="game-wrapper">
+                ${boardHtml}
+                <div class="game-panel">
+                    <div class="players-info">${playersHtml}</div>
+                    <div class="controls">
+                        <button id="rollBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🎲 Бросить кубики</button>
+                        <button id="endTurnBtn" ${!myTurn || !localGameState.diceRolled ? 'disabled' : ''}>➡️ Закончить ход</button>
+                        <div class="dice-area"><span>🎲 Кубики:</span><span class="dice">${localGameState.currentDiceSum || '⚀⚀'}</span></div>
+                    </div>
+                </div>
+                ${purchaseDialog}
+                ${upgradeMenu}
+            </div>
+        `;
+        
+        const rollBtn = document.getElementById("rollBtn");
+        const endTurnBtn = document.getElementById("endTurnBtn");
+        
+        if (rollBtn) {
+            rollBtn.addEventListener("click", () => rollDice());
+        }
+        if (endTurnBtn) {
+            endTurnBtn.addEventListener("click", () => endTurn());
+        }
+        
+        if (localGameState.waitingForPurchase && myTurn) {
+            const buyBtn = document.getElementById("buyPropertyBtn");
+            const skipBtn = document.getElementById("skipPurchaseBtn");
+            if (buyBtn) buyBtn.addEventListener("click", () => buyProperty());
+            if (skipBtn) skipBtn.addEventListener("click", () => skipPurchase());
+        }
+    }
+    
+    // Переменная для выбранного игрока для улучшений
+    let selectedPlayerForBuilding = null;
+    
+    function selectPlayerForBuilding(playerId) {
+        if (playerId === currentPlayerId && myTurn && !localGameState?.diceRolled) {
+            selectedPlayerForBuilding = playerId;
+            renderGameFromState();
+        }
+    }
+    
+    function closeUpgradeMenu() {
+        selectedPlayerForBuilding = null;
+        renderGameFromState();
+    }
+    
+    async function upgradeProperty(tileId) {
+        if (!myTurn || localGameState.diceRolled) return;
+        
+        const state = {...localGameState};
+        const playerIndex = state.players.findIndex(p => p.id === currentPlayerId);
+        if (playerIndex === -1) return;
+        
+        const player = state.players[playerIndex];
+        const tile = TILES_FULL[tileId];
+        const currentHouses = player.houses?.[tileId] || 0;
+        
+        if (currentHouses >= 5) {
+            addSystemMessageUI("Уже максимальный уровень!");
+            return;
+        }
+        
+        const upgradeCost = tile.houseCost;
+        
+        if (player.money < upgradeCost) {
+            addSystemMessageUI(`Не хватает денег! Нужно $${upgradeCost}`);
+            return;
+        }
+        
+        // Проверка на владение всей цветовой группой
+        const colorGroup = tile.color;
+        const sameColorProperties = TILES_FULL.filter(t => t.color === colorGroup && t.type === "property").map(t => t.id);
+        const ownsAllGroup = sameColorProperties.every(propId => player.properties.includes(propId));
+        
+        if (!ownsAllGroup) {
+            addSystemMessageUI(`Нужно владеть всеми улицами цвета ${colorGroup} для улучшения!`);
+            return;
+        }
+        
+        // Проверка на равномерность застройки
+        for (let propId of sameColorProperties) {
+            const housesOnProp = player.houses?.[propId] || 0;
+            if (housesOnProp < currentHouses) {
+                addSystemMessageUI("Улицы в цветовой группе должны быть застроены равномерно!");
+                return;
+            }
+        }
+        
+        // Покупаем улучшение
+        player.money -= upgradeCost;
+        if (!player.houses) player.houses = {};
+        player.houses[tileId] = currentHouses + 1;
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({
+            players: state.players
+        });
+        
+        addSystemMessageUI(`${player.avatar} улучшил ${tile.name} до уровня ${player.houses[tileId]} ${player.houses[tileId] === 5 ? '🏨' : '🏠'}`);
+        
+        selectedPlayerForBuilding = null;
+        renderGameFromState();
+    }
+    
+    // ========== ИГРОВЫЕ ДЕЙСТВИЯ ==========
+    async function rollDice() {
+        if (!myTurn || localGameState.diceRolled) return;
+        
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
+        const sum = d1 + d2;
+        const isDouble = (d1 === d2);
+        
+        const newState = {...localGameState};
+        newState.diceRolled = true;
+        newState.currentDiceSum = sum;
+        newState.lastUpdate = Date.now();
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update(newState);
+        addSystemMessageUI(`${getCurrentPlayer()?.avatar || "Игрок"} бросил ${d1}+${d2}=${sum} ${isDouble ? '(ДУБЛЬ!)' : ''}`);
+        
+        setTimeout(() => movePlayerAfterRoll(sum, isDouble), 500);
+    }
+    
+    async function movePlayerAfterRoll(steps, isDouble) {
+        if (!localGameState) return;
+        
+        const state = {...localGameState};
+        const playerIndex = state.players.findIndex(p => p.id === currentPlayerId);
+        if (playerIndex === -1) return;
+        
+        const player = state.players[playerIndex];
+        let oldPos = player.position;
+        let newPos = (player.position + steps) % 40;
+        let passedGo = newPos < oldPos;
+        
+        if (passedGo) {
+            player.money += 200;
+            addSystemMessageUI(`${player.avatar} прошёл СТАРТ +$200`);
+        }
+        
+        player.position = newPos;
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+        addSystemMessageUI(`${player.avatar} переместился на клетку ${TILES_FULL[newPos].name}`);
+        
+        setTimeout(() => handleTileEffect(newPos, isDouble), 300);
+    }
+    
+    async function handleTileEffect(tileId, isDouble) {
+        if (!localGameState) return;
+        
+        const state = {...localGameState};
+        const playerIndex = state.players.findIndex(p => p.id === currentPlayerId);
+        if (playerIndex === -1) return;
+        
+        const player = state.players[playerIndex];
+        const tile = TILES_FULL[tileId];
+        
+        const owner = state.players.find(p => p.properties && p.properties.includes(tileId));
+        
+        switch(tile.type) {
+            case "property":
+            case "railroad":
+            case "utility":
+                if (owner && owner.id !== currentPlayerId) {
+                    // Расчёт аренды с учётом домов
+                    let rent = 0;
+                    if (tile.type === "property") {
+                        const houses = owner.houses?.[tileId] || 0;
+                        rent = tile.rent[houses] || tile.rent[0];
+                    } else if (tile.type === "railroad") {
+                        const railroadsOwned = owner.properties.filter(id => TILES_FULL[id].type === "railroad").length;
+                        rent = tile.rent[railroadsOwned - 1] || 25;
+                    } else if (tile.type === "utility") {
+                        const utilitiesOwned = owner.properties.filter(id => TILES_FULL[id].type === "utility").length;
+                        const diceSum = state.currentDiceSum || 4;
+                        rent = tile.rent[utilitiesOwned - 1] * diceSum;
+                    }
+                    
+                    if (player.money >= rent) {
+                        player.money -= rent;
+                        const ownerIndex = state.players.findIndex(p => p.id === owner.id);
+                        state.players[ownerIndex].money += rent;
+                        addSystemMessageUI(`${player.avatar} заплатил аренду ${owner.avatar} $${rent}`);
+                    } else {
+                        addSystemMessageUI(`${player.avatar} БАНКРОТ! Не хватает денег на аренду!`);
+                        player.money = 0;
+                    }
+                    await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                } else if (!owner && player.money >= tile.price) {
+                    await db.ref(`rooms/${currentRoomId}/gameState`).update({
+                        waitingForPurchase: true,
+                        purchaseTileId: tileId
+                    });
+                    renderGameFromState();
+                    return;
+                }
+                break;
+                
+            case "tax":
+                const tax = tile.tax || 100;
+                player.money -= tax;
+                addSystemMessageUI(`${player.avatar} заплатил налог $${tax}`);
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                break;
+                
+            case "chance":
+                const chanceCard = CHANCE_CARDS[Math.floor(Math.random() * CHANCE_CARDS.length)];
+                addSystemMessageUI(`🎲 Шанс: ${chanceCard.text}`);
+                await processCardEffect(state, player, chanceCard);
+                break;
+                
+            case "chest":
+                const chestCard = CHEST_CARDS[Math.floor(Math.random() * CHEST_CARDS.length)];
+                addSystemMessageUI(`📦 Общественная казна: ${chestCard.text}`);
+                await processCardEffect(state, player, chestCard);
+                break;
+                
+            case "goToJail":
+                player.position = 10;
+                player.inJail = true;
+                player.jailTurns = 0;
+                addSystemMessageUI(`${player.avatar} отправляется в тюрьму!`);
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({
+                    players: state.players,
+                    diceRolled: true
+                });
+                break;
+        }
+        
+        if (!isDouble) {
+            await endTurnAfterMove();
+        } else {
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({
+                diceRolled: false,
+                waitingForPurchase: false,
+                purchaseTileId: null
+            });
+        }
+    }
+    
+    async function processCardEffect(state, player, card) {
+        switch(card.type) {
+            case "money":
+                player.money += card.value;
+                addSystemMessageUI(`${player.avatar} ${card.value >= 0 ? 'получил' : 'потерял'} $${Math.abs(card.value)}`);
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                break;
+            case "move":
+                player.position = 0;
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                addSystemMessageUI(`${player.avatar} перемещается на СТАРТ`);
+                break;
+            case "moveForward":
+                const newPos = (player.position + card.value) % 40;
+                player.position = newPos;
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                addSystemMessageUI(`${player.avatar} перемещается вперёд на ${card.value} клеток`);
+                break;
+        }
+    }
+    
+    async function buyProperty() {
+        if (!localGameState.waitingForPurchase) return;
+        
+        const state = {...localGameState};
+        const playerIndex = state.players.findIndex(p => p.id === currentPlayerId);
+        const tileId = state.purchaseTileId;
+        const tile = TILES_FULL[tileId];
+        
+        if (playerIndex !== -1 && state.players[playerIndex].money >= tile.price) {
+            state.players[playerIndex].money -= tile.price;
+            if (!state.players[playerIndex].properties) state.players[playerIndex].properties = [];
+            state.players[playerIndex].properties.push(tileId);
+            if (!state.players[playerIndex].houses) state.players[playerIndex].houses = {};
+            state.players[playerIndex].houses[tileId] = 0;
+            addSystemMessageUI(`${state.players[playerIndex].avatar} купил ${tile.name} за $${tile.price}`);
+        }
+        
+        state.waitingForPurchase = false;
+        state.purchaseTileId = null;
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({
+            players: state.players,
+            waitingForPurchase: false,
+            purchaseTileId: null
+        });
+        
+        renderGameFromState();
+    }
+    
+    async function skipPurchase() {
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({
+            waitingForPurchase: false,
+            purchaseTileId: null
+        });
+        renderGameFromState();
+    }
+    
+    async function endTurn() {
+        if (!myTurn) return;
+        await endTurnAfterMove();
+    }
+    
+    async function endTurnAfterMove() {
+        const state = {...localGameState};
+        const players = state.players;
+        const currentIdx = players.findIndex(p => p.id === currentPlayerId);
+        const nextIdx = (currentIdx + 1) % players.length;
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({
+            currentPlayer: players[nextIdx].id,
+            diceRolled: false,
+            currentDiceSum: 0,
+            waitingForPurchase: false,
+            purchaseTileId: null
+        });
+        addSystemMessageUI(`➡️ Ход переходит к ${players[nextIdx].avatar}`);
+        selectedPlayerForBuilding = null;
+    }
+    
+    function getCurrentPlayer() {
+        return localGameState?.players.find(p => p.id === currentPlayerId);
+    }
+    
+    // ========== ЧАТ ==========
+    function addPlayerMessageUI(sender, text) {
+        const container = document.getElementById("playerChatContainer");
+        if (container) {
+            container.innerHTML += `<div class="chat-message"><span class="sender">${sender}:</span> <span class="text">${text}</span></div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+    
+    function addSystemMessageUI(text) {
+        const container = document.getElementById("systemChatContainer");
+        if (container) {
+            container.innerHTML += `<div class="chat-message system"><span class="sender">📢 События:</span> <span class="text">${text}</span></div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+    
+    async function sendChatMessage() {
+        const input = document.getElementById("chatInput");
+        if (!input.value.trim() || !currentRoomId) return;
+        
+        const player = getCurrentPlayer();
+        const senderName = player ? `${player.avatar} ${player.name}` : currentPlayerName;
+        
+        await db.ref(`rooms/${currentRoomId}/chat`).push({
+            type: "player",
+            sender: senderName,
+            text: input.value,
+            timestamp: Date.now()
+        });
+        input.value = "";
+    }
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    function initUI() {
+        showRoomScreen();
+        
+        document.addEventListener("click", (e) => {
+            if (e.target.id === "sendChatBtn") sendChatMessage();
+        });
+        document.addEventListener("keypress", (e) => {
+            if (e.target.id === "chatInput" && e.key === "Enter") sendChatMessage();
+        });
+        
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".chat-messages-container").forEach(c => c.classList.remove("active"));
+                document.getElementById(`${btn.dataset.tab}ChatContainer`).classList.add("active");
+            });
+        });
+        
+        if(document.getElementById("playerChatContainer")) {
+            document.getElementById("playerChatContainer").classList.add("active");
+        }
+        
+        // Глобальные функции для onclick
+        window.selectPlayerForBuilding = selectPlayerForBuilding;
+        window.closeUpgradeMenu = closeUpgradeMenu;
+        window.upgradeProperty = upgradeProperty;
+    }
+    
+    initUI();
+</script>
+</body>
+</html>
