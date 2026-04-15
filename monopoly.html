@@ -617,7 +617,8 @@
     let syncInterval = null;
     let gameStartedFlag = false;
     let activeAuction = null;
-    let activeTradeOffer = null;
+    let auctionListener = null;
+    let pendingTradeOffer = null;
     
     // ========== КОЛЛЕКЦИЯ СМАЙЛИКОВ ==========
     const emojiCategories = {
@@ -748,7 +749,6 @@
         chatInputArea.appendChild(panel);
         emojiPanelVisible = true;
         
-        // Закрытие при клике вне панели
         document.addEventListener('click', function closePanel(e) {
             if (!panel.contains(e.target) && e.target.id !== 'emojiBtn') {
                 panel.remove();
@@ -759,7 +759,7 @@
     }
     
     // ========== МОДАЛЬНЫЕ ОКНА ==========
-    function showModal(title, content, buttons = []) {
+    function showModal(title, content, buttons = [], onClose = null) {
         const existingModal = document.querySelector('.modal-overlay');
         if (existingModal) existingModal.remove();
         
@@ -778,7 +778,10 @@
         document.body.appendChild(modal);
         
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
+            if (e.target === modal) {
+                modal.remove();
+                if (onClose) onClose();
+            }
         });
         
         return modal;
@@ -842,67 +845,154 @@
             { text: '💰 Сделать ставку', class: 'modal-btn-primary', onClick: 'placeBid' },
             { text: '🚪 Выйти', class: 'modal-btn-secondary', onClick: 'closeModal' }
         ]);
+    }
+    
+    function showGlobalAuctionModal(tile, currentBid, currentBidder, endTime) {
+        const content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>🏷️ ${tile.name}</span>
+                    <span>Стартовая цена: $${tile.price}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Текущая ставка:</span>
+                    <span style="color:#ffcd7e;">$${currentBid}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>👤 Лидирует:</span>
+                    <span>${currentBidder || 'Нет ставок'}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>⏱️ Осталось:</span>
+                    <span id="auctionTimerGlobal"></span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Ваш баланс:</span>
+                    <span>$${localGameState?.players.find(p => p.id === currentPlayerId)?.money || 0}</span>
+                </div>
+            </div>
+            <input type="number" id="bidAmountGlobal" class="bid-input" placeholder="Ваша ставка..." min="${currentBid + 1}">
+        `;
         
-        // Инициализируем аукцион в Firebase
-        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
-        auctionRef.set({
-            tileId: tile.id,
-            currentBid: tile.price,
-            currentBidder: null,
-            endTime: Date.now() + 30000, // 30 секунд
-            active: true
-        });
+        showModal(`🔨 АУКЦИОН: ${tile.name}`, content, [
+            { text: '💰 Сделать ставку', class: 'modal-btn-primary', onClick: 'placeGlobalBid' },
+            { text: '🚪 Выйти', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
         
-        activeAuction = {
-            tileId: tile.id,
-            tile: tile,
-            ref: auctionRef
-        };
-        
-        // Слушаем ставки
-        auctionRef.on('value', (snapshot) => {
-            const auction = snapshot.val();
-            if (auction && auction.active) {
-                const bidsDiv = document.getElementById('auctionBids');
-                if (bidsDiv) {
-                    bidsDiv.innerHTML = `
-                        <div class="modal-info-row">
-                            <span>💰 Текущая ставка:</span>
-                            <span style="color:#ffcd7e;">$${auction.currentBid}</span>
-                        </div>
-                        <div class="modal-info-row">
-                            <span>👤 Лидирует:</span>
-                            <span>${auction.currentBidder ? (localGameState?.players.find(p => p.id === auction.currentBidder)?.avatar || 'Игрок') : 'Нет ставок'}</span>
-                        </div>
-                        <div class="modal-info-row">
-                            <span>⏱️ Осталось:</span>
-                            <span id="auctionTimer"></span>
-                        </div>
-                    `;
-                }
-            } else if (auction && !auction.active && auction.winner) {
-                closeModal();
-                const winner = localGameState?.players.find(p => p.id === auction.winner);
-                if (winner) {
-                    addSystemMessageUI(`🏆 Аукцион завершён! ${winner.avatar} выиграл ${TILES_FULL[auction.tileId].name} за $${auction.currentBid}`);
-                    completePurchase(auction.tileId, auction.winner, auction.currentBid);
-                }
-                activeAuction = null;
-            }
-        });
-        
-        // Таймер аукциона
         const timerInterval = setInterval(() => {
-            const timerSpan = document.getElementById('auctionTimer');
-            if (timerSpan && activeAuction) {
-                const timeLeft = Math.max(0, Math.floor((activeAuction.endTime - Date.now()) / 1000));
+            const timerSpan = document.getElementById('auctionTimerGlobal');
+            if (timerSpan) {
+                const timeLeft = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
                 timerSpan.textContent = `${timeLeft} сек`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                 }
             }
         }, 1000);
+        
+        window.globalAuctionTimerInterval = timerInterval;
     }
+    
+    function showTradeRequestModal(offer) {
+        const fromPlayer = localGameState?.players.find(p => p.id === offer.from);
+        const tile = TILES_FULL[offer.propertyId];
+        
+        if (!fromPlayer || !tile) return;
+        
+        const content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>🤝 Предложение от:</span>
+                    <span>${fromPlayer.avatar} ${fromPlayer.name}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>🏠 Недвижимость:</span>
+                    <span>${tile.name}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Цена:</span>
+                    <span style="color:#ffcd7e;">$${offer.price}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Ваш баланс:</span>
+                    <span>${localGameState?.players.find(p => p.id === currentPlayerId)?.money || 0}</span>
+                </div>
+            </div>
+        `;
+        
+        window.pendingTradeOffer = offer;
+        
+        showModal('🤝 ПРЕДЛОЖЕНИЕ ТОРГОВЛИ', content, [
+            { text: '✅ Принять', class: 'modal-btn-primary', onClick: 'acceptTradeOffer' },
+            { text: '❌ Отказать', class: 'modal-btn-danger', onClick: 'declineTradeOffer' }
+        ]);
+    }
+    
+    window.acceptTradeOffer = async function() {
+        if (window.pendingTradeOffer) {
+            await acceptTrade(window.pendingTradeOffer.id, window.pendingTradeOffer);
+            window.pendingTradeOffer = null;
+            closeModal();
+        }
+    };
+    
+    window.declineTradeOffer = async function() {
+        if (window.pendingTradeOffer) {
+            await db.ref(`rooms/${currentRoomId}/tradeOffers/${window.pendingTradeOffer.id}`).update({status: 'declined'});
+            addSystemMessageUI("❌ Вы отклонили предложение о торговле");
+            window.pendingTradeOffer = null;
+            closeModal();
+        }
+    };
+    
+    window.placeGlobalBid = async function() {
+        const bidInput = document.getElementById('bidAmountGlobal');
+        const bid = parseInt(bidInput?.value);
+        if (!bid || isNaN(bid)) {
+            addSystemMessageUI("Введите корректную сумму ставки!");
+            return;
+        }
+        
+        const player = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!player || player.money < bid) {
+            addSystemMessageUI("У вас недостаточно денег для этой ставки!");
+            return;
+        }
+        
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        const snapshot = await auctionRef.get();
+        const auction = snapshot.val();
+        
+        if (auction && auction.active && bid > auction.currentBid) {
+            await auctionRef.update({
+                currentBid: bid,
+                currentBidder: currentPlayerId,
+                lastUpdate: Date.now()
+            });
+            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
+            document.getElementById('bidAmountGlobal').value = '';
+        } else {
+            addSystemMessageUI("Ставка должна быть выше текущей!");
+        }
+    };
+    
+    window.startAuction = async function(tileId) {
+        closeModal();
+        const tile = TILES_FULL[tileId];
+        
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        await auctionRef.set({
+            tileId: tileId,
+            tileName: tile.name,
+            currentBid: tile.price,
+            currentBidder: null,
+            endTime: Date.now() + 30000,
+            active: true,
+            startedBy: currentPlayerId
+        });
+        
+        addSystemMessageUI(`🔨 НАЧАЛСЯ АУКЦИОН на ${tile.name}! Стартовая цена $${tile.price}`);
+    };
     
     window.placeBid = async function() {
         const bidInput = document.getElementById('bidAmount');
@@ -918,195 +1008,75 @@
             return;
         }
         
-        if (activeAuction) {
-            const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
-            const snapshot = await auctionRef.get();
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        const snapshot = await auctionRef.get();
+        const auction = snapshot.val();
+        
+        if (auction && auction.active && bid > auction.currentBid) {
+            await auctionRef.update({
+                currentBid: bid,
+                currentBidder: currentPlayerId,
+                lastUpdate: Date.now()
+            });
+            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
+            document.getElementById('bidAmount').value = '';
+        } else {
+            addSystemMessageUI("Ставка должна быть выше текущей!");
+        }
+    };
+    
+    function setupAuctionListener() {
+        if (auctionListener) {
+            auctionListener.off();
+        }
+        
+        auctionListener = db.ref(`rooms/${currentRoomId}/auction`);
+        auctionListener.on('value', (snapshot) => {
             const auction = snapshot.val();
             
-            if (auction && auction.active && bid > auction.currentBid) {
-                await auctionRef.update({
-                    currentBid: bid,
-                    currentBidder: currentPlayerId,
-                    lastUpdate: Date.now()
-                });
-                addSystemMessageUI(`${player.avatar} предложил $${bid}`);
-                document.getElementById('bidAmount').value = '';
-            } else {
-                addSystemMessageUI("Ставка должна быть выше текущей!");
+            if (auction && auction.active) {
+                const tile = TILES_FULL[auction.tileId];
+                if (tile) {
+                    const currentBidderName = auction.currentBidder ? 
+                        (localGameState?.players.find(p => p.id === auction.currentBidder)?.avatar || 'Игрок') : 'Нет ставок';
+                    
+                    const existingModal = document.querySelector('.modal-overlay');
+                    const isAuctionModal = existingModal && existingModal.innerHTML.includes('АУКЦИОН');
+                    
+                    if (!isAuctionModal && auction.currentBidder !== currentPlayerId) {
+                        showGlobalAuctionModal(tile, auction.currentBid, currentBidderName, auction.endTime);
+                    } else if (isAuctionModal) {
+                        const bidsDiv = document.getElementById('auctionBids');
+                        if (bidsDiv) {
+                            bidsDiv.innerHTML = `
+                                <div class="modal-info-row">
+                                    <span>💰 Текущая ставка:</span>
+                                    <span style="color:#ffcd7e;">$${auction.currentBid}</span>
+                                </div>
+                                <div class="modal-info-row">
+                                    <span>👤 Лидирует:</span>
+                                    <span>${currentBidderName}</span>
+                                </div>
+                                <div class="modal-info-row">
+                                    <span>⏱️ Осталось:</span>
+                                    <span id="auctionTimer"></span>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            } else if (auction && !auction.active && auction.winner) {
+                closeModal();
+                const winner = localGameState?.players.find(p => p.id === auction.winner);
+                if (winner) {
+                    addSystemMessageUI(`🏆 Аукцион завершён! ${winner.avatar} выиграл ${auction.tileName} за $${auction.currentBid}`);
+                    completePurchase(auction.tileId, auction.winner, auction.currentBid);
+                }
+                if (window.globalAuctionTimerInterval) {
+                    clearInterval(window.globalAuctionTimerInterval);
+                }
             }
-        }
-    };
-    
-    window.startAuction = async function(tileId) {
-        closeModal();
-        const tile = TILES_FULL[tileId];
-        showAuctionModal(tile);
-    };
-    
-    function showTradeModal() {
-        if (!localGameState) return;
-        
-        const players = localGameState.players.filter(p => p.id !== currentPlayerId);
-        const currentPlayer = localGameState.players.find(p => p.id === currentPlayerId);
-        
-        let content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>👤 Ваш баланс:</span>
-                    <span style="color:#ffcd7e;">$${currentPlayer.money}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>🏠 Ваша недвижимость:</span>
-                    <span>${currentPlayer.properties?.length || 0} объектов</span>
-                </div>
-            </div>
-            <div class="property-list" id="tradePlayersList">
-                ${players.map(p => `
-                    <div class="property-item" onclick="selectTradePlayer('${p.id}')">
-                        <div class="property-name">${p.avatar} ${p.name}</div>
-                        <div class="property-details">💰 $${p.money} | 🏠 ${p.properties?.length || 0} объектов</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        
-        showModal('🤝 Торговля с игроками', content, [
-            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
-    }
-    
-    window.selectTradePlayer = function(playerId) {
-        const targetPlayer = localGameState?.players.find(p => p.id === playerId);
-        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
-        
-        if (!targetPlayer || !currentPlayer) return;
-        
-        const myProperties = currentPlayer.properties || [];
-        const theirProperties = targetPlayer.properties || [];
-        
-        let content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>🤝 Торговля с ${targetPlayer.avatar} ${targetPlayer.name}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Ваш баланс:</span>
-                    <span>$${currentPlayer.money}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Баланс оппонента:</span>
-                    <span>$${targetPlayer.money}</span>
-                </div>
-            </div>
-            <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость:</h3>
-            <div class="property-list" style="max-height:200px;">
-                ${myProperties.map(propId => {
-                    const tile = TILES_FULL[propId];
-                    return `
-                        <div class="property-item" onclick="offerProperty('${propId}', '${playerId}')">
-                            <div class="property-name">${tile.name}</div>
-                            <div class="property-details">Стоимость: $${tile.price}</div>
-                        </div>
-                    `;
-                }).join('')}
-                ${myProperties.length === 0 ? '<div class="property-details">У вас нет недвижимости для продажи</div>' : ''}
-            </div>
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>💡 Предложение:</span>
-                    <span>Выберите недвижимость для продажи</span>
-                </div>
-            </div>
-            <input type="number" id="tradePrice" class="bid-input" placeholder="Цена продажи..." min="1">
-        `;
-        
-        showModal(`🤝 Торговля с ${targetPlayer.name}`, content, [
-            { text: '📤 Отправить предложение', class: 'modal-btn-primary', onClick: `sendTradeOffer('${playerId}')` },
-            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
-        
-        window.selectedTradeTarget = playerId;
-        window.selectedPropertyForTrade = null;
-    };
-    
-    window.offerProperty = function(propId, targetId) {
-        window.selectedPropertyForTrade = propId;
-        const tile = TILES_FULL[propId];
-        addSystemMessageUI(`Вы выбрали ${tile.name} для продажи игроку`);
-        const priceInput = document.getElementById('tradePrice');
-        if (priceInput) priceInput.focus();
-    };
-    
-    window.sendTradeOffer = async function(targetId) {
-        const propertyId = window.selectedPropertyForTrade;
-        const price = parseInt(document.getElementById('tradePrice')?.value);
-        
-        if (!propertyId) {
-            addSystemMessageUI("Выберите недвижимость для продажи!");
-            return;
-        }
-        
-        if (!price || price <= 0) {
-            addSystemMessageUI("Введите корректную цену!");
-            return;
-        }
-        
-        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
-        if (!currentPlayer) return;
-        
-        const tile = TILES_FULL[propertyId];
-        
-        // Отправляем предложение торговли в Firebase
-        const tradeRef = db.ref(`rooms/${currentRoomId}/tradeOffers`).push({
-            from: currentPlayerId,
-            to: targetId,
-            propertyId: parseInt(propertyId),
-            price: price,
-            timestamp: Date.now(),
-            status: 'pending'
         });
-        
-        addSystemMessageUI(`📨 Предложение отправлено: продажа ${tile.name} за $${price}`);
-        closeModal();
-        
-        // Показываем уведомление получателю
-        const targetPlayer = localGameState.players.find(p => p.id === targetId);
-        if (targetPlayer) {
-            addSystemMessageUI(`💰 ${currentPlayer.avatar} предлагает вам купить ${tile.name} за $${price}. Введите /accept для принятия или /decline для отказа.`);
-        }
-    };
-    
-    async function acceptTrade(offerId, offer) {
-        const state = {...localGameState};
-        const fromPlayer = state.players.find(p => p.id === offer.from);
-        const toPlayer = state.players.find(p => p.id === offer.to);
-        
-        if (!fromPlayer || !toPlayer) return;
-        
-        const tile = TILES_FULL[offer.propertyId];
-        
-        if (toPlayer.money >= offer.price) {
-            toPlayer.money -= offer.price;
-            fromPlayer.money += offer.price;
-            
-            // Передача собственности
-            const propIndex = fromPlayer.properties.indexOf(offer.propertyId);
-            if (propIndex !== -1) {
-                fromPlayer.properties.splice(propIndex, 1);
-                toPlayer.properties.push(offer.propertyId);
-                if (fromPlayer.houses) delete fromPlayer.houses[offer.propertyId];
-                if (!toPlayer.houses) toPlayer.houses = {};
-                toPlayer.houses[offer.propertyId] = 0;
-            }
-            
-            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'accepted'});
-            
-            addSystemMessageUI(`✅ Сделка завершена! ${toPlayer.avatar} купил ${tile.name} у ${fromPlayer.avatar} за $${offer.price}`);
-        } else {
-            addSystemMessageUI(`❌ У ${toPlayer.avatar} недостаточно денег для сделки!`);
-            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'declined'});
-        }
     }
     
     function showUpgradeModal(tile, player) {
@@ -1197,7 +1167,6 @@
         return 'домов';
     }
     
-    // Глобальные функции для модальных окон
     window.confirmPurchase = async function() {
         await buyProperty();
         closeModal();
@@ -1214,10 +1183,6 @@
     window.closeModal = function() {
         const modal = document.querySelector('.modal-overlay');
         if (modal) modal.remove();
-        if (activeAuction && activeAuction.ref) {
-            activeAuction.ref.off();
-            activeAuction = null;
-        }
     };
     
     let pendingUpgradeTileId = null;
@@ -1426,18 +1391,17 @@
             }
         });
         
-        // Слушаем предложения торговли
         roomRef.child("tradeOffers").on("child_added", (snapshot) => {
             const offer = snapshot.val();
             if (offer.to === currentPlayerId && offer.status === 'pending') {
                 const fromPlayer = localGameState?.players.find(p => p.id === offer.from);
-                const tile = TILES_FULL[offer.propertyId];
-                if (fromPlayer && tile) {
-                    addSystemMessageUI(`💰 ${fromPlayer.avatar} предлагает купить ${tile.name} за $${offer.price}. Введите /accept для принятия или /decline для отказа.`);
-                    window.pendingOffer = { id: snapshot.key, ...offer };
+                if (fromPlayer) {
+                    showTradeRequestModal({ id: snapshot.key, ...offer });
                 }
             }
         });
+        
+        setupAuctionListener();
         
         if (syncInterval) clearInterval(syncInterval);
         syncInterval = setInterval(async () => {
@@ -1779,6 +1743,21 @@
         
         const owner = state.players.find(p => p.properties && p.properties.includes(tileId));
         
+        // Если это своя клетка - пропускаем
+        if (owner && owner.id === currentPlayerId) {
+            addSystemMessageUI(`${player.avatar} на своей клетке ${tile.name}`);
+            if (!isDouble) {
+                await endTurnAfterMove();
+            } else {
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({
+                    diceRolled: false,
+                    waitingForPurchase: false,
+                    purchaseTileId: null
+                });
+            }
+            return;
+        }
+        
         switch(tile.type) {
             case "property":
             case "railroad":
@@ -2003,6 +1982,164 @@
         return localGameState?.players.find(p => p.id === currentPlayerId);
     }
     
+    // ========== ТОРГОВЛЯ ==========
+    function showTradeModal() {
+        if (!localGameState) return;
+        
+        const players = localGameState.players.filter(p => p.id !== currentPlayerId);
+        const currentPlayer = localGameState.players.find(p => p.id === currentPlayerId);
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>👤 Ваш баланс:</span>
+                    <span style="color:#ffcd7e;">$${currentPlayer.money}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>🏠 Ваша недвижимость:</span>
+                    <span>${currentPlayer.properties?.length || 0} объектов</span>
+                </div>
+            </div>
+            <div class="property-list" id="tradePlayersList">
+                ${players.map(p => `
+                    <div class="property-item" onclick="selectTradePlayer('${p.id}')">
+                        <div class="property-name">${p.avatar} ${p.name}</div>
+                        <div class="property-details">💰 $${p.money} | 🏠 ${p.properties?.length || 0} объектов</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        showModal('🤝 Торговля с игроками', content, [
+            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
+    }
+    
+    window.selectTradePlayer = function(playerId) {
+        const targetPlayer = localGameState?.players.find(p => p.id === playerId);
+        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
+        
+        if (!targetPlayer || !currentPlayer) return;
+        
+        const myProperties = currentPlayer.properties || [];
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>🤝 Торговля с ${targetPlayer.avatar} ${targetPlayer.name}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Ваш баланс:</span>
+                    <span>$${currentPlayer.money}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Баланс оппонента:</span>
+                    <span>$${targetPlayer.money}</span>
+                </div>
+            </div>
+            <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость:</h3>
+            <div class="property-list" style="max-height:200px;">
+                ${myProperties.map(propId => {
+                    const tile = TILES_FULL[propId];
+                    return `
+                        <div class="property-item" onclick="offerProperty('${propId}', '${playerId}')">
+                            <div class="property-name">${tile.name}</div>
+                            <div class="property-details">Стоимость: $${tile.price}</div>
+                        </div>
+                    `;
+                }).join('')}
+                ${myProperties.length === 0 ? '<div class="property-details">У вас нет недвижимости для продажи</div>' : ''}
+            </div>
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>💡 Предложение:</span>
+                    <span>Выберите недвижимость для продажи</span>
+                </div>
+            </div>
+            <input type="number" id="tradePrice" class="bid-input" placeholder="Цена продажи..." min="1">
+        `;
+        
+        showModal(`🤝 Торговля с ${targetPlayer.name}`, content, [
+            { text: '📤 Отправить предложение', class: 'modal-btn-primary', onClick: `sendTradeOffer('${playerId}')` },
+            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
+        
+        window.selectedTradeTarget = playerId;
+        window.selectedPropertyForTrade = null;
+    };
+    
+    window.offerProperty = function(propId, targetId) {
+        window.selectedPropertyForTrade = propId;
+        const tile = TILES_FULL[propId];
+        addSystemMessageUI(`Вы выбрали ${tile.name} для продажи игроку`);
+        const priceInput = document.getElementById('tradePrice');
+        if (priceInput) priceInput.focus();
+    };
+    
+    window.sendTradeOffer = async function(targetId) {
+        const propertyId = window.selectedPropertyForTrade;
+        const price = parseInt(document.getElementById('tradePrice')?.value);
+        
+        if (!propertyId) {
+            addSystemMessageUI("Выберите недвижимость для продажи!");
+            return;
+        }
+        
+        if (!price || price <= 0) {
+            addSystemMessageUI("Введите корректную цену!");
+            return;
+        }
+        
+        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!currentPlayer) return;
+        
+        const tile = TILES_FULL[propertyId];
+        
+        const tradeRef = db.ref(`rooms/${currentRoomId}/tradeOffers`).push({
+            from: currentPlayerId,
+            to: targetId,
+            propertyId: parseInt(propertyId),
+            price: price,
+            timestamp: Date.now(),
+            status: 'pending'
+        });
+        
+        addSystemMessageUI(`📨 Предложение отправлено: продажа ${tile.name} за $${price}`);
+        closeModal();
+    };
+    
+    async function acceptTrade(offerId, offer) {
+        const state = {...localGameState};
+        const fromPlayer = state.players.find(p => p.id === offer.from);
+        const toPlayer = state.players.find(p => p.id === offer.to);
+        
+        if (!fromPlayer || !toPlayer) return;
+        
+        const tile = TILES_FULL[offer.propertyId];
+        
+        if (toPlayer.money >= offer.price) {
+            toPlayer.money -= offer.price;
+            fromPlayer.money += offer.price;
+            
+            const propIndex = fromPlayer.properties.indexOf(offer.propertyId);
+            if (propIndex !== -1) {
+                fromPlayer.properties.splice(propIndex, 1);
+                toPlayer.properties.push(offer.propertyId);
+                if (fromPlayer.houses) delete fromPlayer.houses[offer.propertyId];
+                if (!toPlayer.houses) toPlayer.houses = {};
+                toPlayer.houses[offer.propertyId] = 0;
+            }
+            
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'accepted'});
+            
+            addSystemMessageUI(`✅ Сделка завершена! ${toPlayer.avatar} купил ${tile.name} у ${fromPlayer.avatar} за $${offer.price}`);
+        } else {
+            addSystemMessageUI(`❌ У ${toPlayer.avatar} недостаточно денег для сделки!`);
+            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'declined'});
+        }
+    }
+    
     // ========== ЧАТ ==========
     function addPlayerMessageUI(sender, text) {
         const container = document.getElementById("playerChatContainer");
@@ -2025,22 +2162,6 @@
         if (!input.value.trim() || !currentRoomId) return;
         
         const message = input.value.trim();
-        
-        // Обработка команд торговли
-        if (message === '/accept' && window.pendingOffer) {
-            await acceptTrade(window.pendingOffer.id, window.pendingOffer);
-            window.pendingOffer = null;
-            input.value = "";
-            return;
-        }
-        
-        if (message === '/decline' && window.pendingOffer) {
-            await db.ref(`rooms/${currentRoomId}/tradeOffers/${window.pendingOffer.id}`).update({status: 'declined'});
-            addSystemMessageUI("❌ Вы отклонили предложение о торговле");
-            window.pendingOffer = null;
-            input.value = "";
-            return;
-        }
         
         const player = getCurrentPlayer();
         const senderName = player ? `${player.avatar} ${player.name}` : currentPlayerName;
@@ -2079,7 +2200,6 @@
             document.getElementById("playerChatContainer").classList.add("active");
         }
         
-        // Глобальные функции
         window.showPropertyInfo = showPropertyInfo;
         window.showPlayerActions = showPlayerActions;
         window.selectUpgradeProperty = selectUpgradeProperty;
@@ -2091,6 +2211,9 @@
         window.selectTradePlayer = selectTradePlayer;
         window.offerProperty = offerProperty;
         window.sendTradeOffer = sendTradeOffer;
+        window.acceptTradeOffer = acceptTradeOffer;
+        window.declineTradeOffer = declineTradeOffer;
+        window.placeGlobalBid = placeGlobalBid;
     }
     
     initUI();
