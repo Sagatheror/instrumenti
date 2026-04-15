@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -11,6 +10,10 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+         transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                color 0.3s ease,
+                box-shadow 0.3s ease;
     }
     
     body {
@@ -406,19 +409,18 @@
     }
     
     .avatar-preview-large {
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        border: 3px solid #ffd93d;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
+        width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 16px;
+    border: 3px solid #ffd93d;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
     }
     
     .avatar-selector {
@@ -1604,6 +1606,7 @@
         height: 32px;
         border-radius: 50%;
         cursor: pointer;
+        padding: 0;
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
@@ -2050,52 +2053,789 @@
     
     /* Тёмная тема */
     body.dark-theme .admin-panel {
-        background: linear-gradient(135deg, #2a2a3e 0%, #25253a 100%);
-        border-color: #9b59b6;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #9b59b6;
+}
+
+body.dark-theme .admin-header {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    border-bottom: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .admin-header h2 {
+    color: #a8c0ff;
+}
+
+body.dark-theme .admin-close {
+    color: #b0b0b0;
+}
+
+body.dark-theme .admin-close:hover {
+    background: rgba(168, 192, 255, 0.1);
+    color: white;
+}
+
+body.dark-theme .admin-tabs {
+    background: rgba(30, 30, 50, 0.95);
+    border-bottom: 1px solid rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .admin-tab {
+    color: #b0b0b0;
+}
+
+body.dark-theme .admin-tab:hover {
+    color: #a8c0ff;
+    background: rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .admin-tab.active {
+    color: #9b59b6;
+    border-bottom-color: #9b59b6;
+}
+
+body.dark-theme .admin-panel-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-theme .admin-stat-card {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e32 100%);
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .admin-stat-value {
+    color: #9b59b6;
+}
+
+body.dark-theme .admin-stat-label {
+    color: #b0b0b0;
+}
+
+body.dark-theme .admin-section {
+    background: rgba(30, 30, 50, 0.8);
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .admin-section h3 {
+    color: #a8c0ff;
+}
+
+body.dark-theme .admin-input-group input,
+body.dark-theme .admin-input-group select,
+body.dark-theme .admin-input-group textarea {
+    background: #2a2a3e;
+    border: 1px solid #3a3a5e;
+    color: #e0e0e0;
+}
+
+body.dark-theme .admin-input-group input:focus,
+body.dark-theme .admin-input-group select:focus,
+body.dark-theme .admin-input-group textarea:focus {
+    border-color: #9b59b6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2);
+}
+
+body.dark-theme .admin-input-group input::placeholder,
+body.dark-theme .admin-input-group textarea::placeholder {
+    color: #6c6c8c;
+}
+
+body.dark-theme .admin-btn {
+    background: linear-gradient(135deg, #4a4a8a 0%, #5a5a9a 100%);
+    color: #e0e0e0;
+}
+
+body.dark-theme .admin-btn:hover {
+    background: linear-gradient(135deg, #5a5a9a 0%, #6a6aaa 100%);
+    transform: translateY(-2px);
+}
+
+body.dark-theme .admin-btn-danger {
+    background: linear-gradient(135deg, #8b3a3a 0%, #a04a4a 100%);
+}
+
+body.dark-theme .admin-btn-danger:hover {
+    background: linear-gradient(135deg, #a04a4a 0%, #b55a5a 100%);
+}
+
+body.dark-theme .admin-btn-warning {
+    background: linear-gradient(135deg, #b8860b 0%, #d4a017 100%);
+    color: #1a1a2e;
+}
+
+body.dark-theme .admin-btn-success {
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+}
+
+body.dark-theme .admin-btn-info {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+}
+
+body.dark-theme .player-list {
+    background: #2a2a3e;
+    border: 1px solid #3a3a5e;
+}
+
+body.dark-theme .player-list-item {
+    border-bottom-color: #3a3a5e;
+}
+
+body.dark-theme .player-list-item:hover {
+    background: rgba(155, 89, 182, 0.1);
+}
+
+body.dark-theme .player-list-name {
+    color: #e0e0e0;
+}
+
+body.dark-theme .player-list-score {
+    color: #9b59b6;
+}
+
+body.dark-theme .word-list {
+    background: #2a2a3e;
+    border: 1px solid #3a3a5e;
+}
+
+body.dark-theme .word-item {
+    border-bottom-color: #3a3a5e;
+}
+
+body.dark-theme .word-text {
+    color: #e0e0e0;
+}
+
+body.dark-theme .word-delete {
+    color: #ff9999;
+}
+
+body.dark-theme .word-delete:hover {
+    background: #dc3545;
+    color: white;
+}
+
+body.dark-theme .banned-word {
+    background: #8b3a3a30;
+    border: 1px solid #dc354530;
+}
+
+body.dark-theme .banned-word-text {
+    color: #ff9999;
+}
+
+body.dark-theme .settings-row {
+    border-bottom-color: #3a3a5e;
+}
+
+body.dark-theme .settings-label {
+    color: #e0e0e0;
+}
+
+body.dark-theme .settings-control input[type="range"] {
+    background: #3a3a5e;
+}
+
+body.dark-theme .settings-control input[type="range"]::-webkit-slider-thumb {
+    background: #9b59b6;
+}
+
+body.dark-theme .settings-control input[type="checkbox"] {
+    accent-color: #9b59b6;
+}
+
+body.dark-theme .notification-item {
+    background: rgba(155, 89, 182, 0.1);
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .notification-item:hover {
+    background: rgba(155, 89, 182, 0.2);
+}
+
+/* Стили для селектов в админ-панели */
+body.dark-theme select {
+    background: #2a2a3e;
+    color: #e0e0e0;
+    border-color: #3a3a5e;
+}
+
+body.dark-theme select option {
+    background: #2a2a3e;
+    color: #e0e0e0;
+}
+
+/* Стили для чекбоксов в админ-панели */
+body.dark-theme input[type="checkbox"] {
+    accent-color: #9b59b6;
+}
+
+/* Стили для ползунков */
+body.dark-theme input[type="range"] {
+    -webkit-appearance: none;
+    background: #3a3a5e;
+    border-radius: 10px;
+}
+
+body.dark-theme input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #9b59b6;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+body.dark-theme input[type="range"]::-webkit-slider-thumb:hover {
+    background: #a8c0ff;
+    transform: scale(1.2);
+}
+    .suggest-letter-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496) !important;
     }
     
-    body.dark-theme .admin-tab {
-        color: #b0b0b0;
+    .suggest-letter-btn:hover {
+    background: linear-gradient(135deg, #138496, #0f6674) !important;
+    transform: translateY(-2px);
     }
     
-    body.dark-theme .admin-tab.active {
-        color: #a8c0ff;
+    /* Тёмная тема для кнопки */
+    body.dark-theme .suggest-letter-btn {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+    }
+    /* Модальное окно профиля */
+    .profile-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
     }
     
-    body.dark-theme .admin-section {
-        background: rgba(155, 89, 182, 0.1);
+    .profile-modal.show {
+    display: flex;
     }
     
-    body.dark-theme .admin-section h3 {
-        color: #e0e0e0;
+    .profile-modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 32px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
     
-    body.dark-theme .admin-input-group input,
-    body.dark-theme .admin-input-group select,
-    body.dark-theme .admin-input-group textarea {
-        background: #2a2a3e;
-        border-color: #3a3a5e;
-        color: #e0e0e0;
+    body.dark-theme .profile-modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(168, 192, 255, 0.2);
     }
     
-    body.dark-theme .player-list {
-        border-color: #3a3a5e;
+    .profile-modal-header {
+    padding: 24px 24px 16px;
+    border-bottom-color: rgba(168, 192, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     }
     
-    body.dark-theme .player-list-item {
-        border-bottom-color: #3a3a5e;
+    .profile-modal-header h2 {
+    background: linear-gradient(135deg, #a8c0ff 0%, #9b59b6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    }
+    body.dark-theme .profile-close-btn {
+    color: #b0b0b0;
+}
+body.dark-theme .profile-close-btn:hover {
+    background: rgba(168, 192, 255, 0.1);
+    color: white;
+}
+body.dark-theme .profile-avatar-section {
+    border-bottom-color: rgba(168, 192, 255, 0.2);
+}
+
+body.dark-theme .avatar-input-group input {
+    background: #2a2a3e;
+    border-color: #3a3a5e;
+    color: #e0e0e0;
+}
+
+body.dark-theme .avatar-input-group input:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
+}
+
+body.dark-theme .avatar-presets h4 {
+    color: #a8c0ff;
+}
+
+body.dark-theme .avatar-preset {
+    background: #2a2a3e;
+    transition: all 0.2s;
+}
+
+body.dark-theme .avatar-preset:hover {
+    background: #3a3a5e;
+    transform: scale(1.1);
+}
+
+body.dark-theme .avatar-preset.selected {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 0 0 2px #ffd93d;
+}
+
+body.dark-theme .profile-name-section label {
+    color: #a8c0ff;
+}
+
+body.dark-theme .profile-name-section input {
+    background: #2a2a3e;
+    border-color: #3a3a5e;
+    color: #e0e0e0;
+}
+
+body.dark-theme .profile-name-section input:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
+}
+
+body.dark-theme .profile-stats {
+    background: rgba(155, 89, 182, 0.1);
+    border: 1px solid rgba(168, 192, 255, 0.1);
+}
+
+body.dark-theme .profile-stats h4 {
+    color: #a8c0ff;
+}
+
+body.dark-theme .stat-value {
+    color: #9b59b6;
+}
+
+body.dark-theme .stat-label {
+    color: #b0b0b0;
+}
+
+body.dark-theme .profile-cancel-btn {
+    background: #2a2a3e;
+    color: #b0b0b0;
+    border: 1px solid #3a3a5e;
+}
+
+body.dark-theme .profile-cancel-btn:hover {
+    background: #3a3a5e;
+    color: white;
+}
+    .profile-close-btn {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.2s;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    border-radius: 50%;
     }
     
-    body.dark-theme .banned-word {
-        background: #8b3a3a30;
+    .profile-close-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.1);
     }
     
-    body.dark-theme .banned-word-text {
-        color: #ff9999;
+    .profile-modal-body {
+    padding: 24px;
     }
     
-    body.dark-theme .notification-item {
-        background: #3a3a5e;
+    .profile-avatar-section {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    }
+    
+    .profile-avatar-preview {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    border: 4px solid #ffd93d;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    }
+    
+    .profile-avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+    
+    .avatar-input-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+    }
+    
+    .avatar-input-group input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 60px;
+    font-size: 0.9rem;
+    background: white;
+    }
+    
+    body.dark-theme .avatar-input-group input {
+    background: #2a2a3e;
+    border-color: #3a3a5e;
+    color: #e0e0e0;
+    }
+    
+    .avatar-presets {
+    margin-top: 20px;
+    }
+    
+    .avatar-presets h4 {
+    margin-bottom: 12px;
+    color: #495057;
+    font-size: 0.9rem;
+    }
+    
+    .avatar-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 8px;
+    }
+    
+    .avatar-preset {
+    font-size: 2rem;
+    cursor: pointer;
+    text-align: center;
+    padding: 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
+    }
+    
+    .avatar-preset:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: scale(1.1);
+    }
+    
+    .avatar-preset.selected {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 0 0 2px #ffd93d;
+    }
+    
+    .profile-name-section {
+    margin-bottom: 24px;
+    }
+    
+    .profile-name-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    }
+    
+    .profile-name-section input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e9ecef;
+    border-radius: 60px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    }
+    
+    .profile-name-section input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .profile-stats {
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+    }
+    
+    .profile-stats h4 {
+    margin-bottom: 12px;
+    color: #667eea;
+    }
+    
+    .profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    }
+    
+    .stat-item {
+    text-align: center;
+    }
+    
+    .stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #667eea;
+    }
+    
+    .stat-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    }
+    
+    .profile-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    }
+    
+    .profile-save-btn, .profile-cancel-btn {
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    }
+    
+    .profile-save-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    }
+    
+    .profile-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    
+    .profile-cancel-btn {
+    background: #e9ecef;
+    border: none;
+    color: #495057;
+    }
+    
+    .profile-cancel-btn:hover {
+    background: #dee2e6;
+    }
+    
+    @keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+    
+    /* Кнопка открытия профиля */
+    .profile-open-btn {
+    position: absolute;
+    top: 20px;
+    right: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 100;
+    }
+    
+    .profile-open-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Убираем старый блок profile-setup */
+    .profile-setup {
+    display: none;
+    }
+    /* Верхняя панель с кнопками */
+    .top-bar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 10px;
+    z-index: 50;
+    }
+    
+    .top-bar-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    }
+    
+    .top-bar-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    }
+    
+    .top-bar-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .top-bar-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .top-bar-btn.profile-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    .top-bar-btn.theme-btn {
+    background: linear-gradient(135deg, #ffd93d, #ffb347);
+    color: #495057;
+    }
+    
+    .top-bar-btn.settings-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    }
+    
+    .top-bar-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 16px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    }
+    .system-message {
+    background: linear-gradient(135deg, #667eea15, #764ba215) !important;
+    border-left: 3px solid #667eea !important;
+    font-style: italic;
+    cursor: default;
+}
+
+.system-message:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+body.dark-theme .system-message {
+    background: linear-gradient(135deg, #667eea10, #764ba210) !important;
+    border-left-color: #9b59b6 !important;
+}
+.file-upload-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.upload-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.upload-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.upload-file-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+}
+
+.upload-url-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    border: none;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+    /* Адаптация для мобильных */
+    @media (max-width: 768px) {
+    .top-bar-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+    
+    .top-bar-title {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    }
+    
+    /* Тёмная тема для верхней панели */
+    body.dark-theme .top-bar-btn {
+    background: rgba(30, 30, 50, 0.8);
+    border-color: rgba(168, 192, 255, 0.3);
+    }
+    
+    body.dark-theme .top-bar-title {
+    background: rgba(0, 0, 0, 0.5);
     }
     @media (max-width: 1100px) {
         .main-grid {
@@ -2126,6 +2866,24 @@
     gap: 8px;
         }
     }
+    body.dark-theme ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+    background: #2a2a3e;
+    border-radius: 10px;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+    background: #9b59b6;
+    border-radius: 10px;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background: #a8c0ff;
+}
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -2133,11 +2891,80 @@
 
 <body>
   <div class="game-container">
-    <div style="position: absolute; top: 2px; right: 30px; z-index: 100;">
-      <button id="themeToggle" class="theme-toggle-btn">
-        <i class="fas fa-moon"></i>
-      </button>
+    <button class="profile-open-btn" style="display:none" id="profileOpenBtn">
+      <i class="fas fa-user-circle"></i>
+    </button>
+
+    <!-- Модальное окно профиля -->
+    <div class="profile-modal" id="profileModal">
+    <div class="profile-modal-content">
+        <div class="profile-modal-header">
+            <h2><i class="fas fa-id-card"></i> Мой профиль</h2>
+            <button class="profile-close-btn" id="profileCloseBtn">&times;</button>
+        </div>
+        <div class="profile-modal-body">
+            <div class="profile-avatar-section">
+                <div class="profile-avatar-preview" id="profileAvatarPreview">
+                    😎
+                </div>
+                <div class="avatar-input-group">
+                    <input type="text" id="gifUrlInput" placeholder="Введите URL GIF-аватара..." class="gif-url-input">
+                    <button id="setGifBtn" class="admin-btn" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                        <i class="fas fa-link"></i> Загрузить GIF
+                    </button>
+                </div>
+                <div class="avatar-presets">
+                    <h4><i class="fas fa-smile"></i> Или выберите эмодзи:</h4>
+                    <div class="avatar-presets-grid" id="avatarPresetsGrid"></div>
+                </div>
+            </div>
+            
+            <div class="profile-name-section">
+                <label><i class="fas fa-tag"></i> Ваше имя:</label>
+                <input type="text" id="profileNameInput" placeholder="Введите ваше имя" maxlength="20" class="profile-name-input">
+            </div>
+            
+            <div class="profile-stats">
+                <h4><i class="fas fa-chart-line"></i> Моя статистика</h4>
+                <div class="profile-stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statGamesPlayed">0</div>
+                        <div class="stat-label">Игр сыграно</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statWordsTotal">0</div>
+                        <div class="stat-label">Слов сказано</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statWins">0</div>
+                        <div class="stat-label">Побед</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statRating">1000</div>
+                        <div class="stat-label">Рейтинг</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <button class="profile-cancel-btn" id="profileCancelBtn">Отмена</button>
+                <button class="profile-save-btn" id="profileSaveBtn">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+            </div>
+        </div>
     </div>
+</div>
+   <div class="top-bar">
+    <div class="top-bar-right">
+        <button id="profileTopBtn" class="top-bar-btn profile-btn" title="Профиль">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <button id="themeTopBtn" class="top-bar-btn theme-btn" title="Сменить тему">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+</div>
     <div class="profile-setup">
       <div style="display: flex; gap: 20px; align-items: center;">
         <div class="avatar-preview-large" id="avatarPreview">😎</div>
@@ -2269,7 +3096,9 @@
             <button class="skip-btn" id="skipBtn">
               <i class="fas fa-forward"></i> Пропустить ход
             </button>
-
+            <button class="suggest-letter-btn" id="suggestLetterBtn" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+              <i class="fas fa-sync-alt"></i> Предложить новую букву
+            </button>
             <!-- НОВЫЙ БЛОК: Кнопки голосования (появляются при жалобе) -->
             <div class="vote-buttons" id="voteButtons" style="display: none;">
               <button class="vote-yes-btn" id="voteYesBtn">
@@ -4167,7 +4996,1004 @@
     
     // Вызовите эту функцию после инициализации
     setupRealtimeProfileUpdates();
+    let letterChangeVoteActive = false;
+    let letterChangeVoteData = {
+    proposedBy: null,
+    newLetter: null,
+    votesFor: [],
+    votesAgainst: []
+    };
+    
+    // Кнопка предложения смены буквы
+    const suggestLetterBtn = document.getElementById('suggestLetterBtn');
+    
+    // Функция для проверки, можно ли предложить смену буквы
+    function canSuggestLetterChange() {
+    if (!roomId) return false;
+    if (letterChangeVoteActive) return false;
+    if (complaintActive) return false;
+    if (players.length < 2) return false;
+    if (!lastWord && usedWords.length === 0) return false; // Если игра только началась, не нужно
+    
+    // Нельзя предлагать смену буквы если это не ваш ход (опционально)
+    // if (myId !== currentPlayerId) return false;
+    
+    return true;
+    }
+    
+    // Предложение смены буквы
+    async function suggestLetterChange() {
+    if (!canSuggestLetterChange()) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-ban"></i> Сейчас нельзя предложить смену буквы';
+        return;
+    }
+    
+    // Получаем текущую нужную букву
+    let currentLetter = '';
+    if (lastWord) {
+        currentLetter = getLastLetter(lastWord);
+    }
+    
+    // Генерируем случайную букву, кроме текущей и исключённых
+    const letters = 'абвгдежзийклмнопрстуфхцчшщэюя';
+    const excludedLetters = ['ь', 'ъ', 'ы', currentLetter];
+    let availableLetters = letters.split('').filter(l => !excludedLetters.includes(l));
+    
+    if (availableLetters.length === 0) {
+        availableLetters = letters.split('').filter(l => l !== currentLetter);
+    }
+    
+    const randomIndex = Math.floor(Math.random() * availableLetters.length);
+    const newLetter = availableLetters[randomIndex];
+    
+    letterChangeVoteActive = true;
+    letterChangeVoteData = {
+        proposedBy: myId,
+        newLetter: newLetter,
+        votesFor: [myId],
+        votesAgainst: []
+    };
+    
+    // Сохраняем в Firebase
+    const roomRef = db.ref(`rooms/${roomId}`);
+    await roomRef.child('letterChangeVote').set(letterChangeVoteData);
+    
+    // Отправляем сообщение в чат
+    const msg = {
+        sender: '🔔 СИСТЕМА',
+        senderId: 'system',
+        text: `📢 Игрок ${myName} предложил сменить букву на "${newLetter.toUpperCase()}"! Голосуйте кнопками ниже.`,
+        timestamp: Date.now()
+    };
+    const msgsRef = db.ref(`rooms/${roomId}/messages`);
+    const snap = await msgsRef.once('value');
+    let arr = snap.val() || [];
+    arr.push(msg);
+    if (arr.length > 50) arr = arr.slice(-50);
+    await msgsRef.set(arr);
+    
+    messageBoxDiv.innerHTML = `<i class="fas fa-vote-yea"></i> Предложена смена буквы на "${newLetter.toUpperCase()}"! Голосуйте!`;
+    
+    updateLetterVoteUI();
+    }
+    
+    // Обновление UI для голосования за смену буквы
+    function updateLetterVoteUI() {
+    if (letterChangeVoteActive && roomId) {
+        // Показываем кнопки голосования за смену буквы
+        const existingPanel = document.getElementById('letterVotePanel');
+        if (existingPanel) existingPanel.remove();
+        
+        const votePanel = document.createElement('div');
+        votePanel.id = 'letterVotePanel';
+        votePanel.style.cssText = `
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: center;
+            border: 1px solid #667eea;
+        `;
+        
+        const hasVoted = letterChangeVoteData.votesFor.includes(myId) || 
+                        letterChangeVoteData.votesAgainst.includes(myId);
+        const isProposer = letterChangeVoteData.proposedBy === myId;
+        const canVote = !hasVoted && !isProposer;
+        
+        votePanel.innerHTML = `
+            <div style="margin-bottom: 10px;">
+                <i class="fas fa-exchange-alt"></i> 
+                <strong>Голосование: сменить букву на "${letterChangeVoteData.newLetter.toUpperCase()}"</strong>
+            </div>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 10px;">
+                <span style="background: #28a74520; padding: 5px 15px; border-radius: 20px;">
+                    ✅ ЗА: ${letterChangeVoteData.votesFor.length}
+                </span>
+                <span style="background: #dc354520; padding: 5px 15px; border-radius: 20px;">
+                    ❌ ПРОТИВ: ${letterChangeVoteData.votesAgainst.length}
+                </span>
+            </div>
+            ${canVote ? `
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button id="letterVoteYesBtn" style="background: #28a745; border: none; padding: 8px 20px; border-radius: 30px; color: white; cursor: pointer;">
+                        <i class="fas fa-check"></i> За смену
+                    </button>
+                    <button id="letterVoteNoBtn" style="background: #dc3545; border: none; padding: 8px 20px; border-radius: 30px; color: white; cursor: pointer;">
+                        <i class="fas fa-times"></i> Против смены
+                    </button>
+                </div>
+            ` : (hasVoted ? '<div style="color: #6c757d;">✅ Вы уже проголосовали</div>' : '<div style="color: #6c757d;">⏳ Ожидание голосов...</div>')}
+            <div style="margin-top: 10px; font-size: 12px; color: #6c757d;">
+                Проголосовало: ${letterChangeVoteData.votesFor.length + letterChangeVoteData.votesAgainst.length} / ${players.length}
+            </div>
+        `;
+        
+        // Вставляем панель после turn-indicator или в другое видное место
+        const turnIndicator = document.querySelector('.turn-indicator');
+        if (turnIndicator && !document.getElementById('letterVotePanel')) {
+            turnIndicator.insertAdjacentElement('afterend', votePanel);
+        }
+        
+        // Назначаем обработчики
+        const yesBtn = document.getElementById('letterVoteYesBtn');
+        const noBtn = document.getElementById('letterVoteNoBtn');
+        
+        if (yesBtn) {
+            yesBtn.onclick = () => voteForLetterChange(true);
+        }
+        if (noBtn) {
+            noBtn.onclick = () => voteForLetterChange(false);
+        }
+        
+        // Проверяем, завершено ли голосование
+        checkLetterVoteResult();
+    } else {
+        const existingPanel = document.getElementById('letterVotePanel');
+        if (existingPanel) existingPanel.remove();
+    }
+    }
+    
+    // Голосование за/против смены буквы
+    async function voteForLetterChange(voteFor) {
+    if (!letterChangeVoteActive || !roomId) return;
+    
+    const hasVoted = letterChangeVoteData.votesFor.includes(myId) || 
+                    letterChangeVoteData.votesAgainst.includes(myId);
+    if (hasVoted) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Вы уже проголосовали';
+        return;
+    }
+    
+    if (letterChangeVoteData.proposedBy === myId) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Вы не можете голосовать за своё предложение';
+        return;
+    }
+    
+    const roomRef = db.ref(`rooms/${roomId}`);
+    if (voteFor) {
+        await roomRef.child('letterChangeVote/votesFor').set([...letterChangeVoteData.votesFor, myId]);
+        messageBoxDiv.innerHTML = '<i class="fas fa-check"></i> Вы проголосовали ЗА смену буквы';
+    } else {
+        await roomRef.child('letterChangeVote/votesAgainst').set([...letterChangeVoteData.votesAgainst, myId]);
+        messageBoxDiv.innerHTML = '<i class="fas fa-times"></i> Вы проголосовали ПРОТИВ смены буквы';
+    }
+    }
+    
+    // Проверка результата голосования за смену буквы
+    async function checkLetterVoteResult() {
+    if (!letterChangeVoteActive || !roomId) return;
+    
+    const totalPlayers = players.length;
+    const totalVotes = letterChangeVoteData.votesFor.length + letterChangeVoteData.votesAgainst.length;
+    
+    // Если проголосовали все игроки (кроме автора предложения, если он не голосовал)
+    const neededVotes = totalPlayers - 1; // все кроме автора
+    if (totalVotes >= neededVotes || totalVotes === totalPlayers) {
+        const roomRef = db.ref(`rooms/${roomId}`);
+        
+        if (letterChangeVoteData.votesFor.length > letterChangeVoteData.votesAgainst.length) {
+            // Смена буквы одобрена
+            const newLetter = letterChangeVoteData.newLetter;
+            
+            // Создаём новое слово, начинающееся с новой буквы (используем слово из словаря)
+            let newLastWord = await getWordStartingWith(newLetter);
+            
+            // Обновляем игру
+            await roomRef.update({
+                lastWord: newLastWord,
+                lastWordAuthor: null,
+                letterChangeVote: null
+            });
+            
+            messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> ✅ Голосование завершено! Буква сменена на "${newLetter.toUpperCase()}". Новое слово: "${newLastWord}"`;
+            
+            // Отправляем сообщение в чат
+            const msg = {
+                sender: '🔔 СИСТЕМА',
+                senderId: 'system',
+                text: `🎉 Голосование завершено! Буква сменена на "${newLetter.toUpperCase()}"! Новое слово: "${newLastWord}"`,
+                timestamp: Date.now()
+            };
+            const msgsRef = db.ref(`rooms/${roomId}/messages`);
+            const snap = await msgsRef.once('value');
+            let arr = snap.val() || [];
+            arr.push(msg);
+            if (arr.length > 50) arr = arr.slice(-50);
+            await msgsRef.set(arr);
+            
+        } else {
+            // Смена буквы отклонена
+            await roomRef.child('letterChangeVote').set(null);
+            messageBoxDiv.innerHTML = '<i class="fas fa-times-circle"></i> ❌ Голосование завершено! Смена буквы отклонена.';
+            
+            const msg = {
+                sender: '🔔 СИСТЕМА',
+                senderId: 'system',
+                text: `❌ Голосование завершено! Смена буквы отклонена.`,
+                timestamp: Date.now()
+            };
+            const msgsRef = db.ref(`rooms/${roomId}/messages`);
+            const snap = await msgsRef.once('value');
+            let arr = snap.val() || [];
+            arr.push(msg);
+            if (arr.length > 50) arr = arr.slice(-50);
+            await msgsRef.set(arr);
+        }
+        
+        letterChangeVoteActive = false;
+        letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
+        updateLetterVoteUI();
+    }
+    }
+    
+    // Получить случайное слово из словаря, начинающееся с определённой буквы
+    async function getWordStartingWith(letter) {
+    await loadRussianDictionary();
+    
+    // Ищем слово из словаря, начинающееся с нужной буквы
+    const possibleWords = Array.from(russianDictionary).filter(word => 
+        word.length >= 2 && word[0] === letter && !usedWords.includes(word)
+    );
+    
+    if (possibleWords.length > 0) {
+        const randomIndex = Math.floor(Math.random() * possibleWords.length);
+        return possibleWords[randomIndex];
+    }
+    
+    // Если нет подходящих слов, используем базовое слово
+    const fallbackWords = {
+        'а': 'арбуз', 'б': 'банан', 'в': 'волк', 'г': 'город', 'д': 'дом',
+        'е': 'енот', 'ж': 'жук', 'з': 'зебра', 'и': 'игра', 'й': 'йогурт',
+        'к': 'кот', 'л': 'лес', 'м': 'мост', 'н': 'нос', 'о': 'окно',
+        'п': 'пол', 'р': 'река', 'с': 'стол', 'т': 'трава', 'у': 'утка',
+        'ф': 'флаг', 'х': 'хлеб', 'ц': 'цвет', 'ч': 'час', 'ш': 'шар',
+        'щ': 'щука', 'э': 'эхо', 'ю': 'юла', 'я': 'яблоко'
+    };
+    
+    return fallbackWords[letter] || 'слово';
+    }
+    
+    // Функция для очистки голосования при сбросе игры
+    async function resetLetterVote() {
+    if (roomId) {
+        await db.ref(`rooms/${roomId}/letterChangeVote`).set(null);
+    }
+    letterChangeVoteActive = false;
+    letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
+    updateLetterVoteUI();
+    }
+    
+    // Добавляем обработчик для кнопки предложения смены буквы
+    if (suggestLetterBtn) {
+    suggestLetterBtn.onclick = suggestLetterChange;
+    }
+    
+    // Слушаем изменения голосования в Firebase
+    function setupLetterVoteListener(room) {
+    const roomRef = db.ref(`rooms/${room}`);
+    roomRef.child('letterChangeVote').on('value', (snap) => {
+        const data = snap.val();
+        if (data && data.proposedBy && data.newLetter) {
+            letterChangeVoteActive = true;
+            letterChangeVoteData = data;
+            updateLetterVoteUI();
+        } else if (!data && letterChangeVoteActive) {
+            letterChangeVoteActive = false;
+            letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
+            updateLetterVoteUI();
+        }
+    });
+    }
+    
+    // Обновляем setupListeners для добавления слушателя голосования
+    const originalSetupListeners = setupListeners;
+    setupListeners = function(room) {
+    originalSetupListeners(room);
+    setupLetterVoteListener(room);
+    };
+    
+    // Обновляем resetGameState для сброса голосования
+    const originalResetGameState = resetGameState;
+    resetGameState = function() {
+    originalResetGameState();
+    letterChangeVoteActive = false;
+    letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
+    };
+    
+    // Обновляем canSuggestLetterChange для учёта голосования
+    window.canSuggestLetterChange = canSuggestLetterChange;
+    // ========== КАСТОМНЫЕ ПРОФИЛИ С GIF АВАТАРАМИ ==========
+    let profileModal = null;
+    let profileStats = {
+    gamesPlayed: 0,
+    wordsTotal: 0,
+    wins: 0,
+    rating: 1000
+    };
+    
+    // Загрузка статистики из localStorage
+    function loadProfileStats() {
+    const saved = localStorage.getItem('playerStats_' + (myId || 'default'));
+    if (saved) {
+        try {
+            profileStats = JSON.parse(saved);
+        } catch(e) {}
+    }
+    updateStatsDisplay();
+    }
+    
+    // Сохранение статистики
+    function saveProfileStats() {
+    if (myId) {
+        localStorage.setItem('playerStats_' + myId, JSON.stringify(profileStats));
+    }
+    }
+    
+    // Обновление отображения статистики
+    function updateStatsDisplay() {
+    document.getElementById('statGamesPlayed').textContent = profileStats.gamesPlayed;
+    document.getElementById('statWordsTotal').textContent = profileStats.wordsTotal;
+    document.getElementById('statWins').textContent = profileStats.wins;
+    document.getElementById('statRating').textContent = profileStats.rating;
+    }
+    
+    // Добавление статистики после игры
+    function updateGameStats(isWin, wordCount) {
+    profileStats.gamesPlayed++;
+    profileStats.wordsTotal += wordCount || 0;
+    if (isWin) profileStats.wins++;
+    // Обновление рейтинга
+    if (isWin) {
+        profileStats.rating += 25;
+    } else {
+        profileStats.rating = Math.max(0, profileStats.rating - 10);
+    }
+    saveProfileStats();
+    updateStatsDisplay();
+    }
+    
+    // Открытие модального окна профиля
+    function openProfileModal() {
+    if (!profileModal) return;
+    
+    // Загружаем текущие данные
+    document.getElementById('profileNameInput').value = myName;
+    
+    // Показываем текущий аватар
+    const previewDiv = document.getElementById('profileAvatarPreview');
+    if (myAvatarUrl && myAvatarUrl.startsWith('http')) {
+        previewDiv.innerHTML = `<img src="${myAvatarUrl}" alt="avatar">`;
+    } else {
+        previewDiv.innerHTML = myAvatar || '😎';
+    }
+    
+    profileModal.classList.add('show');
+    }
+    
+    // Закрытие модального окна
+    function closeProfileModal() {
+    profileModal.classList.remove('show');
+    }
+    
+    // Сохранение профиля
+    async function saveProfile() {
+    const newName = document.getElementById('profileNameInput').value.trim();
+    if (!newName) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Имя не может быть пустым';
+        return;
+    }
+    
+    const oldName = myName;
+    myName = newName;
+    
+    // Обновляем в Firebase если есть комната
+    if (roomId && myId) {
+        const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
+        await roomRef.update({ name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl });
+    }
+    
+    // Обновляем локальное хранилище
+    localStorage.setItem('playerName', myName);
+    localStorage.setItem('playerAvatar', myAvatar);
+    localStorage.setItem('playerAvatarUrl', myAvatarUrl || '');
+    
+    messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Профиль обновлён! ${oldName} → ${myName}`;
+    
+    // Обновляем отображение в игре
+    renderPlayers();
+    
+    closeProfileModal();
+    }
+    
+    // Установка GIF аватара по URL
+    async function setGifAvatar(url) {
+    if (!url || !url.trim()) {
+        messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Введите URL GIF';
+        return;
+    }
+    
+    // Проверяем, что это ссылка на изображение
+    const img = new Image();
+    img.onload = async () => {
+        myAvatarUrl = url.trim();
+        myAvatar = '';
+        
+        // Обновляем превью
+        const previewDiv = document.getElementById('profileAvatarPreview');
+        previewDiv.innerHTML = `<img src="${myAvatarUrl}" alt="avatar">`;
+        
+        // Обновляем основной аватар в игре
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (avatarPreview) {
+            avatarPreview.innerHTML = `<img src="${myAvatarUrl}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">`;
+        }
+        
+        // Обновляем в Firebase
+        if (roomId && myId) {
+            const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
+            await roomRef.update({ avatar: '', avatarUrl: myAvatarUrl });
+        }
+        
+        messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> GIF аватар установлен!';
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('playerAvatarUrl', myAvatarUrl);
+        localStorage.setItem('playerAvatar', '');
+    };
+    
+    img.onerror = () => {
+        messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Неверный URL изображения';
+    };
+    
+    img.src = url.trim();
+    }
+    
+    // Выбор эмодзи аватара
+    function selectEmojiAvatar(emoji) {
+    myAvatar = emoji;
+    myAvatarUrl = null;
+    
+    // Обновляем превью
+    const previewDiv = document.getElementById('profileAvatarPreview');
+    previewDiv.innerHTML = emoji;
+    
+    // Обновляем основной аватар в игре
+    const avatarPreview = document.getElementById('avatarPreview');
+    if (avatarPreview) {
+        avatarPreview.innerHTML = emoji;
+    }
+    
+    // Обновляем в Firebase
+    if (roomId && myId) {
+        const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
+        roomRef.update({ avatar: myAvatar, avatarUrl: null });
+    }
+    
+    // Сохраняем в localStorage
+    localStorage.setItem('playerAvatar', myAvatar);
+    localStorage.setItem('playerAvatarUrl', '');
+    
+    messageBoxDiv.innerHTML = `<i class="fas fa-smile"></i> Аватар изменён на ${emoji}`;
+    }
+    
+    // Инициализация пресетов эмодзи
+    function initAvatarPresets() {
+    const presets = [
+        '😀', '😂', '😎', '🤓', '😍', '🥶', '🤯', '🥳',
+        '🦸', '🦹', '🧙', '🐉', '👾', '🤖', '👻', '🎃',
+        '🐺', '🦊', '🐱', '🐼', '🦁', '🐧', '🐨', '🦄',
+        '🍕', '🍔', '🌮', '🍣', '🎮', '⚽', '🎸', '🎧',
+        '🌟', '⭐', '🔥', '👑', '💎', '💰', '⚙️', '💡'
+    ];
+    
+    const container = document.getElementById('avatarPresetsGrid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    presets.forEach(emoji => {
+        const div = document.createElement('div');
+        div.className = 'avatar-preset';
+        div.textContent = emoji;
+        div.onclick = () => selectEmojiAvatar(emoji);
+        container.appendChild(div);
+    });
+    }
+    
+    // Загрузка сохранённого профиля
+    function loadSavedProfile() {
+    const savedName = localStorage.getItem('playerName');
+    const savedAvatar = localStorage.getItem('playerAvatar');
+    const savedAvatarUrl = localStorage.getItem('playerAvatarUrl');
+    
+    if (savedName) myName = savedName;
+    if (savedAvatarUrl) {
+        myAvatarUrl = savedAvatarUrl;
+        myAvatar = '';
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (avatarPreview) {
+            avatarPreview.innerHTML = `<img src="${myAvatarUrl}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">`;
+        }
+    } else if (savedAvatar) {
+        myAvatar = savedAvatar;
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (avatarPreview) {
+            avatarPreview.innerHTML = myAvatar;
+        }
+    }
+    
+    if (playerNameInput) playerNameInput.value = myName;
+    }
+    
+    // Инициализация модального окна профиля
+    function initProfileModal() {
+    profileModal = document.getElementById('profileModal');
+    
+    if (!profileModal) return;
+    
+    // Кнопки
+    const openBtn = document.getElementById('profileOpenBtn');
+    const closeBtn = document.getElementById('profileCloseBtn');
+    const cancelBtn = document.getElementById('profileCancelBtn');
+    const saveBtn = document.getElementById('profileSaveBtn');
+    const setGifBtn = document.getElementById('setGifBtn');
+    const gifUrlInput = document.getElementById('gifUrlInput');
+    
+    if (openBtn) openBtn.onclick = openProfileModal;
+    if (closeBtn) closeBtn.onclick = closeProfileModal;
+    if (cancelBtn) cancelBtn.onclick = closeProfileModal;
+    if (saveBtn) saveBtn.onclick = saveProfile;
+    
+    if (setGifBtn && gifUrlInput) {
+        setGifBtn.onclick = () => {
+            setGifAvatar(gifUrlInput.value);
+            gifUrlInput.value = '';
+        };
+        
+        gifUrlInput.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                setGifAvatar(gifUrlInput.value);
+                gifUrlInput.value = '';
+            }
+        };
+    }
+    
+    // Закрытие по клику вне окна
+    profileModal.onclick = (e) => {
+        if (e.target === profileModal) closeProfileModal();
+    };
+    
+    // Инициализация пресетов
+    initAvatarPresets();
+    
+    // Загрузка статистики
+    loadProfileStats();
+    }
+    
+    // Переопределяем функцию renderPlayers для отображения GIF аватаров
+    const originalRenderPlayers = renderPlayers;
+    renderPlayers = function() {
+    let html = '';
+    players.forEach(p => {
+        const isActiveTurn = (p.id === currentPlayerId && !complaintActive);
+        const isMe = (p.id === myId);
+        
+        let avatarHtml = '';
+        if (p.avatarUrl && p.avatarUrl.startsWith('http')) {
+            avatarHtml = `<img src="${p.avatarUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            avatarHtml = p.avatar || '😎';
+        }
+        
+        html += `<div class="player-card ${isActiveTurn ? 'active' : ''} ${isMe ? 'this-player' : ''}">
+                    <div class="player-avatar">${avatarHtml}</div>
+                    <div class="player-name">${p.name} ${isMe ? '(Вы)' : ''}</div>
+                    <div class="player-score">🏆 ${p.score || 0}</div>
+                </div>`;
+    });
+    playersPanelDiv.innerHTML = html || '<div style="text-align: center; padding: 20px;">Нет игроков</div>';
+    };
+    
+    // Запускаем инициализацию после загрузки
+    document.addEventListener('DOMContentLoaded', () => {
+    initProfileModal();
+    loadSavedProfile();
+    });
+    
+    // Обновляем функцию присоединения к комнате, чтобы отправлять актуальные данные профиля
+    const originalJoinRoom = joinRoom;
+    joinRoom = async function() {
+    myName = localStorage.getItem('playerName') || playerNameInput.value.trim() || "Воин";
+    myAvatar = localStorage.getItem('playerAvatar') || '😎';
+    myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
+    await originalJoinRoom();
+    };
+    
+    const originalCreateRoom = createRoom;
+    createRoom = async function() {
+    myName = localStorage.getItem('playerName') || playerNameInput.value.trim() || "Воин";
+    myAvatar = localStorage.getItem('playerAvatar') || '😎';
+    myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
+    await originalCreateRoom();
+    };
+    
+    // Функция для отслеживания побед (вызывать при завершении игры)
+    function onGameEnd(winnerId) {
+    if (winnerId === myId) {
+        updateGameStats(true, usedWords.filter(w => w.authorId === myId).length);
+    }
+    }
+    let previousPlayersCount = 0;
+let joinedPlayersLog = new Set(); // Для отслеживания уже уведомлённых игроков
+
+// Функция отправки системного сообщения в чат
+async function sendSystemMessageToChat(message, type = 'info') {
+    if (!roomId) return;
+    
+    const icons = {
+        join: '🎉',
+        leave: '👋',
+        info: 'ℹ️',
+        warning: '⚠️'
+    };
+    
+    const systemMsg = {
+        sender: '🔔 СИСТЕМА',
+        senderId: 'system',
+        text: `${icons[type] || '📢'} ${message}`,
+        timestamp: Date.now(),
+        isSystem: true
+    };
+    
+    const msgsRef = db.ref(`rooms/${roomId}/messages`);
+    const snap = await msgsRef.once('value');
+    let arr = snap.val() || [];
+    arr.push(systemMsg);
+    if (arr.length > 50) arr = arr.slice(-50);
+    await msgsRef.set(arr);
+}
+
+// Функция проверки новых/ушедших игроков
+function checkPlayersChanges(newPlayers) {
+    if (!roomId) return;
+    
+    const oldPlayerIds = new Set(players.map(p => p.id));
+    const newPlayerIds = new Set(newPlayers.map(p => p.id));
+    
+    // Проверяем новых игроков
+    for (let player of newPlayers) {
+        if (!oldPlayerIds.has(player.id) && player.id !== myId) {
+            // Новый игрок присоединился
+            const message = `${player.name} присоединился к битве!`;
+            sendSystemMessageToChat(message, 'join');
+            
+            // Отправляем уведомление (если разрешено)
+            if (Notification.permission === 'granted' && !document.hasFocus()) {
+                new Notification('🎮 Новый игрок!', {
+                    body: `${player.name} присоединился к комнате`,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/1946/1946425.png',
+                    silent: true
+                });
+            }
+        }
+    }
+    
+    // Проверяем ушедших игроков
+    for (let player of players) {
+        if (!newPlayerIds.has(player.id) && player.id !== myId) {
+            // Игрок покинул игру
+            const message = `${player.name} покинул битву...`;
+            sendSystemMessageToChat(message, 'leave');
+        }
+    }
+}
+
+// Переопределяем функцию renderPlayers для отслеживания изменений
+const originalRenderPlayersForNotifications = renderPlayers;
+renderPlayers = function() {
+    // Проверяем изменения перед обновлением
+    if (players.length > 0) {
+        checkPlayersChanges(players);
+    }
+    
+    // Вызываем оригинальную функцию
+    originalRenderPlayersForNotifications();
+};
+
+// Функция для уведомления о начале игры (когда собралось достаточно игроков)
+let gameStartedNotified = false;
+
+function checkGameStart() {
+    if (!roomId) return;
+    
+    if (players.length >= 2 && !gameStartedNotified && usedWords.length === 0) {
+        gameStartedNotified = true;
+        sendSystemMessageToChat('Игра началась! Первое слово может быть любым! 🎮', 'info');
+        
+        // Отправляем уведомление
+        if (Notification.permission === 'granted') {
+            new Notification('🎮 Игра началась!', {
+                body: 'Придумывайте слова и побеждайте!',
+                icon: 'https://cdn-icons-png.flaticon.com/512/1946/1946425.png'
+            });
+        }
+    } else if (players.length < 2) {
+        gameStartedNotified = false;
+    }
+}
+
+// Обновляем setupListeners для добавления проверки старта игры
+const originalSetupListenersForGameStart = setupListeners;
+setupListeners = function(room) {
+    originalSetupListenersForGameStart(room);
+    
+    // Слушаем изменения количества игроков для уведомления о старте
+    const roomRef = db.ref(`rooms/${room}`);
+    roomRef.child('players').on('value', (snap) => {
+        setTimeout(() => checkGameStart(), 500);
+    });
+};
+
+// Функция для приветствия при подключении к комнате
+async function sendWelcomeMessage() {
+    if (!roomId) return;
+    
+    setTimeout(async () => {
+        const welcomeMsg = {
+            sender: '🔔 СИСТЕМА',
+            senderId: 'system',
+            text: `👋 Добро пожаловать, ${myName}! Правила: существительные, ед.ч, именительный падеж. Удачи!`,
+            timestamp: Date.now(),
+            isSystem: true
+        };
+        
+        const msgsRef = db.ref(`rooms/${roomId}/messages`);
+        const snap = await msgsRef.once('value');
+        let arr = snap.val() || [];
+        arr.push(welcomeMsg);
+        if (arr.length > 50) arr = arr.slice(-50);
+        await msgsRef.set(arr);
+    }, 1000);
+}
+
+// Переопределяем функции входа в комнату для отправки приветствия
+const originalJoinRoomForWelcome = joinRoom;
+joinRoom = async function() {
+    await originalJoinRoomForWelcome();
+    if (roomId) {
+        sendWelcomeMessage();
+    }
+};
+
+const originalCreateRoomForWelcome = createRoom;
+createRoom = async function() {
+    await originalCreateRoomForWelcome();
+    if (roomId) {
+        sendWelcomeMessage();
+    }
+};
+function initTopBar() {
+    const profileTopBtn = document.getElementById('profileTopBtn');
+    const themeTopBtn = document.getElementById('themeTopBtn');
+    const settingsTopBtn = document.getElementById('settingsTopBtn');
+    
+    // Кнопка профиля
+    if (profileTopBtn) {
+        profileTopBtn.onclick = () => {
+            if (typeof openProfileModal === 'function') {
+                openProfileModal();
+            } else {
+                // Если модальное окно профиля ещё не инициализировано
+                messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка профиля...';
+                setTimeout(() => {
+                    if (typeof openProfileModal === 'function') openProfileModal();
+                }, 500);
+            }
+        };
+    }
+    
+    // Кнопка смены темы
+    if (themeTopBtn) {
+        themeTopBtn.onclick = () => {
+            if (typeof toggleTheme === 'function') {
+                toggleTheme();
+            } else {
+                // Fallback переключения темы
+                if (document.body.classList.contains('dark-theme')) {
+                    document.body.classList.remove('dark-theme');
+                    document.body.classList.add('light-theme');
+                    localStorage.setItem('gameTheme', 'light');
+                    themeTopBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                } else {
+                    document.body.classList.remove('light-theme');
+                    document.body.classList.add('dark-theme');
+                    localStorage.setItem('gameTheme', 'dark');
+                    themeTopBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            }
+        };
+        
+        // Обновляем иконку в зависимости от текущей темы
+        const updateThemeIcon = () => {
+            if (document.body.classList.contains('dark-theme')) {
+                themeTopBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeTopBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        };
+        updateThemeIcon();
+        
+        // Следим за изменением темы
+        const observer = new MutationObserver(updateThemeIcon);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+    
+    // Кнопка настроек (можно добавить быстрые настройки)
+    if (settingsTopBtn) {
+        settingsTopBtn.onclick = () => {
+            // Создаём простое меню настроек
+            showQuickSettingsMenu();
+        };
+    }
+}
+
+// Быстрое меню настроек
+function showQuickSettingsMenu() {
+    // Создаём временное меню
+    const menu = document.createElement('div');
+    menu.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1000;
+        min-width: 200px;
+        animation: slideDown 0.2s ease;
+    `;
+    
+    if (document.body.classList.contains('dark-theme')) {
+        menu.style.background = '#2a2a3e';
+        menu.style.color = '#e0e0e0';
+    }
+    
+    menu.innerHTML = `
+        <div style="margin-bottom: 12px; font-weight: bold;">⚙️ Быстрые настройки</div>
+        <hr style="margin: 8px 0;">
+        <div style="margin: 10px 0;">
+            <label>🔊 Звуки: </label>
+            <input type="checkbox" id="quickSoundsToggle" ${localStorage.getItem('soundsEnabled') !== 'false' ? 'checked' : ''}>
+        </div>
+        <div style="margin: 10px 0;">
+            <label>🔔 Уведомления: </label>
+            <input type="checkbox" id="quickNotificationsToggle" ${localStorage.getItem('notificationsEnabled') !== 'false' ? 'checked' : ''}>
+        </div>
+        <hr style="margin: 8px 0;">
+        <button id="quickClearChat" style="width: 100%; margin-top: 8px; background: #dc3545; color: white; border: none; padding: 8px; border-radius: 12px; cursor: pointer;">
+            🗑️ Очистить чат
+        </button>
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Обработчики
+    const soundsToggle = menu.querySelector('#quickSoundsToggle');
+    const notifToggle = menu.querySelector('#quickNotificationsToggle');
+    const clearBtn = menu.querySelector('#quickClearChat');
+    
+    if (soundsToggle) {
+        soundsToggle.onchange = (e) => {
+            localStorage.setItem('soundsEnabled', e.target.checked);
+            if (!e.target.checked && soundMixer) {
+                Object.keys(soundMixer.sounds).forEach(id => soundMixer.stop(id));
+            }
+        };
+    }
+    
+    if (notifToggle) {
+        notifToggle.onchange = (e) => {
+            localStorage.setItem('notificationsEnabled', e.target.checked);
+            if (e.target.checked && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        };
+    }
+    
+    if (clearBtn) {
+        clearBtn.onclick = async () => {
+            if (roomId) {
+                await db.ref(`rooms/${roomId}/messages`).set([]);
+                messageBoxDiv.innerHTML = '<i class="fas fa-trash"></i> Чат очищен';
+                menu.remove();
+            }
+        };
+    }
+    
+    // Закрытие при клике вне меню
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && e.target !== settingsTopBtn) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 100);
+}
+
+// Запускаем инициализацию верхней панели
+document.addEventListener('DOMContentLoaded', () => {
+    initTopBar();
+});
+
+// Добавляем анимацию для меню
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+const originalRenderChat = renderChat;
+renderChat = function(messages) {
+    if (!messages.length) { 
+        chatMessagesDiv.innerHTML = '<div class="chat-message" style="text-align: center;"><i class="fas fa-comment"></i> Чат пуст, напишите первое сообщение</div>'; 
+        return; 
+    }
+    
+    let html = '';
+    messages.forEach(m => {
+        const isMine = m.senderId === myId;
+        const isSystem = m.senderId === 'system';
+        const time = new Date(m.timestamp).toLocaleTimeString().slice(0, 5);
+        
+        if (isSystem) {
+            // Стиль для системных сообщений
+            html += `<div class="chat-message system-message" style="background: linear-gradient(135deg, #667eea15, #764ba215); text-align: center; margin: 8px auto; max-width: 90%;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 1.1rem;">${m.text.split(' ')[0]}</span>
+                            <span style="color: #667eea; font-size: 0.85rem;">${m.text.substring(m.text.indexOf(' '))}</span>
+                        </div>
+                        <div class="time" style="display: block; text-align: center; margin-top: 4px;">${time}</div>
+                    </div>`;
+        } else {
+            html += `<div class="chat-message ${isMine ? 'mine' : ''}">
+                        <span class="sender">${m.sender}</span>
+                        <span class="time">${time}</span>
+                        <div style="margin-top: 4px;">${m.text}</div>
+                    </div>`;
+        }
+    });
+    chatMessagesDiv.innerHTML = html;
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+};
   </script>
 </body>
-
 </html>
