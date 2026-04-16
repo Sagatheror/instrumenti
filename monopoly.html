@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Наша Монополия</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -19,36 +19,37 @@
             background: radial-gradient(circle at 20% 30%, #0a2f1f, #030c07);
             font-family: 'Segoe UI', 'Poppins', 'Inter', sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .app-container {
             display: flex;
-            gap: 24px;
-            max-width: 1600px;
+            gap: 20px;
+            max-width: 2000px;
             margin: 0 auto;
             align-items: flex-start;
+            flex-wrap: wrap;
         }
 
         .game-area {
-            flex: 3;
-            min-width: 0;
+            flex: 4;
+            min-width: 380px;
         }
 
         .chat-panel {
-            flex: 1;
-            min-width: 300px;
-            max-width: 360px;
+            flex: 1.5;
+            min-width: 320px;
+            max-width: 420px;
             background: rgba(30, 25, 20, 0.95);
             backdrop-filter: blur(16px);
-            border-radius: 48px;
+            border-radius: 40px;
             padding: 20px;
             box-shadow: 0 25px 45px rgba(0,0,0,0.4);
             border: 1px solid rgba(212, 175, 55, 0.3);
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 40px);
-            max-height: 900px;
+            height: calc(100vh - 30px);
+            max-height: 1000px;
         }
 
         .chat-header {
@@ -58,23 +59,36 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #d4af37;
             margin-bottom: 15px;
+            position: relative;
         }
 
         .chat-header h3 {
             color: #ffcd7e;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .emoji-btn {
             background: #2a2418;
             border: 1px solid #d4af37;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            font-size: 2rem;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            font-size: 1.8rem;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
         }
 
         .emoji-btn:hover {
@@ -83,58 +97,61 @@
         }
 
         .emoji-panel {
-            position: absolute;
-            bottom: 70px;
-            right: 20px;
-            background: #2a2418;
-            border: 2px solid #d4af37;
-            border-radius: 20px;
-            padding: 15px;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    background: #2a2418;
+    border: 2px solid #d4af37;
+    border-radius: 25px;
+    padding: 15px;
+    width: 380px;
+    max-height: 450px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
 
-        .emoji-category {
-            margin-bottom: 15px;
-        }
+.emoji-category {
+    margin-bottom: 20px;
+}
 
-        .emoji-category-title {
-            color: #ffcd7e;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #d4af3740;
-            padding-bottom: 4px;
-        }
+.emoji-category-title {
+    color: #ffcd7e;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #d4af3740;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
         .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-        }
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
 
-        .emoji-item {
-            font-size: 1.5rem;
-            cursor: pointer;
-            text-align: center;
-            padding: 5px;
-            border-radius: 10px;
-            transition: all 0.1s;
-        }
+.emoji-item {
+    font-size: 1.5rem;
+    cursor: pointer;
+    text-align: center;
+    padding: 6px;
+    border-radius: 12px;
+    transition: all 0.1s;
+}
 
-        .emoji-item:hover {
-            background: #d4af37;
-            transform: scale(1.2);
-        }
+.emoji-item:hover {
+    background: #d4af37;
+    transform: scale(1.2);
+}
 
         .chat-tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 15px;
             background: rgba(0,0,0,0.3);
-            border-radius: 40px;
+            border-radius: 50px;
             padding: 4px;
         }
 
@@ -142,9 +159,10 @@
             flex: 1;
             background: transparent;
             border: none;
-            padding: 10px 12px;
-            border-radius: 36px;
+            padding: 10px 15px;
+            border-radius: 45px;
             font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
             color: #c9b896;
             transition: 0.15s;
@@ -172,23 +190,24 @@
         .chat-message {
             background: rgba(0,0,0,0.5);
             border-radius: 20px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
+            padding: 10px 15px;
+            font-size: 0.9rem;
             animation: fadeInUp 0.2s ease;
         }
 
         .chat-message.system {
-            border-left: 3px solid #d4af37;
+            border-left: 4px solid #d4af37;
         }
 
-        .chat-message.trade {
-            border-left: 3px solid #4caf50;
+         .chat-message.trade {
+            border-left: 4px solid #4caf50;
             background: rgba(76,175,80,0.2);
         }
 
         .chat-message .sender {
             color: #ffcd7e;
             font-weight: bold;
+            margin-right: 8px;
         }
 
         .chat-message .text {
@@ -207,20 +226,22 @@
             flex: 1;
             background: #2a2418;
             border: 1px solid #d4af37;
-            border-radius: 40px;
-            padding: 12px 16px;
+            border-radius: 50px;
+            padding: 12px 18px;
             color: white;
             font-family: inherit;
+            font-size: 0.95rem;
             outline: none;
         }
 
         .send-btn {
             background: #d4af37;
             border: none;
-            border-radius: 40px;
-            padding: 0 20px;
+            border-radius: 50px;
+            padding: 0 22px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 1.3rem;
         }
 
         @keyframes fadeInUp {
@@ -230,15 +251,15 @@
 
         .room-screen {
             background: linear-gradient(145deg, #fff7ea, #f7ebd2);
-            border-radius: 56px;
-            padding: 40px;
+            border-radius: 60px;
+            padding: 40px 30px;
             text-align: center;
-            max-width: 650px;
+            max-width: 600px;
             margin: 30px auto;
         }
 
         .room-screen h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             background: linear-gradient(135deg, #d4af37, #b8860b);
             -webkit-background-clip: text;
             background-clip: text;
@@ -252,7 +273,7 @@
 
         .room-input {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             font-size: 1.1rem;
             border: 2px solid #d4af37;
             border-radius: 60px;
@@ -270,7 +291,7 @@
 
         .room-btn {
             background: #d4af37;
-            padding: 12px 28px;
+            padding: 14px 32px;
             font-size: 1.1rem;
             border: none;
             border-radius: 60px;
@@ -285,26 +306,38 @@
 
         .player-name-input-room {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             font-size: 1rem;
             border: 2px solid #e2caa1;
             border-radius: 60px;
             text-align: center;
             margin: 10px 0;
         }
-
+.avatar-selector .avatar-option {
+            font-size: 2.2rem !important;
+            width: 60px !important;
+            padding: 8px !important;
+        }
         .waiting-players {
             margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             background: #e9dccd;
-            border-radius: 32px;
+            border-radius: 35px;
+        }
+.waiting-players h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
         }
 
+        .waiting-players p {
+            font-size: 1rem;
+            margin: 8px 0;
+        }
         .start-game-btn-lobby {
             background: #4caf50;
             color: white;
             font-size: 1.2rem;
-            padding: 12px 30px;
+            padding: 14px 35px;
             margin-top: 15px;
             border: none;
             border-radius: 60px;
@@ -320,7 +353,7 @@
 
         .game-wrapper {
             background: rgba(0, 0, 0, 0.25);
-            border-radius: 56px;
+            border-radius: 50px;
             padding: 20px;
         }
 
@@ -328,10 +361,10 @@
             display: grid;
             grid-template-columns: repeat(11, 1fr);
             background: #f3e5c0;
-            border-radius: 32px;
-            box-shadow: inset 0 0 0 6px #e9d09c;
-            width: min(70vw, 70vh);
-            height: min(70vw, 70vh);
+            border-radius: 35px;
+            box-shadow: inset 0 0 0 5px #e9d09c;
+            width: min(75vw, 75vh);
+            height: min(75vw, 75vh);
             margin: 0 auto;
         }
 
@@ -345,10 +378,10 @@
             font-size: 0.6rem;
             font-weight: bold;
             text-align: center;
-            padding: 3px 1px;
+            padding: 4px 2px;
             position: relative;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
         .cell:hover {
@@ -357,55 +390,117 @@
             z-index: 10;
         }
 
-        .color-brown { border-top: 6px solid #9b5e2c; }
-        .color-lightblue { border-top: 6px solid #6fcbdf; }
-        .color-pink { border-top: 6px solid #f77fbe; }
-        .color-orange { border-top: 6px solid #f39c12; }
-        .color-red { border-top: 6px solid #e63946; }
-        .color-yellow { border-top: 6px solid #ffd966; }
-        .color-green { border-top: 6px solid #2ecc71; }
-        .color-blue { border-top: 6px solid #5499ff; }
-        .railroad { border-top: 6px solid #6c6f6c; }
-        .utility { border-top: 6px solid #48c9b0; }
+        .cell-name {
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
 
-        .owner-token { position: absolute; bottom: 2px; right: 2px; font-size: 0.65rem; background: rgba(0,0,0,0.7); border-radius: 20px; padding: 0px 4px; color: gold; }
-        .players-on-cell { position: absolute; top: 2px; left: 2px; display: flex; gap: 2px; font-size: 0.7rem; background: rgba(0,0,0,0.55); border-radius: 20px; padding: 0px 4px; }
+        .cell-price {
+            font-size: 0.5rem;
+            color: #5a3a1a;
+        }
+
+        .color-brown { border-top: 5px solid #8B4513; }
+        .color-lightblue { border-top: 5px solid #87CEEB; }
+        .color-pink { border-top: 5px solid #FF69B4; }
+        .color-orange { border-top: 5px solid #FF8C00; }
+        .color-red { border-top: 5px solid #DC143C; }
+        .color-yellow { border-top: 5px solid #FFD700; }
+        .color-green { border-top: 5px solid #228B22; }
+        .color-blue { border-top: 5px solid #1E90FF; }
+        .railroad { border-top: 5px solid #2F4F4F; }
+        .utility { border-top: 5px solid #20B2AA; }
+
+        .owner-token { 
+            position: absolute; 
+            bottom: 2px; 
+            right: 2px; 
+            font-size: 0.55rem; 
+            background: rgba(0,0,0,0.75); 
+            border-radius: 12px; 
+            padding: 1px 4px; 
+            color: gold; 
+            white-space: nowrap;
+        }
+        .players-on-cell { 
+            position: absolute; 
+            top: 2px; 
+            left: 2px; 
+            display: flex; 
+            gap: 2px; 
+            font-size: 0.65rem; 
+            background: rgba(0,0,0,0.6); 
+            border-radius: 12px; 
+            padding: 1px 4px; 
+        }
 
         .game-panel {
             background: #25201ab3;
             backdrop-filter: blur(12px);
-            border-radius: 48px;
+            border-radius: 40px;
             padding: 20px;
             margin-top: 20px;
             color: #fcf3e0;
         }
 
-        .players-info { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .players-info { 
+            display: flex; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            margin-bottom: 20px; 
+        }
         .player-card {
             background: #322a1ed9;
-            border-radius: 28px;
-            padding: 8px 12px;
+            border-radius: 30px;
+            padding: 12px 15px;
             flex: 1;
+            min-width: 120px;
             cursor: pointer;
             border: 2px solid #a8864b;
             transition: all 0.2s;
+            font-size: 0.9rem;
         }
         .player-card:hover { background: #4a3a28d9; transform: translateY(-2px); }
         .player-card.active { background: #6b4e2ad9; border-color: #ffce89; box-shadow: 0 0 0 2px #ffbc60; }
-        .controls { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; align-items: center; }
+        .player-name { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
+        .player-money { font-size: 1rem; color: #ffcd7e; }
+        .controls { 
+            display: flex; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            margin: 15px 0; 
+            align-items: center; 
+        }
         button {
             background: #ffcd7e;
             border: none;
-            padding: 10px 22px;
+            padding: 12px 24px;
             border-radius: 60px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.1s;
+            font-size: 1rem;
         }
         button:active { transform: scale(0.96); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .dice-area { background: #1f1a13b3; padding: 6px 18px; border-radius: 60px; display: inline-flex; align-items: center; gap: 12px; }
-        .dice { font-size: 1.8rem; background: #fcf3e0; color: #2a2418; width: 55px; text-align: center; border-radius: 20px; }
+        .dice-area { 
+            background: #1f1a13b3; 
+            padding: 8px 20px; 
+            border-radius: 60px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        .dice { 
+            font-size: 1.8rem; 
+            background: #fcf3e0; 
+            color: #2a2418; 
+            width: 65px; 
+            text-align: center; 
+            border-radius: 20px; 
+            padding: 8px;
+        }
 
         .modal-overlay {
             position: fixed;
@@ -424,14 +519,14 @@
 
         .modal-content {
             background: linear-gradient(145deg, #2a2418, #1f1a13);
-            border-radius: 48px;
+            border-radius: 50px;
             padding: 30px;
-            max-width: 500px;
+            max-width: 550px;
             width: 90%;
             border: 2px solid #d4af37;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             animation: slideIn 0.3s ease;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -447,14 +542,14 @@
 
         .modal-title {
             color: #ffcd7e;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             text-align: center;
             margin-bottom: 20px;
         }
 
         .modal-info {
             background: rgba(0,0,0,0.4);
-            border-radius: 32px;
+            border-radius: 30px;
             padding: 15px;
             margin: 15px 0;
         }
@@ -465,6 +560,7 @@
             padding: 8px 0;
             border-bottom: 1px solid #d4af3740;
             color: #f0e6d0;
+            font-size: 0.95rem;
         }
 
         .modal-info-row:last-child {
@@ -476,12 +572,14 @@
             gap: 15px;
             margin-top: 25px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .modal-btn {
             flex: 1;
             padding: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            min-width: 110px;
         }
 
         .modal-btn-primary {
@@ -499,7 +597,7 @@
             color: white;
         }
 
-        .property-list {
+         .property-list {
             max-height: 300px;
             overflow-y: auto;
             margin: 15px 0;
@@ -507,7 +605,7 @@
 
         .property-item {
             background: rgba(0,0,0,0.3);
-            border-radius: 20px;
+            border-radius: 22px;
             padding: 12px;
             margin-bottom: 10px;
             cursor: pointer;
@@ -522,32 +620,74 @@
         .property-name {
             color: #ffcd7e;
             font-weight: bold;
+            font-size: 0.95rem;
         }
 
         .property-details {
             font-size: 0.85rem;
             color: #c9b896;
+            margin-top: 4px;
         }
 
         .bid-input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #3a3022;
             border: 1px solid #d4af37;
-            border-radius: 40px;
+            border-radius: 50px;
             color: white;
             font-size: 1rem;
             text-align: center;
             margin: 10px 0;
         }
 
-        @media (max-width: 900px) {
-            .app-container { flex-direction: column; }
-            .chat-panel { max-width: 100%; height: 350px; order: 2; }
+        .reconnect-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #2c2c2c;
+            padding: 12px 20px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 9999;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 1000px) {
+            .board { width: min(75vw, 75vh); height: min(75vw, 75vh); }
+        }
+
+        @media (max-width: 800px) {
+            body { padding: 8px; }
+            .app-container { flex-direction: column; gap: 12px; }
+            .chat-panel { max-width: 100%; height: 300px; order: 2; }
             .game-area { order: 1; }
             .board { width: min(85vw, 85vh); height: min(85vw, 85vh); }
-            .cell-name { font-size: 0.5rem; }
-            .emoji-panel { width: 280px; right: 10px; }
+            .cell-name { font-size: 0.4rem; }
+            .cell-price { font-size: 0.35rem; }
+            .emoji-panel { width: 260px; right: 10px; bottom: 80px; }
+            .player-card { font-size: 0.7rem; min-width: 80px; }
+            button { padding: 6px 12px; font-size: 0.75rem; }
+            .modal-content { padding: 20px; }
+            .modal-title { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 500px) {
+            .cell-name { font-size: 0.35rem; }
+            .cell-price { font-size: 0.3rem; }
+            .owner-token { font-size: 0.4rem; }
+            .players-on-cell { font-size: 0.45rem; }
+            .player-card { min-width: 70px; padding: 5px 6px; font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -556,7 +696,7 @@
     <div class="game-area" id="gameArea"></div>
     <div class="chat-panel" id="chatPanel" style="display: none;">
         <div class="chat-header">
-            <span style="font-size: 1.8rem;">💬</span>
+            <span style="font-size: 1.6rem;">💬</span>
             <h3>Чат комнаты <span id="roomNameDisplay"></span></h3>
             <button class="emoji-btn" id="emojiBtn">😊</button>
         </div>
@@ -598,7 +738,6 @@
             return true;
         } catch(e) {
             console.error("❌ Ошибка Firebase:", e);
-            alert("Ошибка подключения к Firebase: " + e.message);
             return false;
         }
     }
@@ -620,80 +759,166 @@
     let auctionListener = null;
     let pendingTradeOffer = null;
     
-    // ========== КОЛЛЕКЦИЯ СМАЙЛИКОВ ==========
-    const emojiCategories = {
-        "😊 Смайлики": ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🥸","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗","🤔","🤭","🤫","🤥","😶","😐","😑","😬","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧","😷","🤒","🤕","🤑","🤠","😈","👿","👹","👺","🤡","💩","👻","💀","☠️","👽","👾","🤖","🎃","😺","😸","😹","😻","😼","😽","🙀","😿","😾"],
-        "🐶 Животные": ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐴","🐺","🐗","🐝","🐛","🦋","🐌","🐞","🐜","🦟","🦗","🕷️","🦂","🐢","🐍","🦎","🐙","🦑","🦐","🦞","🐠","🐟","🐡","🐬","🐳","🐋","🦈","🐊","🐅","🐆","🦓","🦍","🦧","🐘","🦛","🦏","🐪","🐫","🦒","🦘","🐃","🐂","🐄","🐎","🐖","🐏","🐑","🦙","🐐","🦌","🐕","🐩","🐈","🐓","🦃","🦚","🦜","🦢","🕊️","🐇","🦝","🦨","🦡","🦔","🐿️"],
-        "🍔 Еда": ["🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🫐","🍈","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑","🥦","🥬","🥒","🌶️","🫑","🌽","🥕","🫒","🧄","🧅","🥔","🍠","🥐","🥯","🍞","🥖","🥨","🧀","🥚","🍳","🧈","🥞","🧇","🥓","🥩","🍗","🍖","🦴","🌭","🍔","🍟","🍕","🥪","🥙","🧆","🌮","🌯","🫔","🥗","🥘","🫕","🥫","🍝","🍜","🍲","🍛","🍣","🍱","🥟","🦪","🍤","🍙","🍚","🍘","🍥","🥠","🥮","🍢","🍡","🍧","🍨","🍦","🥧","🧁","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","🌰","🥜","🍯","🥛","☕","🍵","🧃","🥤","🧋","🍶","🍺","🍻","🥂","🥃","🥄","🔪","🍽️"],
-        "🎮 Игры": ["🎮","🕹️","🎲","♟️","🎯","🎳","🎰","🧩","🎨","🎭","🎪","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🪘","🎲","♠️","♥️","♦️","♣️","🃏","🀄️","🎴"],
-        "🚀 Транспорт": ["🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛹","🚀","🛸","✈️","🛩️","🚁","🚤","⛵","🛳️","🚢","🚂","🚆","🚇","🚉"],
-        "⭐ Символы": ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","☮️","✝️","☪️","🕉️","☸️","✡️","🔯","🕎","☯️","☦️","🛐","⛎","♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓","🆔","⚛️","🉐","🉑","💯","🔞","📵","🚫","❌","⭕","💢","♨️","‼️","⁉️","❓","❔","❕","❗","🔰","💠","🌀","🌐","🏧","🈹","🈚","🈶","🈸","🈴","🈲","🈳","㊗️","㊙️","🈺","🈵","🔴","🟠","🟡","🟢","🔵","🟣","⚫","⚪","🟤","🔘","🔲","🔳","💠","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"]
-    };
+    function savePlayerSession() {
+        if (currentRoomId && currentPlayerId) {
+            localStorage.setItem('monopoly_session', JSON.stringify({
+                roomId: currentRoomId,
+                playerId: currentPlayerId,
+                playerName: currentPlayerName,
+                playerAvatar: currentPlayerAvatar,
+                isCreator: isRoomCreator
+            }));
+        }
+    }
     
-    const avatarList = ["🐧", "🐱", "🐶", "🦊", "🐸", "🐼", "🦁", "🐨"];
+    function loadPlayerSession() {
+        const saved = localStorage.getItem('monopoly_session');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch(e) { return null; }
+        }
+        return null;
+    }
     
-    // ========== ПОЛНЫЕ ДАННЫЕ КЛЕТОК ==========
+    function clearPlayerSession() {
+        localStorage.removeItem('monopoly_session');
+    }
+    
+    async function tryReconnect() {
+        const session = loadPlayerSession();
+        if (!session || !session.roomId) return false;
+        
+        if (!initFirebase()) return false;
+        
+        currentRoomId = session.roomId;
+        currentPlayerId = session.playerId;
+        currentPlayerName = session.playerName;
+        currentPlayerAvatar = session.playerAvatar;
+        isRoomCreator = session.isCreator;
+        
+        const roomRef = db.ref(`rooms/${currentRoomId}`);
+        const snapshot = await roomRef.get();
+        
+        if (!snapshot.exists()) {
+            clearPlayerSession();
+            return false;
+        }
+        
+        const room = snapshot.val();
+        
+        if (!room.players || !room.players[currentPlayerId]) {
+            await roomRef.child(`players/${currentPlayerId}`).set({
+                id: currentPlayerId,
+                name: currentPlayerName,
+                avatar: currentPlayerAvatar,
+                joinedAt: Date.now()
+            });
+        }
+        
+        setupGameListeners();
+        
+        if (room.gameStarted && room.gameState) {
+            gameStartedFlag = true;
+            localGameState = room.gameState;
+            gameActive = true;
+            myTurn = (room.gameState.currentPlayer === currentPlayerId);
+            renderGameFromState();
+        } else {
+            showGameLobby();
+        }
+        
+        addSystemMessageUI("🔌 Переподключение выполнено успешно!");
+        return true;
+    }
+    
+    // ========== ПОЛНЫЕ ДАННЫЕ КЛЕТОК ОРИГИНАЛЬНОЙ МОНОПОЛИИ ==========
     const TILES_FULL = [
-        { id: 0, name: "СТАРТ", type: "start", price: 0, color: null },
-        { id: 1, name: "Балтийская ул.", type: "property", price: 60, rent: [2,10,30,90,160,250], color: "brown", houseCost: 50 },
+        { id: 0, name: "СТАРТ", type: "start", price: 0, color: null, rent: null, houseCost: null },
+        { id: 1, name: "Медитеррания", type: "property", price: 60, rent: [2,10,30,90,160,250], color: "brown", houseCost: 50, mortgage: 30 },
         { id: 2, name: "Общественная казна", type: "chest", price: 0, color: null },
-        { id: 3, name: "Восточная ул.", type: "property", price: 60, rent: [4,20,60,180,320,450], color: "brown", houseCost: 50 },
-        { id: 4, name: "Налог", type: "tax", price: 0, tax: 200, color: null },
-        { id: 5, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
-        { id: 6, name: "Вермонт авеню", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50 },
+        { id: 3, name: "Балтийская ул.", type: "property", price: 60, rent: [4,20,60,180,320,450], color: "brown", houseCost: 50, mortgage: 30 },
+        { id: 4, name: "Подоходный налог", type: "tax", price: 0, tax: 200, color: null },
+        { id: 5, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null, mortgage: 100 },
+        { id: 6, name: "Восточная ул.", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50, mortgage: 50 },
         { id: 7, name: "Шанс", type: "chance", price: 0, color: null },
-        { id: 8, name: "Коннектикут авеню", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50 },
-        { id: 9, name: "Восток авеню", type: "property", price: 120, rent: [8,40,100,300,450,600], color: "lightblue", houseCost: 50 },
+        { id: 8, name: "Вермонт авеню", type: "property", price: 100, rent: [6,30,90,270,400,550], color: "lightblue", houseCost: 50, mortgage: 50 },
+        { id: 9, name: "Коннектикут авеню", type: "property", price: 120, rent: [8,40,100,300,450,600], color: "lightblue", houseCost: 50, mortgage: 60 },
         { id: 10, name: "Тюрьма", type: "jail", price: 0, color: null },
-        { id: 11, name: "Сент-Чарльз пл.", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100 },
-        { id: 12, name: "Электрическая компания", type: "utility", price: 150, rent: [4,10], color: null },
-        { id: 13, name: "Атлантик авеню", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100 },
-        { id: 14, name: "Вирджиния авеню", type: "property", price: 160, rent: [12,60,180,500,700,900], color: "pink", houseCost: 100 },
-        { id: 15, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
-        { id: 16, name: "Стейт авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100 },
+        { id: 11, name: "Сент-Чарльз пл.", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100, mortgage: 70 },
+        { id: 12, name: "Электрическая компания", type: "utility", price: 150, rent: [4,10], color: null, mortgage: 75 },
+        { id: 13, name: "Атлантик авеню", type: "property", price: 140, rent: [10,50,150,450,625,750], color: "pink", houseCost: 100, mortgage: 70 },
+        { id: 14, name: "Вирджиния авеню", type: "property", price: 160, rent: [12,60,180,500,700,900], color: "pink", houseCost: 100, mortgage: 80 },
+        { id: 15, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null, mortgage: 100 },
+        { id: 16, name: "Стейт авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100, mortgage: 90 },
         { id: 17, name: "Общественная казна", type: "chest", price: 0, color: null },
-        { id: 18, name: "Вирджиния авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100 },
-        { id: 19, name: "Сент-Джеймс пл.", type: "property", price: 200, rent: [16,80,220,600,800,1000], color: "orange", houseCost: 100 },
+        { id: 18, name: "Вирджиния авеню", type: "property", price: 180, rent: [14,70,200,550,750,950], color: "orange", houseCost: 100, mortgage: 90 },
+        { id: 19, name: "Сент-Джеймс пл.", type: "property", price: 200, rent: [16,80,220,600,800,1000], color: "orange", houseCost: 100, mortgage: 100 },
         { id: 20, name: "Бесплатная парковка", type: "parking", price: 0, color: null },
-        { id: 21, name: "Теннесси авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150 },
+        { id: 21, name: "Теннесси авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150, mortgage: 110 },
         { id: 22, name: "Шанс", type: "chance", price: 0, color: null },
-        { id: 23, name: "Нью-Йорк авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150 },
-        { id: 24, name: "Кентукки авеню", type: "property", price: 220, rent: [20,100,300,750,925,1100], color: "red", houseCost: 150 },
-        { id: 25, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null },
-        { id: 26, name: "Индиана авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150 },
-        { id: 27, name: "Иллинойс авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150 },
-        { id: 28, name: "Атлантик авеню", type: "property", price: 260, rent: [24,120,360,850,1025,1200], color: "yellow", houseCost: 150 },
-        { id: 29, name: "Водопровод", type: "utility", price: 150, rent: [4,10], color: null },
+        { id: 23, name: "Нью-Йорк авеню", type: "property", price: 220, rent: [18,90,250,700,875,1050], color: "red", houseCost: 150, mortgage: 110 },
+        { id: 24, name: "Кентукки авеню", type: "property", price: 220, rent: [20,100,300,750,925,1100], color: "red", houseCost: 150, mortgage: 110 },
+        { id: 25, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null, mortgage: 100 },
+        { id: 26, name: "Индиана авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150, mortgage: 120 },
+        { id: 27, name: "Иллинойс авеню", type: "property", price: 240, rent: [22,110,330,800,975,1150], color: "yellow", houseCost: 150, mortgage: 120 },
+        { id: 28, name: "Атлантик авеню", type: "property", price: 260, rent: [24,120,360,850,1025,1200], color: "yellow", houseCost: 150, mortgage: 130 },
+        { id: 29, name: "Водопровод", type: "utility", price: 150, rent: [4,10], color: null, mortgage: 75 },
         { id: 30, name: "Отправляйтесь в тюрьму", type: "goToJail", price: 0, color: null },
-        { id: 31, name: "Пасифик авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200 },
-        { id: 32, name: "Каролина авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200 },
+        { id: 31, name: "Пасифик авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200, mortgage: 140 },
+        { id: 32, name: "Каролина авеню", type: "property", price: 280, rent: [26,130,390,900,1100,1275], color: "green", houseCost: 200, mortgage: 140 },
         { id: 33, name: "Общественная казна", type: "chest", price: 0, color: null },
-        { id: 34, name: "Пенсильвания авеню", type: "property", price: 320, rent: [28,150,450,1000,1200,1400], color: "green", houseCost: 200 },
+        { id: 34, name: "Пенсильвания авеню", type: "property", price: 320, rent: [28,150,450,1000,1200,1400], color: "green", houseCost: 200, mortgage: 160 },
         { id: 35, name: "Шанс", type: "chance", price: 0, color: null },
-        { id: 36, name: "Парк Плейс", type: "property", price: 350, rent: [35,175,500,1100,1300,1500], color: "blue", houseCost: 200 },
+        { id: 36, name: "Парк Плейс", type: "property", price: 350, rent: [35,175,500,1100,1300,1500], color: "blue", houseCost: 200, mortgage: 175 },
         { id: 37, name: "Налог на роскошь", type: "tax", price: 0, tax: 100, color: null },
-        { id: 38, name: "Бродвей", type: "property", price: 400, rent: [50,200,600,1400,1700,2000], color: "blue", houseCost: 200 },
-        { id: 39, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null }
+        { id: 38, name: "Бродвей", type: "property", price: 400, rent: [50,200,600,1400,1700,2000], color: "blue", houseCost: 200, mortgage: 200 },
+        { id: 39, name: "Ж/д вокзал", type: "railroad", price: 200, rent: [25,50,100,200], color: null, mortgage: 100 }
     ];
     
-    // Карты шанса и общественной казны
+    // ========== КАРТЫ ШАНСА (оригинальные) ==========
     const CHANCE_CARDS = [
         { text: "Продвиньтесь до СТАРТА", type: "move", value: 0 },
         { text: "Банк выплачивает вам дивиденды $50", type: "money", value: 50 },
         { text: "Ваша постройка окупается, получите $100", type: "money", value: 100 },
         { text: "Отправляйтесь вперёд на 3 клетки", type: "moveForward", value: 3 },
-        { text: "Штраф за превышение скорости $15", type: "money", value: -15 },
-        { text: "Платите за страхование $20", type: "money", value: -20 }
+        { text: "Отправляйтесь на Ж/д вокзал", type: "moveToRailroad", value: 0 },
+        { text: "Отправляйтесь на ближайшую Компанию", type: "moveToUtility", value: 0 },
+        { text: "Платите за страхование $20", type: "money", value: -20 },
+        { text: "Вы выиграли кроссворд $100", type: "money", value: 100 },
+        { text: "Отправляйтесь в тюрьму", type: "goToJail", value: 0 },
+        { text: "Продвиньтесь до Сент-Чарльз пл.", type: "moveTo", value: 11 },
+        { text: "Продвиньтесь до Иллинойс авеню", type: "moveTo", value: 27 },
+        { text: "Делайте ремонт во всех домах: $25 за дом, $100 за отель", type: "repairs", value: 25 }
     ];
     
+    // ========== КАРТЫ ОБЩЕСТВЕННОЙ КАЗНЫ (оригинальные) ==========
     const CHEST_CARDS = [
         { text: "Вы выиграли в лотерею $100", type: "money", value: 100 },
         { text: "Ошибка в вашу пользу, получите $50", type: "money", value: 50 },
         { text: "Оплатите счёт за доктора $50", type: "money", value: -50 },
-        { text: "Благотворительность $25", type: "money", value: -25 }
+        { text: "Благотворительность $25", type: "money", value: -25 },
+        { text: "Наследство от дяди $200", type: "money", value: 200 },
+        { text: "Страховка $100", type: "money", value: 100 },
+        { text: "Заплатите за обучение $150", type: "money", value: -150 },
+        { text: "Вы получили гонорар $20", type: "money", value: 20 },
+        { text: "Продвиньтесь до СТАРТА", type: "move", value: 0 },
+        { text: "Освободитесь из тюрьмы", type: "getOutOfJail", value: 0 }
     ];
     
-    // Позиции на доске 11x11
+    // ========== ЦВЕТОВЫЕ ГРУППЫ ДЛЯ ПРОВЕРКИ МОНОПОЛИИ ==========
+    const COLOR_GROUPS = {
+        brown: [1, 3],
+        lightblue: [6, 8, 9],
+        pink: [11, 13, 14],
+        orange: [16, 18, 19],
+        red: [21, 23, 24],
+        yellow: [26, 27, 28],
+        green: [31, 32, 34],
+        blue: [36, 38]
+    };
+    
+    // Позиции на доске 11x11 (увеличенное поле)
     const positionsMap = new Array(40);
     const layout = [];
     for(let i = 0; i < 11; i++) layout.push([0, i]);
@@ -702,7 +927,84 @@
     for(let i = 9; i >= 1; i--) layout.push([i, 0]);
     for(let i = 0; i < 40; i++) positionsMap[i] = layout[i];
     
-    // ========== СМАЙЛИКИ В ЧАТЕ ==========
+    // Аватарки
+    const avatarList = [
+    "🐧", "🐱", "🐶", "🦊", "🐸", "🐼", "🦁", "🐨", "🐰", "🐭",
+    "🐹", "🐻", "🐷", "🐮", "🐵", "🐔", "🐦", "🐴", "🦄", "🐌",
+    "🦋", "🐝", "🐞", "🐟", "🐠", "🐡", "🐙", "🦑", "🐬", "🐳",
+    "🦈", "🐊", "🦒", "🦓", "🐘", "🦏", "🐪", "🦙", "🦥", "🐿️"
+];
+    
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function getHouseEnding(num) {
+        if (num === 1) return 'дом';
+        if (num >= 2 && num <= 4) return 'дома';
+        return 'домов';
+    }
+    
+    function canBuildHouses(player, tileId) {
+        const tile = TILES_FULL[tileId];
+        if (tile.type !== "property") return false;
+        
+        const currentHouses = player.houses?.[tileId] || 0;
+        if (currentHouses >= 5) return false;
+        
+        const colorGroup = tile.color;
+        const groupTiles = COLOR_GROUPS[colorGroup];
+        if (!groupTiles) return false;
+        
+        // Проверка владения всей группой
+        for (let propId of groupTiles) {
+            if (!player.properties.includes(propId)) return false;
+        }
+        
+        // Проверка равномерности застройки
+        const currentLevel = currentHouses;
+        for (let propId of groupTiles) {
+            const houses = player.houses?.[propId] || 0;
+            if (houses < currentLevel) return false;
+        }
+        
+        return true;
+    }
+    
+    function canSellHouses(player, tileId) {
+        const tile = TILES_FULL[tileId];
+        if (tile.type !== "property") return false;
+        
+        const currentHouses = player.houses?.[tileId] || 0;
+        if (currentHouses === 0) return false;
+        
+        const colorGroup = tile.color;
+        const groupTiles = COLOR_GROUPS[colorGroup];
+        
+        // Проверка равномерности (нельзя продать, если в группе есть более высокий уровень)
+        for (let propId of groupTiles) {
+            const houses = player.houses?.[propId] || 0;
+            if (houses > currentHouses) return false;
+        }
+        
+        return true;
+    }
+    
+    function calculateRent(tile, player, owner, diceSum) {
+        if (tile.type === "property") {
+            const houses = owner.houses?.[tile.id] || 0;
+            return tile.rent[houses];
+        }
+        if (tile.type === "railroad") {
+            const railroadsOwned = owner.properties.filter(id => TILES_FULL[id].type === "railroad").length;
+            return tile.rent[railroadsOwned - 1];
+        }
+        if (tile.type === "utility") {
+            const utilitiesOwned = owner.properties.filter(id => TILES_FULL[id].type === "utility").length;
+            if (utilitiesOwned === 1) return diceSum * 4;
+            return diceSum * 10;
+        }
+        return 0;
+    }
+    
+    // ========== ЭМОДЗИ ПАНЕЛЬ ==========
     let emojiPanelVisible = false;
     
     function toggleEmojiPanel() {
@@ -716,39 +1018,69 @@
     }
     
     function showEmojiPanel() {
-        const chatInputArea = document.querySelector('.chat-input-area');
-        if (!chatInputArea) return;
+    const chatInputArea = document.querySelector('.chat-input-area');
+    if (!chatInputArea) return;
+    
+    const existingPanel = document.querySelector('.emoji-panel');
+    if (existingPanel) {
+        existingPanel.remove();
+        emojiPanelVisible = false;
+        return;
+    }
+    
+    const panel = document.createElement('div');
+    panel.className = 'emoji-panel';
+    
+    // Категории эмодзи
+    const emojiCategories = {
+        "😊 Смайлики и эмоции": ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗","🤔","🤭","🤫","🤥","😶","😐","😑","😬","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧","😷","🤒","🤕","🤑","🤠","😈","👿","👹","👺","🤡","💩","👻","💀","☠️","👽","👾","🤖","🎃","😺","😸","😹","😻","😼","😽","🙀","😿","😾"],
+        "🐶 Животные и природа": ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐴","🐺","🐗","🐝","🐛","🦋","🐌","🐞","🐜","🦟","🦗","🕷️","🦂","🐢","🐍","🦎","🐙","🦑","🦐","🦞","🐠","🐟","🐡","🐬","🐳","🐋","🦈","🐊","🐅","🐆","🦓","🦍","🦧","🐘","🦛","🦏","🐪","🐫","🦒","🦘","🐃","🐂","🐄","🐎","🐖","🐏","🐑","🦙","🐐","🦌","🐕","🐩","🐈","🐓","🦃","🦚","🦜","🦢","🕊️","🐇","🦝","🦨","🦡","🦔","🐿️","🌲","🌳","🌴","🌵","🌾","🌿","🍀","🍁","🍂","🍃","🌸","🌹","🌺","🌻","🌼","🌷","🌱","🌞","🌝","🌚","🌛","🌜","⭐","🌟","🌠","🔥","💧","🌈","☁️","⛅","🌊"],
+        "🍔 Еда и напитки": ["🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🍈","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑","🥦","🥬","🥒","🌶️","🌽","🥕","🧄","🧅","🥔","🍠","🥐","🥯","🍞","🥖","🥨","🧀","🥚","🍳","🧈","🥞","🧇","🥓","🥩","🍗","🍖","🦴","🌭","🍔","🍟","🍕","🥪","🥙","🧆","🌮","🌯","🥗","🥘","🥫","🍝","🍜","🍲","🍛","🍣","🍱","🥟","🦪","🍤","🍙","🍚","🍘","🍥","🥠","🥮","🍢","🍡","🍧","🍨","🍦","🥧","🧁","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","🌰","🥜","🍯","🥛","☕","🍵","🧃","🥤","","🍶","🍺","🍻","🥂","🥃","🥄","🔪","🍽️"],
+        "🎮 Игры и хобби": ["🎮","🕹️","🎲","♟️","🎯","🎳","🎰","🧩","🎨","🎭","🎪","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻",,"🎲","♠️","♥️","♦️","♣️","🃏","🀄️","🎴","🎯","🎱","🎽","🏆","🥇","🥈","🥉","🏅","🎖️","🏀","⚽","⚾","🥎","🎾","🏐","🏈","🏉","🎿","🏂","🏄","🏊","🚴","🏋️","🤼","🤸","🤺","⛸️","🥌","🎣","🧗"],
+        "🚀 Транспорт и путешествия": ["🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛹","🚀","🛸","✈️","🛩️","🚁","🚤","⛵","🛳️","🚢","🚂","🚆","🚇","🚉","🚊","🚝","🚞","🚋","🚌","🚍","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛺","🚠","🚟","🚡","🛸","🌍","🌎","🌏","🗺️","🧭","⛰️","🏔️","🌋","🏕️","🏖️","🏜️","🏝️"],
+        "⭐ Символы и флаги": ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","☮️","✝️","☪️","🕉️","☸️","✡️","🔯","🕎","☯️","☦️","🛐","⛎","♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓","🆔","⚛️","🉐","🉑","💯","🔞","📵","🚫","❌","⭕","💢","♨️","‼️","⁉️","❓","❔","❕","❗","🔰","💠","🌀","🌐","🏧","🈹","🈚","🈶","🈸","🈴","🈲","🈳","㊗️","㊙️","🈺","🈵","🔴","🟠","🟡","🟢","🔵","🟣","⚫","⚪","🟤","🔘","🔲","🔳","💠","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🏁","🚩","🎌","🏴","🏳️","🏳️‍🌈","🏴‍☠️"]
+    };
+    
+    for (const [category, emojis] of Object.entries(emojiCategories)) {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'emoji-category';
         
-        const panel = document.createElement('div');
-        panel.className = 'emoji-panel';
+        // Берём только первые 48 эмодзи из каждой категории для компактности
+        const displayEmojis = emojis.slice(0, 48);
         
-        for (const [category, emojis] of Object.entries(emojiCategories)) {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'emoji-category';
-            categoryDiv.innerHTML = `<div class="emoji-category-title">${category}</div><div class="emoji-grid"></div>`;
-            const grid = categoryDiv.querySelector('.emoji-grid');
-            
-            emojis.forEach(emoji => {
-                const emojiItem = document.createElement('div');
-                emojiItem.className = 'emoji-item';
-                emojiItem.textContent = emoji;
-                emojiItem.onclick = () => {
-                    const input = document.getElementById('chatInput');
-                    if (input) {
-                        input.value += emoji;
-                        input.focus();
-                    }
-                    panel.remove();
-                    emojiPanelVisible = false;
-                };
-                grid.appendChild(emojiItem);
-            });
-            panel.appendChild(categoryDiv);
-        }
+        categoryDiv.innerHTML = `
+            <div class="emoji-category-title">
+                <span>${category.split(' ')[0]}</span>
+                <span>${category.split(' ').slice(1).join(' ')}</span>
+            </div>
+            <div class="emoji-grid"></div>
+        `;
         
-        chatInputArea.appendChild(panel);
-        emojiPanelVisible = true;
+        const grid = categoryDiv.querySelector('.emoji-grid');
         
+        displayEmojis.forEach(emoji => {
+            const emojiItem = document.createElement('div');
+            emojiItem.className = 'emoji-item';
+            emojiItem.textContent = emoji;
+            emojiItem.onclick = () => {
+                const input = document.getElementById('chatInput');
+                if (input) {
+                    input.value += emoji;
+                    input.focus();
+                }
+                panel.remove();
+                emojiPanelVisible = false;
+            };
+            grid.appendChild(emojiItem);
+        });
+        panel.appendChild(categoryDiv);
+    }
+    
+    chatInputArea.appendChild(panel);
+    emojiPanelVisible = true;
+    
+    // Закрытие при клике вне панели
+    setTimeout(() => {
         document.addEventListener('click', function closePanel(e) {
             if (!panel.contains(e.target) && e.target.id !== 'emojiBtn') {
                 panel.remove();
@@ -756,7 +1088,8 @@
                 document.removeEventListener('click', closePanel);
             }
         });
-    }
+    }, 100);
+}
     
     // ========== МОДАЛЬНЫЕ ОКНА ==========
     function showModal(title, content, buttons = [], onClose = null) {
@@ -811,6 +1144,7 @@
                 </div>
                 ${tile.rent ? `<div class="modal-info-row"><span>💰 Базовая аренда:</span><span>$${tile.rent[0]}</span></div>` : ''}
                 ${tile.houseCost ? `<div class="modal-info-row"><span>🏗️ Стоимость дома:</span><span>$${tile.houseCost}</span></div>` : ''}
+                ${tile.mortgage ? `<div class="modal-info-row"><span>🏦 Залоговая стоимость:</span><span>$${tile.mortgage}</span></div>` : ''}
             </div>
             <div class="modal-buttons" style="margin-top:10px;">
                 <button class="modal-btn modal-btn-secondary" onclick="startAuction(${tile.id})">🔨 Аукцион</button>
@@ -823,31 +1157,198 @@
         ]);
     }
     
-    function showAuctionModal(tile) {
+    function showUpgradeModal(tile, player) {
+        const currentHouses = player.houses?.[tile.id] || 0;
+        const nextHouses = currentHouses + 1;
+        const upgradeCost = tile.houseCost;
+        const remaining = player.money - upgradeCost;
+        const nextRent = tile.rent[nextHouses];
+        
         const content = `
             <div class="modal-info">
                 <div class="modal-info-row">
-                    <span>🏷️ ${tile.name}</span>
-                    <span>Стартовая цена: $${tile.price}</span>
+                    <span>🏠 ${tile.name}</span>
+                    <span>Уровень: ${currentHouses === 0 ? 'Без домов' : currentHouses === 5 ? 'Отель' : `${currentHouses} ${getHouseEnding(currentHouses)}`}</span>
                 </div>
                 <div class="modal-info-row">
-                    <span>💰 Ваш баланс:</span>
-                    <span style="color:#ffcd7e;">$${localGameState?.players.find(p => p.id === currentPlayerId)?.money || 0}</span>
+                    <span>💰 Текущий баланс:</span>
+                    <span style="color:#ffcd7e; font-weight:bold;">$${player.money}</span>
                 </div>
-            </div>
-            <input type="number" id="bidAmount" class="bid-input" placeholder="Ваша ставка..." min="${tile.price}">
-            <div class="modal-info" id="auctionBids">
-                <div class="modal-info-row">📢 Ставки будут отображаться здесь</div>
+                <div class="modal-info-row">
+                    <span>🏗️ Стоимость улучшения:</span>
+                    <span style="color:#e63946;">-$${upgradeCost}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💵 Останется после покупки:</span>
+                    <span style="color:${remaining >= 0 ? '#4caf50' : '#e63946'}; font-weight:bold;">$${remaining}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>📈 Новая аренда:</span>
+                    <span style="color:#4caf50;">$${nextRent} (было $${tile.rent[currentHouses]})</span>
+                </div>
             </div>
         `;
         
-        showModal(`🔨 АУКЦИОН: ${tile.name}`, content, [
-            { text: '💰 Сделать ставку', class: 'modal-btn-primary', onClick: 'placeBid' },
-            { text: '🚪 Выйти', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        showModal(`🏗️ Улучшение до ${nextHouses === 5 ? 'ОТЕЛЯ' : `${nextHouses} ${getHouseEnding(nextHouses)}`}`, content, [
+            { text: '🏠 Улучшить', class: 'modal-btn-primary', onClick: 'confirmUpgrade' },
+            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
         ]);
     }
     
+    function showPropertyInfo(tileId) {
+        const tile = TILES_FULL[tileId];
+        const owner = localGameState?.players.find(p => p.properties?.includes(tileId));
+        const houses = owner?.houses?.[tileId] || 0;
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>🏷️ ${tile.name}</span>
+                    <span>${tile.type === 'property' ? 'Улица' : tile.type === 'railroad' ? 'Ж/д вокзал' : tile.type === 'utility' ? 'Компания' : tile.type === 'tax' ? 'Налог' : tile.type.toUpperCase()}</span>
+                </div>
+                ${tile.price ? `<div class="modal-info-row"><span>💰 Стоимость:</span><span>$${tile.price}</span></div>` : ''}
+        `;
+        
+        if (owner) {
+            content += `
+                <div class="modal-info-row">
+                    <span>👑 Владелец:</span>
+                    <span>${owner.avatar} ${owner.name}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>🏠 Уровень застройки:</span>
+                    <span>${houses === 0 ? 'Нет домов' : houses === 5 ? '🏨 Отель' : '🏠'.repeat(houses) + ` ${houses} ${getHouseEnding(houses)}`}</span>
+                </div>
+            `;
+            if (tile.rent) {
+                const currentRent = tile.rent[houses];
+                content += `<div class="modal-info-row"><span>💰 Текущая аренда:</span><span style="color:#ffcd7e;">$${currentRent}</span></div>`;
+            }
+            if (tile.mortgage) {
+                content += `<div class="modal-info-row"><span>🏦 Залоговая стоимость:</span><span>$${tile.mortgage}</span></div>`;
+            }
+        } else if (tile.price) {
+            if (tile.rent) {
+                content += `<div class="modal-info-row"><span>📈 Базовая аренда:</span><span>$${tile.rent[0]}</span></div>`;
+            }
+            if (tile.houseCost) {
+                content += `<div class="modal-info-row"><span>🏗️ Стоимость дома:</span><span>$${tile.houseCost}</span></div>`;
+            }
+            if (tile.mortgage) {
+                content += `<div class="modal-info-row"><span>🏦 Залоговая стоимость:</span><span>$${tile.mortgage}</span></div>`;
+            }
+        }
+        
+        content += `</div>`;
+        
+        showModal(`📋 Информация о клетке`, content, [
+            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
+    }
+    
+    window.confirmPurchase = async function() {
+        await buyProperty();
+        closeModal();
+    };
+    
+    window.confirmUpgrade = async function() {
+        if (pendingUpgradeTileId) {
+            await upgradeProperty(pendingUpgradeTileId);
+            pendingUpgradeTileId = null;
+        }
+        closeModal();
+    };
+    
+    window.closeModal = function() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) modal.remove();
+    };
+    
+    let pendingUpgradeTileId = null;
+    
+    // ========== АУКЦИОН ==========
+    window.startAuction = async function(tileId) {
+        closeModal();
+        const tile = TILES_FULL[tileId];
+        
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        await auctionRef.set({
+            tileId: tileId,
+            tileName: tile.name,
+            currentBid: tile.price,
+            currentBidder: null,
+            endTime: Date.now() + 30000,
+            active: true,
+            startedBy: currentPlayerId
+        });
+        
+        addSystemMessageUI(`🔨 НАЧАЛСЯ АУКЦИОН на ${tile.name}! Стартовая цена $${tile.price}`);
+    };
+    
+    window.placeBid = async function() {
+        const bidInput = document.getElementById('bidAmount');
+        const bid = parseInt(bidInput?.value);
+        if (!bid || isNaN(bid)) {
+            addSystemMessageUI("Введите корректную сумму ставки!");
+            return;
+        }
+        
+        const player = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!player || player.money < bid) {
+            addSystemMessageUI("У вас недостаточно денег для этой ставки!");
+            return;
+        }
+        
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        const snapshot = await auctionRef.get();
+        const auction = snapshot.val();
+        
+        if (auction && auction.active && bid > auction.currentBid) {
+            await auctionRef.update({
+                currentBid: bid,
+                currentBidder: currentPlayerId,
+                lastUpdate: Date.now()
+            });
+            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
+            document.getElementById('bidAmount').value = '';
+        } else {
+            addSystemMessageUI("Ставка должна быть выше текущей!");
+        }
+    };
+    
+    window.placeGlobalBid = async function() {
+        const bidInput = document.getElementById('bidAmountGlobal');
+        const bid = parseInt(bidInput?.value);
+        if (!bid || isNaN(bid)) {
+            addSystemMessageUI("Введите корректную сумму ставки!");
+            return;
+        }
+        
+        const player = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!player || player.money < bid) {
+            addSystemMessageUI("У вас недостаточно денег для этой ставки!");
+            return;
+        }
+        
+        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
+        const snapshot = await auctionRef.get();
+        const auction = snapshot.val();
+        
+        if (auction && auction.active && bid > auction.currentBid) {
+            await auctionRef.update({
+                currentBid: bid,
+                currentBidder: currentPlayerId,
+                lastUpdate: Date.now()
+            });
+            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
+            document.getElementById('bidAmountGlobal').value = '';
+        } else {
+            addSystemMessageUI("Ставка должна быть выше текущей!");
+        }
+    };
+    
     function showGlobalAuctionModal(tile, currentBid, currentBidder, endTime) {
+        const currentPlayerMoney = localGameState?.players.find(p => p.id === currentPlayerId)?.money || 0;
         const content = `
             <div class="modal-info">
                 <div class="modal-info-row">
@@ -868,7 +1369,7 @@
                 </div>
                 <div class="modal-info-row">
                     <span>💰 Ваш баланс:</span>
-                    <span>$${localGameState?.players.find(p => p.id === currentPlayerId)?.money || 0}</span>
+                    <span>$${currentPlayerMoney}</span>
                 </div>
             </div>
             <input type="number" id="bidAmountGlobal" class="bid-input" placeholder="Ваша ставка..." min="${currentBid + 1}">
@@ -884,14 +1385,171 @@
             if (timerSpan) {
                 const timeLeft = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
                 timerSpan.textContent = `${timeLeft} сек`;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                }
+                if (timeLeft <= 0) clearInterval(timerInterval);
             }
         }, 1000);
         
         window.globalAuctionTimerInterval = timerInterval;
     }
+    
+    function setupAuctionListener() {
+        if (auctionListener) auctionListener.off();
+        
+        auctionListener = db.ref(`rooms/${currentRoomId}/auction`);
+        auctionListener.on('value', (snapshot) => {
+            const auction = snapshot.val();
+            
+            if (auction && auction.active) {
+                const tile = TILES_FULL[auction.tileId];
+                if (tile) {
+                    const currentBidderName = auction.currentBidder ? 
+                        (localGameState?.players.find(p => p.id === auction.currentBidder)?.avatar || 'Игрок') : 'Нет ставок';
+                    
+                    const existingModal = document.querySelector('.modal-overlay');
+                    const isAuctionModal = existingModal && existingModal.innerHTML.includes('АУКЦИОН');
+                    
+                    if (!isAuctionModal && auction.currentBidder !== currentPlayerId) {
+                        showGlobalAuctionModal(tile, auction.currentBid, currentBidderName, auction.endTime);
+                    }
+                }
+            } else if (auction && !auction.active && auction.winner) {
+                closeModal();
+                const winner = localGameState?.players.find(p => p.id === auction.winner);
+                if (winner) {
+                    addSystemMessageUI(`🏆 Аукцион завершён! ${winner.avatar} выиграл ${auction.tileName} за $${auction.currentBid}`);
+                    completePurchase(auction.tileId, auction.winner, auction.currentBid);
+                }
+                if (window.globalAuctionTimerInterval) clearInterval(window.globalAuctionTimerInterval);
+            }
+        });
+    }
+    
+    // ========== ТОРГОВЛЯ ==========
+    function showTradeModal() {
+        if (!localGameState) return;
+        
+        const players = localGameState.players.filter(p => p.id !== currentPlayerId);
+        const currentPlayer = localGameState.players.find(p => p.id === currentPlayerId);
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>👤 Ваш баланс:</span>
+                    <span style="color:#ffcd7e;">$${currentPlayer.money}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>🏠 Ваша недвижимость:</span>
+                    <span>${currentPlayer.properties?.length || 0} объектов</span>
+                </div>
+            </div>
+            <div class="property-list" id="tradePlayersList">
+                ${players.map(p => `
+                    <div class="property-item" onclick="selectTradePlayer('${p.id}')">
+                        <div class="property-name">${p.avatar} ${p.name}</div>
+                        <div class="property-details">💰 $${p.money} | 🏠 ${p.properties?.length || 0} объектов</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        showModal('🤝 Торговля с игроками', content, [
+            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
+    }
+    
+    window.selectTradePlayer = function(playerId) {
+        const targetPlayer = localGameState?.players.find(p => p.id === playerId);
+        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
+        
+        if (!targetPlayer || !currentPlayer) return;
+        
+        const myProperties = currentPlayer.properties || [];
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>🤝 Торговля с ${targetPlayer.avatar} ${targetPlayer.name}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Ваш баланс:</span>
+                    <span>$${currentPlayer.money}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Баланс оппонента:</span>
+                    <span>$${targetPlayer.money}</span>
+                </div>
+            </div>
+            <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость:</h3>
+            <div class="property-list" style="max-height:200px;">
+                ${myProperties.map(propId => {
+                    const tile = TILES_FULL[propId];
+                    const houses = currentPlayer.houses?.[propId] || 0;
+                    return `
+                        <div class="property-item" onclick="offerProperty('${propId}', '${playerId}')">
+                            <div class="property-name">${tile.name}</div>
+                            <div class="property-details">Стоимость: $${tile.price} | Уровень: ${houses === 0 ? '0' : houses === 5 ? 'Отель' : houses}</div>
+                        </div>
+                    `;
+                }).join('')}
+                ${myProperties.length === 0 ? '<div class="property-details">У вас нет недвижимости для продажи</div>' : ''}
+            </div>
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>💡 Предложение:</span>
+                    <span>Выберите недвижимость для продажи</span>
+                </div>
+            </div>
+            <input type="number" id="tradePrice" class="bid-input" placeholder="Цена продажи..." min="1">
+        `;
+        
+        showModal(`🤝 Торговля с ${targetPlayer.name}`, content, [
+            { text: '📤 Отправить предложение', class: 'modal-btn-primary', onClick: `sendTradeOffer('${playerId}')` },
+            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
+        ]);
+        
+        window.selectedTradeTarget = playerId;
+        window.selectedPropertyForTrade = null;
+    };
+    
+    window.offerProperty = function(propId, targetId) {
+        window.selectedPropertyForTrade = propId;
+        const tile = TILES_FULL[propId];
+        addSystemMessageUI(`Вы выбрали ${tile.name} для продажи игроку`);
+        const priceInput = document.getElementById('tradePrice');
+        if (priceInput) priceInput.focus();
+    };
+    
+    window.sendTradeOffer = async function(targetId) {
+        const propertyId = window.selectedPropertyForTrade;
+        const price = parseInt(document.getElementById('tradePrice')?.value);
+        
+        if (!propertyId) {
+            addSystemMessageUI("Выберите недвижимость для продажи!");
+            return;
+        }
+        
+        if (!price || price <= 0) {
+            addSystemMessageUI("Введите корректную цену!");
+            return;
+        }
+        
+        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!currentPlayer) return;
+        
+        const tile = TILES_FULL[propertyId];
+        
+        const tradeRef = db.ref(`rooms/${currentRoomId}/tradeOffers`).push({
+            from: currentPlayerId,
+            to: targetId,
+            propertyId: parseInt(propertyId),
+            price: price,
+            timestamp: Date.now(),
+            status: 'pending'
+        });
+        
+        addSystemMessageUI(`📨 Предложение отправлено: продажа ${tile.name} за $${price}`);
+        closeModal();
+    };
     
     function showTradeRequestModal(offer) {
         const fromPlayer = localGameState?.players.find(p => p.id === offer.from);
@@ -945,247 +1603,38 @@
         }
     };
     
-    window.placeGlobalBid = async function() {
-        const bidInput = document.getElementById('bidAmountGlobal');
-        const bid = parseInt(bidInput?.value);
-        if (!bid || isNaN(bid)) {
-            addSystemMessageUI("Введите корректную сумму ставки!");
-            return;
-        }
+    async function acceptTrade(offerId, offer) {
+        const state = {...localGameState};
+        const fromPlayer = state.players.find(p => p.id === offer.from);
+        const toPlayer = state.players.find(p => p.id === offer.to);
         
-        const player = localGameState?.players.find(p => p.id === currentPlayerId);
-        if (!player || player.money < bid) {
-            addSystemMessageUI("У вас недостаточно денег для этой ставки!");
-            return;
-        }
+        if (!fromPlayer || !toPlayer) return;
         
-        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
-        const snapshot = await auctionRef.get();
-        const auction = snapshot.val();
+        const tile = TILES_FULL[offer.propertyId];
         
-        if (auction && auction.active && bid > auction.currentBid) {
-            await auctionRef.update({
-                currentBid: bid,
-                currentBidder: currentPlayerId,
-                lastUpdate: Date.now()
-            });
-            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
-            document.getElementById('bidAmountGlobal').value = '';
-        } else {
-            addSystemMessageUI("Ставка должна быть выше текущей!");
-        }
-    };
-    
-    window.startAuction = async function(tileId) {
-        closeModal();
-        const tile = TILES_FULL[tileId];
-        
-        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
-        await auctionRef.set({
-            tileId: tileId,
-            tileName: tile.name,
-            currentBid: tile.price,
-            currentBidder: null,
-            endTime: Date.now() + 30000,
-            active: true,
-            startedBy: currentPlayerId
-        });
-        
-        addSystemMessageUI(`🔨 НАЧАЛСЯ АУКЦИОН на ${tile.name}! Стартовая цена $${tile.price}`);
-    };
-    
-    window.placeBid = async function() {
-        const bidInput = document.getElementById('bidAmount');
-        const bid = parseInt(bidInput?.value);
-        if (!bid || isNaN(bid)) {
-            addSystemMessageUI("Введите корректную сумму ставки!");
-            return;
-        }
-        
-        const player = localGameState?.players.find(p => p.id === currentPlayerId);
-        if (!player || player.money < bid) {
-            addSystemMessageUI("У вас недостаточно денег для этой ставки!");
-            return;
-        }
-        
-        const auctionRef = db.ref(`rooms/${currentRoomId}/auction`);
-        const snapshot = await auctionRef.get();
-        const auction = snapshot.val();
-        
-        if (auction && auction.active && bid > auction.currentBid) {
-            await auctionRef.update({
-                currentBid: bid,
-                currentBidder: currentPlayerId,
-                lastUpdate: Date.now()
-            });
-            addSystemMessageUI(`${player.avatar} предложил $${bid}`);
-            document.getElementById('bidAmount').value = '';
-        } else {
-            addSystemMessageUI("Ставка должна быть выше текущей!");
-        }
-    };
-    
-    function setupAuctionListener() {
-        if (auctionListener) {
-            auctionListener.off();
-        }
-        
-        auctionListener = db.ref(`rooms/${currentRoomId}/auction`);
-        auctionListener.on('value', (snapshot) => {
-            const auction = snapshot.val();
+        if (toPlayer.money >= offer.price) {
+            toPlayer.money -= offer.price;
+            fromPlayer.money += offer.price;
             
-            if (auction && auction.active) {
-                const tile = TILES_FULL[auction.tileId];
-                if (tile) {
-                    const currentBidderName = auction.currentBidder ? 
-                        (localGameState?.players.find(p => p.id === auction.currentBidder)?.avatar || 'Игрок') : 'Нет ставок';
-                    
-                    const existingModal = document.querySelector('.modal-overlay');
-                    const isAuctionModal = existingModal && existingModal.innerHTML.includes('АУКЦИОН');
-                    
-                    if (!isAuctionModal && auction.currentBidder !== currentPlayerId) {
-                        showGlobalAuctionModal(tile, auction.currentBid, currentBidderName, auction.endTime);
-                    } else if (isAuctionModal) {
-                        const bidsDiv = document.getElementById('auctionBids');
-                        if (bidsDiv) {
-                            bidsDiv.innerHTML = `
-                                <div class="modal-info-row">
-                                    <span>💰 Текущая ставка:</span>
-                                    <span style="color:#ffcd7e;">$${auction.currentBid}</span>
-                                </div>
-                                <div class="modal-info-row">
-                                    <span>👤 Лидирует:</span>
-                                    <span>${currentBidderName}</span>
-                                </div>
-                                <div class="modal-info-row">
-                                    <span>⏱️ Осталось:</span>
-                                    <span id="auctionTimer"></span>
-                                </div>
-                            `;
-                        }
-                    }
-                }
-            } else if (auction && !auction.active && auction.winner) {
-                closeModal();
-                const winner = localGameState?.players.find(p => p.id === auction.winner);
-                if (winner) {
-                    addSystemMessageUI(`🏆 Аукцион завершён! ${winner.avatar} выиграл ${auction.tileName} за $${auction.currentBid}`);
-                    completePurchase(auction.tileId, auction.winner, auction.currentBid);
-                }
-                if (window.globalAuctionTimerInterval) {
-                    clearInterval(window.globalAuctionTimerInterval);
-                }
+            const propIndex = fromPlayer.properties.indexOf(offer.propertyId);
+            if (propIndex !== -1) {
+                fromPlayer.properties.splice(propIndex, 1);
+                toPlayer.properties.push(offer.propertyId);
+                const housesLevel = fromPlayer.houses?.[offer.propertyId] || 0;
+                if (fromPlayer.houses) delete fromPlayer.houses[offer.propertyId];
+                if (!toPlayer.houses) toPlayer.houses = {};
+                toPlayer.houses[offer.propertyId] = housesLevel;
             }
-        });
-    }
-    
-    function showUpgradeModal(tile, player) {
-        const currentHouses = player.houses?.[tile.id] || 0;
-        const nextHouses = currentHouses + 1;
-        const upgradeCost = tile.houseCost;
-        const remaining = player.money - upgradeCost;
-        const nextRent = tile.rent[nextHouses];
-        
-        const content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>🏠 ${tile.name}</span>
-                    <span>Уровень: ${currentHouses === 0 ? 'Без домов' : currentHouses === 5 ? 'Отель' : `${currentHouses} дом(ов)`}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Текущий баланс:</span>
-                    <span style="color:#ffcd7e; font-weight:bold;">$${player.money}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>🏗️ Стоимость улучшения:</span>
-                    <span style="color:#e63946;">-$${upgradeCost}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💵 Останется после покупки:</span>
-                    <span style="color:${remaining >= 0 ? '#4caf50' : '#e63946'}; font-weight:bold;">$${remaining}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>📈 Новая аренда:</span>
-                    <span style="color:#4caf50;">$${nextRent} (было $${tile.rent[currentHouses]})</span>
-                </div>
-            </div>
-        `;
-        
-        showModal(`🏗️ Улучшение до ${nextHouses === 5 ? 'ОТЕЛЯ' : `${nextHouses} ${getHouseEnding(nextHouses)}`}`, content, [
-            { text: '🏠 Улучшить', class: 'modal-btn-primary', onClick: 'confirmUpgrade' },
-            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
-    }
-    
-    function showPropertyInfo(tileId) {
-        const tile = TILES_FULL[tileId];
-        const owner = localGameState?.players.find(p => p.properties?.includes(tileId));
-        const houses = owner?.houses?.[tileId] || 0;
-        
-        let content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>🏷️ ${tile.name}</span>
-                    <span>${tile.type === 'property' ? 'Улица' : tile.type === 'railroad' ? 'Ж/д вокзал' : 'Компания'}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Стоимость:</span>
-                    <span>$${tile.price || 'Не продаётся'}</span>
-                </div>
-        `;
-        
-        if (owner) {
-            content += `
-                <div class="modal-info-row">
-                    <span>👑 Владелец:</span>
-                    <span>${owner.avatar} ${owner.name}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>🏠 Уровень застройки:</span>
-                    <span>${houses === 0 ? 'Нет домов' : houses === 5 ? '🏨 Отель' : '🏠'.repeat(houses) + ` ${houses} дом(ов)`}</span>
-                </div>
-            `;
-            if (tile.rent) {
-                const currentRent = tile.rent[houses];
-                content += `<div class="modal-info-row"><span>💰 Текущая аренда:</span><span style="color:#ffcd7e;">$${currentRent}</span></div>`;
-            }
-        } else if (tile.price) {
-            content += `<div class="modal-info-row"><span>📈 Базовая аренда:</span><span>$${tile.rent?.[0] || 'См. условия'}</span></div>`;
-            content += `<div class="modal-info-row"><span>🏗️ Стоимость дома:</span><span>$${tile.houseCost || 'Н/Д'}</span></div>`;
+            
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'accepted'});
+            
+            addSystemMessageUI(`✅ Сделка завершена! ${toPlayer.avatar} купил ${tile.name} у ${fromPlayer.avatar} за $${offer.price}`);
+        } else {
+            addSystemMessageUI(`❌ У ${toPlayer.avatar} недостаточно денег для сделки!`);
+            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'declined'});
         }
-        
-        content += `</div>`;
-        
-        showModal(`📋 Информация о клетке`, content, [
-            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
     }
-    
-    function getHouseEnding(num) {
-        if (num === 1) return 'дом';
-        if (num >= 2 && num <= 4) return 'дома';
-        return 'домов';
-    }
-    
-    window.confirmPurchase = async function() {
-        await buyProperty();
-        closeModal();
-    };
-    
-    window.confirmUpgrade = async function() {
-        if (pendingUpgradeTileId) {
-            await upgradeProperty(pendingUpgradeTileId);
-            pendingUpgradeTileId = null;
-        }
-        closeModal();
-    };
-    
-    window.closeModal = function() {
-        const modal = document.querySelector('.modal-overlay');
-        if (modal) modal.remove();
-    };
-    
-    let pendingUpgradeTileId = null;
     
     // ========== ЭКРАН КОМНАТЫ ==========
     function showRoomScreen() {
@@ -1196,7 +1645,7 @@
                 <div class="room-input-group">
                     <input type="text" id="playerNameInput" class="player-name-input-room" placeholder="Ваше имя" value="Игрок${Math.floor(Math.random()*100)}">
                 </div>
-                <div class="avatar-selector" id="roomAvatarSelector" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0;"></div>
+                <div class="avatar-selector" id="roomAvatarSelector" style="display: flex; justify-content: center; gap: 10px; margin: 12px 0; flex-wrap: wrap;"></div>
                 <div class="room-input-group">
                     <input type="text" id="customRoomId" class="room-input" placeholder="Название комнаты (оставьте пустым для генерации)">
                 </div>
@@ -1213,7 +1662,7 @@
         avatarList.forEach((av, idx) => {
             const div = document.createElement("div");
             div.className = "avatar-option";
-            div.style.cssText = "font-size:2rem; cursor:pointer; padding:8px; border-radius:50px; background:#f2e5d4; width:55px; text-align:center; transition:0.1s;";
+            div.style.cssText = "font-size:1.8rem; cursor:pointer; padding:6px; border-radius:50px; background:#f2e5d4; width:50px; text-align:center; transition:0.1s;";
             div.innerText = av;
             div.onclick = () => {
                 document.querySelectorAll("#roomAvatarSelector .avatar-option").forEach(el => el.style.background = "#f2e5d4");
@@ -1278,6 +1727,7 @@
         try {
             await roomRef.set(roomData);
             console.log("✅ Комната создана");
+            savePlayerSession();
             setupGameListeners();
             showGameLobby();
         } catch(e) {
@@ -1316,8 +1766,8 @@
         }
         
         const playerCount = Object.keys(room.players || {}).length;
-        if (playerCount >= 4) {
-            alert("Комната полна (максимум 4 игрока)");
+        if (playerCount >= 6) {
+            alert("Комната полна (максимум 6 игроков)");
             return;
         }
         
@@ -1329,6 +1779,7 @@
                 joinedAt: Date.now()
             });
             console.log("✅ Подключено к комнате");
+            savePlayerSession();
             setupGameListeners();
             showGameLobby();
         } catch(e) {
@@ -1361,24 +1812,16 @@
             }
         });
         
-        if (gameStateListener) {
-            gameStateListener.off();
-        }
+        if (gameStateListener) gameStateListener.off();
         
         gameStateListener = roomRef.child("gameState");
         gameStateListener.on("value", (snapshot) => {
             const state = snapshot.val();
-            console.log("📡 gameState обновлён:", state ? "есть данные" : "нет данных");
-            
             if (!state) return;
             
             if (state.gameStarted === true) {
-                if (!state.players || !Array.isArray(state.players) || state.players.length === 0) {
-                    console.log("⏳ Ждем загрузки players...");
-                    return;
-                }
+                if (!state.players || !Array.isArray(state.players) || state.players.length === 0) return;
                 
-                console.log("✅ Игроки загружены:", state.players.length);
                 gameStartedFlag = true;
                 localGameState = state;
                 gameActive = true;
@@ -1406,11 +1849,9 @@
         if (syncInterval) clearInterval(syncInterval);
         syncInterval = setInterval(async () => {
             if (gameStartedFlag) return;
-            
             const snapshot = await roomRef.child("gameState").get();
             const state = snapshot.val();
             if (state && state.gameStarted === true && state.players && state.players.length > 0 && !gameStartedFlag) {
-                console.log("🔄 Принудительная синхронизация: загружаем игру");
                 gameStartedFlag = true;
                 localGameState = state;
                 gameActive = true;
@@ -1433,20 +1874,18 @@
         const statusDiv = document.getElementById("roomStatus");
         if (!statusDiv) return;
         
-        const canStart = players.length >= 2 && players.length <= 4;
+        const canStart = players.length >= 2 && players.length <= 6;
         
         statusDiv.innerHTML = `<div class="waiting-players">
-            <h3>👥 В комнате (${players.length}/4):</h3>
+            <h3>👥 В комнате (${players.length}/6):</h3>
             ${players.map(p => `<p>${p.avatar} ${p.name} ${p.id === currentPlayerId ? '(Вы)' : ''}</p>`).join('')}
-            <p style="margin-top:10px;">${players.length < 2 ? '⏳ Ожидание игроков... (нужно минимум 2)' : '✅ Достаточно игроков!'}</p>
-            ${isRoomCreator ? `<button id="startGameBtn" class="start-game-btn-lobby" ${!canStart ? 'disabled' : ''}>🚀 СТАРТ ИГРЫ</button>` : `<p style="margin-top:10px; color:#d4af37;">🎲 Ожидайте начала игры от создателя комнаты...</p>`}
+            <p style="margin-top:8px;">${players.length < 2 ? '⏳ Ожидание игроков... (нужно минимум 2)' : '✅ Достаточно игроков!'}</p>
+            ${isRoomCreator ? `<button id="startGameBtn" class="start-game-btn-lobby" ${!canStart ? 'disabled' : ''}>🚀 СТАРТ ИГРЫ</button>` : `<p style="margin-top:8px; color:#d4af37;">🎲 Ожидайте начала игры от создателя комнаты...</p>`}
         </div>`;
         
         if (isRoomCreator) {
             const startBtn = document.getElementById("startGameBtn");
-            if (startBtn) {
-                startBtn.onclick = () => startGameManually();
-            }
+            if (startBtn) startBtn.onclick = () => startGameManually();
         }
     }
     
@@ -1455,9 +1894,9 @@
         document.getElementById("roomNameDisplay").innerText = currentRoomId;
         document.getElementById("gameArea").innerHTML = `
             <div class="game-wrapper">
-                <div style="text-align:center; padding:50px; background:rgba(0,0,0,0.5); border-radius:48px;">
+                <div style="text-align:center; padding:40px 20px; background:rgba(0,0,0,0.5); border-radius:40px;">
                     <h2 style="color:#ffcd7e;">🎲 ЛОББИ</h2>
-                    <p style="color:white;">ID комнаты: <strong style="font-size:1.5rem;">${currentRoomId}</strong></p>
+                    <p style="color:white;">ID комнаты: <strong style="font-size:1.3rem;">${currentRoomId}</strong></p>
                     <p style="color:white;">Поделитесь этим кодом с друзьями!</p>
                     <div id="roomStatus"></div>
                 </div>
@@ -1495,6 +1934,7 @@
             houses: {},
             inJail: false,
             jailTurns: 0,
+            getOutOfJailCards: 0,
             order: idx
         }));
         
@@ -1533,22 +1973,8 @@
     
     // ========== ОТРИСОВКА ИГРЫ ==========
     function renderGameFromState() {
-        if (!localGameState) {
-            console.log("Нет состояния игры для отображения");
-            return;
-        }
+        if (!localGameState || !localGameState.players || !Array.isArray(localGameState.players) || localGameState.players.length === 0) return;
         
-        if (!localGameState.players || !Array.isArray(localGameState.players)) {
-            console.log("Нет players в состоянии игры, ждем загрузки...", localGameState);
-            return;
-        }
-        
-        if (localGameState.players.length === 0) {
-            console.log("players пустой, ждем загрузки...");
-            return;
-        }
-        
-        console.log("🎨 Рендеринг игры...", localGameState.players.length, "игроков");
         const players = localGameState.players;
         const currentPlayerIdGame = localGameState.currentPlayer;
         
@@ -1566,11 +1992,18 @@
             
             const owner = players.find(p => p.properties && p.properties.includes(i));
             const housesCount = owner?.houses?.[i] || 0;
-            const housesDisplay = housesCount > 0 ? (housesCount === 5 ? '🏨' : '🏠'.repeat(housesCount)) : '';
+            let housesDisplay = '';
+            if (housesCount > 0) {
+                if (housesCount === 5) housesDisplay = '🏨';
+                else if (housesCount === 4) housesDisplay = '🏠🏠🏠🏠';
+                else if (housesCount === 3) housesDisplay = '🏠🏠🏠';
+                else if (housesCount === 2) housesDisplay = '🏠🏠';
+                else if (housesCount === 1) housesDisplay = '🏠';
+            }
             
             boardHtml += `<div class="cell ${colorClass}" onclick="showPropertyInfo(${i})" style="grid-row:${row+1};grid-column:${col+1}">
-                <div class="cell-name">${tile.name.length > 12 ? tile.name.substring(0,10)+".." : tile.name}</div>
-                ${tile.price ? `<div class="cell-price">$${tile.price}</div>` : ''}
+                <div class="cell-name">${tile.name.length > 10 ? tile.name.substring(0,8)+".." : tile.name}</div>
+                ${tile.price ? `<div class="cell-price" style="font-size:0.4rem;">$${tile.price}</div>` : ''}
                 ${owner ? `<div class="owner-token">👑 ${owner.avatar} ${housesDisplay}</div>` : ''}
                 <div class="players-on-cell">${playersAvatars}</div>
             </div>`;
@@ -1579,20 +2012,20 @@
         
         const playersHtml = players.map(p => {
             if (!p) return '';
+            const canBuild = p.properties ? p.properties.some(pid => canBuildHouses(p, pid)) : false;
             return `
                 <div class="player-card ${currentPlayerIdGame === p.id ? 'active' : ''}" onclick="showPlayerActions('${p.id}')">
                     <div class="player-name">${p.avatar || '?'} ${p.name || '???'}</div>
                     <div class="player-money">💰 $${p.money || 0}</div>
                     <div>🏠 ${(p.properties && p.properties.length) || 0}</div>
-                    ${p.id === currentPlayerId && myTurn ? '<span style="font-size:0.7rem;">🎲 ВАШ ХОД</span>' : ''}
+                    ${p.id === currentPlayerId && myTurn ? '<span style="font-size:0.6rem;">🎲 ВАШ ХОД</span>' : ''}
+                    ${canBuild && p.id === currentPlayerId && myTurn && !localGameState.diceRolled ? '<span style="font-size:0.6rem; color:#4caf50;">🏗️</span>' : ''}
                 </div>
             `;
         }).join('');
         
         const chatPanel = document.getElementById("chatPanel");
-        if (chatPanel && chatPanel.style.display === "none") {
-            chatPanel.style.display = "flex";
-        }
+        if (chatPanel && chatPanel.style.display === "none") chatPanel.style.display = "flex";
         
         document.getElementById("gameArea").innerHTML = `
             <div class="game-wrapper">
@@ -1603,41 +2036,29 @@
                         <button id="rollBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🎲 Бросить кубики</button>
                         <button id="endTurnBtn" ${!myTurn || !localGameState.diceRolled ? 'disabled' : ''}>➡️ Закончить ход</button>
                         <button id="tradeBtn" ${!myTurn ? 'disabled' : ''}>🤝 Торговля</button>
+                        <button id="upgradeBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🏗️ Улучшить</button>
                         <div class="dice-area"><span>🎲 Кубики:</span><span class="dice">${localGameState.currentDiceSum || '⚀⚀'}</span></div>
                     </div>
                 </div>
             </div>
         `;
         
-        const rollBtn = document.getElementById("rollBtn");
-        const endTurnBtn = document.getElementById("endTurnBtn");
-        const tradeBtn = document.getElementById("tradeBtn");
-        
-        if (rollBtn) {
-            rollBtn.addEventListener("click", () => rollDice());
-        }
-        if (endTurnBtn) {
-            endTurnBtn.addEventListener("click", () => endTurn());
-        }
-        if (tradeBtn) {
-            tradeBtn.addEventListener("click", () => showTradeModal());
-        }
+        document.getElementById("rollBtn")?.addEventListener("click", () => rollDice());
+        document.getElementById("endTurnBtn")?.addEventListener("click", () => endTurn());
+        document.getElementById("tradeBtn")?.addEventListener("click", () => showTradeModal());
+        document.getElementById("upgradeBtn")?.addEventListener("click", () => showUpgradeProperties());
     }
     
-    function showPlayerActions(playerId) {
-        if (playerId !== currentPlayerId || !myTurn || localGameState?.diceRolled) return;
+    function showUpgradeProperties() {
+        if (!myTurn || localGameState?.diceRolled) return;
         
         const player = localGameState?.players.find(p => p.id === currentPlayerId);
         if (!player) return;
         
-        const ownProperties = player.properties || [];
-        const upgradableProperties = ownProperties.filter(propId => {
-            const tile = TILES_FULL[propId];
-            return tile.type === "property" && (player.houses?.[propId] || 0) < 5;
-        });
+        const upgradableProperties = (player.properties || []).filter(propId => canBuildHouses(player, propId));
         
         if (upgradableProperties.length === 0) {
-            addSystemMessageUI("У вас нет недвижимости для улучшения!");
+            addSystemMessageUI("Нет доступных для улучшения улиц! Нужно:\n- Владеть всей цветовой группой\n- Равномерная застройка\n- Достаточно денег");
             return;
         }
         
@@ -1657,13 +2078,14 @@
                     const tile = TILES_FULL[propId];
                     const currentHouses = player.houses?.[propId] || 0;
                     const upgradeCost = tile.houseCost;
-                    const canAfford = player.money >= upgradeCost;
+                    const nextLevel = currentHouses + 1;
                     return `
                         <div class="property-item" onclick="selectUpgradeProperty(${propId})">
                             <div class="property-name">${tile.name}</div>
                             <div class="property-details">
-                                Уровень: ${currentHouses === 0 ? 'Без домов' : currentHouses === 5 ? 'Отель' : `${currentHouses} дом(ов)`} | 
-                                Стоимость улучшения: $${upgradeCost} ${!canAfford ? '(не хватает)' : ''}
+                                🏠 Уровень: ${currentHouses === 0 ? '0' : currentHouses === 5 ? 'Отель' : currentHouses} → ${nextLevel === 5 ? 'Отель' : nextLevel} | 
+                                💰 Стоимость: $${upgradeCost} | 
+                                📈 Новая аренда: $${tile.rent[nextLevel]}
                             </div>
                         </div>
                     `;
@@ -1686,6 +2108,11 @@
         }
     };
     
+    function showPlayerActions(playerId) {
+        if (playerId !== currentPlayerId || !myTurn || localGameState?.diceRolled) return;
+        showUpgradeProperties();
+    }
+    
     // ========== ИГРОВЫЕ ДЕЙСТВИЯ ==========
     async function rollDice() {
         if (!myTurn || localGameState.diceRolled) return;
@@ -1700,8 +2127,26 @@
         newState.currentDiceSum = sum;
         newState.lastUpdate = Date.now();
         
+        if (isDouble) {
+            newState.doublesCount = (newState.doublesCount || 0) + 1;
+            if (newState.doublesCount >= 3) {
+                addSystemMessageUI(`${getCurrentPlayer()?.avatar} выбросил дубль в третий раз! Отправляется в тюрьму!`);
+                const player = newState.players.find(p => p.id === currentPlayerId);
+                player.position = 10;
+                player.inJail = true;
+                player.jailTurns = 0;
+                newState.diceRolled = true;
+                newState.doublesCount = 0;
+                await db.ref(`rooms/${currentRoomId}/gameState`).update(newState);
+                await endTurnAfterMove();
+                return;
+            }
+        } else {
+            newState.doublesCount = 0;
+        }
+        
         await db.ref(`rooms/${currentRoomId}/gameState`).update(newState);
-        addSystemMessageUI(`${getCurrentPlayer()?.avatar || "Игрок"} бросил ${d1}+${d2}=${sum} ${isDouble ? '(ДУБЛЬ!)' : ''}`);
+        addSystemMessageUI(`${getCurrentPlayer()?.avatar || "Игрок"} бросил ${d1}+${d2}=${sum} ${isDouble ? '(ДУБЛЬ! Ещё ход)' : ''}`);
         
         setTimeout(() => movePlayerAfterRoll(sum, isDouble), 500);
     }
@@ -1714,6 +2159,20 @@
         if (playerIndex === -1) return;
         
         const player = state.players[playerIndex];
+        
+        if (player.inJail) {
+            addSystemMessageUI(`${player.avatar} в тюрьме! Ход пропущен.`);
+            player.jailTurns++;
+            if (player.jailTurns >= 3) {
+                player.inJail = false;
+                player.money -= 50;
+                addSystemMessageUI(`${player.avatar} заплатил $50 и вышел из тюрьмы!`);
+            }
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            await endTurnAfterMove();
+            return;
+        }
+        
         let oldPos = player.position;
         let newPos = (player.position + steps) % 40;
         let passedGo = newPos < oldPos;
@@ -1740,10 +2199,9 @@
         
         const player = state.players[playerIndex];
         const tile = TILES_FULL[tileId];
-        
         const owner = state.players.find(p => p.properties && p.properties.includes(tileId));
         
-        // Если это своя клетка - пропускаем
+        // Своя клетка
         if (owner && owner.id === currentPlayerId) {
             addSystemMessageUI(`${player.avatar} на своей клетке ${tile.name}`);
             if (!isDouble) {
@@ -1763,29 +2221,20 @@
             case "railroad":
             case "utility":
                 if (owner && owner.id !== currentPlayerId) {
-                    let rent = 0;
-                    if (tile.type === "property") {
-                        const houses = owner.houses?.[tileId] || 0;
-                        rent = tile.rent[houses] || tile.rent[0];
-                    } else if (tile.type === "railroad") {
-                        const railroadsOwned = owner.properties.filter(id => TILES_FULL[id].type === "railroad").length;
-                        rent = tile.rent[railroadsOwned - 1] || 25;
-                    } else if (tile.type === "utility") {
-                        const utilitiesOwned = owner.properties.filter(id => TILES_FULL[id].type === "utility").length;
-                        const diceSum = state.currentDiceSum || 4;
-                        rent = tile.rent[utilitiesOwned - 1] * diceSum;
-                    }
+                    const diceSum = state.currentDiceSum || 4;
+                    const rent = calculateRent(tile, player, owner, diceSum);
                     
                     if (player.money >= rent) {
                         player.money -= rent;
                         const ownerIndex = state.players.findIndex(p => p.id === owner.id);
                         state.players[ownerIndex].money += rent;
                         addSystemMessageUI(`${player.avatar} заплатил аренду ${owner.avatar} $${rent}`);
+                        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
                     } else {
                         addSystemMessageUI(`${player.avatar} БАНКРОТ! Не хватает денег на аренду!`);
                         player.money = 0;
+                        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
                     }
-                    await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
                 } else if (!owner && player.money >= tile.price) {
                     showPurchaseModal(tile, player.money);
                     await db.ref(`rooms/${currentRoomId}/gameState`).update({
@@ -1839,23 +2288,85 @@
     }
     
     async function processCardEffect(state, player, card) {
-        switch(card.type) {
-            case "money":
-                player.money += card.value;
-                addSystemMessageUI(`${player.avatar} ${card.value >= 0 ? 'получил' : 'потерял'} $${Math.abs(card.value)}`);
+        if (card.type === "goToJail") {
+            player.position = 10;
+            player.inJail = true;
+            player.jailTurns = 0;
+            addSystemMessageUI(`${player.avatar} отправляется в тюрьму!`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "getOutOfJail") {
+            player.getOutOfJailCards = (player.getOutOfJailCards || 0) + 1;
+            addSystemMessageUI(`${player.avatar} получил карту 'Освобождение из тюрьмы'!`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "moveToRailroad") {
+            const railroads = [5, 15, 25, 39];
+            let nearest = railroads.find(r => r > player.position) || railroads[0];
+            player.position = nearest;
+            addSystemMessageUI(`${player.avatar} перемещается на ${TILES_FULL[nearest].name}`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "moveToUtility") {
+            const utilities = [12, 28];
+            let nearest = utilities.find(u => u > player.position) || utilities[0];
+            player.position = nearest;
+            addSystemMessageUI(`${player.avatar} перемещается на ${TILES_FULL[nearest].name}`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "moveTo") {
+            player.position = card.value;
+            addSystemMessageUI(`${player.avatar} перемещается на ${TILES_FULL[card.value].name}`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "repairs") {
+            let totalCost = 0;
+            for (let propId of player.properties) {
+                const tile = TILES_FULL[propId];
+                if (tile.type === "property") {
+                    const houses = player.houses?.[propId] || 0;
+                    if (houses > 0) {
+                        totalCost += houses * card.value;
+                    }
+                }
+            }
+            if (totalCost > 0) {
+                player.money = Math.max(0, player.money - totalCost);
+                addSystemMessageUI(`${player.avatar} заплатил $${totalCost} за ремонт!`);
                 await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-                break;
-            case "move":
-                player.position = 0;
-                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-                addSystemMessageUI(`${player.avatar} перемещается на СТАРТ`);
-                break;
-            case "moveForward":
-                const newPos = (player.position + card.value) % 40;
-                player.position = newPos;
-                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-                addSystemMessageUI(`${player.avatar} перемещается вперёд на ${card.value} клеток`);
-                break;
+            }
+            return;
+        }
+        
+        if (card.type === "money") {
+            player.money += card.value;
+            addSystemMessageUI(`${player.avatar} ${card.value >= 0 ? 'получил' : 'потерял'} $${Math.abs(card.value)}`);
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            return;
+        }
+        
+        if (card.type === "move") {
+            player.position = 0;
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            addSystemMessageUI(`${player.avatar} перемещается на СТАРТ`);
+            return;
+        }
+        
+        if (card.type === "moveForward") {
+            const newPos = (player.position + card.value) % 40;
+            player.position = newPos;
+            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+            addSystemMessageUI(`${player.avatar} перемещается вперёд на ${card.value} клеток`);
         }
     }
     
@@ -1916,7 +2427,12 @@
         const currentHouses = player.houses?.[tileId] || 0;
         
         if (currentHouses >= 5) {
-            addSystemMessageUI("Уже максимальный уровень!");
+            addSystemMessageUI("Уже максимальный уровень (Отель)!");
+            return;
+        }
+        
+        if (!canBuildHouses(player, tileId)) {
+            addSystemMessageUI("Нельзя улучшить! Нужно:\n- Владеть всеми улицами цвета\n- Равномерная застройка");
             return;
         }
         
@@ -1927,23 +2443,6 @@
             return;
         }
         
-        const colorGroup = tile.color;
-        const sameColorProperties = TILES_FULL.filter(t => t.color === colorGroup && t.type === "property").map(t => t.id);
-        const ownsAllGroup = sameColorProperties.every(propId => player.properties.includes(propId));
-        
-        if (!ownsAllGroup) {
-            addSystemMessageUI(`Нужно владеть всеми улицами цвета ${colorGroup} для улучшения!`);
-            return;
-        }
-        
-        for (let propId of sameColorProperties) {
-            const housesOnProp = player.houses?.[propId] || 0;
-            if (housesOnProp < currentHouses) {
-                addSystemMessageUI("Улицы в цветовой группе должны быть застроены равномерно!");
-                return;
-            }
-        }
-        
         player.money -= upgradeCost;
         if (!player.houses) player.houses = {};
         player.houses[tileId] = currentHouses + 1;
@@ -1952,7 +2451,8 @@
             players: state.players
         });
         
-        addSystemMessageUI(`${player.avatar} улучшил ${tile.name} до уровня ${player.houses[tileId]} ${player.houses[tileId] === 5 ? '🏨' : '🏠'}`);
+        const newLevel = player.houses[tileId];
+        addSystemMessageUI(`${player.avatar} улучшил ${tile.name} до ${newLevel === 5 ? 'ОТЕЛЯ' : `${newLevel} ${getHouseEnding(newLevel)}`}! 🏗️`);
         
         renderGameFromState();
     }
@@ -1973,171 +2473,14 @@
             diceRolled: false,
             currentDiceSum: 0,
             waitingForPurchase: false,
-            purchaseTileId: null
+            purchaseTileId: null,
+            doublesCount: 0
         });
         addSystemMessageUI(`➡️ Ход переходит к ${players[nextIdx].avatar}`);
     }
     
     function getCurrentPlayer() {
         return localGameState?.players.find(p => p.id === currentPlayerId);
-    }
-    
-    // ========== ТОРГОВЛЯ ==========
-    function showTradeModal() {
-        if (!localGameState) return;
-        
-        const players = localGameState.players.filter(p => p.id !== currentPlayerId);
-        const currentPlayer = localGameState.players.find(p => p.id === currentPlayerId);
-        
-        let content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>👤 Ваш баланс:</span>
-                    <span style="color:#ffcd7e;">$${currentPlayer.money}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>🏠 Ваша недвижимость:</span>
-                    <span>${currentPlayer.properties?.length || 0} объектов</span>
-                </div>
-            </div>
-            <div class="property-list" id="tradePlayersList">
-                ${players.map(p => `
-                    <div class="property-item" onclick="selectTradePlayer('${p.id}')">
-                        <div class="property-name">${p.avatar} ${p.name}</div>
-                        <div class="property-details">💰 $${p.money} | 🏠 ${p.properties?.length || 0} объектов</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        
-        showModal('🤝 Торговля с игроками', content, [
-            { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
-    }
-    
-    window.selectTradePlayer = function(playerId) {
-        const targetPlayer = localGameState?.players.find(p => p.id === playerId);
-        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
-        
-        if (!targetPlayer || !currentPlayer) return;
-        
-        const myProperties = currentPlayer.properties || [];
-        
-        let content = `
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>🤝 Торговля с ${targetPlayer.avatar} ${targetPlayer.name}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Ваш баланс:</span>
-                    <span>$${currentPlayer.money}</span>
-                </div>
-                <div class="modal-info-row">
-                    <span>💰 Баланс оппонента:</span>
-                    <span>$${targetPlayer.money}</span>
-                </div>
-            </div>
-            <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость:</h3>
-            <div class="property-list" style="max-height:200px;">
-                ${myProperties.map(propId => {
-                    const tile = TILES_FULL[propId];
-                    return `
-                        <div class="property-item" onclick="offerProperty('${propId}', '${playerId}')">
-                            <div class="property-name">${tile.name}</div>
-                            <div class="property-details">Стоимость: $${tile.price}</div>
-                        </div>
-                    `;
-                }).join('')}
-                ${myProperties.length === 0 ? '<div class="property-details">У вас нет недвижимости для продажи</div>' : ''}
-            </div>
-            <div class="modal-info">
-                <div class="modal-info-row">
-                    <span>💡 Предложение:</span>
-                    <span>Выберите недвижимость для продажи</span>
-                </div>
-            </div>
-            <input type="number" id="tradePrice" class="bid-input" placeholder="Цена продажи..." min="1">
-        `;
-        
-        showModal(`🤝 Торговля с ${targetPlayer.name}`, content, [
-            { text: '📤 Отправить предложение', class: 'modal-btn-primary', onClick: `sendTradeOffer('${playerId}')` },
-            { text: '❌ Отмена', class: 'modal-btn-secondary', onClick: 'closeModal' }
-        ]);
-        
-        window.selectedTradeTarget = playerId;
-        window.selectedPropertyForTrade = null;
-    };
-    
-    window.offerProperty = function(propId, targetId) {
-        window.selectedPropertyForTrade = propId;
-        const tile = TILES_FULL[propId];
-        addSystemMessageUI(`Вы выбрали ${tile.name} для продажи игроку`);
-        const priceInput = document.getElementById('tradePrice');
-        if (priceInput) priceInput.focus();
-    };
-    
-    window.sendTradeOffer = async function(targetId) {
-        const propertyId = window.selectedPropertyForTrade;
-        const price = parseInt(document.getElementById('tradePrice')?.value);
-        
-        if (!propertyId) {
-            addSystemMessageUI("Выберите недвижимость для продажи!");
-            return;
-        }
-        
-        if (!price || price <= 0) {
-            addSystemMessageUI("Введите корректную цену!");
-            return;
-        }
-        
-        const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
-        if (!currentPlayer) return;
-        
-        const tile = TILES_FULL[propertyId];
-        
-        const tradeRef = db.ref(`rooms/${currentRoomId}/tradeOffers`).push({
-            from: currentPlayerId,
-            to: targetId,
-            propertyId: parseInt(propertyId),
-            price: price,
-            timestamp: Date.now(),
-            status: 'pending'
-        });
-        
-        addSystemMessageUI(`📨 Предложение отправлено: продажа ${tile.name} за $${price}`);
-        closeModal();
-    };
-    
-    async function acceptTrade(offerId, offer) {
-        const state = {...localGameState};
-        const fromPlayer = state.players.find(p => p.id === offer.from);
-        const toPlayer = state.players.find(p => p.id === offer.to);
-        
-        if (!fromPlayer || !toPlayer) return;
-        
-        const tile = TILES_FULL[offer.propertyId];
-        
-        if (toPlayer.money >= offer.price) {
-            toPlayer.money -= offer.price;
-            fromPlayer.money += offer.price;
-            
-            const propIndex = fromPlayer.properties.indexOf(offer.propertyId);
-            if (propIndex !== -1) {
-                fromPlayer.properties.splice(propIndex, 1);
-                toPlayer.properties.push(offer.propertyId);
-                if (fromPlayer.houses) delete fromPlayer.houses[offer.propertyId];
-                if (!toPlayer.houses) toPlayer.houses = {};
-                toPlayer.houses[offer.propertyId] = 0;
-            }
-            
-            await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'accepted'});
-            
-            addSystemMessageUI(`✅ Сделка завершена! ${toPlayer.avatar} купил ${tile.name} у ${fromPlayer.avatar} за $${offer.price}`);
-        } else {
-            addSystemMessageUI(`❌ У ${toPlayer.avatar} недостаточно денег для сделки!`);
-            await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'declined'});
-        }
     }
     
     // ========== ЧАТ ==========
@@ -2162,7 +2505,6 @@
         if (!input.value.trim() || !currentRoomId) return;
         
         const message = input.value.trim();
-        
         const player = getCurrentPlayer();
         const senderName = player ? `${player.avatar} ${player.name}` : currentPlayerName;
         
@@ -2176,8 +2518,9 @@
     }
     
     // ========== ИНИЦИАЛИЗАЦИЯ ==========
-    function initUI() {
-        showRoomScreen();
+    async function initUI() {
+        const reconnected = await tryReconnect();
+        if (!reconnected) showRoomScreen();
         
         document.addEventListener("click", (e) => {
             if (e.target.id === "sendChatBtn") sendChatMessage();
@@ -2214,6 +2557,7 @@
         window.acceptTradeOffer = acceptTradeOffer;
         window.declineTradeOffer = declineTradeOffer;
         window.placeGlobalBid = placeGlobalBid;
+        window.showUpgradeProperties = showUpgradeProperties;
     }
     
     initUI();
