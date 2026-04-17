@@ -14,14 +14,49 @@
             box-sizing: border-box;
             user-select: none;
         }
-
+::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2a2418;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 10px;
+        }
         body {
-            background: radial-gradient(circle at 20% 30%, #0a2f1f, #030c07);
-            font-family: 'Segoe UI', 'Poppins', 'Inter', sans-serif;
+            background: radial-gradient(ellipse at 20% 30%, #0a2f1f, #020a05);
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+ body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #d4af37, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 60px 90px, #ffcd7e, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 130px 50px, #d4af37, rgba(0,0,0,0));
+            background-repeat: no-repeat;
+            background-size: 200px 200px, 300px 300px, 400px 400px;
+            animation: floatBackground 20s linear infinite;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
         }
 
+        @keyframes floatBackground {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
         .app-container {
             display: flex;
             gap: 20px;
@@ -40,16 +75,23 @@
             flex: 1.5;
             min-width: 320px;
             max-width: 420px;
-            background: rgba(30, 25, 20, 0.95);
-            backdrop-filter: blur(16px);
+            background: linear-gradient(145deg, rgba(30, 25, 20, 0.98), rgba(20, 16, 12, 0.98));
+            backdrop-filter: blur(20px);
             border-radius: 40px;
             padding: 20px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(212, 175, 55, 0.4);
             display: flex;
             flex-direction: column;
             height: calc(100vh - 30px);
             max-height: 1000px;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.4s ease;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .chat-header {
@@ -59,21 +101,19 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #d4af37;
             margin-bottom: 15px;
-            position: relative;
         }
 
         .chat-header h3 {
             color: #ffcd7e;
             font-size: 1.2rem;
             flex: 1;
-            margin: 0;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .emoji-btn {
-            background: #2a2418;
+            background: linear-gradient(145deg, #2a2418, #1f1a13);
             border: 1px solid #d4af37;
             border-radius: 50%;
             width: 44px;
@@ -81,10 +121,11 @@
             min-width: 44px;
             font-size: 1.8rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .emoji-btn:hover {
@@ -96,7 +137,8 @@
             position: absolute;
             bottom: 80px;
             right: 0;
-            background: #2a2418;
+            background: #2a2418e6;
+            backdrop-filter: blur(18px);
             border: 2px solid #d4af37;
             border-radius: 25px;
             padding: 15px;
@@ -185,7 +227,19 @@
             border-radius: 20px;
             padding: 10px 15px;
             font-size: 0.9rem;
-            animation: fadeInUp 0.2s ease;
+            animation: messageAppear 0.3s ease;
+            transition: transform 0.1s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .chat-message:hover {
+            transform: translateX(5px);
+            border-left-color: #d4af37;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .chat-message.system {
@@ -290,6 +344,13 @@
             text-align: center;
             max-width: 600px;
             margin: 30px auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: fadeInScale 0.4s ease;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .room-screen h1 {
@@ -404,14 +465,30 @@
         .board {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
-            background: #f3e5c0;
-            border-radius: 35px;
-            box-shadow: inset 0 0 0 5px #e9d09c;
-            width: min(75vw, 75vh);
+            background: linear-gradient(145deg, #2c5a2a, #1a3a18);
+            border-radius: 5px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+            width: min(95vw, 95vh);
             height: min(75vw, 75vh);
             margin: 0 auto;
+            position: relative;
+            border: 3px solid #d4af37;
+            transition: transform 0.2s ease;
         }
-
+.board::before {
+            content: "🏆 Монополия";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: rgba(255,215,0,0.3);
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
         .cell {
             background: radial-gradient(ellipse at 30% 35%, #fff5e6, #ffefd3);
             border: 1px solid #cfb27c;
@@ -445,16 +522,16 @@
             color: #5a3a1a;
         }
 
-        .color-brown { border-top: 5px solid #8B4513; }
-        .color-lightblue { border-top: 5px solid #87CEEB; }
-        .color-pink { border-top: 5px solid #FF69B4; }
-        .color-orange { border-top: 5px solid #FF8C00; }
-        .color-red { border-top: 5px solid #DC143C; }
-        .color-yellow { border-top: 5px solid #FFD700; }
-        .color-green { border-top: 5px solid #228B22; }
-        .color-blue { border-top: 5px solid #1E90FF; }
-        .railroad { border-top: 5px solid #2F4F4F; }
-        .utility { border-top: 5px solid #20B2AA; }
+        .cell.color-brown { border-top: 6px solid #8B4513; border-radius: 8px 8px 0 0; }
+        .cell.color-lightblue { border-top: 6px solid #87CEEB; border-radius: 8px 8px 0 0; }
+        .cell.color-pink { border-top: 6px solid #FF69B4; border-radius: 8px 8px 0 0; }
+        .cell.color-orange { border-top: 6px solid #FF8C00; border-radius: 8px 8px 0 0; }
+        .cell.color-red { border-top: 6px solid #DC143C; border-radius: 8px 8px 0 0; }
+        .cell.color-yellow { border-top: 6px solid #FFD700; border-radius: 8px 8px 0 0; }
+        .cell.color-green { border-top: 6px solid #228B22; border-radius: 8px 8px 0 0; }
+        .cell.color-blue { border-top: 6px solid #1E90FF; border-radius: 8px 8px 0 0; }
+        .cell.railroad { border-top: 6px solid #2F4F4F; border-radius: 8px 8px 0 0; background: linear-gradient(135deg, #fff0e0, #ffe0c8); }
+        .cell.utility { border-top: 6px solid #20B2AA; border-radius: 8px 8px 0 0; background: linear-gradient(135deg, #e8f4ff, #d0e8ff); }
 
         .owner-token {
             position: absolute;
@@ -484,12 +561,19 @@
         }
 
         .game-panel {
-            background: #25201ab3;
+            background: linear-gradient(135deg, rgba(37,32,26,0.95), rgba(25,20,15,0.98));
             backdrop-filter: blur(12px);
             border-radius: 40px;
             padding: 20px;
             margin-top: 20px;
             color: #fcf3e0;
+            border: 1px solid rgba(212,175,55,0.3);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .players-info {
@@ -500,21 +584,51 @@
         }
 
         .player-card {
-            background: #322a1ed9;
+            background: linear-gradient(145deg, #322a1e, #2a2218);
             border-radius: 30px;
             padding: 12px 15px;
             flex: 1;
             min-width: 120px;
             cursor: pointer;
             border: 2px solid #a8864b;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: cardGlow 2s ease-in-out infinite;
+            animation-play-state: paused;
         }
 
-        .player-card:hover { background: #4a3a28d9; transform: translateY(-2px); }
-        .player-card.active { background: #6b4e2ad9; border-color: #ffce89; box-shadow: 0 0 0 2px #ffbc60; }
-        .player-name { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
-        .player-money { font-size: 1rem; color: #ffcd7e; }
+        @keyframes cardGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+            50% { box-shadow: 0 0 0 3px rgba(212,175,55,0.3); }
+        }
+
+        .player-card.active {
+            background: linear-gradient(145deg, #6b4e2a, #5a3e20);
+            border-color: #ffce89;
+            box-shadow: 0 0 0 2px #ffbc60, 0 4px 12px rgba(0,0,0,0.3);
+            animation-play-state: running;
+        }
+
+        .player-card:hover { 
+            background: linear-gradient(145deg, #4a3a28, #3a2a1e); 
+            transform: translateY(-3px);
+            border-color: #d4af37;
+        }
+
+        .player-name { 
+            font-size: 1rem; 
+            font-weight: bold; 
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .player-money { 
+            font-size: 1rem; 
+            color: #ffcd7e; 
+            font-weight: bold;
+        }
         
         .controls {
             display: flex;
@@ -525,18 +639,41 @@
         }
         
         button {
-            background: #ffcd7e;
+            background: linear-gradient(135deg, #ffcd7e, #e6b84e);
             border: none;
             padding: 12px 24px;
             border-radius: 60px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.1s;
+            transition: all 0.1s ease;
             font-size: 1rem;
+            color: #1f1a13;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* НОВОЕ: Эффект пульсации при нажатии */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 25%;
+            background: rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        button:active::after {
+            width: 100%;
+            height: 100%;
         }
         
         button:active { transform: scale(0.96); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: #6c6f6c; }
         
         .dice-area {
             background: #1f1a13b3;
@@ -549,12 +686,26 @@
         
         .dice {
             font-size: 1.8rem;
-            background: #fcf3e0;
+            background: linear-gradient(135deg, #fff, #f0e6d0);
             color: #2a2418;
             width: 65px;
             text-align: center;
             border-radius: 20px;
             padding: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+
+        .dice.rolling {
+            animation: diceRoll 0.3s ease;
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .modal-overlay {
@@ -580,27 +731,26 @@
             width: 90%;
             border: 2px solid #d4af37;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: slideIn 0.3s ease;
+            animation: slideInScale 0.3s ease;
             max-height: 85vh;
             overflow-y: auto;
         }
 
+        @keyframes slideInScale {
+            from { opacity: 0; transform: scale(0.9) translateY(-30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         .modal-content.forced {
             border-color: #e63946;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            border-width: 3px;
         }
 
         .modal-title {
-            color: #ffcd7e;
+            background: linear-gradient(135deg, #ffcd7e, #d4af37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-size: 1.6rem;
             text-align: center;
             margin-bottom: 20px;
