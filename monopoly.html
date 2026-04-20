@@ -890,6 +890,14 @@
             .modal-content { padding: 20px; }
             .modal-title { font-size: 1.2rem; }
         }
+        .unsold-properties-info {
+    transition: all 0.2s ease;
+}
+
+.unsold-properties-info:hover {
+    background: rgba(212, 175, 55, 0.2) !important;
+    transform: translateY(-2px);
+}
     </style>
 </head>
 <body>
@@ -902,9 +910,11 @@
             <button class="emoji-btn" id="emojiBtn">😊</button>
         </div>
         <div class="chat-tabs">
-            <button class="tab-btn active" data-tab="player">👥 Игровой чат</button>
-        </div>
+    <button class="tab-btn active" data-tab="player">💬 Чат</button>
+    <button class="tab-btn" data-tab="log">📜 Лог событий</button>
+</div>
         <div class="chat-messages-container active" id="playerChatContainer"></div>
+        <div class="chat-messages-container" id="logChatContainer"></div>
         <div class="chat-input-area">
             <input type="text" class="chat-input" id="chatInput" placeholder="Написать сообщение...">
             <button class="send-btn" id="sendChatBtn">➤</button>
@@ -962,15 +972,41 @@
     let auctionEndTimer = null;
     
     function showNotification(message, type = "info") {
-        const container = document.getElementById("notificationContainer");
-        const notification = document.createElement("div");
-        notification.className = `notification ${type === "warning" ? "warning" : type === "success" ? "success" : ""}`;
-        notification.textContent = message;
-        container.appendChild(notification);
-        setTimeout(() => {
-            if (notification.parentNode) notification.remove();
-        }, 3000);
+    const container = document.getElementById("notificationContainer");
+    const notification = document.createElement("div");
+    notification.className = `notification ${type === "warning" ? "warning" : type === "success" ? "success" : ""}`;
+    notification.textContent = message;
+    container.appendChild(notification);
+    setTimeout(() => {
+        if (notification.parentNode) notification.remove();
+    }, 3000);
+    
+    // ДОБАВЛЯЕМ В ЛОГ
+    addLogMessage(message, type);
+}
+
+// НОВАЯ ФУНКЦИЯ: добавление в лог событий
+function addLogMessage(message, type = "info") {
+    const logContainer = document.getElementById("logChatContainer");
+    if (!logContainer) return;
+    
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    let icon = "📌";
+    if (type === "success") icon = "✅";
+    if (type === "warning") icon = "⚠️";
+    if (type === "info") icon = "ℹ️";
+    
+    const logEntry = document.createElement("div");
+    logEntry.className = `chat-message system`;
+    logEntry.innerHTML = `<span class="sender" style="color:#d4af37;">[${time}] ${icon}</span> <span class="text">${message}</span>`;
+    logContainer.appendChild(logEntry);
+    logContainer.scrollTop = logContainer.scrollHeight;
+    
+    // Ограничиваем количество записей в логе (не более 200)
+    while (logContainer.children.length > 200) {
+        logContainer.removeChild(logContainer.firstChild);
     }
+}
     
     // Функция принудительной продажи имущества при банкротстве
     async function checkAndHandleBankruptcy(player) {
@@ -2025,6 +2061,7 @@
         if (window.pendingTradeOffer) {
             await db.ref(`rooms/${currentRoomId}/tradeOffers/${window.pendingTradeOffer.id}`).update({status: 'declined'});
             showNotification("❌ Вы отклонили предложение о торговле", "warning");
+            addLogMessage(`${localGameState?.players.find(p => p.id === offer.from)?.avatar} отклонил предложение о торговле`, "warning");
             window.pendingTradeOffer = null;
             closeModal();
         }
@@ -2078,7 +2115,8 @@
         await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
         await db.ref(`rooms/${currentRoomId}/tradeOffers/${offerId}`).update({status: 'accepted'});
         
-        showNotification(`✅ Сделка завершена!`, "success");
+        showNotification(`✅ Сделка завершена! ${fromPlayer.avatar} и ${toPlayer.avatar} обменялись имуществом`, "success");
+addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили обмен: ${JSON.stringify(offer)}`, "success");
     }
     
     // ========== ЭКРАН КОМНАТЫ ==========
@@ -2477,6 +2515,13 @@
                 ${boardHtml}
                 <div class="game-panel">
                     <div class="players-info">${playersHtml}</div>
+                    <div class="unsold-properties-info" style="margin: 15px 0; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 20px; cursor: pointer;" onclick="showUnsoldProperties()">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span>🏠 Непродано клеток:</span>
+        <span id="unsoldCount" style="color: #ffcd7e; font-weight: bold; font-size: 1.2rem;">0</span>
+    </div>
+    <div style="font-size: 0.7rem; color: #c9b896;">Нажмите для списка</div>
+</div>
                     <div class="controls">
                         <button id="rollBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🎲 Бросить кубики</button>
                         <button id="endTurnBtn" ${!myTurn || !localGameState.diceRolled ? 'disabled' : ''}>➡️ Закончить ход</button>
@@ -2492,6 +2537,7 @@
         document.getElementById("endTurnBtn")?.addEventListener("click", () => endTurn());
         document.getElementById("tradeBtn")?.addEventListener("click", () => showTradeModal());
         document.getElementById("upgradeBtn")?.addEventListener("click", () => showUpgradeProperties());
+        updateUnsoldPropertiesCount();
     }
     
     function showUpgradeProperties() {
@@ -2661,16 +2707,32 @@
                     const rent = calculateRent(tile, player, owner, diceSum);
                     
                     if (player.money >= rent) {
-                        player.money -= rent;
-                        const ownerIndex = state.players.findIndex(p => p.id === owner.id);
-                        state.players[ownerIndex].money += rent;
-                        showNotification(`${player.avatar} заплатил аренду ${owner.avatar} $${rent}`, "warning");
-                        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-                    } else {
-                        showNotification(`${player.avatar} БАНКРОТ! Не хватает денег на аренду!`, "warning");
-                        player.money = 0;
-                        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
-                    }
+    player.money -= rent;
+    const ownerIndex = state.players.findIndex(p => p.id === owner.id);
+    state.players[ownerIndex].money += rent;
+    showNotification(`${player.avatar} заплатил аренду ${owner.avatar} $${rent}`, "warning");
+    await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+} else {
+    // Долг перед владельцем
+    const debt = rent - player.money;
+    showNotification(`${player.avatar} БАНКРОТ! Долг $${debt} перед ${owner.avatar}! Начинается принудительная продажа имущества`, "warning");
+    
+    // Забираем все деньги у игрока
+    player.money = 0;
+    await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+    
+    // Активируем принудительную продажу
+    forcedSellMode = true;
+    
+    // Сохраняем информацию о долге
+    window.pendingDebt = {
+        amount: debt,
+        creditorId: owner.id,
+        creditorName: owner.avatar
+    };
+    
+    showForcedSaleModalWithDebt(debt, owner.avatar);
+}
                 } else if (!owner && player.money >= tile.price) {
                     showPurchaseModal(tile, player.money);
                     await db.ref(`rooms/${currentRoomId}/gameState`).update({
@@ -2728,7 +2790,106 @@
             });
         }
     }
+    function showForcedSaleModalWithDebt(debt, creditorName) {
+    const player = localGameState?.players.find(p => p.id === currentPlayerId);
+    if (!player) return;
     
+    let content = `
+        <div class="modal-info">
+            <div class="modal-info-row">
+                <span>⚠️ ВНИМАНИЕ! ДОЛГ ПЕРЕД ${creditorName}</span>
+                <span style="color:#e63946;">$${debt}</span>
+            </div>
+            <div class="modal-info-row">
+                <span>💰 Ваш баланс:</span>
+                <span style="color:#e63946;">$${player.money}</span>
+            </div>
+            <div class="modal-info-row">
+                <span>💸 Необходимо собрать:</span>
+                <span style="color:#ffcd7e;">$${debt}</span>
+            </div>
+        </div>
+        <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость для продажи:</h3>
+        <div class="property-list">
+            ${(player.properties || []).map(propId => {
+                const tile = TILES_FULL[propId];
+                const houses = player.houses?.[propId] || 0;
+                let sellPrice = Math.floor(tile.price * 0.5);
+                for (let i = 0; i < houses; i++) {
+                    sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
+                }
+                return `
+                    <div class="property-item" onclick="sellPropertyForcedWithDebt(${propId}, ${debt}, '${creditorName}')">
+                        <div class="property-name">${tile.icon} ${tile.name}</div>
+                        <div class="property-details">
+                            🏠 Уровень: ${houses === 0 ? '0' : houses === 5 ? 'Отель' : houses} | 
+                            💰 Продажа за: $${sellPrice}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        <div class="modal-info">
+            <div class="modal-info-row">
+                <span>💡 Подсказка:</span>
+                <span>Продавайте имущество пока долг не будет погашен</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = showModal("⚠️ БАНКРОТСТВО - НЕОБХОДИМО ПОГАСИТЬ ДОЛГ", content, [
+        { text: 'Продать имущество', class: 'modal-btn-primary', onClick: 'closeModal' }
+    ]);
+    if (modal) modal.querySelector('.modal-content').classList.add('forced');
+}
+
+window.sellPropertyForcedWithDebt = async function(propId, debt, creditorName) {
+    const state = {...localGameState};
+    const player = state.players.find(p => p.id === currentPlayerId);
+    const tile = TILES_FULL[propId];
+    const houses = player.houses?.[propId] || 0;
+    let sellPrice = Math.floor(tile.price * 0.5);
+    for (let i = 0; i < houses; i++) {
+        sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
+    }
+    
+    const propIndex = player.properties.indexOf(propId);
+    if (propIndex !== -1) {
+        player.properties.splice(propIndex, 1);
+        if (player.houses) delete player.houses[propId];
+        player.money += sellPrice;
+        
+        await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+        showNotification(`💰 Вы продали ${tile.icon} ${tile.name} за $${sellPrice}!`, "success");
+        addLogMessage(`${player.avatar} продал ${tile.name} за $${sellPrice} для погашения долга`, "warning");
+        
+        // Проверяем, хватает ли теперь денег на долг
+        const updatedPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (updatedPlayer && updatedPlayer.money >= debt) {
+            // Погашаем долг
+            updatedPlayer.money -= debt;
+            const creditorIndex = state.players.findIndex(p => p.id === window.pendingDebt?.creditorId);
+            if (creditorIndex !== -1) {
+                state.players[creditorIndex].money += debt;
+                await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
+                showNotification(`✅ Долг в размере $${debt} перед ${creditorName} погашен!`, "success");
+                addLogMessage(`${player.avatar} погасил долг $${debt} перед ${creditorName}`, "success");
+            }
+            forcedSellMode = false;
+            delete window.pendingDebt;
+            closeModal();
+        } else if (updatedPlayer && updatedPlayer.properties.length === 0) {
+            showNotification("💀 У вас больше нет имущества! Вы банкрот!", "warning");
+            addLogMessage(`${player.avatar} обанкротился и выбывает из игры!`, "warning");
+            forcedSellMode = false;
+            delete window.pendingDebt;
+            closeModal();
+        } else {
+            // Продолжаем продажу
+            showForcedSaleModalWithDebt(debt, creditorName);
+        }
+    }
+};
     async function processCardEffect(state, player, card) {
         if (card.type === "goToJail") {
             player.position = 10;
@@ -2976,7 +3137,16 @@
         if(document.getElementById("playerChatContainer")) {
             document.getElementById("playerChatContainer").classList.add("active");
         }
-        
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".chat-messages-container").forEach(c => c.classList.remove("active"));
+        const targetId = `${btn.dataset.tab}ChatContainer`;
+        const target = document.getElementById(targetId);
+        if (target) target.classList.add("active");
+    });
+});
         window.showPropertyInfo = showPropertyInfo;
         window.showPlayerActions = showPlayerActions;
         window.selectUpgradeProperty = selectUpgradeProperty;
@@ -2998,7 +3168,83 @@
         window.rollJailDice = rollJailDice;
         window.useJailCard = useJailCard;
     }
+    function updateUnsoldPropertiesCount() {
+    if (!localGameState || !localGameState.players) return;
     
+    // Собираем все купленные клетки
+    const ownedProperties = new Set();
+    localGameState.players.forEach(player => {
+        if (player.properties) {
+            player.properties.forEach(propId => ownedProperties.add(propId));
+        }
+    });
+    
+    // Считаем только покупаемые клетки (property, railroad, utility)
+    const buyableTiles = TILES_FULL.filter(tile => 
+        tile.type === "property" || tile.type === "railroad" || tile.type === "utility"
+    );
+    
+    const unsold = buyableTiles.filter(tile => !ownedProperties.has(tile.id));
+    
+    const unsoldSpan = document.getElementById("unsoldCount");
+    if (unsoldSpan) {
+        unsoldSpan.textContent = unsold.length;
+    }
+    
+    return unsold;
+}
+window.showUnsoldProperties = function() {
+    if (!localGameState || !localGameState.players) {
+        showNotification("Игра ещё не началась", "warning");
+        return;
+    }
+    
+    const ownedProperties = new Set();
+    localGameState.players.forEach(player => {
+        if (player.properties) {
+            player.properties.forEach(propId => ownedProperties.add(propId));
+        }
+    });
+    
+    const buyableTiles = TILES_FULL.filter(tile => 
+        tile.type === "property" || tile.type === "railroad" || tile.type === "utility"
+    );
+    
+    const unsold = buyableTiles.filter(tile => !ownedProperties.has(tile.id));
+    
+    if (unsold.length === 0) {
+        showNotification("🏆 Все клетки проданы!", "success");
+        return;
+    }
+    
+    let content = `
+        <div class="modal-info">
+            <div class="modal-info-row">
+                <span>🏠 Непродано клеток:</span>
+                <span style="color:#ffcd7e; font-weight:bold;">${unsold.length} / ${buyableTiles.length}</span>
+            </div>
+        </div>
+        <div class="property-list">
+    `;
+    
+    unsold.forEach(tile => {
+        content += `
+            <div class="property-item" onclick="showPropertyInfo(${tile.id}); closeModal();">
+                <div class="property-name">${tile.icon} ${tile.name}</div>
+                <div class="property-details">
+                    💰 Стоимость: $${tile.price} | 
+                    Тип: ${tile.type === 'property' ? 'Улица' : tile.type === 'railroad' ? 'Ж/д вокзал' : 'Компания'}
+                </div>
+            </div>
+        `;
+    });
+    
+    content += `</div>`;
+    
+    showModal('📋 Доступные для покупки клетки', content, [
+        { text: 'Закрыть', class: 'modal-btn-secondary', onClick: 'closeModal' }
+    ]);
+};
     async function tryReconnect() {
         const session = loadPlayerSession();
         if (!session || !session.roomId) return false;
