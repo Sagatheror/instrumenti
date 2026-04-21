@@ -1427,7 +1427,7 @@ function addLogMessage(message, type = "info") {
                 ${tile.mortgage ? `<div class="modal-info-row"><span>🏦 Залоговая стоимость:</span><span>$${tile.mortgage}</span></div>` : ''}
             </div>
             <div class="modal-buttons" style="margin-top:10px;">
-                <button class="modal-btn modal-btn-secondary" onclick="startAuction(${tile.id})">🔨 Аукцион</button>
+                <button class="modal-btn modal-btn-secondary" style="display:none" onclick="startAuction(${tile.id})">🔨 Аукцион</button>
             </div>
         `;
         
