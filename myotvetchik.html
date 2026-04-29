@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Elysian AI | Обучаемый ассистент с семантическим поиском</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #eef2f9 0%, #e0e8f2 100%);
+            min-height: 100vh;
+            padding: 24px;
+            transition: background 0.3s, color 0.2s;
+        }
+
+        /* Адаптивная тёмная тема */
+        body.dark {
+            background: linear-gradient(145deg, #121826 0%, #0f131f 100%);
+            color: #eef2ff;
+        }
+
+        /* Основной контейнер */
+        .glass-panel {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        body.dark .glass-panel {
+            background: rgba(18, 25, 45, 0.8);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        /* хедер */
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        body.dark .header {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1E4A6E, #2C7DA0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        body.dark .logo-area h1 {
+            background: linear-gradient(135deg, #7bc3e6, #5fa7c7);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .badge-stats {
+            background: rgba(44, 125, 160, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* две колонки грид */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.8rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 860px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.6rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        body.dark .card {
+            background: rgba(30, 40, 60, 0.7);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border-bottom: 2px solid rgba(44, 125, 160, 0.3);
+            padding-bottom: 0.6rem;
+        }
+
+        textarea, input {
+            width: 100%;
+            border-radius: 1.2rem;
+            border: 1px solid #cfdfed;
+            background: white;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        body.dark textarea, body.dark input {
+            background: #1f2a3e;
+            border-color: #334155;
+            color: #eef2ff;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 2rem;
+            padding: 10px 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #2c7da0;
+            color: white;
+        }
+
+        .btn-primary { background: #2c7da0; }
+        .btn-primary:hover { background: #1f617e; transform: translateY(-2px); }
+        .btn-secondary { background: #4b6f86; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2c7da0;
+            color: #2c7da0;
+        }
+        body.dark .btn-outline {
+            color: #7bc3e6;
+            border-color: #5f9ebc;
+        }
+        .btn-outline:hover { background: rgba(44,125,160,0.1); }
+        .btn-ghost {
+            background: rgba(0,0,0,0.05);
+            color: #1e4a6e;
+        }
+        body.dark .btn-ghost { background: rgba(255,255,255,0.08); color: #cbd5e6; }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: #e7f0f5;
+        }
+        .result-area {
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin-top: 1.2rem;
+            min-height: 180px;
+        }
+        .answer-card {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid #2c7da0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        body.dark .answer-card {
+            background: #1e293b;
+        }
+        .copy-btn {
+            background: #e9f0f5;
+            border: none;
+            border-radius: 2rem;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        hr { margin: 1rem 0; border-color: rgba(0,0,0,0.05); }
+        body.dark hr { border-color: rgba(255,255,255,0.05); }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1f3e48;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 60px;
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            font-size: 0.85rem;
+            animation: fadeInUp 0.2s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .file-label {
+            background: #eef2f9;
+            padding: 6px 14px;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        body.dark .file-label { background: #2d3a52; color: white; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+<div class="glass-panel">
+    <div class="header">
+        <div class="logo-area">
+            <h1>Обучаемый ассистент</h1>
+            <div style="font-size:0.75rem; opacity:0.7;">семантический поиск + генерация на основе ваших ответов</div>
+        </div>
+        <div class="badge-stats">
+            <span>📚 <span id="statsCount">0</span> примеров</span>
+            <button id="themeToggleBtn" class="theme-toggle" aria-label="Тёмная тема">🌙</button>
+        </div>
+    </div>
+    <div class="dashboard">
+        <!-- Колонка обучения -->
+        <div class="card">
+            <div class="card-header">
+                <span>🧠 1. Обучение</span>
+            </div>
+            <label>📌 Вопрос пользователя</label>
+            <textarea id="trainQuestion" rows="2" placeholder="Пример: Как отменить подписку?"></textarea>
+            <label style="margin-top: 12px;">💬 Ваш ответ (точный текст)</label>
+            <textarea id="trainAnswer" rows="3" placeholder="Напишите ответ, который вы дали человеку..."></textarea>
+            <div class="flex-row">
+                <button id="savePairBtn" class="btn btn-primary">💾 Сохранить в базу</button>
+                <button id="clearTrainBtn" class="btn btn-outline">🗑️ Очистить</button>
+            </div>
+            <div id="trainStatus" class="status-badge" style="margin-top: 12px;"></div>
+            <hr>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <span>📦 Управление данными</span>
+                <div style="display: flex; gap: 8px;">
+                    <button id="exportJsonBtn" class="btn btn-outline" style="padding:6px 14px;">📥 Экспорт JSON</button>
+                    <label class="file-label">📂 Импорт JSON<input type="file" id="importFileInput" accept=".json"></label>
+                    <button id="clearAllDbBtn" class="btn btn-outline" style="border-color:#c97e5a; color:#bc6f4b;">⚠️ Сброс</button>
+                </div>
+            </div>
+            <div id="importStatus" style="font-size:0.7rem; margin-top: 8px;"></div>
+        </div>
+        <!-- Колонка поиска и ответа -->
+        <div class="card">
+            <div class="card-header">
+                <span>🔍 2. Найти или сгенерировать ответ</span>
+            </div>
+            <label>❓ Вопрос пользователя (можно перефразировать)</label>
+            <textarea id="queryInput" rows="2" placeholder="Напишите вопрос, который вам задали..."></textarea>
+            <div class="flex-row">
+                <button id="askBtn" class="btn btn-primary">🎯 Найти лучший ответ</button>
+                <button id="generateSuggestionBtn" class="btn btn-secondary">✨ Сгенерировать самому</button>
+            </div>
+            <div id="resultContainer" class="result-area">
+                <div style="text-align:center; opacity:0.6;">💡 Здесь появится готовый ответ — скопируйте в диалог</div>
+            </div>
+            <div id="queryStatus" class="status-badge" style="margin-top: 8px;"></div>
+            <p style="font-size:0.7rem; margin-top: 16px; opacity:0.6;">⚡ Ассистент находит похожий вопрос по смыслу (TF-IDF + косинус). Кнопка «Сгенерировать» адаптирует ответ под новый контекст, подставляя ключевые слова.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- БАЗА ДАННЫХ (LocalStorage + импорт/экспорт) ----------
+    let knowledgeBase = [];
+    const STORAGE_KEY = "elysian_assistant_v3";
+
+    function saveToLocalStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(knowledgeBase));
+        updateStats();
+    }
+
+    function loadFromLocalStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) knowledgeBase = parsed;
+                else knowledgeBase = [];
+            } catch(e) { knowledgeBase = []; }
+        }
+        if (!knowledgeBase.length) {
+            // демо-примеры
+            knowledgeBase = [
+                { id: Date.now() + 1, question: "Как поменять пароль?", answer: "Зайдите в настройки профиля → раздел 'Безопасность' → нажмите 'Изменить пароль'. Введите текущий и новый пароль, сохраните." },
+                { id: Date.now() + 2, question: "Где посмотреть историю заказов?", answer: "История заказов доступна в личном кабинете во вкладке 'Мои заказы'. Все заказы отсортированы по дате." },
+                { id: Date.now() + 3, question: "Как связаться с поддержкой?", answer: "Напишите в чат на сайте, отправьте email на support@example.com или позвоните 8-800-123-45-67." }
+            ];
+            saveToLocalStorage();
+        }
+        updateStats();
+    }
+
+    function updateStats() {
+        const span = document.getElementById("statsCount");
+        if (span) span.innerText = knowledgeBase.length;
+    }
+
+    function addTrainingPair(question, answer) {
+        if (!question.trim() || !answer.trim()) {
+            showToast("❌ Заполните вопрос и ответ", true);
+            return false;
+        }
+        knowledgeBase.push({
+            id: Date.now() + Math.random() * 10000,
+            question: question.trim(),
+            answer: answer.trim()
+        });
+        saveToLocalStorage();
+        showToast("✅ Пара сохранена! Теперь ассистент знает новый ответ.", false);
+        return true;
+    }
+
+    function clearAllDatabase() {
+        if (confirm("⚠️ ВНИМАНИЕ: все вопросы и ответы будут удалены. Сделайте экспорт JSON для бекапа. Продолжить?")) {
+            knowledgeBase = [];
+            saveToLocalStorage();
+            document.getElementById("resultContainer").innerHTML = `<div style="text-align:center; padding:1rem;">🗑️ База очищена. Добавьте новые примеры.</div>`;
+            document.getElementById("queryStatus").innerHTML = "";
+            showToast("База знаний сброшена", false);
+            return true;
+        }
+        return false;
+    }
+    // экспорт JSON
+    function exportToJSON() {
+        if (!knowledgeBase.length) { showToast("Нет данных для экспорта", true); return; }
+        const dataStr = JSON.stringify(knowledgeBase, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const date = new Date().toISOString().slice(0,19).replace(/:/g, "-");
+        a.download = `assistant_backup_${date}.json`;
+        a.href = url;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("📁 Экспорт выполнен", false);
+    }
+
+    function importFromJSON(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (!Array.isArray(imported)) throw new Error("Файл должен содержать массив");
+                const valid = imported.filter(item => item.question && item.answer && typeof item.question === "string" && typeof item.answer === "string");
+                if (!valid.length) throw new Error("Нет корректных пар вопрос-ответ");
+                const newBase = valid.map(item => ({
+                    id: Date.now() + Math.random() * 10000 + Math.random(),
+                    question: item.question.trim(),
+                    answer: item.answer.trim()
+                }));
+                knowledgeBase = newBase;
+                saveToLocalStorage();
+                updateStats();
+                document.getElementById("resultContainer").innerHTML = `<div style="padding:1rem;">✨ Импортировано ${newBase.length} записей</div>`;
+                showToast(`Импорт успешен: ${newBase.length} записей`, false);
+            } catch(err) {
+                showToast(`Ошибка: ${err.message}`, true);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function showToast(msg, isError = false) {
+        let toast = document.querySelector(".toast-msg");
+        if(toast) toast.remove();
+        const div = document.createElement("div");
+        div.className = "toast-msg";
+        div.style.background = isError ? "#a1301f" : "#1f5e7a";
+        div.innerText = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2800);
+    }
+
+    // ------------------ СЕМАНТИЧЕСКАЯ ПОХОЖЕСТЬ (TF-IDF + косинус) ------------------
+    const STOP_WORDS = new Set([
+        "и", "в", "на", "с", "по", "к", "у", "о", "об", "для", "от", "из", "за", "под", "над",
+        "что", "как", "так", "это", "этот", "эта", "эти", "тот", "чтобы", "быть", "его", "её",
+        "их", "меня", "тебе", "вам", "нас", "них", "вы", "я", "ты", "он", "она", "оно", "они",
+        "да", "нет", "не", "без", "до", "при", "через", "про", "весь", "все", "всё", "всех"
+    ]);
+    function tokenize(text) {
+        const words = text.toLowerCase().match(/\b[\wа-яё]+\b/gu) || [];
+        return words.filter(w => w.length > 1 && !STOP_WORDS.has(w));
+    }
+    function buildTfidfVectors(corpusTexts) {
+        const tokenizedDocs = corpusTexts.map(t => tokenize(t));
+        const docCount = tokenizedDocs.length;
+        const termDocFreq = new Map();
+        for (const tokens of tokenizedDocs) {
+            const uniq = new Set(tokens);
+            for (const term of uniq) termDocFreq.set(term, (termDocFreq.get(term) || 0) + 1);
+        }
+        const idf = new Map();
+        for (const [term, df] of termDocFreq) idf.set(term, Math.log((docCount + 1) / (df + 1)) + 1);
+        const vectors = [];
+        for (const tokens of tokenizedDocs) {
+            const tf = new Map();
+            for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
+            const vec = new Map();
+            for (const [term, termTf] of tf) {
+                const idfVal = idf.get(term) || 1;
+                vec.set(term, (termTf / tokens.length) * idfVal);
+            }
+            vectors.push(vec);
+        }
+        return vectors;
+    }
+    function cosineSimilarity(vecA, vecB) {
+        let dot = 0, normA = 0, normB = 0;
+        const keys = new Set([...vecA.keys(), ...vecB.keys()]);
+        for (const k of keys) {
+            const a = vecA.get(k) || 0;
+            const b = vecB.get(k) || 0;
+            dot += a * b;
+            normA += a * a;
+            normB += b * b;
+        }
+        if (normA === 0 || normB === 0) return 0;
+        return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+    function findBestMatch(queryText) {
+        if (!knowledgeBase.length) return null;
+        const questions = knowledgeBase.map(i => i.question);
+        const corpus = [...questions, queryText];
+        const vectors = buildTfidfVectors(corpus);
+        const queryVec = vectors[vectors.length-1];
+        const docVecs = vectors.slice(0, knowledgeBase.length);
+        let bestIdx = -1, bestScore = -1;
+        for (let i=0; i<docVecs.length; i++) {
+            const sim = cosineSimilarity(queryVec, docVecs[i]);
+            if (sim > bestScore) { bestScore = sim; bestIdx = i; }
+        }
+        if (bestIdx !== -1 && bestScore > 0.02) return { match: knowledgeBase[bestIdx], score: bestScore };
+        return null;
+    }
+    function generateSmartAnswer(userQuery) {
+        if (!knowledgeBase.length) return "📭 База пуста, добавьте примеры через обучение.";
+        const best = findBestMatch(userQuery);
+        const baseAnswer = best ? best.match.answer : knowledgeBase[0].answer;
+        const baseQuestion = best ? best.match.question : knowledgeBase[0].question;
+        return adaptAnswerToQuery(baseAnswer, userQuery);
+    }
+    function adaptAnswerToQuery(template, newQuery) {
+        let result = template;
+        const tokens = tokenize(newQuery);
+        const important = [...new Set(tokens.filter(w => w.length > 2))];
+        if (important.length === 0) return result;
+        const lowerRes = result.toLowerCase();
+        const missing = important.filter(k => !lowerRes.includes(k));
+        if (missing.length && result.length < 400) {
+            const topic = missing.slice(0,2).join(" ");
+            if (topic && !result.includes(topic)) {
+                result = `По вопросу о «${topic}»: ${result.charAt(0).toLowerCase() + result.slice(1)}`;
+            }
+        }
+        if (important[0]) {
+            result = result.replace(/ваш вопрос|данная ситуация|эта проблема/gi, `вопрос про «${important[0]}»`);
+        }
+        return result;
+    }
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+    }
+    function attachCopyEvents() {
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.removeEventListener('click', copyHandler);
+            btn.addEventListener('click', copyHandler);
+        });
+    }
+    async function copyHandler(e) {
+        const text = e.currentTarget.getAttribute('data-copy');
+        if (text) {
+            await navigator.clipboard.writeText(text);
+            const orig = e.currentTarget.innerText;
+            e.currentTarget.innerText = '✅ Скопировано!';
+            setTimeout(() => e.currentTarget.innerText = orig, 1300);
+            showToast("Ответ скопирован, отправьте клиенту!", false);
+        }
+    }
+    function renderBestAnswer(query) {
+        if (!knowledgeBase.length) {
+            document.getElementById("resultContainer").innerHTML = `<div style="padding:1rem;">❌ База пуста. Обучите ассистента.</div>`;
+            return;
+        }
+        const match = findBestMatch(query);
+        if (!match || match.score < 0.03) {
+            document.getElementById("resultContainer").innerHTML = `<div style="background:#fff0e0; border-radius:1rem; padding:1rem;">🤔 Похожий ответ не найден. Попробуйте «Сгенерировать» или обучите новый пример.</div>`;
+            document.getElementById("queryStatus").innerHTML = "Слабая семантическая связь";
+            return;
+        }
+        const ans = match.match.answer;
+        const origQ = match.match.question;
+        const scorePercent = (match.score * 100).toFixed(1);
+        document.getElementById("resultContainer").innerHTML = `
+            <div class="answer-card">
+                <div class="original-q" style="font-weight:600;">📖 Совпадение: «${escapeHtml(origQ)}» (${scorePercent}%)</div>
+                <div class="answer-text" style="margin:10px 0;">${escapeHtml(ans)}</div>
+                <button class="copy-btn" data-copy="${escapeHtml(ans)}">📋 Копировать ответ</button>
+            </div>
+        `;
+        document.getElementById("queryStatus").innerHTML = "✅ Готово к отправке человеку.";
+        attachCopyEvents();
+    }
+    function renderGenerated(query) {
+        if (!knowledgeBase.length) {
+            document.getElementById("resultContainer").innerHTML = `<div>Нет базы для генерации</div>`;
+            return;
+        }
+        const generated = generateSmartAnswer(query);
+        document.getElementById("resultContainer").innerHTML = `
+            <div class="answer-card" style="border-left-color:#48a0b5;">
+                <div class="original-q">✨ Адаптированный ответ под: «${escapeHtml(query.substring(0,80))}»</div>
+                <div class="answer-text">${escapeHtml(generated)}</div>
+                <button class="copy-btn" data-copy="${escapeHtml(generated)}">📋 Скопировать</button>
+            </div>
+        `;
+        document.getElementById("queryStatus").innerHTML = "🧠 Ответ сгенерирован на основе ваших примеров.";
+        attachCopyEvents();
+    }
+
+    // --- Тёмная тема ---
+    function initTheme() {
+        const isDark = localStorage.getItem("theme") === "dark";
+        if (isDark) document.body.classList.add("dark");
+        const btn = document.getElementById("themeToggleBtn");
+        btn.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+            const nowDark = document.body.classList.contains("dark");
+            localStorage.setItem("theme", nowDark ? "dark" : "light");
+            btn.innerText = nowDark ? "☀️" : "🌙";
+        });
+        btn.innerText = isDark ? "☀️" : "🌙";
+    }
+
+    // --- Инициализация DOM ---
+    document.addEventListener("DOMContentLoaded", () => {
+        loadFromLocalStorage();
+        initTheme();
+
+        const saveBtn = document.getElementById("savePairBtn");
+        const clearTrain = document.getElementById("clearTrainBtn");
+        const askBtn = document.getElementById("askBtn");
+        const generateBtn = document.getElementById("generateSuggestionBtn");
+        const clearAll = document.getElementById("clearAllDbBtn");
+        const exportBtn = document.getElementById("exportJsonBtn");
+        const importFile = document.getElementById("importFileInput");
+        const trainQ = document.getElementById("trainQuestion");
+        const trainA = document.getElementById("trainAnswer");
+        const queryInp = document.getElementById("queryInput");
+        const trainStatus = document.getElementById("trainStatus");
+
+        saveBtn.addEventListener("click", () => {
+            if(addTrainingPair(trainQ.value, trainA.value)) {
+                trainStatus.innerHTML = "✅ Обучение завершено!";
+                trainQ.value = "";
+                trainA.value = "";
+                setTimeout(() => trainStatus.innerHTML = "", 2000);
+            } else { trainStatus.innerHTML = "❌ Ошибка, заполните оба поля"; }
+        });
+        clearTrain.addEventListener("click", () => { trainQ.value = ""; trainA.value = ""; trainStatus.innerHTML = "Поля очищены"; });
+        askBtn.addEventListener("click", () => { const q = queryInp.value.trim(); if(q) renderBestAnswer(q); else showToast("Введите вопрос", true); });
+        generateBtn.addEventListener("click", () => { const q = queryInp.value.trim(); if(q) renderGenerated(q); else showToast("Введите вопрос для генерации", true); });
+        clearAll.addEventListener("click", () => clearAllDatabase());
+        exportBtn.addEventListener("click", exportToJSON);
+        importFile.addEventListener("change", (e) => { if(e.target.files[0]) importFromJSON(e.target.files[0]); importFile.value = ""; });
+    });
+</script>
+</body>
+</html>
