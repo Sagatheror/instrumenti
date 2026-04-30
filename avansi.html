@@ -1001,64 +1001,64 @@ tr:hover::before {
         
         const BILLS_RANGES = {
     'Парк Развлечений': { 
-        numbers: 'AB28:AB48', 
-        dates: 'AC28:AC48',
-        amounts: 'AD28:AD48' 
+        numbers: 'AB35:AB70', 
+        dates: 'AC35:AC70',
+        amounts: 'AD35:AD70' 
     },
     '7 скамеек': { 
-        numbers: 'AE3:AE23', 
-        dates: 'AF3:AF23',
+        numbers: 'AE3:AE31', 
+        dates: 'AF3:AF31',
         amounts: 'AG3:AG23' 
     },
     'Рельеф': { 
-        numbers: 'S28:S48', 
-        dates: 'T28:T48',
-        amounts: 'U28:U48' 
+        numbers: 'S35:S70', 
+        dates: 'T35:T70',
+        amounts: 'U35:U70' 
     },
     'Мой двор': { 
-        numbers: 'AE28:AE48', 
-        dates: 'AF28:AF48',
-        amounts: 'AG28:AG48' 
+        numbers: 'AE35:AE70', 
+        dates: 'AF35:AF70',
+        amounts: 'AG35:AG70' 
     },
     'САВУШКА': { 
-        numbers: 'Y3:Y23', 
-        dates: 'Z3:Z23',
-        amounts: 'AA3:AA23' 
+        numbers: 'Y3:Y31', 
+        dates: 'Z3:Z31',
+        amounts: 'AA3:AA31' 
     },
     'АВИАТОР': { 
-        numbers: 'D28:D48', 
-        dates: 'E28:E48',
-        amounts: 'F28:F48' 
+        numbers: 'D35:D70', 
+        dates: 'E35:E70',
+        amounts: 'F35:F70' 
     },
     'ПАПА Карло': { 
-        numbers: 'D3:D23', 
-        dates: 'E3:E23',
-        amounts: 'F3:F23' 
+        numbers: 'D3:D31', 
+        dates: 'E3:E31',
+        amounts: 'F3:F31' 
     },
     'СКИФ-Про': { 
-        numbers: 'A3:A23', 
-        dates: 'B3:B23',
-        amounts: 'C3:C23' 
+        numbers: 'A3:A31', 
+        dates: 'B3:B31',
+        amounts: 'C3:C31' 
     },
     'КОМПАК': { 
-        numbers: 'G3:G23', 
-        dates: 'H3:H23',
-        amounts: 'I3:I23' 
+        numbers: 'G3:G31', 
+        dates: 'H3:H31',
+        amounts: 'I3:I31' 
     },
     'Абрис': { 
-        numbers: 'J3:J23', 
-        dates: 'K3:K23',
-        amounts: 'L3:L23' 
+        numbers: 'J3:J31', 
+        dates: 'K3:K31',
+        amounts: 'L3:L31' 
     },
     'ГРОС': { 
-        numbers: 'G28:G48', 
-        dates: 'H28:H48',
-        amounts: 'I28:I48' 
+        numbers: 'G35:G70', 
+        dates: 'H35:H70',
+        amounts: 'I35:I70' 
     },
     'СПОРТ-ФОРА': { 
-    numbers: 'AK28:AK48', 
-    dates: 'AL28:AL48',
-    amounts: 'AM28:AM48' 
+    numbers: 'AK35:AK70', 
+    dates: 'AL35:AL70',
+    amounts: 'AM35:AM70' 
 }
 };
 
@@ -1327,9 +1327,21 @@ tr:hover::before {
 
         function parseNum(str) {
     if (!str) return null;
+    // Удаляем всё, кроме цифр, запятых, точек и минуса
     const clean = str.replace(/[^\d.,-]/g, '');
-    const withoutThousands = clean.replace(/,/g, '');
-    const num = parseFloat(withoutThousands);
+    
+    // Определяем, какой разделитель используется
+    let numStr;
+    if (clean.includes(',') && !clean.match(/\d{3,},\d{2}$/)) {
+        // Если есть запятая и это не похоже на разделитель тысяч (нет 3+ цифр перед запятой и 2 цифр после), считаем её десятичным разделителем
+        // Заменяем запятую на точку для parseFloat
+        numStr = clean.replace(',', '.');
+    } else {
+        // Иначе просто удаляем все запятые (разделители тысяч)
+        numStr = clean.replace(/,/g, '');
+    }
+    
+    const num = parseFloat(numStr);
     return isNaN(num) ? null : num;
 }
 
