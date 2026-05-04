@@ -1035,6 +1035,10 @@
         <i class="fas fa-file"></i>
         <span>Запятые коды 1С</span>
     </div>
+                    <div class="nav-item" onclick="loadPage('page6'); hideSidebar();">
+    <i class="fas fa-chart-simple"></i>
+    <span>CSV Checked анализ</span>
+</div>
                 </div>
                 
                 <div class="nav-section" style="display:none">
@@ -1150,6 +1154,15 @@
             <div class="feature-desc">Правильная расстановка символов</div>
         </div>
     </div>
+                            <div class="feature" onclick="loadPage('page6'); hideSidebar();">
+    <div class="feature-icon">
+        <i class="fas fa-chart-simple"></i>
+    </div>
+    <div class="feature-content">
+        <div class="feature-title">CSV Checked анализ</div>
+        <div class="feature-desc">Фильтрация товаров по checked=1 и Parent_Message_ID=0</div>
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
@@ -1183,11 +1196,15 @@
         url: 'https://sagatheror.github.io/instrumenti/formalization.html',
         icon: 'fas fa-shapes'
     },
-    // 👇 ДОБАВЬТЕ ЭТУ НОВУЮ СТРАНИЦУ
     'page5': {
         title: 'Запятые коды 1С',
         url: 'https://sagatheror.github.io/instrumenti/zapyatie.html',
         icon: 'fas fa-file'
+    },
+    'page6': {
+        title: 'CSV Checked анализ',
+        url: 'https://sagatheror.github.io/instrumenti/csvchecked.html',
+        icon: 'fas fa-chart-simple'
     }
 };
         
