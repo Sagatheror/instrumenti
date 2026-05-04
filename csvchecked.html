@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CSV checked=1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .glass-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #0f172a 0%, #1e293b 100%);
+            padding: 1.8rem 2.5rem;
+            color: white;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .mode-selector {
+            background: #f8fafc;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-label {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 12px;
+            background: #e2e8f0;
+            padding: 6px;
+            border-radius: 60px;
+        }
+
+        .mode-btn {
+            padding: 8px 28px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: #475569;
+        }
+
+        .mode-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        }
+
+        .mode-desc {
+            font-size: 0.8rem;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+
+        .content-panel {
+            padding: 2rem 2.5rem;
+        }
+
+        .upload-zone {
+            background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 32px;
+            border: 2px dashed #94a3b8;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            transform: scale(0.99);
+        }
+
+        .upload-zone.drag-active {
+            border-color: #2563eb;
+            background: #e0f2fe;
+            border-width: 3px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 44px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .stats-dashboard {
+            background: linear-gradient(115deg, #fef9e3 0%, #fef3c7 100%);
+            border-radius: 28px;
+            padding: 1.2rem 2rem;
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stats-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #b45309;
+            background: white;
+            padding: 0 20px;
+            border-radius: 60px;
+        }
+
+        .included-chip {
+            background: #10b981;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            background: #0f172a;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-export:hover:not(:disabled) {
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+
+        .btn-export:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .table-wrapper {
+            border-radius: 24px;
+            overflow: auto;
+            border: 1px solid #e2e8f0;
+            background: white;
+            max-height: 450px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            background: #f1f5f9;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .data-table tr:hover td {
+            background: #fef9e3;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .footer-note {
+            padding: 1rem 2rem;
+            background: #f8fafc;
+            text-align: center;
+            font-size: 0.75rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Модальное окно предпросмотра */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+ backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow: auto;
+            padding: 1.8rem;
+            box-shadow: 0 25px 50px -12px black;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-options {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+        }
+
+        .option-btn {
+            display: inline-block;
+            margin: 8px 12px 8px 0;
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+
+        .preview-stats {
+            background: #e0e7ff;
+            padding: 12px;
+            border-radius: 16px;
+            margin: 1rem 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .fade-up {
+            animation: fadeUp 0.25s ease-out;
+        }
+    </style>
+</head>
+<body>
+<div class="glass-container">
+    <div class="main-card">
+        <div class="hero">
+            <h1>📊 CSV Анализ</h1>
+            <p>Торуда / СОТ</p>
+        </div>
+
+        <div class="mode-selector">
+            <span class="mode-label">🎛️ Режим источника:</span>
+            <div class="mode-switch">
+                <button id="modeTorudaBtn" class="mode-btn active">🏭 Торуда</button>
+                <button id="modeSotBtn" class="mode-btn">📦 СОТ</button>
+            </div>
+            <div class="mode-desc" id="modeDesc">Торуда: Parent_Message_ID (2), ItemID (12), Checked (22)</div>
+        </div>
+
+        <div class="content-panel">
+            <div id="dropZone" class="upload-zone">
+                <div class="upload-icon">📂🗂️</div>
+                <button id="fakeFileBtn" class="btn-primary" style="pointer-events: none;">
+                    📎 Выбрать CSV файл
+                </button>
+                <input type="file" id="csvFileInput" accept=".csv, .text/csv, .txt" style="display: none;">
+                <div style="margin-top: 16px; font-size: 0.8rem; color: #475569;">
+                    🐉 Перетащите файл сюда или кликните по области<br>
+                    Разделитель: <strong>;</strong>
+                </div>
+            </div>
+
+            <div id="resultsPanel" style="display: none;">
+                <div class="stats-dashboard fade-up">
+                    <div>
+                        <span style="font-weight: 600;">✅ Товаров с checked = 1</span>
+                        <span class="stats-number" id="checkedCountDisplay">0</span>
+                    </div>
+                    <div class="included-chip" id="includedChip">✨ Включено всего <span id="totalSpan">0</span> товаров</div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="clearBtn" class="btn-primary btn-clear" style="background:#f1f5f9;">🗑️ Очистить</button>
+                    <button id="exportBtn" class="btn-export">⬇️ Выгрузить CSV (Checked, ItemID)</button>
+                </div>
+
+                <div style="font-weight: 600; margin: 1rem 0 0.8rem 0; border-left: 5px solid #3b82f6; padding-left: 16px;">
+                    📋 Отфильтрованные записи
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Checked</th><th>Parent_Message_ID</th><th>ItemID</th><th>Предпросмотр (первые поля)</th></tr>
+                        </thead>
+                        <tbody id="previewTableBody">
+                            <tr><td colspan="4" class="empty-message">Нет данных — загрузите CSV</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="errorContainer"></div>
+        </div>
+        <div class="footer-note">
+            🧩 <strong>Торуда:</strong> Parent_Message_ID (столбец №2), ItemID (№12), Checked (№22)<br>
+            🧩 <strong>СОТ:</strong> Parent_Message_ID (№2), ItemID (№13), Checked (№24) + возможность пропустить первые строки
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // DOM элементы
+        const fileInput = document.getElementById('csvFileInput');
+        const dropZone = document.getElementById('dropZone');
+        const resultsPanel = document.getElementById('resultsPanel');
+        const checkedCountSpan = document.getElementById('checkedCountDisplay');
+        const totalSpan = document.getElementById('totalSpan');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const previewBody = document.getElementById('previewTableBody');
+        const errorContainer = document.getElementById('errorContainer');
+        const modeToruda = document.getElementById('modeTorudaBtn');
+        const modeSot = document.getElementById('modeSotBtn');
+        const modeDesc = document.getElementById('modeDesc');
+
+        let currentMode = 'toruda';
+        let filteredData = [];
+        let currentRawRows = null;      // сырые строки после парсинга
+        let currentFileName = null;
+
+        const columnsConfig = {
+            toruda: { parentIdx: 1, itemIdIdx: 11, checkedIdx: 21, name: 'Торуда' },
+            sot: { parentIdx: 1, itemIdIdx: 12, checkedIdx: 23, name: 'СОТ' }
+        };
+
+        function showError(msg) {
+            errorContainer.innerHTML = `<div style="background:#fee2e2; border-radius:20px; padding:12px 20px; margin-top:16px; color:#991b1b; border-left:5px solid #ef4444;">⚠️ ${msg}</div>`;
+            setTimeout(() => { if(errorContainer.innerHTML.includes(msg)) errorContainer.innerHTML = ''; }, 5000);
+        }
+
+        function clearError() { errorContainer.innerHTML = ''; }
+
+        function resetUI(keepPanelHidden = true) {
+            filteredData = [];
+            if(!keepPanelHidden) resultsPanel.style.display = 'none';
+            previewBody.innerHTML = '<tr><td colspan="4" class="empty-message">📭 Нет данных — загрузите CSV</td></tr>';
+            if(exportBtn) exportBtn.disabled = true;
+            clearError();
+        }
+
+        // Парсинг CSV
+        function parseCSV(csvText) {
+            const rows = [];
+            const lines = csvText.split(/\r?\n/);
+            for(let line of lines) {
+                if(line.trim() === "") {
+                    rows.push([]);
+                    continue;
+                }
+                const values = [];
+                let inQuote = false;
+                let current = '';
+                let i = 0;
+                while(i < line.length) {
+                    const ch = line[i];
+                    if(ch === '"') {
+                        if(inQuote && line[i+1] === '"') {
+                            current += '"';
+                            i+=2;
+                            continue;
+                        }
+                        inQuote = !inQuote;
+                        i++;
+                        continue;
+                    }
+                    if(ch === ';' && !inQuote) {
+                        values.push(current);
+                        current = '';
+                        i++;
+                        continue;
+                    }
+                    current += ch;
+                    i++;
+                }
+                values.push(current);
+                rows.push(values.map(v => v.trim()));
+            }
+            return rows;
+        }
+
+        // Подсчёт отфильтрованных строк на основе startRow
+        function countFiltered(rows, config, startRowIndex) {
+            const minCols = Math.max(config.checkedIdx, config.itemIdIdx, config.parentIdx) + 1;
+            let count = 0;
+            let sampleItems = [];
+            for(let i = startRowIndex; i < rows.length; i++) {
+                const row = rows[i];
+                if(row.length < minCols) continue;
+                const parentRaw = row[config.parentIdx];
+                const checkedRaw = row[config.checkedIdx];
+                let parentNum = parseFloat(String(parentRaw).trim().replace(',', '.'));
+                let checkedNum = parseFloat(String(checkedRaw).trim().replace(',', '.'));
+                if(isNaN(parentNum) || isNaN(checkedNum)) continue;
+                if(checkedNum === 1 && parentNum === 0) {
+                    count++;
+                    if(sampleItems.length < 3) {
+                        const itemIdRaw = row[config.itemIdIdx] || '';
+                        sampleItems.push({ parent: parentNum, checked: checkedNum, itemId: itemIdRaw });
+                    }
+                }
+            }
+            return { count, sampleItems };
+        }
+
+        // Функция для показа модалки с вариантами для СОТ
+        function showSotPreviewDialog(rows, config) {
+            // анализируем без пропуска (startRow = 0)
+            const withoutSkip = countFiltered(rows, config, 0);
+            // анализируем с пропуском 2 строк (индекс 2), плюс пропуск заголовка (3-я строка) по логике СОТ
+            let withSkipStart = 0;
+            if(rows.length > 2 && rows[0] && (rows[0].length === 0 || rows[0].every(c => c === "")) &&
+               rows[1] && (rows[1].length === 0 || rows[1].every(c => c === ""))) {
+                withSkipStart = 3; // пропускаем 2 пустые + строку заголовков
+            } else {
+                withSkipStart = 0;
+            }
+            const withSkip = countFiltered(rows, config, withSkipStart);
+            
+            // создаём модалку
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal-overlay';
+            modalDiv.innerHTML = `
+                <div class="modal-content">
+                    <h3>📌 Настройка импорта для СОТ</h3>
+                    <p>Файл: <strong>${escapeHtml(currentFileName || '—')}</strong></p>
+                    <div class="modal-options">
+                        <div style="margin-bottom: 20px;">
+                            <strong>🧪 Предварительный расчёт:</strong>
+                        </div>
+                        <div class="preview-stats">
+                            <div style="margin-bottom: 12px;">📄 <strong>Без пропуска строк</strong><br>
+                            👉 Найдено товаров: <strong>${withoutSkip.count}</strong> (checked=1 и Parent_Message_ID=0)</div>
+                            <div>📄 <strong>С пропуском первых 2 пустых + заголовка (рекомендуется для СОТ)</strong><br>
+                            👉 Найдено товаров: <strong>${withSkip.count}</strong></div>
+                        </div>
+                        <p style="font-size: 0.85rem; margin-top: 12px;">Выберите вариант обработки:</p>
+                        <button id="skipNoBtn" class="option-btn">🚫 Не пропускать строки</button>
+                        <button id="skipYesBtn" class="option-btn" style="background:#dbeafe;">✅ Пропустить 2 пустые + заголовок</button>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="cancelModalBtn" class="btn-clear" style="padding:8px 20px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+            
+            const closeModal = () => modalDiv.remove();
+            
+            const applyProcessing = (skipStartIndex) => {
+                processWithStartRow(rows, config, skipStartIndex);
+                closeModal();
+            };
+            
+            document.getElementById('skipNoBtn').addEventListener('click', () => applyProcessing(0));
+            document.getElementById('skipYesBtn').addEventListener('click', () => applyProcessing(withSkipStart >= 3 ? withSkipStart : 3));
+            document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+            modalDiv.addEventListener('click', (e) => { if(e.target === modalDiv) closeModal(); });
+        }
+        
+        function processWithStartRow(rows, config, startIndex) {
+            const minCols = Math.max(config.checkedIdx, config.itemIdIdx, config.parentIdx) + 1;
+            const validItems = [];
+            for(let i = startIndex; i < rows.length; i++) {
+                const row = rows[i];
+                if(row.length < minCols) continue;
+                const parentRaw = row[config.parentIdx];
+                const checkedRaw = row[config.checkedIdx];
+                const itemIdRaw = row[config.itemIdIdx] !== undefined ? row[config.itemIdIdx] : '';
+                
+                let parentNum = parseFloat(String(parentRaw).trim().replace(',', '.'));
+                let checkedNum = parseFloat(String(checkedRaw).trim().replace(',', '.'));
+                if(isNaN(parentNum) || isNaN(checkedNum)) continue;
+                if(checkedNum === 1 && parentNum === 0) {
+                    let itemIdStr = String(itemIdRaw).trim();
+                    let previewParts = row.slice(0, Math.min(row.length, 6)).map(v => v.length > 22 ? v.substring(0,20)+'…' : v);
+                    let previewText = previewParts.join(' ; ');
+                    if(row.length > 6) previewText += ' …';
+                    validItems.push({
+                        checked: checkedNum,
+                        parentMsgId: parentNum,
+                        itemId: itemIdStr,
+                        previewRaw: previewText
+                    });
+                }
+            }
+            
+            if(validItems.length === 0) {
+                filteredData = [];
+                resultsPanel.style.display = 'block';
+                checkedCountSpan.innerText = '0';
+                totalSpan.innerText = '0';
+                document.getElementById('includedChip').innerHTML = `✨ Включено всего 0 товаров`;
+                previewBody.innerHTML = '<tr><td colspan="4" class="empty-message">✅ Нет товаров с checked=1 и Parent_Message_ID=0</td></tr>';
+                exportBtn.disabled = true;
+                return;
+            }
+            
+            filteredData = validItems;
+            const total = filteredData.length;
+            checkedCountSpan.innerText = total;
+            totalSpan.innerText = total;
+            document.getElementById('includedChip').innerHTML = `✨ Включено всего ${total} товаров`;
+            resultsPanel.style.display = 'block';
+            exportBtn.disabled = false;
+            renderPreviewTable();
+        }
+        
+        function renderPreviewTable() {
+            if(!filteredData.length) {
+                previewBody.innerHTML = '<tr><td colspan="4" class="empty-message">Нет записей</td></tr>';
+                return;
+            }
+            let html = '';
+            for(let item of filteredData) {
+                html += `<tr>
+                    <td><span class="badge-success">✓ ${escapeHtml(item.checked)}</span></td>
+                    <td><code>${escapeHtml(item.parentMsgId)}</code></td>
+                    <td><strong style="font-family:monospace;">${escapeHtml(item.itemId || '—')}</strong></td>
+                    <td style="font-size:0.8rem;">${escapeHtml(item.previewRaw)}</td>
+                </tr>`;
+            }
+            previewBody.innerHTML = html;
+        }
+        
+        function escapeHtml(str) {
+            if(!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Главный обработчик файла
+        function handleFile(file) {
+            if(!file) return;
+            if(!file.name.match(/\.(csv|txt)$/i) && file.type !== 'text/csv') {
+                showError("Пожалуйста, загрузите CSV файл");
+                return;
+            }
+            currentFileName = file.name;
+            resetUI(true);
+            clearError();
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const csvText = e.target.result;
+                    const allRows = parseCSV(csvText);
+                    if(allRows.length === 0) {
+                        showError("Файл пуст");
+                        return;
+                    }
+                    currentRawRows = allRows;
+                    const config = columnsConfig[currentMode];
+                    
+                    if(currentMode === 'toruda') {
+                        // Для Торуда сразу обрабатываем с 0 строки
+                        processWithStartRow(currentRawRows, config, 0);
+                    } 
+                    else if(currentMode === 'sot') {
+                        // Для СОТ показываем диалог выбора
+                        showSotPreviewDialog(currentRawRows, config);
+                    }
+                } catch(err) {
+                    console.error(err);
+                    showError("Ошибка разбора: " + err.message);
+                }
+            };
+            reader.onerror = () => showError("Ошибка чтения файла");
+            reader.readAsText(file, "UTF-8");
+        }
+        
+        // Генерация экспорта
+        function generateExportCSV() {
+            if(!filteredData.length) return "";
+            const header = ["checked", "ItemID"];
+            const rows = [header];
+            for(let item of filteredData) rows.push([item.checked, item.itemId]);
+            return rows.map(row => row.map(cell => {
+                let str = String(cell ?? '');
+                if(str.includes(';') || str.includes('"') || str.includes('\n')) str = '"' + str.replace(/"/g, '""') + '"';
+                return str;
+            }).join(';')).join('\n');
+        }
+        
+        function downloadCSV(content, filename) {
+            const blob = new Blob(["\uFEFF" + content], {type: "text/csv;charset=utf-8;"});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+        
+        // События
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files && e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+            fileInput.value = ''; // предотвращаем повторный выбор того же
+        });
+        
+        // Клик по зоне (без повторного открытия диалога)
+        dropZone.addEventListener('click', (e) => {
+            if(e.target === dropZone || dropZone.contains(e.target)) {
+                if(e.target.id !== 'fakeFileBtn' && !e.target.closest('.btn-primary')) {
+                    fileInput.click();
+                }
+            }
+        });
+        
+        // Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); }));
+        dropZone.addEventListener('dragenter', () => dropZone.classList.add('drag-active'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+        dropZone.addEventListener('drop', (e) => {
+            dropZone.classList.remove('drag-active');
+            const files = e.dataTransfer.files;
+            if(files.length) handleFile(files[0]);
+        });
+        
+        // Смена режимов
+        modeToruda.addEventListener('click', () => {
+            if(currentMode === 'toruda') return;
+            currentMode = 'toruda';
+            modeToruda.classList.add('active');
+            modeSot.classList.remove('active');
+            modeDesc.innerText = 'Торуда: Parent_Message_ID (столбец №2), ItemID (№12), Checked (№22)';
+            resetUI();
+            currentRawRows = null;
+        });
+        
+        modeSot.addEventListener('click', () => {
+            if(currentMode === 'sot') return;
+            currentMode = 'sot';
+            modeSot.classList.add('active');
+            modeToruda.classList.remove('active');
+            modeDesc.innerText = 'СОТ: Parent_Message_ID (№2), ItemID (№13), Checked (№24) + выбор пропуска строк';
+            resetUI();
+            currentRawRows = null;
+        });
+        
+        exportBtn.addEventListener('click', () => {
+            if(!filteredData.length) { showError("Нет данных для экспорта"); return; }
+            const csv = generateExportCSV();
+            if(csv) downloadCSV(csv, `export_${currentMode}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`);
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            resetUI();
+            currentRawRows = null;
+        });
+        
+        resetUI();
+    })();
+</script>
+</body>
+</html>
