@@ -2,1846 +2,684 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ФинБорд · Аналитика счетов</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #e0e7ff;
-            --primary-dark: #3730a3;
-            --secondary: #10b981;
-            --secondary-light: #d1fae5;
-            --warning: #f59e0b;
-            --warning-light: #fef3c7;
-            --danger: #ef4444;
-            --danger-light: #fee2e2;
-            --purple: #8b5cf6;
-            --purple-light: #ede9fe;
-            --teal: #06b6d4;
-            --teal-light: #cffafe;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-        }
-        
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            box-sizing: border-box;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            color: var(--gray-800);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 20px;
+            background: #edf2f7;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 24px 20px;
         }
-        
-        .container {
+
+        .dashboard {
             max-width: 1600px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-            position: relative;
         }
-        
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--warning), var(--purple));
-            z-index: 10;
-        }
-        
-        .app-header {
-            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
-            color: white;
-            padding: 30px 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .app-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-        }
-        
-        .header-content {
-            position: sticky;
-            right: 20px;
-            z-index: 2;
+
+        .top-bar {
             display: flex;
             justify-content: space-between;
-            align-items: right;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
+            margin-bottom: 28px;
+            gap: 16px;
         }
-        
-        .header-left .description {
-            font-size: 15px;
-            opacity: 0.9;
-            max-width: 500px;
-            font-weight: 400;
-            color: var(--gray-300);
-        }
-        
-        .header-right {
+
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #2d3a4e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
             display: flex;
-            flex-direction: column;
-            align-items: right;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 i {
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .status-chip {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
             gap: 10px;
+            border: 1px solid #e2e8f0;
         }
-        
-        .current-time {
-            font-size: 14px;
-            color: var(--gray-300);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 2px #d1fae5;
         }
-        
-        .controls {
-            padding: 24px 40px;
-            background-color: var(--gray-50);
-            border-bottom: 1px solid var(--gray-200);
+
+        .control-panel {
+            background: white;
+            border-radius: 32px;
+            padding: 8px 16px 8px 24px;
+            margin-bottom: 32px;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            justify-content: space-between;
             align-items: center;
-            position: relative;
+            gap: 16px;
+            backdrop-filter: blur(2px);
+            border: 1px solid #eef2f6;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.02);
         }
-        
-        .data-source-toggle {
-            display: flex;
-            background-color: white;
-            border-radius: var(--radius-md);
-            padding: 4px;
-            flex-wrap: wrap;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-            gap: 4px;
-        }
-        
-        .toggle-btn {
-            padding: 12px 24px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            transition: all 0.3s ease;
-            color: var(--gray-600);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .toggle-btn i {
-            font-size: 16px;
-        }
-        
-        .toggle-btn.active {
-            background-color: white;
-            color: var(--primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-1px);
-        }
-        
-        .toggle-btn.active::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-        }
-        
-        .toggle-btn:hover:not(.active) {
-            background-color: var(--gray-100);
-            transform: translateY(-1px);
-        }
-        
-        .action-buttons {
+
+        .source-switch {
             display: flex;
             gap: 12px;
-            margin-left: auto;
+            background: #f8fafc;
+            padding: 5px;
+            border-radius: 48px;
         }
-        
-        .reload-btn, .export-btn {
-            padding: 12px 24px;
+
+        .source-btn {
             border: none;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 14px;
+            background: transparent;
+            padding: 10px 24px;
+            border-radius: 40px;
             font-weight: 600;
-            transition: all 0.3s;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #475569;
+        }
+
+        .source-btn i {
+            font-size: 1rem;
+        }
+
+        .source-btn.active {
+            background: #2d3a4e;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .source-btn:not(.active):hover {
+            background: #eef2ff;
+            color: #1e40af;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-reload {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 22px;
+            border-radius: 34px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1e293b;
         }
-        
-        .reload-btn {
-            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
-            color: white;
+
+        .btn-reload:hover {
+            background: #e6edf5;
+            transform: translateY(-1px);
         }
-        
-        .export-btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-        
-        .reload-btn:hover, .export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .reload-btn:active, .export-btn:active {
-            transform: translateY(0);
-        }
-        
-        .loading {
-            padding: 60px;
-            text-align: center;
-            font-size: 18px;
-            color: var(--gray-500);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error {
-            padding: 60px;
-            text-align: center;
-            color: var(--danger);
-            font-weight: 600;
-            font-size: 18px;
-            background-color: var(--danger-light);
-            border-radius: var(--radius-lg);
-            margin: 20px;
-            border: 1px solid #fecaca;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .error i {
-            font-size: 48px;
-        }
-        
-        .data-display {
-            padding: 40px;
-            min-height: 600px;
-        }
-        
-        .summary-section {
+
+        .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
             margin-bottom: 40px;
         }
-        
-        .summary-card {
-            background-color: white;
-            padding: 24px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+
+        .kpi-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px 22px;
+            transition: all 0.2s;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
-        
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
-        }
-        
-        .summary-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .summary-card.green::before {
-            background: linear-gradient(to bottom, var(--secondary), #059669);
-        }
-        
-        .summary-card.orange::before {
-            background: linear-gradient(to bottom, var(--warning), #d97706);
-        }
-        
-        .summary-card.purple::before {
-            background: linear-gradient(to bottom, var(--purple), #7c3aed);
-        }
-        
-        .summary-card.red::before {
-            background: linear-gradient(to bottom, var(--danger), #dc2626);
-        }
-        
-        .summary-card.teal::before {
-            background: linear-gradient(to bottom, var(--teal), #0891b2);
-        }
-        
-        .summary-title {
-            font-size: 13px;
+
+        .kpi-title {
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--gray-500);
-            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: #5b6e8c;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
-        .summary-value {
-            font-size: 32px;
+
+        .kpi-number {
+            font-size: 2.2rem;
             font-weight: 800;
-            color: var(--gray-900);
+            color: #0f172a;
             line-height: 1.2;
-            margin-bottom: 8px;
+            word-break: break-word;
         }
-        
-        .summary-change {
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+
+        .kpi-badge {
+            font-size: 0.75rem;
+            margin-top: 8px;
+            color: #2c7a4d;
+            background: #e0f2e9;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
         }
-        
-        .summary-change.positive {
-            color: var(--secondary);
-        }
-        
-        .summary-change.negative {
-            color: var(--danger);
-        }
-        
-        .charts-section {
+
+        .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
             gap: 24px;
-            margin-bottom: 40px;
+            margin-bottom: 44px;
         }
-        
-        .chart-container {
-            position: relative;
-            background-color: white;
-            padding: 24px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
-            height: 380px;
-            transition: transform 0.3s ease;
+
+        .chart-card {
+            background: white;
+            border-radius: 28px;
+            padding: 18px 18px 12px 18px;
+            border: 1px solid #eef2f8;
+            transition: 0.2s;
             display: flex;
             flex-direction: column;
         }
-        
-        .chart-container:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
+
         .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-shrink: 0;
+            padding: 0 8px 12px 8px;
+            border-bottom: 1px solid #f0f2f5;
+            margin-bottom: 16px;
         }
-        
-        .chart-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .chart-actions {
+
+        .chart-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
             display: flex;
             gap: 8px;
+            color: #1e293b;
         }
-        
-        .chart-action-btn {
-            background: var(--gray-100);
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--gray-600);
-            transition: all 0.2s;
-        }
-        
-        .chart-action-btn:hover {
-            background: var(--gray-200);
-            color: var(--gray-900);
-        }
-        
-        .chart-wrapper {
+
+        .chart-canvas-wrapper {
             position: relative;
-            flex: 1;
-            min-height: 0;
+            height: 300px;
+            width: 100%;
         }
-        
-        .chart-wrapper canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        .table-container {
+
+        .table-wrapper {
+            background: white;
+            border-radius: 28px;
+            border: 1px solid #edf2f9;
             overflow-x: auto;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 40px;
-            border: 1px solid var(--gray-200);
+            margin-bottom: 28px;
+            padding: 4px 0;
         }
-        
-        table {
+
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            font-size: 0.85rem;
+            min-width: 600px;
         }
-        
-        th {
-            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
-            color: white;
+
+        .data-table th {
             text-align: left;
             padding: 18px 20px;
+            background: #f9fbfe;
             font-weight: 600;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
+            color: #1f2a40;
+            border-bottom: 1px solid #e9edf2;
         }
-        
-        th:first-child {
-            border-top-left-radius: 15px;
+
+        .data-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #2c3e50;
         }
-        
-        th:last-child {
-            border-top-right-radius: 15px;
+
+        .data-table tr:hover td {
+            background-color: #fafcff;
         }
-        
-        td {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--gray-100);
-            font-size: 14px;
-        }
-        
-        tr:nth-child(even) {
-            background-color: var(--gray-50);
-        }
-        
-        tr:hover {
-            background-color: var(--gray-100);
-        }
-        
-        .employee-section {
-            margin-bottom: 32px;
-            padding: 32px;
-            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 100%);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .employee-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 8px;
-            height: 100%;
-        }
-        
-        .employee-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--gray-200);
-        }
-        
-        .employee-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .employee-color-indicator {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .employee-stats {
-            display: flex;
-            gap: 16px;
-        }
-        
-        .employee-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .employee-block {
             background: white;
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
+            border-radius: 28px;
+            margin-bottom: 28px;
+            border: 1px solid #eef2f9;
+            overflow: hidden;
+            transition: 0.1s;
         }
-        
-        .employee-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-        
-        .employee-summary-item {
-            background-color: white;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-            transition: transform 0.2s ease;
+
+        .employee-head {
+            padding: 20px 28px;
+            background: #fefefe;
+            border-bottom: 2px solid #f0f4fa;
             display: flex;
-            flex-direction: column;
-        }
-        
-        .employee-summary-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .employee-summary-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-500);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .employee-summary-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--gray-900);
-        }
-        
-        .employee-summary-change {
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        
-        .footer {
-            padding: 28px 40px;
-            text-align: center;
-            color: var(--gray-500);
-            font-size: 14px;
-            border-top: 1px solid var(--gray-200);
-            background-color: var(--gray-50);
-            display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
         }
-        
-        .footer-left {
+
+        .emp-name {
+            font-weight: 700;
+            font-size: 1.35rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 14px;
         }
-        
-        .footer-right {
+
+        .emp-stats-mini {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            gap: 22px;
+            font-size: 0.85rem;
         }
-        
-        .data-source-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            background-color: var(--primary-light);
-            color: #000000;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
+
+        .emp-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            padding: 20px 28px;
+            background: #fefefe;
+            border-bottom: 1px solid #f0f4fa;
         }
-        
-        .badge-icon {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+
+        .emp-detail-card {
+            background: #fafdff;
+            border-radius: 18px;
+            padding: 12px 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            border: 1px solid #eef2f8;
         }
-        
-        .legend-container {
+
+        .emp-subtable {
+            padding: 0 28px 24px 28px;
+        }
+
+        .footer-info {
+            margin-top: 40px;
+            text-align: center;
+            color: #6b7a8f;
+            font-size: 0.8rem;
+            border-top: 1px solid #e2edf7;
+            padding-top: 24px;
             display: flex;
+            justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 24px;
-            padding: 16px;
-            background-color: white;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--gray-200);
-            box-shadow: var(--shadow-sm);
         }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background-color: var(--gray-50);
-            border-radius: 20px;
-            font-size: 14px;
+
+        @media (max-width: 780px) {
+            body { padding: 16px; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .chart-canvas-wrapper { height: 260px; }
+            .emp-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+
+        .badge-sheet {
+            background: #eef2ff;
+            padding: 5px 12px;
+            border-radius: 80px;
+            font-size: 0.7rem;
             font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .legend-item:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-        }
-        
-        .empty-state {
-            padding: 60px;
-            text-align: center;
-            color: var(--gray-500);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            color: var(--gray-300);
-        }
-        
-        @media (max-width: 1200px) {
-            .charts-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .chart-container {
-                height: 360px;
-            }
-        }
-        
-        @media (max-width: 992px) {
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .header-right {
-                align-items: flex-start;
-            }
-            
-            .action-buttons {
-                margin-left: 0;
-                width: 100%;
-                justify-content: flex-end;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                border-radius: var(--radius-lg);
-            }
-            
-            .app-header, .controls, .data-display, .footer {
-                padding: 20px;
-            }
-            
-            .header-left h1 {
-                font-size: 24px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .action-buttons {
-                width: 100%;
-                justify-content: stretch;
-            }
-            
-            .reload-btn, .export-btn {
-                flex: 1;
-                justify-content: center;
-            }
-            
-            .data-display {
-                padding: 20px;
-            }
-            
-            .summary-section {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .charts-section {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .chart-container {
-                height: 320px;
-                padding: 20px;
-            }
-            
-            .employee-section {
-                padding: 24px 20px;
-            }
-            
-            .employee-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .employee-stats {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .employee-summary {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer {
-                flex-direction: column;
-                text-align: center;
-                gap: 16px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .data-source-toggle {
-                flex-direction: column;
-            }
-            
-            .toggle-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .charts-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .chart-container {
-                height: 300px;
-            }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="app-header">
-            <div class="header-content">
-                <div class="header-right">
-                    <div class="current-time">
-                        <i class="far fa-clock"></i>
-                        <span id="current-time">Загрузка времени...</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-        
-        <div class="controls">
-            <div class="data-source-toggle">
-                <button class="toggle-btn active" id="toggle-data1">
-                    <i class="fas fa-building"></i>
-                    Деловые линии
-                </button>
-                <button class="toggle-btn" id="toggle-data2">
-                    <i class="fas fa-users"></i>
-                    Бригадиры
-                </button>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="reload-btn" id="reload-data">
-                    <i class="fas fa-sync-alt"></i>
-                    Обновить
-                </button>
-            </div>
+<div class="dashboard">
+    <div class="top-bar">
+        <div class="brand">
         </div>
-        
-        <div class="data-display" id="data-display">
-            <div class="loading" id="loading">
-                <div class="loading-spinner"></div>
-                <div>Загрузка данных...</div>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <div class="footer-left">
-                <i class="fas fa-info-circle"></i>
-                <p>Данные загружаются из Google Sheets. Последнее обновление: <span id="last-update">сегодня</span></p>
-            </div>
+        <div class="status-chip">
+            <span class="live-dot"></span>
+            <span id="liveClock">--:--</span>
+            <i class="far fa-calendar-alt"></i>
         </div>
     </div>
 
-    <script>
-        const dataSources = {
-            data1: {
-                name: "Деловые линии",
-                url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1650468959&single=true&output=csv",
-                active: true,
-                icon: "fas fa-building"
-            },
-            data2: {
-                name: "Бригадиры",
-                url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=509205910&single=true&output=csv",
-                active: false,
-                icon: "fas fa-users"
-            }
-        };
-
-        const employeeColors = {
-            "Кардашин": {
-                primary: "#4f46e5",
-                light: "#e0e7ff",
-                gradient: "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)",
-                icon: "fas fa-user-tie"
-            },
-            "Бурнос": {
-                primary: "#10b981",
-                light: "#d1fae5",
-                gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
-                icon: "fas fa-user-check"
-            },
-            "Килин": {
-                primary: "#f59e0b",
-                light: "#fef3c7",
-                gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
-                icon: "fas fa-user-cog"
-            },
-            "Мудров": {
-                primary: "#ef4444",
-                light: "#fee2e2",
-                gradient: "linear-gradient(135deg, #ef4444 0%, #f87171 100%)",
-                icon: "fas fa-user-graduate"
-            },
-            "Алиджон": {
-                primary: "#8b5cf6",
-                light: "#ede9fe",
-                gradient: "linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)",
-                icon: "fas fa-user-friends"
-            }
-        };
-
-        const dataDisplay = document.getElementById('data-display');
-        const loadingElement = document.getElementById('loading');
-        const toggleData1Btn = document.getElementById('toggle-data1');
-        const toggleData2Btn = document.getElementById('toggle-data2');
-        const reloadBtn = document.getElementById('reload-data');
-        const exportBtn = document.getElementById('export-data');
-        const currentTimeElement = document.getElementById('current-time');
-        const lastUpdateElement = document.getElementById('last-update');
-        
-        let currentDataSource = 'data1';
-        let currentCharts = [];
-        let lastUpdateTime = new Date();
-        
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            const dateString = now.toLocaleDateString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            currentTimeElement.textContent = `${dateString} ${timeString}`;
-        }
-        
-        setInterval(updateTime, 1000);
-        updateTime();
-        
-        function updateLastUpdateTime() {
-            lastUpdateTime = new Date();
-            const timeString = lastUpdateTime.toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit'
-            });
-            lastUpdateElement.textContent = timeString;
-        }
-        
-        async function loadData(source) {
-            try {
-                destroyCharts();
-                
-                loadingElement.style.display = 'flex';
-                dataDisplay.innerHTML = '';
-                dataDisplay.appendChild(loadingElement);
-                
-                const response = await fetch(source.url);
-                
-                if (!response.ok) {
-                    throw new Error(`Ошибка загрузки: ${response.status}`);
-                }
-                
-                const csvText = await response.text();
-                const data = parseCSV(csvText);
-                
-                if (source === dataSources.data1) {
-                    displayData1(data);
-                } else {
-                    displayData2(data);
-                }
-                
-                loadingElement.style.display = 'none';
-                updateLastUpdateTime();
-                
-            } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-                showError(`Не удалось загрузить данные: ${error.message}`);
-            }
-        }
-        
-        function parseCSV(csvText) {
-            const rows = csvText.split('\n');
-            return rows.map(row => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
-                
-                for (let i = 0; i < row.length; i++) {
-                    const char = row[i];
-                    
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        result.push(current.trim());
-                        current = '';
-                    } else {
-                        current += char;
-                    }
-                }
-                
-                result.push(current.trim());
-                return result;
-            });
-        }
-        
-        function destroyCharts() {
-            currentCharts.forEach(chart => {
-                if (chart && typeof chart.destroy === 'function') {
-                    chart.destroy();
-                }
-            });
-            currentCharts = [];
-        }
-        
-        function createChart(canvasId, config) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return null;
-            
-            const ctx = canvas.getContext('2d');
-            const chart = new Chart(ctx, {
-                ...config,
-                options: {
-                    ...config.options,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        ...config.options?.plugins,
-                        legend: {
-                            ...config.options?.plugins?.legend,
-                            labels: {
-                                boxWidth: 12,
-                                padding: 10,
-                                font: {
-                                    size: 11
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            currentCharts.push(chart);
-            return chart;
-        }
-function extractAccountNumber(fullAccount) {
-    if (!fullAccount) return '';
-    
-    const match = fullAccount.match(/SCHETA-?\s*(\d+)/i);
-    if (match) {
-        return `SCHETA-${match[1]}`;
-    }
-    
-    const numberMatch = fullAccount.match(/\d{4,}/);
-    if (numberMatch) {
-        return `SCHETA-${numberMatch[0]}`;
-    }
-    
-    return fullAccount.length > 20 ? fullAccount.substring(0, 20) + '...' : fullAccount;
-}
-
-function displayData1(data) {
-    let html = '';
-    
-    let deposit = '';
-    if (data.length > 0 && data[0].length > 5) {
-        deposit = data[0][5] || '';
-    }
-    
-    let balance = '';
-    if (data.length > 252 && data[252].length > 2) {
-        balance = data[252][2] || '';
-    }
-    
-    const accounts = [];
-    let totalAmount = 0;
-    let accountCount = 0;
-    
-    for (let i = 1; i < Math.min(data.length, 251); i++) {
-        if (data[i].length >= 3) {
-            const account = data[i][0] || '';
-            const date = data[i][1] || '';
-            const amount = data[i][2] || '';
-            
-            if (account || date || amount) {
-                accounts.push({ account, date, amount });
-                
-                const amountNum = parseFloat(amount.replace(/[^\d.-]/g, '')) || 0;
-                totalAmount += amountNum;
-                accountCount++;
-            }
-        }
-    }
-    
-    const formattedTotalAmount = totalAmount.toLocaleString('ru-RU', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
-    });
-    
-    const dateSums = {};
-    const accountNames = [];
-    const accountDisplayNames = [];
-    const accountAmounts = [];
-    
-    accounts.forEach((item) => {
-        if (item.date) {
-            const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
-            
-            if (dateSums[item.date]) {
-                dateSums[item.date] += amountNum;
-            } else {
-                dateSums[item.date] = amountNum;
-            }
-        }
-        
-        if (item.account) {
-            accountNames.push(item.account);
-            accountDisplayNames.push(extractAccountNumber(item.account));
-            const amountNum = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
-            accountAmounts.push(amountNum);
-        }
-    });
-    
-    const dates = Object.keys(dateSums);
-    const amounts = dates.map(date => dateSums[date]);
-    
-    const sortedDateIndices = dates.map((date, index) => index)
-        .sort((a, b) => new Date(dates[a]) - new Date(dates[b]));
-    
-    const sortedDates = sortedDateIndices.map(i => dates[i]);
-    const sortedAmounts = sortedDateIndices.map(i => amounts[i]);
-    
-    html += `
-        <div class="summary-section fade-in">
-            <div class="summary-card">
-                <div class="summary-title"><i class="fas fa-piggy-bank"></i> Депозит</div>
-                <div class="summary-value">${deposit || 'Нет данных'}</div>
-                <div class="summary-change positive"><i class="fas fa-arrow-up"></i> Активный</div>
-            </div>
-            <div class="summary-card green">
-                <div class="summary-title"><i class="fas fa-wallet"></i> Остаток</div>
-                <div class="summary-value">${balance || 'Нет данных'}</div>
-                <div class="summary-change positive"><i class="fas fa-check-circle"></i> На счету</div>
-            </div>
-            <div class="summary-card orange">
-                <div class="summary-title"><i class="fas fa-file-invoice-dollar"></i> Сумма счетов</div>
-                <div class="summary-value">${formattedTotalAmount}</div>
-                <div class="summary-change positive"><i class="fas fa-chart-line"></i> Всего</div>
-            </div>
-            <div class="summary-card purple">
-                <div class="summary-title"><i class="fas fa-list-ol"></i> Количество счетов</div>
-                <div class="summary-value">${accountCount}</div>
-                <div class="summary-change positive"><i class="fas fa-plus"></i> Обработано</div>
-            </div>
+    <div class="control-panel">
+        <div class="source-switch">
+            <button class="source-btn active" id="toggleDL"><i class="fas fa-building"></i> Деловые линии</button>
+            <button class="source-btn" id="toggleBrig"><i class="fas fa-users"></i> Бригадиры</button>
         </div>
-    `;
-    
-    html += `
-        <div class="charts-section fade-in">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title"><i class="fas fa-chart-bar"></i> Распределение сумм по счетам</div>
-                </div>
-                <div class="chart-wrapper"><canvas id="amountsChart"></canvas></div>
-            </div>
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title"><i class="fas fa-chart-line"></i> Суммы по датам</div>
-                </div>
-                <div class="chart-wrapper"><canvas id="datesChart"></canvas></div>
-            </div>
+        <div class="action-group">
+            <button class="btn-reload" id="reloadMainBtn"><i class="fas fa-sync-alt"></i> Обновить</button>
         </div>
-    `;
-    
-    if (accounts.length > 0) {
-        html += `
-            <div class="table-container fade-in">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-hashtag"></i> Счет</th>
-                            <th><i class="far fa-calendar-alt"></i> Дата</th>
-                            <th><i class="fas fa-money-bill-wave"></i> Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        accounts.forEach(item => {
-            const displayAccount = extractAccountNumber(item.account);
-             html += `
-                <tr>
-                    <td><i class="fas fa-file-invoice"></i> ${item.account || ''}</td>
-                    <td>${item.date || ''}</td>
-                    <td><strong>${item.amount || ''}</strong></td>
-                </tr>
-            `;
+    </div>
+
+    <div id="mainContent">
+        <div style="text-align:center; padding: 70px 20px;" id="loadingState">
+            <i class="fas fa-spinner fa-pulse fa-2x" style="color:#3b82f6"></i>
+            <p style="margin-top: 16px; color:#4b5563">Загрузка данных из Google Sheets...</p>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <span><i class="far fa-clock"></i> Последнее обновление: <span id="lastUpdateTime">—</span></span>
+        <span><i class="fas fa-database"></i> Данные в реальном времени из таблицы</span>
+    </div>
+</div>
+
+<script>
+    const SOURCES = {
+        dl: {
+            name: "Деловые линии",
+            url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1650468959&single=true&output=csv",
+            active: true
+        },
+        brig: {
+            name: "Бригадиры",
+            url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=509205910&single=true&output=csv",
+            active: false
+        }
+    };
+    let currentSourceKey = 'dl';
+    let activeCharts = [];
+
+    const empPalette = {
+        "Кардашин": { primary: "#4f46e5", light: "#e0e7ff", icon: "fas fa-user-tie" },
+        "Бурнос":   { primary: "#10b981", light: "#d1fae5", icon: "fas fa-user-check" },
+        "Килин":    { primary: "#f59e0b", light: "#fef3c7", icon: "fas fa-user-cog" },
+        "Мудров":   { primary: "#ef4444", light: "#fee2e2", icon: "fas fa-user-graduate" },
+        "Алиджон":  { primary: "#8b5cf6", light: "#ede9fe", icon: "fas fa-user-friends" }
+    };
+
+    function parseCSV(text) {
+        const rows = text.split(/\r?\n/);
+        return rows.map(row => {
+            let inQuote = false;
+            let cell = '';
+            const out = [];
+            for (let ch of row) {
+                if (ch === '"') { inQuote = !inQuote; }
+                else if (ch === ',' && !inQuote) {
+                    out.push(cell.trim());
+                    cell = '';
+                } else { cell += ch; }
+            }
+            out.push(cell.trim());
+            return out;
         });
-        
-        html += `
-                    </tbody>
-                </table>
-            </div>
-        `;
-    } else {
-        html += `
-            <div class="empty-state fade-in">
-                <i class="fas fa-file-excel"></i>
-                <h3>Нет данных о счетах</h3>
-                <p>В таблице не найдены данные о счетах для отображения</p>
-            </div>
-        `;
     }
-    
-    dataDisplay.innerHTML = html;
-    
-    setTimeout(() => {
-        createChart('amountsChart', {
-            type: 'bar',
-            data: {
-                labels: accountDisplayNames,
-                datasets: [{
-                    label: 'Сумма',
-                    data: accountAmounts,
-                    backgroundColor: 'rgba(79, 70, 229, 0.7)',
-                    borderColor: 'rgba(79, 70, 229, 1)',
-                    borderWidth: 2,
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        titleColor: '#f8fafc',
-                        bodyColor: '#f8fafc',
-                        borderColor: '#4f46e5',
-                        borderWidth: 1,
-                        callbacks: {
-                            label: function(context) {
-                                return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
-                            },
-                            title: function(context) {
-                                const fullAccount = accountNames[context[0].dataIndex] || '';
-                                const displayAccount = accountDisplayNames[context[0].dataIndex] || '';
-                                
-                                if (fullAccount !== displayAccount && fullAccount.length > displayAccount.length) {
-                                    return `${displayAccount}\n(${fullAccount})`;
-                                }
-                                return displayAccount;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                        ticks: {
-                            color: '#64748b',
-                            callback: function(value) {
-                                return value.toLocaleString('ru-RU');
-                            }
-                        }
-                    },
-                    x: {
-                        grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                        ticks: { 
-                            color: '#64748b',
-                            maxRotation: 45,
-                            minRotation: 45,
-                            callback: function(value, index) {
-                                const label = accountDisplayNames[index] || '';
-                                return label.length > 12 ? label.substring(0, 10) + '...' : label;
-                            }
-                        }
+
+    function destroyCharts() {
+        activeCharts.forEach(ch => { if (ch && typeof ch.destroy === 'function') ch.destroy(); });
+        activeCharts = [];
+    }
+
+    function formatMoney(val) { return Number(val).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    function extractShortAccount(full) {
+        if (!full) return '';
+        const match = full.match(/SCHETA-?\s*(\d+)/i);
+        if (match) return `SCHETA-${match[1]}`;
+        const num = full.match(/\d{4,}/);
+        if (num) return `Счет ${num[0]}`;
+        return full.length > 22 ? full.slice(0,20)+'...' : full;
+    }
+
+    function renderDL(dataRows) {
+        let depositCell = (dataRows[0] && dataRows[0][5]) ? dataRows[0][5] : '—';
+        let balanceCell = (dataRows[252] && dataRows[252][2]) ? dataRows[252][2] : '—';
+        const accountsRaw = [];
+        for (let i = 1; i < Math.min(dataRows.length, 251); i++) {
+            const row = dataRows[i];
+            if (row && row.length >= 3 && (row[0] || row[1] || row[2])) {
+                accountsRaw.push({ account: row[0]||'', date: row[1]||'', amount: row[2]||'' });
+            }
+        }
+        let totalSum = 0;
+        accountsRaw.forEach(a => { const n = parseFloat(a.amount.replace(/[^\d.-]/g, '')) || 0; totalSum += n; });
+        const kpis = [
+            { title: "Депозит", value: depositCell, icon: "fa-piggy-bank", cls: "" },
+            { title: "Остаток на счете", value: balanceCell, icon: "fa-wallet", cls: "" },
+            { title: "Сумма счетов", value: formatMoney(totalSum), icon: "fa-file-invoice-dollar", cls: "" },
+            { title: "Кол-во счетов", value: accountsRaw.length, icon: "fa-receipt", cls: "" }
+        ];
+
+        let kpiHtml = `<div class="kpi-grid">` + kpis.map(k => `
+            <div class="kpi-card">
+                <div class="kpi-title"><i class="fas ${k.icon}"></i> ${k.title}</div>
+                <div class="kpi-number">${k.value}</div>
+                <div class="kpi-badge">актуально</div>
+            </div>`).join('') + `</div>`;
+
+        const dateMap = new Map();
+        const accMap = new Map();
+        accountsRaw.forEach(item => {
+            let amt = parseFloat(item.amount.replace(/[^\d.-]/g, '')) || 0;
+            if (item.date) dateMap.set(item.date, (dateMap.get(item.date)||0) + amt);
+            if (item.account) accMap.set(item.account, (accMap.get(item.account)||0) + amt);
+        });
+        const sortedDates = Array.from(dateMap.keys()).sort((a,b)=> new Date(a)-new Date(b));
+        const dateAmounts = sortedDates.map(d => dateMap.get(d));
+        const accountLabels = Array.from(accMap.keys()).map(ac => extractShortAccount(ac));
+        const accountValues = Array.from(accMap.values());
+
+        const chartsHtml = `
+            <div class="charts-grid">
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Суммы по счетам</h3></div><div class="chart-canvas-wrapper"><canvas id="dlBarChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Суммы по датам</h3></div><div class="chart-canvas-wrapper"><canvas id="dlLineChart"></canvas></div></div>
+            </div>`;
+
+        let tableHtml = `<div class="table-wrapper"><table class="data-table"><thead><tr><th>Счет</th><th>Дата</th><th>Сумма</th></tr></thead><tbody>`;
+        accountsRaw.forEach(item => {
+            tableHtml += `<tr><td><i class="fas fa-file-invoice"></i> ${item.account || '—'}</td><td>${item.date || '—'}</td><td><strong>${item.amount || '0'}</strong></td></tr>`;
+        });
+        tableHtml += `</tbody></table></div>`;
+        if (accountsRaw.length === 0) tableHtml = `<div class="kpi-card" style="text-align:center">Нет счетов для отображения</div>`;
+
+        document.getElementById('mainContent').innerHTML = kpiHtml + chartsHtml + tableHtml;
+
+        setTimeout(() => {
+            const barCtx = document.getElementById('dlBarChart')?.getContext('2d');
+            const lineCtx = document.getElementById('dlLineChart')?.getContext('2d');
+            if (barCtx) {
+                activeCharts.push(new Chart(barCtx, {
+                    type: 'bar',
+                    data: { labels: accountLabels, datasets: [{ label: 'Сумма', data: accountValues, backgroundColor: '#3b82f6', borderRadius: 8 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString()} ₽` } } } }
+                }));
+            }
+            if (lineCtx) {
+                activeCharts.push(new Chart(lineCtx, {
+                    type: 'line',
+                    data: { labels: sortedDates, datasets: [{ label: 'Сумма по дням', data: dateAmounts, borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.05)', fill: true, tension: 0.3, pointRadius: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                }));
+            }
+        }, 20);
+    }
+
+    function renderBrig(dataRows) {
+        const employees = [
+            { name: "Кардашин", accIdx:0, dateIdx:1, amtIdx:2 },
+            { name: "Бурнос",   accIdx:3, dateIdx:4, amtIdx:5 },
+            { name: "Килин",    accIdx:6, dateIdx:7, amtIdx:8 },
+            { name: "Мудров",   accIdx:9, dateIdx:10, amtIdx:11 },
+            { name: "Алиджон",  accIdx:12, dateIdx:13, amtIdx:14 }
+        ];
+        let empStats = [];
+        let legendHtml = `<div class="kpi-grid" style="margin-bottom: 20px;"><div class="kpi-card"><div class="kpi-title">🎨 Легенда сотрудников</div><div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;">`;
+
+        employees.forEach(emp => {
+            const color = empPalette[emp.name]?.primary || '#64748b';
+            legendHtml += `<span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:${color}; border-radius:50%;"></span> ${emp.name}</span>`;
+        });
+        legendHtml += `</div></div></div>`;
+
+        let totalDepositAll = 0, totalSumAll = 0, totalBalanceAll = 0;
+        let employeesData = [];
+
+        for (let emp of employees) {
+            const depositRaw = (dataRows[2] && dataRows[2][emp.amtIdx]) ? dataRows[2][emp.amtIdx] : '0';
+            const balanceRaw = (dataRows[39] && dataRows[39][emp.amtIdx]) ? dataRows[39][emp.amtIdx] : '0';
+            let depositVal = parseFloat(depositRaw.replace(/[^\d.-]/g, '')) || 0;
+            let balanceVal = parseFloat(balanceRaw.replace(/[^\d.-]/g, '')) || 0;
+            let invoices = [];
+            let sumInv = 0;
+            for (let i = 3; i < Math.min(dataRows.length, 39); i++) {
+                const row = dataRows[i];
+                if (row && row.length > emp.amtIdx) {
+                    let acc = row[emp.accIdx] || '';
+                    let date = row[emp.dateIdx] || '';
+                    let amtRaw = row[emp.amtIdx] || '';
+                    if (acc || date || amtRaw) {
+                        let num = parseFloat(amtRaw.replace(/[^\d.-]/g, '')) || 0;
+                        sumInv += num;
+                        invoices.push({ account: acc, date, amount: amtRaw });
                     }
                 }
             }
-        });
-        
-        createChart('datesChart', {
-            type: 'line',
-            data: {
-                labels: sortedDates,
-                datasets: [{
-                    label: 'Сумма',
-                    data: sortedAmounts,
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                    borderColor: 'rgba(79, 70, 229, 1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        titleColor: '#f8fafc',
-                        bodyColor: '#f8fafc',
-                        borderColor: '#4f46e5',
-                        borderWidth: 1,
-                        callbacks: {
-                            label: function(context) {
-                                return `Сумма: ${context.raw.toLocaleString('ru-RU')}`;
-                            },
-                            title: function(context) {
-                                return `Дата: ${context[0].label}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                        ticks: {
-                            color: '#64748b',
-                            callback: function(value) {
-                                return value.toLocaleString('ru-RU');
-                            }
-                        }
-                    },
-                    x: {
-                        grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                        ticks: { 
-                            color: '#64748b',
-                            maxRotation: 45,
-                            minRotation: 45
-                        }
-                    }
-                }
+            totalDepositAll += depositVal;
+            totalSumAll += sumInv;
+            totalBalanceAll += balanceVal;
+            employeesData.push({ ...emp, deposit: depositVal, balance: balanceVal, totalInvoices: sumInv, invoices, count: invoices.length });
+        }
+
+        const kpiHtml = `<div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-title"><i class="fas fa-piggy-bank"></i> Общий депозит</div><div class="kpi-number">${formatMoney(totalDepositAll)}</div></div>
+            <div class="kpi-card"><div class="kpi-title"><i class="fas fa-file-invoice"></i> Общая сумма счетов</div><div class="kpi-number">${formatMoney(totalSumAll)}</div></div>
+            <div class="kpi-card"><div class="kpi-title"><i class="fas fa-wallet"></i> Общий остаток</div><div class="kpi-number">${formatMoney(totalBalanceAll)}</div></div>
+            <div class="kpi-card"><div class="kpi-title"><i class="fas fa-users"></i> Сотрудников</div><div class="kpi-number">${employeesData.length}</div></div>
+        </div>`;
+
+        const labels = employeesData.map(e => e.name);
+        const depData = employeesData.map(e => e.deposit);
+        const invData = employeesData.map(e => e.totalInvoices);
+        const balData = employeesData.map(e => e.balance);
+        const colors = labels.map(n => empPalette[n]?.primary || '#94a3b8');
+
+        const chartsBlock = `
+            <div class="charts-grid">
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Депозиты</h3></div><div class="chart-canvas-wrapper"><canvas id="pieDeposit"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Суммы счетов</h3></div><div class="chart-canvas-wrapper"><canvas id="barInvoices"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-coins"></i> Остатки</h3></div><div class="chart-canvas-wrapper"><canvas id="doughnutBal"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-simple"></i> Депозит vs Остаток</h3></div><div class="chart-canvas-wrapper"><canvas id="groupCompare"></canvas></div></div>
+            </div>`;
+
+        let employeesHtml = '';
+        for (let emp of employeesData) {
+            const col = empPalette[emp.name]?.primary || '#4b5563';
+            const icon = empPalette[emp.name]?.icon || 'fas fa-user';
+            employeesHtml += `
+                <div class="employee-block" style="border-left: 5px solid ${col}">
+                    <div class="employee-head">
+                        <div class="emp-name"><span style="background:${col}; width:28px;height:28px;border-radius:30px;display:inline-flex;align-items:center;justify-content:center;color:white;"><i class="${icon} fa-xs"></i></span> ${emp.name}</div>
+                        <div class="emp-stats-mini"><span><i class="fas fa-receipt"></i> счетов: ${emp.count}</span><span><i class="fas fa-ruble-sign"></i> сумма: ${formatMoney(emp.totalInvoices)}</span></div>
+                    </div>
+                    <div class="emp-detail-grid">
+                        <div class="emp-detail-card"><div class="kpi-title"><i class="fas fa-piggy-bank"></i> Депозит</div><div class="kpi-number" style="font-size:1.4rem;">${formatMoney(emp.deposit)}</div></div>
+                        <div class="emp-detail-card"><div class="kpi-title"><i class="fas fa-file-invoice-dollar"></i> Сумма счетов</div><div class="kpi-number" style="font-size:1.4rem;">${formatMoney(emp.totalInvoices)}</div></div>
+                        <div class="emp-detail-card"><div class="kpi-title"><i class="fas fa-wallet"></i> Остаток</div><div class="kpi-number" style="font-size:1.4rem;">${formatMoney(emp.balance)}</div></div>
+                        <div class="emp-detail-card"><div class="kpi-title"><i class="fas fa-chart-line"></i> Потрачено</div><div class="kpi-number" style="font-size:1.2rem;">${emp.deposit ? ((emp.totalInvoices/emp.deposit)*100).toFixed(1) : 0}%</div></div>
+                    </div>
+                    <div class="emp-subtable">
+                        <div class="table-wrapper"><table class="data-table"><thead><tr><th>Счет</th><th>Дата</th><th>Сумма</th></tr></thead><tbody>
+                            ${emp.invoices.map(inv => `<tr><td><i class="fas fa-file-invoice"></i> ${inv.account || '—'}</td><td>${inv.date || '—'}</td><td><strong>${inv.amount || '0'}</strong></td></tr>`).join('')}
+                            ${emp.invoices.length === 0 ? '<tr><td colspan="3">Нет операций</td></tr>' : ''}
+                        </tbody></table></div>
+                    </div>
+                </div>`;
+        }
+
+        const finalHtml = legendHtml + kpiHtml + chartsBlock + employeesHtml;
+        document.getElementById('mainContent').innerHTML = finalHtml;
+
+        setTimeout(() => {
+            const pieCtx = document.getElementById('pieDeposit')?.getContext('2d');
+            const barInv = document.getElementById('barInvoices')?.getContext('2d');
+            const doughBal = document.getElementById('doughnutBal')?.getContext('2d');
+            const compareCtx = document.getElementById('groupCompare')?.getContext('2d');
+            if (pieCtx) activeCharts.push(new Chart(pieCtx, { type: 'doughnut', data: { labels, datasets: [{ data: depData, backgroundColor: colors, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } }));
+            if (barInv) activeCharts.push(new Chart(barInv, { type: 'bar', data: { labels, datasets: [{ label: 'Сумма счетов', data: invData, backgroundColor: colors, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false } }));
+            if (doughBal) activeCharts.push(new Chart(doughBal, { type: 'doughnut', data: { labels, datasets: [{ data: balData, backgroundColor: colors.map(c=>c+'cc'), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '55%' } }));
+            if (compareCtx) {
+                activeCharts.push(new Chart(compareCtx, {
+                    type: 'bar', data: { labels, datasets: [{ label: 'Депозит', data: depData, backgroundColor: '#2563eb' }, { label: 'Остаток', data: balData, backgroundColor: '#ea580c' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()} ₽` } } } }
+                }));
             }
-        });
-    }, 100);
-}
-        
-        function displayData2(data) {
-            let html = '';
-            
-            const employees = [
-                { name: "Кардашин", accountCol: 0, dateCol: 1, amountCol: 2 },
-                { name: "Бурнос", accountCol: 3, dateCol: 4, amountCol: 5 },
-                { name: "Килин", accountCol: 6, dateCol: 7, amountCol: 8 },
-                { name: "Мудров", accountCol: 9, dateCol: 10, amountCol: 11 },
-                { name: "Алиджон", accountCol: 12, dateCol: 13, amountCol: 14 }
-            ];
-            
-            const employeeNames = [];
-            const employeeDeposits = [];
-            const employeeTotalAmounts = [];
-            const employeeBalances = [];
-            
-            let legendHTML = '<div class="legend-container fade-in">';
-            legendHTML += '<div style="font-weight: 600; margin-bottom: 8px; width: 100%; color: var(--gray-700);"><i class="fas fa-palette"></i> Легенда цветов сотрудников:</div>';
-            
-            employees.forEach((employee, index) => {
-                const colors = employeeColors[employee.name] || employeeColors["Кардашин"];
-                
-                legendHTML += `
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: ${colors.primary}"></div>
-                        <span><i class="${colors.icon}"></i> ${employee.name}</span>
-                    </div>
-                `;
-                
-                const employeeName = data[0] && data[0][employee.accountCol] ? data[0][employee.accountCol] : employee.name;
-                const employeeDeposit = data[2] && data[2][employee.amountCol] ? data[2][employee.amountCol] : '';
-                const employeeBalance = data[39] && data[39][employee.amountCol] ? data[39][employee.amountCol] : '';
-                
-                const employeeAccounts = [];
-                let employeeTotal = 0;
-                let employeeAccountCount = 0;
-                
-                for (let i = 3; i < Math.min(data.length, 39); i++) {
-                    if (data[i] && data[i].length > employee.amountCol) {
-                        const account = data[i][employee.accountCol] || '';
-                        const date = data[i][employee.dateCol] || '';
-                        const amount = data[i][employee.amountCol] || '';
-                        
-                        if (account || date || amount) {
-                            employeeAccounts.push({ 
-                                account: account.trim(), 
-                                date: date.trim(), 
-                                amount: amount.trim() 
-                            });
-                            
-                            const amountNum = parseFloat(amount.replace(/[^\d.-]/g, '')) || 0;
-                            employeeTotal += amountNum;
-                            employeeAccountCount++;
-                        }
-                    }
-                }
-                
-                const formattedEmployeeTotal = employeeTotal.toLocaleString('ru-RU', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-                
-                employeeNames.push(employeeName);
-                employeeDeposits.push(parseFloat(employeeDeposit.replace(/[^\d.-]/g, '')) || 0);
-                employeeTotalAmounts.push(employeeTotal);
-                employeeBalances.push(parseFloat(employeeBalance.replace(/[^\d.-]/g, '')) || 0);
-                
-                const performance = employeeTotal > 0 ? Math.round((employeeTotal / (employeeDeposits[employeeDeposits.length-1] || 1)) * 100) : 0;
-                const performanceClass = performance > 100 ? 'positive' : 'negative';
-                const performanceIcon = performance > 100 ? 'fa-arrow-up' : 'fa-arrow-down';
-                
-                html += `
-                    <div class="employee-section fade-in" style="border-left-color: ${colors.primary}">
-                        <div class="employee-header">
-                            <div class="employee-name">
-                                <span class="employee-color-indicator" style="background: ${colors.gradient}"></span>
-                                <i class="${colors.icon}"></i>
-                                ${employeeName}
-                            </div>
-                            <div class="employee-stats">
-                                <div class="employee-stat">
-                                    <i class="fas fa-file-invoice"></i>
-                                    <span>Счетов: <strong>${employeeAccountCount}</strong></span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="employee-summary">
-                            <div class="employee-summary-item" style="border-left: 4px solid ${colors.primary}">
-                                <div class="employee-summary-title"><i class="fas fa-piggy-bank"></i> Депозит</div>
-                                <div class="employee-summary-value">${employeeDeposit || 'Нет данных'}</div>
-                            </div>
-                            <div class="employee-summary-item" style="border-left: 4px solid ${colors.primary}">
-                                <div class="employee-summary-title"><i class="fas fa-file-invoice-dollar"></i> Сумма счетов</div>
-                                <div class="employee-summary-value">${formattedEmployeeTotal}</div>
-                                <div class="employee-summary-change positive"><i class="fas fa-chart-line"></i> Всего</div>
-                            </div>
-                            <div class="employee-summary-item" style="border-left: 4px solid ${colors.primary}">
-                                <div class="employee-summary-title"><i class="fas fa-list-ol"></i> Количество счетов</div>
-                                <div class="employee-summary-value">${employeeAccountCount}</div>
-                                <div class="employee-summary-change positive"><i class="fas fa-plus"></i> Обработано</div>
-                            </div>
-                            <div class="employee-summary-item" style="border-left: 4px solid ${colors.primary}">
-                                <div class="employee-summary-title"><i class="fas fa-wallet"></i> Остаток</div>
-                                <div class="employee-summary-value">${employeeBalance || 'Нет данных'}</div>
-                                <div class="employee-summary-change positive"><i class="fas fa-check-circle"></i> На счету</div>
-                            </div>
-                        </div>
-                `;
-                
-                if (employeeAccounts.length > 0) {
-                    html += `
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th style="border-left: 4px solid ${colors.primary}"><i class="fas fa-hashtag"></i> Счет</th>
-                                        <th><i class="far fa-calendar-alt"></i> Дата</th>
-                                        <th><i class="fas fa-money-bill-wave"></i> Сумма</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    employeeAccounts.forEach(item => {
-                        html += `
-                            <tr>
-                                <td style="border-left: 4px solid ${colors.primary}"><i class="fas fa-file-invoice"></i> ${item.account || ''}</td>
-                                <td>${item.date || ''}</td>
-                                <td><strong>${item.amount || ''}</strong></td>
-                            </tr>
-                        `;
-                    });
-                    
-                    html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                } else {
-                    html += `
-                        <div class="empty-state">
-                            <i class="fas fa-file-excel"></i>
-                            <h3>Нет данных о счетах</h3>
-                            <p>Для ${employeeName} не найдены данные о счетах</p>
-                        </div>
-                    `;
-                }
-                
-                html += `</div>`;
-            });
-            
-            legendHTML += '</div>';
-            
-            const totalDeposit = employeeDeposits.reduce((sum, deposit) => sum + deposit, 0);
-            const totalAmount = employeeTotalAmounts.reduce((sum, amount) => sum + amount, 0);
-            const totalBalance = employeeBalances.reduce((sum, balance) => sum + balance, 0);
-            const totalAccounts = employeeNames.length;
-            const avgPerformance = employeeTotalAmounts.reduce((sum, amount, idx) => {
-                const deposit = employeeDeposits[idx] || 1;
-                return sum + (amount / deposit * 100);
-            }, 0) / employeeNames.length;
-            
-            const summaryHTML = `
-                <div class="summary-section fade-in">
-                    <div class="summary-card">
-                        <div class="summary-title"><i class="fas fa-piggy-bank"></i> Общий депозит</div>
-                        <div class="summary-value">${totalDeposit.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                        <div class="summary-change positive"><i class="fas fa-users"></i> ${employeeNames.length} сотрудников</div>
-                    </div>
-                    <div class="summary-card green">
-                        <div class="summary-title"><i class="fas fa-file-invoice-dollar"></i> Общая сумма счетов</div>
-                        <div class="summary-value">${totalAmount.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                        <div class="summary-change positive"><i class="fas fa-chart-line"></i> Всего</div>
-                    </div>
-                    <div class="summary-card orange">
-                        <div class="summary-title"><i class="fas fa-wallet"></i> Общий остаток</div>
-                        <div class="summary-value">${totalBalance.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                        <div class="summary-change positive"><i class="fas fa-check-circle"></i> На счетах</div>
-                    </div>
-                    </div>
-            `;
-            
-            const employeeColorsArray = employeeNames.map(name => employeeColors[name]?.primary || '#4f46e5');
-            const employeeLightColorsArray = employeeNames.map(name => employeeColors[name]?.primary + '80' || '#4f46e580');
-            
-            const chartsHTML = `
-                ${legendHTML}
-                <div class="charts-section fade-in">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-chart-pie"></i> Депозиты сотрудников</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="depositsChart"></canvas></div>
-                    </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-chart-bar"></i> Общие суммы по сотрудникам</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="totalsChart"></canvas></div>
-                    </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-pie-chart"></i> Остатки сотрудников</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="balancesChart"></canvas></div>
-                    </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title"><i class="fas fa-balance-scale"></i> Сравнение депозитов и остатков</div>
-                        </div>
-                        <div class="chart-wrapper"><canvas id="comparisonChart"></canvas></div>
-                    </div>
-                </div>
-            `;
-            
-            dataDisplay.innerHTML = summaryHTML + chartsHTML + html;
-            
-            setTimeout(() => {
-                createChart('depositsChart', {
-                    type: 'doughnut',
-                    data: {
-                        labels: employeeNames,
-                        datasets: [{
-                            label: 'Депозит',
-                            data: employeeDeposits,
-                            backgroundColor: employeeColorsArray,
-                            borderColor: employeeNames.map(name => '#ffffff'),
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: { size: 12, weight: '500' }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.label}: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        cutout: '60%'
-                    }
-                });
-                
-                createChart('totalsChart', {
-                    type: 'bar',
-                    data: {
-                        labels: employeeNames,
-                        datasets: [{
-                            label: 'Общая сумма счетов',
-                            data: employeeTotalAmounts,
-                            backgroundColor: employeeColorsArray,
-                            borderColor: employeeNames.map(name => '#ffffff'),
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            borderSkipped: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.label}: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                                ticks: {
-                                    color: '#64748b',
-                                    callback: function(value) {
-                                        return value.toLocaleString('ru-RU');
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                                ticks: { color: '#64748b' }
-                            }
-                        }
-                    }
-                });
-                
-                createChart('balancesChart', {
-                    type: 'doughnut',
-                    data: {
-                        labels: employeeNames,
-                        datasets: [{
-                            label: 'Остаток',
-                            data: employeeBalances,
-                            backgroundColor: employeeColorsArray,
-                            borderColor: employeeNames.map(name => '#ffffff'),
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: { size: 12, weight: '500' }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.label}: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        cutout: '60%'
-                    }
-                });
-                
-                createChart('comparisonChart', {
-                    type: 'bar',
-                    data: {
-                        labels: employeeNames,
-                        datasets: [
-                            {
-                                label: 'Депозит',
-                                data: employeeDeposits,
-                                backgroundColor: employeeColorsArray.map(color => color + 'CC'),
-                                borderColor: employeeColorsArray,
-                                borderWidth: 2,
-                                borderRadius: 6,
-                                borderSkipped: false,
-                            },
-                            {
-                                label: 'Остаток',
-                                data: employeeBalances,
-                                backgroundColor: employeeLightColorsArray,
-                                borderColor: employeeColorsArray,
-                                borderWidth: 2,
-                                borderRadius: 6,
-                                borderSkipped: false,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#f8fafc',
-                                bodyColor: '#f8fafc',
-                                borderColor: '#4f46e5',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.dataset.label}: ${context.raw.toLocaleString('ru-RU')}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: 'rgba(226, 232, 240, 0.5)' },
-                                ticks: {
-                                    color: '#64748b',
-                                    callback: function(value) {
-                                        return value.toLocaleString('ru-RU');
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: { color: 'rgba(226, 232, 240, 0.3)' },
-                                ticks: { color: '#64748b' }
-                            }
-                        }
-                    }
-                });
-            }, 100);
+        }, 30);
+    }
+
+    async function fetchAndRender(sourceKey) {
+        const source = SOURCES[sourceKey];
+        const contentDiv = document.getElementById('mainContent');
+        contentDiv.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><i class="fas fa-spinner fa-pulse fa-2x" style="color:#3b82f6"></i><p style="margin-top:12px;">Загрузка ${source.name} ...</p></div>`;
+        try {
+            const resp = await fetch(source.url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const csv = await resp.text();
+            const parsed = parseCSV(csv);
+            destroyCharts();
+            if (sourceKey === 'dl') renderDL(parsed);
+            else renderBrig(parsed);
+            document.getElementById('lastUpdateTime').innerText = new Date().toLocaleTimeString('ru-RU');
+        } catch (err) {
+            console.error(err);
+            contentDiv.innerHTML = `<div style="background:#ffe5e5; border-radius:28px; padding:36px; text-align:center; margin-top:20px; color:#b91c1c;"><i class="fas fa-circle-exclamation fa-2x"></i><h3 style="margin:16px 0 8px">Ошибка загрузки</h3><p>${err.message}</p><button class="btn-reload" id="retryLocalBtn" style="margin-top:18px;"><i class="fas fa-rotate-right"></i> Повторить</button></div>`;
+            const retryBtn = document.getElementById('retryLocalBtn');
+            if (retryBtn) retryBtn.onclick = () => fetchAndRender(currentSourceKey);
         }
-        
-        function showError(message) {
-            loadingElement.style.display = 'none';
-            dataDisplay.innerHTML = `
-                <div class="error fade-in">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Ошибка загрузки данных</h3>
-                    <p>${message}</p>
-                    <button class="reload-btn" onclick="loadData(dataSources[currentDataSource])" style="margin-top: 20px;">
-                        <i class="fas fa-redo"></i> Попробовать снова
-                    </button>
-                </div>
-            `;
-        }
-        
-        function switchDataSource(sourceId) {
-            toggleData1Btn.classList.toggle('active', sourceId === 'data1');
-            toggleData2Btn.classList.toggle('active', sourceId === 'data2');
-            
-            currentDataSource = sourceId;
-            loadData(dataSources[sourceId]);
-        }
-        
-        toggleData1Btn.addEventListener('click', () => switchDataSource('data1'));
-        toggleData2Btn.addEventListener('click', () => switchDataSource('data2'));
-        reloadBtn.addEventListener('click', () => loadData(dataSources[currentDataSource]));
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData(dataSources[currentDataSource]);
-        });
-        
-        window.addEventListener('resize', () => {
-            currentCharts.forEach(chart => {
-                if (chart && typeof chart.resize === 'function') {
-                    chart.resize();
-                }
-            });
-        });
-    </script>
+    }
+
+    function updateTimeUI() {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+    }
+    setInterval(updateTimeUI, 1000);
+    updateTimeUI();
+
+    const dlBtn = document.getElementById('toggleDL');
+    const brigBtn = document.getElementById('toggleBrig');
+    const reload = document.getElementById('reloadMainBtn');
+
+    function setActive(src) {
+        currentSourceKey = src;
+        dlBtn.classList.toggle('active', src === 'dl');
+        brigBtn.classList.toggle('active', src === 'brig');
+        fetchAndRender(src);
+    }
+
+    dlBtn.onclick = () => setActive('dl');
+    brigBtn.onclick = () => setActive('brig');
+    reload.onclick = () => fetchAndRender(currentSourceKey);
+
+    fetchAndRender('dl');
+</script>
 </body>
 </html>
