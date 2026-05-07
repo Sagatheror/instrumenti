@@ -2,15 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Мотивацию надо поднять</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Quicksand:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Montserrat:wght@300;400;600;700;900&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
@@ -18,2048 +17,1095 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 20px;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            transition: background 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             position: relative;
             overflow-x: hidden;
+            cursor: none !important;
         }
 
-        /* Декоративные элементы фона */
-        .bg-gradient {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(255,255,255,0.1) 0%, transparent 40%);
-    z-index: 0;
-    transition: opacity 0.5s ease;
-    opacity: 0.3;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-}
+        body, body * {
+            cursor: none !important;
+        }
 
-.bg-grid {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.3;
-    transition: opacity 0.5s ease;
-    animation: gridFloat 20s linear infinite;
-}
-
-@keyframes gridFloat {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(5px, 5px); }
-    50% { transform: translate(10px, 0); }
-    75% { transform: translate(5px, -5px); }
-    100% { transform: translate(0, 0); }
-}
-.bg-orb {
-    position: fixed;
-    width: 80vmax;
-    height: 80vmax;
-    border-radius: 50%;
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    filter: blur(100px) brightness(0.8);
-    z-index: 0;
-    opacity: 0.5;
-    mix-blend-mode: screen;
-}
-
-.bg-orb-2 {
-    position: fixed;
-    width: 60vmax;
-    height: 60vmax;
-    border-radius: 50%;
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    bottom: -10%;
-    right: -10%;
-    filter: blur(100px) brightness(0.8);
-    z-index: 0;
-    opacity: 0.5;
-    mix-blend-mode: screen;
-}
-
-      .particle {
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1;
-    transition: all 0.5s ease;
-    background: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 10px currentColor;
-    --duration: 10s;
-}
-
-.particle:nth-child(3n) {
-    width: 6px;
-    height: 6px;
-    background: rgba(255, 200, 200, 0.6);
-}
-
-.particle:nth-child(5n+2) {
-    width: 3px;
-    height: 3px;
-    background: rgba(200, 255, 200, 0.6);
-}
-@keyframes cyberpunkOrb1 {
-    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.5; filter: blur(100px) hue-rotate(0deg); }
-    25% { transform: translate(-45%, -55%) scale(1.3) rotate(90deg); opacity: 0.7; filter: blur(100px) hue-rotate(30deg); }
-    50% { transform: translate(-55%, -45%) scale(1.1) rotate(180deg); opacity: 0.6; filter: blur(100px) hue-rotate(60deg); }
-    75% { transform: translate(-40%, -60%) scale(1.4) rotate(270deg); opacity: 0.8; filter: blur(100px) hue-rotate(30deg); }
-    100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0.5; filter: blur(100px) hue-rotate(0deg); }
-}
-
-@keyframes cyberpunkOrb2 {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.4; filter: blur(100px) hue-rotate(0deg); }
-    33% { transform: translate(-10%, -10%) scale(1.4) rotate(-120deg); opacity: 0.6; filter: blur(100px) hue-rotate(-30deg); }
-    66% { transform: translate(5%, 5%) scale(0.9) rotate(-240deg); opacity: 0.5; filter: blur(100px) hue-rotate(-60deg); }
-    100% { transform: translate(0, 0) scale(1) rotate(-360deg); opacity: 0.4; filter: blur(100px) hue-rotate(0deg); }
-}
-
-@keyframes oceanOrb1 {
-    0% { transform: translate(-50%, -50%) scale(1) translateY(0) translateX(0); opacity: 0.4; filter: blur(100px) brightness(1); }
-    20% { transform: translate(-45%, -55%) scale(1.2) translateY(-20px) translateX(-10px); opacity: 0.6; filter: blur(100px) brightness(1.1); }
-    40% { transform: translate(-55%, -45%) scale(1.1) translateY(20px) translateX(10px); opacity: 0.5; filter: blur(100px) brightness(0.9); }
-    60% { transform: translate(-48%, -52%) scale(1.3) translateY(-10px) translateX(-15px); opacity: 0.7; filter: blur(100px) brightness(1.2); }
-    80% { transform: translate(-52%, -48%) scale(1.2) translateY(10px) translateX(15px); opacity: 0.6; filter: blur(100px) brightness(0.95); }
-    100% { transform: translate(-50%, -50%) scale(1) translateY(0) translateX(0); opacity: 0.4; filter: blur(100px) brightness(1); }
-}
-
-@keyframes oceanOrb2 {
-    0% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; filter: blur(100px) brightness(1); }
-    20% { transform: translate(-8%, -12%) scale(1.3) translateY(-15px); opacity: 0.5; filter: blur(100px) brightness(1.2); }
-    40% { transform: translate(6%, 4%) scale(1.2) translateY(15px); opacity: 0.4; filter: blur(100px) brightness(0.9); }
-    60% { transform: translate(-12%, 2%) scale(1.4) translateY(-8px); opacity: 0.6; filter: blur(100px) brightness(1.3); }
-    80% { transform: translate(4%, -6%) scale(1.2) translateY(10px); opacity: 0.5; filter: blur(100px) brightness(0.95); }
-    100% { transform: translate(0, 0) scale(1) translateY(0); opacity: 0.3; filter: blur(100px) brightness(1); }
-}
-        /* Основной контейнер */
-        .oracle {
-            position: relative;
-            z-index: 10;
+        .kinetic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 700px;
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 56px;
-            padding: 36px;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(0);
-            animation: containerAppear 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            transition: all 0.6s ease;
         }
 
-        @keyframes containerAppear {
-            0% { opacity: 0; transform: translateY(50px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+        .gradient-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: sphereMove 25s infinite alternate;
+            transition: background 0.5s ease;
         }
 
-        /* Темы (сокращено для читаемости, но сохранены все стили) */
-        .oracle.theme-cyberpunk {
-            background: linear-gradient(135deg, rgba(5, 10, 20, 0.7), rgba(10, 5, 25, 0.7));
-            border: 2px solid rgba(0, 255, 255, 0.4);
-            box-shadow: 0 30px 60px -15px rgba(0, 255, 255, 0.3), 0 0 50px rgba(255, 0, 255, 0.2);
-            font-family: 'Orbitron', sans-serif;
+        @keyframes sphereMove {
+            0% { transform: translate(0, ) scale(1); opacity: 0.4; }
+            50% { transform: translate(5%, 5%) scale(1.3); opacity: 0.65; }
+            100% { transform: translate(-3%, -3%) scale(1.1); opacity: 0.5; }
+        }
+        .noise-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjkiIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDMiLz48L3N2Zz4=');
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
         }
 
-        body.theme-cyberpunk-bg {
-            background: linear-gradient(145deg, #03050f, #0a0515);
+        .cursor-trail {
+            position: fixed;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.05s, width 0.2s, height 0.2s;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(2px);
         }
-        
-        body.theme-cyberpunk-bg .bg-orb {
-            background: radial-gradient(circle at 30% 30%, #00ffff, #ff00ff, transparent 80%);
-            animation: cyberpunkOrb1 15s infinite linear;
-        }
-        
-        body.theme-cyberpunk-bg .bg-orb-2 {
-            background: radial-gradient(circle at 70% 70%, #ff00ff, #00ffff, transparent 80%);
-            animation: cyberpunkOrb2 18s infinite linear;
-        }
-
-        .oracle.theme-picmi {
-            background: linear-gradient(135deg, rgba(45, 25, 35, 0.7), rgba(55, 30, 40, 0.7));
-            border: 2px solid rgba(255, 200, 210, 0.5);
-            box-shadow: 0 30px 60px -15px rgba(255, 180, 190, 0.3), 0 0 50px rgba(255, 220, 180, 0.2);
-            font-family: 'Quicksand', sans-serif;
-        }
-
-        body.theme-picmi-bg {
-            background: linear-gradient(145deg, #2a1a24, #35222e);
+        .particle-universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .oracle.theme-dark {
-            background: linear-gradient(135deg, rgba(10, 10, 15, 0.8), rgba(15, 15, 20, 0.8));
-            border: 2px solid rgba(180, 180, 200, 0.15);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
-            font-family: 'Montserrat', sans-serif;
+        .cosmic-particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatCosmic linear infinite;
+            pointer-events: auto;
+            cursor: none !important;
+            transition: transform 0.2s;
         }
 
-        body.theme-dark-bg {
-            background: linear-gradient(145deg, #0a0a0f, #12121a);
+        .cosmic-particle:hover {
+            transform: scale(4);
+            filter: brightness(1.5);
         }
 
-        .oracle.theme-ocean {
-            background: linear-gradient(135deg, rgba(20, 45, 65, 0.7), rgba(25, 50, 70, 0.7));
-            border: 2px solid rgba(135, 206, 235, 0.5);
-            box-shadow: 0 30px 60px -15px rgba(135, 206, 235, 0.3), 0 0 50px rgba(173, 216, 230, 0.2);
-            font-family: 'Playfair Display', serif;
+        @keyframes floatCosmic {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
         }
 
-        body.theme-ocean-bg {
-            background: linear-gradient(145deg, #112a36, #1a3340);
+        .oracle-container {
+            position: relative;
+            z-index: 30;
+            width: 100%;
+            max-width: 850px;
+            animation: containerFloat 1s ease;
         }
 
-        /* Верхняя панель */
-        .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 45px;
-    padding: 0 15px;
-    position: relative;
-}
-
-.date {
-    color: rgba(255, 255, 255, 0.98);
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 12px 25px;
-    border-radius: 60px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-    font-weight: 600;
-    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
-    position: relative;
-    overflow: hidden;
-}
-
-.date::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.date:hover::before {
-    left: 100%;
-}
-
-.date:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.5);
-}
-
-        .oracle.theme-cyberpunk .date,
-        .oracle.theme-cyberpunk .stat-badge,
-        .oracle.theme-cyberpunk .mood-detector {
-            background: rgba(0, 255, 255, 0.15);
-            border-color: rgba(0, 255, 255, 0.4);
-            color: #a0ffff;
+        @keyframes containerFloat {
+            from { opacity: 0; transform: translateY(50px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .oracle.theme-picmi .date,
-        .oracle.theme-picmi .stat-badge,
-        .oracle.theme-picmi .mood-detector {
-            background: rgba(255, 200, 210, 0.2);
-            border-color: rgba(255, 220, 180, 0.5);
-            color: #fff0f0;
+        .glass-panel {
+            background: rgba(6, 8, 20, 0.55);
+            backdrop-filter: blur(28px) saturate(200%);
+            border-radius: 72px;
+            padding: 36px 40px 46px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.15);
         }
 
-        .oracle.theme-dark .date,
-        .oracle.theme-dark .stat-badge,
-        .oracle.theme-dark .mood-detector {
-            background: rgba(200, 200, 220, 0.08);
-            border-color: rgba(200, 200, 220, 0.15);
-            color: #e0e0f0;
-        }
-
-        .oracle.theme-ocean .date,
-        .oracle.theme-ocean .stat-badge,
-        .oracle.theme-ocean .mood-detector {
-            background: rgba(135, 206, 235, 0.2);
-            border-color: rgba(173, 216, 230, 0.5);
-            color: #d0f0ff;
-        }
-
-        .stats {
+        .header-flex {
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .date-chip {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 28px;
+            border-radius: 80px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            cursor: none !important;
+            backdrop-filter: blur(5px);
+            color: #ffffff !important;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+
+        .date-chip:hover {
+            transform: translateY(-2px) scale(1.02);
+            letter-spacing: 2px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 14px;
         }
 
         .stat-badge {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            padding: 10px 20px;
-            border-radius: 50px;
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1rem;
+            border-radius: 80px;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        /* Прогресс */
-        .progress-container {
-            width: 100%;
-            margin-bottom: 40px;
-            padding: 0 12px;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            color: rgba(255, 255, 255, 0.8);
+            gap: 10px;
+            font-weight: 800;
             font-size: 0.9rem;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: none !important;
+            position: relative;
             overflow: hidden;
-            position: relative;
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #FFE484 !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        .progress-fill {
-            height: 100%;
-            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.5s ease;
-            position: relative;
-            border-radius: 10px;
-        }
-
-        .oracle.theme-cyberpunk .progress-fill {
-            background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
-            background-size: 200% 100%;
-            animation: gradientShift 3s infinite;
-        }
-
-        .oracle.theme-picmi .progress-fill {
-            background: linear-gradient(90deg, #ffb6c1, #ffdab9, #ffb6c1);
-            background-size: 200% 100%;
-            animation: gradientShift 3s infinite;
-        }
-
-        .oracle.theme-dark .progress-fill {
-            background: linear-gradient(90deg, #6a6a80, #4a4a60, #6a6a80);
-            background-size: 200% 100%;
-            animation: gradientShift 4s infinite;
-        }
-
-        .oracle.theme-ocean .progress-fill {
-            background: linear-gradient(90deg, #87ceeb, #add8e6, #87ceeb);
-            background-size: 200% 100%;
-            animation: gradientShift 3s infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .progress-fill::after {
+        .stat-badge::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            animation: shimmer 1.8s infinite;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
 
-        /* Карточка */
-        .card-wrapper {
-    perspective: 3000px;
-    margin-bottom: 40px;
-    cursor: pointer;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-}
-
-.card-wrapper::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: inherit;
-    filter: blur(30px);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    border-radius: 60px;
-    z-index: -1;
-}
-
-.card-wrapper:hover::before {
-    opacity: 0.3;
-}
-
-.card-wrapper:hover {
-    transform: scale(1.03) translateY(-8px);
-}
-
-        .card {
-    position: relative;
-    width: 100%;
-    min-height: 420px;
-    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    transform-style: preserve-3d;
-    border-radius: 60px;
-}
-
-.card.flipped {
-    transform: rotateY(180deg) scale(1.05);
-}
-.card-front, .card-back {
-    position: absolute;
-    width: 100%;
-    min-height: 420px;
-    backface-visibility: hidden;
-    border-radius: 60px;
-    padding: 50px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: all 0.5s ease;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.1);
-}
-
-        .oracle.theme-cyberpunk .card-front,
-        .oracle.theme-cyberpunk .card-back {
-            background: rgba(5, 10, 20, 0.8);
-            border: 2px solid rgba(0, 255, 255, 0.4);
-        }
-
-        .oracle.theme-picmi .card-front,
-        .oracle.theme-picmi .card-back {
-            background: rgba(45, 25, 35, 0.7);
-            border: 2px solid rgba(255, 200, 210, 0.5);
-        }
-
-        .oracle.theme-dark .card-front,
-        .oracle.theme-dark .card-back {
-            background: rgba(10, 10, 15, 0.85);
-            border: 2px solid rgba(180, 180, 200, 0.15);
-        }
-
-        .oracle.theme-ocean .card-front,
-        .oracle.theme-ocean .card-back {
-            background: rgba(20, 45, 65, 0.7);
-            border: 2px solid rgba(135, 206, 235, 0.5);
-        }
-
-        .card-front {
-    transform: rotateY(0deg);
-    color: white;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-}
-
-.card-front .icon {
-    font-size: 8rem;
-    margin-bottom: 30px;
-    animation: floatAdvanced 4s ease-in-out infinite;
-    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
-    text-shadow: 0 0 30px currentColor;
-}
-
-@keyframes floatAdvanced {
-    0%, 100% { 
-        transform: translateY(0) scale(1) rotate(0deg); 
-        filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5));
-    }
-    25% { 
-        transform: translateY(-15px) scale(1.08) rotate(-3deg); 
-        filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.7));
-    }
-    50% { 
-        transform: translateY(-25px) scale(1.15) rotate(0deg); 
-        filter: drop-shadow(0 35px 45px rgba(0, 0, 0, 0.8));
-    }
-    75% { 
-        transform: translateY(-15px) scale(1.08) rotate(3deg); 
-        filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.7));
-    }
-}
-        .card-front .hint {
-            font-size: 1.3rem;
-    opacity: 0.9;
-    margin-top: 30px;
-    letter-spacing: 3px;
-    position: relative;
-    font-weight: 500;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px 30px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-.card-front .hint::after {
-    content: '👆';
-    position: absolute;
-    bottom: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.5rem;
-    animation: bounce 1.2s infinite;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-12px); }
-}
-
-        .card-back {
-            transform: rotateY(180deg);
-    color: white;
-    overflow-y: auto;
-    background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));
-    position: relative;
-        }
-.card-back p {
-    font-size: 1.8rem;
-    line-height: 1.7;
-    font-weight: 500;
-    text-align: center;
-    word-break: break-word;
-    animation: textAppear 0.6s ease-out;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    padding: 20px 0;
-    letter-spacing: 0.5px;
-}
-
-@keyframes textAppear {
-    0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-        .rarity-badge {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 1.5rem;
-            opacity: 0.8;
-            transition: all 0.4s ease;
-            animation: rotateSlow 12s infinite linear;
-            filter: drop-shadow(0 0 10px currentColor);
-        }
-
-        @keyframes rotateSlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .rarity-badge:hover {
-            opacity: 1;
-            transform: scale(1.3) rotate(180deg);
-            cursor: pointer;
-        }
-
-        /* Кнопка */
-        .get-button {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    color: white;
-    padding: 26px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-radius: 80px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    letter-spacing: 4px;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
-    z-index: 2;
-}
-
-        .oracle.theme-cyberpunk .get-button {
-            background: rgba(0, 255, 255, 0.15);
-            border-color: rgba(0, 255, 255, 0.5);
-            color: #a0ffff;
-            letter-spacing: 5px;
-            text-shadow: 0 0 15px #00ffff;
-        }
-
-        .oracle.theme-picmi .get-button {
-            background: rgba(255, 200, 210, 0.2);
-            border-color: rgba(255, 220, 180, 0.6);
-            color: #fff0f0;
-            text-shadow: 0 0 15px #ffb6c1;
-        }
-
-        .oracle.theme-dark .get-button {
-            background: rgba(200, 200, 220, 0.08);
-            border-color: rgba(200, 200, 220, 0.2);
-            color: #e0e0f0;
-            text-shadow: 0 0 15px #8080a0;
-        }
-
-        .oracle.theme-ocean .get-button {
-            background: rgba(135, 206, 235, 0.2);
-            border-color: rgba(173, 216, 230, 0.6);
-            color: #d0f0ff;
-            text-shadow: 0 0 15px #87ceeb;
-            font-style: italic;
-        }
-
-        .get-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.7s ease;
-    z-index: 1;
-}
-.get-button::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, currentColor, transparent);
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
-}
-
-.get-button:hover::after {
-    transform: scaleX(1);
-}
-        .get-button:hover::before {
+        .stat-badge:hover::before {
             left: 100%;
         }
 
-        .get-button:hover:not(:disabled) {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 30px 50px -10px rgba(0, 0, 0, 0.8);
-    letter-spacing: 6px;
-}
-.get-button:active:not(:disabled) {
-    transform: translateY(-3px) scale(1.01);
-}
-        .get-button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+        .stat-badge:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .progress-wrapper {
+            margin-bottom: 36px;
+        }
+
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .progress-track {
+            background: rgba(0, 0, 0, 0.4);
+            height: 10px;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: none !important;
+            transition: all 0.3s;
+        }
+
+        .progress-track:hover {
+            height: 14px;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            position: relative;
+        }
+
+        .card-perspective {
+            perspective: 2500px;
+            margin-bottom: 40px;
+            cursor: none !important;
+        }
+
+        .card-flipper {
+            position: relative;
+            width: 100%;
+            min-height: 550px;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-flipper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            min-height: 550px;
+            backface-visibility: hidden;
+            border-radius: 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 52px 42px;
+            background: linear-gradient(135deg, rgba(10, 12, 25, 0.95), rgba(5, 6, 15, 0.98));
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.4s;
+        }
+
+        .card-front {
+            transform: rotateY(0deg);
+            gap: 35px;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .front-icon-big {
+            font-size: 8rem;
+            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.6));
+            animation: hyperFloat 3s infinite ease-in-out;
+            transition: all 0.3s;
+        }
+
+        @keyframes hyperFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-12px) rotate(-5deg) scale(1.05); }
+            75% { transform: translateY(-20px) rotate(5deg) scale(1.08); }
+        }
+
+        .motivation-text {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.45;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 15px;
+            transition: color 0.3s;
+            color: #ffffff !important;
+        }
+
+        .rarity-tag {
+            position: absolute;
+            top: 25px;
+            right: 32px;
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 20px gold);
+            animation: rotateGlow 20s infinite linear;
+            cursor: none !important;
+            transition: all 0.2s;
+        }
+
+        .rarity-tag:hover {
+            transform: scale(1.3) rotate(15deg);
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); filter: drop-shadow(0 0 10px gold); }
+            50% { filter: drop-shadow(0 0 25px orange); }
+            100% { transform: rotate(360deg); filter: drop-shadow(0 0 10px gold); }
+        }
+
+        .action-button {
+            width: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-radius: 100px;
+            padding: 26px 32px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 8px;
+            cursor: none !important;
+            transition: all 0.4s ease;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-button:active::before {
+            width: 500px;
+            height: 500px;
+        }
+
+        .action-button:hover:not(:disabled) {
+            transform: scale(1.04);
+            letter-spacing: 12px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: none !important;
             transform: scale(0.98);
         }
 
-        /* НОВЫЙ ЭЛЕМЕНТ: Детектор настроения */
-        .mood-detector {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 70px;
-    backdrop-filter: blur(15px);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
-}
+        .mood-panel {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            border-radius: 56px;
+            padding: 26px 30px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            cursor: none !important;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            position: relative;
+            overflow: hidden;
+        }
 
-.mood-detector::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.2) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-}
-.mood-detector:hover {
-    transform: scale(1.02) translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 25px 45px -10px rgba(0, 0, 0, 0.7);
-}
+        .mood-panel::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
 
-.mood-detector:hover::before {
-    opacity: 1;
-}
-.mood-detector:active {
-    transform: scale(0.98) translateY(0);
-}
+        .mood-panel:hover::after {
+            opacity: 1;
+        }
 
-        .mood-header {
+        .mood-panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .mood-panel:active {
+            transform: scale(0.97);
+        }
+
+        .mood-header-line {
             display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    padding: 0 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .mood-title {
-            font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: relative;
+            font-weight: 800;
+            display: flex;
+            gap: 14px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+            color: #ffffff !important;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
         }
-.mood-title span {
-    font-size: 2rem;
-    animation: pulse 2.5s infinite;
-    filter: drop-shadow(0 0 10px currentColor);
-}
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); filter: drop-shadow(0 0 20px currentColor); }
-}
-.mood-indicator {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem;
-    animation: spin 12s infinite linear;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-}
+        .mood-spinner {
+            font-size: 2.3rem;
+            transition: all 0.3s;
+            animation: moodPulse 2s infinite;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
 
-.mood-indicator:hover {
-    transform: scale(1.1);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+        @keyframes moodPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; text-shadow: 0 0 0px transparent; }
+            50% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+        }
 
         .mood-result {
-            font-size: 1.6rem;
-    font-weight: 600;
-    text-align: center;
-    padding: 20px 15px;
-    transition: all 0.3s ease;
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 50px;
-    margin: 15px 0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 48px;
+            padding: 24px 22px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin: 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            min-height: 110px;
+            transition: all 0.3s;
+            color: #ffffff !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-       .mood-emoji {
-    font-size: 3rem;
-    animation: bounce 1.2s infinite;
-    filter: drop-shadow(0 0 15px currentColor);
-}
-
-.mood-tag {
-    padding: 8px 20px;
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.15);
-    font-size: 1rem;
-    letter-spacing: 2px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-}
-.mood-footer {
-    display: flex;
-    justify-content: flex-end;
-    font-size: 0.9rem;
-    opacity: 0.8;
-    padding: 5px 15px;
-    font-style: italic;
-}
-
-        /* Стили для детектора под каждую тему */
-        .oracle.theme-cyberpunk .mood-title {
-    color: #a0ffff;
-    text-shadow: 0 0 15px #00ffff;
-}
-
-.oracle.theme-cyberpunk .mood-result {
-    border-color: rgba(0, 255, 255, 0.3);
-    box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.1);
-}
-
-.oracle.theme-picmi .mood-title {
-    color: #fff0f0;
-    text-shadow: 0 0 15px #ffb6c1;
-}
-
-.oracle.theme-picmi .mood-result {
-    border-color: rgba(255, 200, 210, 0.3);
-    box-shadow: inset 0 0 30px rgba(255, 200, 210, 0.1);
-}
-
-.oracle.theme-dark .mood-title {
-    color: #e0e0f0;
-    text-shadow: 0 0 15px #8080a0;
-}
-
-.oracle.theme-dark .mood-result {
-    border-color: rgba(180, 180, 200, 0.2);
-    box-shadow: inset 0 0 30px rgba(180, 180, 200, 0.05);
-}
-
-.oracle.theme-ocean .mood-title {
-    color: #d0f0ff;
-    text-shadow: 0 0 15px #87ceeb;
-}
-
-.oracle.theme-ocean .mood-result {
-    border-color: rgba(135, 206, 235, 0.3);
-    box-shadow: inset 0 0 30px rgba(135, 206, 235, 0.1);
-}
-
-        /* Переключатель тем */
-        .theme-switcher {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 40px;
-    position: relative;
-    padding: 30px 0;
-}
-
-.theme-switcher::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 350px;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255, 255, 255, 0.2), 
-        rgba(255, 255, 255, 0.4), 
-        rgba(255, 255, 255, 0.2), 
-        transparent);
-    z-index: 0;
-}
-.theme-option {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
-}
-
-.theme-option:hover {
-    transform: translateY(-12px) scale(1.05);
-}
-.theme-dot {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    transition: all 0.4s ease;
-    position: relative;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-}
-
-.theme-dot::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    transition: all 0.4s ease;
-}
-
-.theme-dot::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 50%;
-    background: inherit;
-    filter: blur(8px);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: -1;
-}
-.theme-option:hover .theme-dot::after {
-    opacity: 0.7;
-}
-
-.theme-option.active .theme-dot {
-    transform: scale(1.25);
-    border-color: white;
-    box-shadow: 0 0 40px currentColor;
-    animation: pulseGlow 2s infinite;
-}
-
-.theme-option.active .theme-dot::before {
-    border-color: rgba(255, 255, 255, 0.8);
-    animation: ringPulse 2s infinite;
-}
-
-@keyframes ringPulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-        border-color: rgba(255, 255, 255, 0.8);
-    }
-    50% {
-        transform: scale(1.3);
-        opacity: 0.5;
-        border-color: rgba(255, 255, 255, 0.4);
-    }
-    100% {
-        transform: scale(1.6);
-        opacity: 0;
-        border-color: rgba(255, 255, 255, 0);
-    }
-}
-
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 40px currentColor;
-    }
-    50% {
-        box-shadow: 0 0 70px currentColor;
-    }
-}
-       
-.theme-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    transition: all 0.4s ease;
-    font-weight: 700;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    background: rgba(0, 0, 0, 0.2);
-    padding: 6px 15px;
-    border-radius: 50px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.theme-option:hover .theme-label {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    letter-spacing: 4px;
-}
-
-.theme-option.active .theme-label {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    color: white;
-    text-shadow: 0 0 15px currentColor;
-}
-
-        .theme-option[data-theme="cyberpunk"] .theme-dot { 
-            background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
-            background-size: 200% 200%;
-            animation: gradientRotate 4s infinite;
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+        .mood-footer-tag {
+            text-align: right;
+            font-size: 0.75rem;
+            opacity: 0.9;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        .theme-option[data-theme="picmi"] .theme-dot { 
-            background: linear-gradient(135deg, #ffb6c1, #ffdab9, #ffb6c1);
-            background-size: 200% 200%;
-            animation: gradientRotate 4s infinite;
-            box-shadow: 0 0 40px rgba(255, 200, 210, 0.8);
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-top: 22px;
         }
 
-        .theme-option[data-theme="dark"] .theme-dot { 
-            background: linear-gradient(135deg, #6a6a80, #4a4a60, #6a6a80);
-            background-size: 200% 200%;
-            animation: gradientRotate 5s infinite;
-            box-shadow: 0 0 40px rgba(90, 90, 112, 0.8);
+        .theme-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 60px;
+            padding: 14px 8px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            cursor: none !important;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+            color: #ffffff !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        .theme-option[data-theme="ocean"] .theme-dot { 
-            background: linear-gradient(135deg, #87ceeb, #add8e6, #87ceeb);
-            background-size: 200% 200%;
-            animation: gradientRotate 4s infinite;
-            box-shadow: 0 0 40px rgba(135, 206, 235, 0.8);
+        .theme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
 
-        @keyframes gradientRotate {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
+        .theme-card:hover::before {
+            left: 100%;
         }
 
-        /* Уведомление */
-        .toast {
-    position: fixed;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%) translateY(200px);
-    background: rgba(25, 25, 40, 0.95);
-    backdrop-filter: blur(25px);
-    color: white;
-    padding: 20px 45px;
-    border-radius: 80px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.1);
-    font-size: 1.2rem;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 1000;
-    white-space: nowrap;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-}
-
-        /* Адаптивность */
-        @media (max-width: 500px) {
-            .oracle { padding: 24px; }
-            .card-front, .card-back { min-height: 320px; padding: 32px 24px; }
-            .card-back p { font-size: 1.3rem; }
-            .top-bar { flex-direction: column; gap: 15px; }
-            .toast { white-space: normal; text-align: center; max-width: 90%; }
-            .theme-switcher { gap: 20px; }
-            .theme-dot { width: 50px; height: 50px; }
-            .theme-label { font-size: 0.8rem; }
-            .mood-result { font-size: 1.1rem; }
+        .theme-card:hover {
+            transform: translateY(-5px) scale(1.04);
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
-        @keyframes floatParticle {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-            25% { transform: translate(30px, -30px) scale(1.2); opacity: 0.6; }
-            50% { transform: translate(-20px, 20px) scale(0.8); opacity: 0.4; }
-            75% { transform: translate(20px, 20px) scale(1.1); opacity: 0.5; }
-            100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+        .theme-card.active {
+            transform: scale(1.04);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .toast-global {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(180px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(40px);
+            padding: 18px 45px;
+            border-radius: 80px;
+            font-weight: 700;
+            z-index: 200;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 0.95rem;
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: #ffffff !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .toast-global.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        :-webkit-scrollbar {
+            width: 6px;
+        }
+        :-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+        :-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.4);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 680px) {
+            .glass-panel { padding: 24px 20px; }
+            .motivation-text { font-size: 1.25rem; }
+            .card-front, .card-back { min-height: 440px; padding: 35px 22px; }
+            .themes-grid { gap: 8px; }
+            .theme-card { font-size: 0.65rem; padding: 10px 3px; }
+            .action-button { font-size: 1.1rem; padding: 18px; letter-spacing: 3px; }
+            .toast-global { white-space: normal; max-width: 85%; text-align: center; font-size: 0.8rem; padding: 14px 25px; }
+            .header-flex { gap: 12px; }
+            .stat-badge { padding: 8px 16px; font-size: 0.8rem; }
+            .cursor-trail { width: 22px; height: 22px; }
+            .cursor-trail::before { font-size: 14px; }
         }
     </style>
 </head>
 <body>
-    <!-- Декоративные элементы -->
-    <div class="bg-gradient"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-orb" id="bgOrb1"></div>
-    <div class="bg-orb-2" id="bgOrb2"></div>
+    <div class="kinetic-bg" id="kineticBg">
+        <div class="gradient-sphere sphere-1" id="sphere1"></div>
+        <div class="gradient-sphere sphere-2" id="sphere2"></div>
+        <div class="gradient-sphere sphere-3" id="sphere3"></div>
+        <div class="gradient-sphere sphere-4" id="sphere4"></div>
+    </div>
+    <div class="noise-texture"></div>
+    <div class="particle-universe" id="particleUniverse"></div>
 
-    <!-- Уведомление -->
-    <div class="toast" id="toast"></div>
+    <div id="cursorTrail" class="cursor-trail"></div>
 
-    <div class="oracle" id="oracle">
-        <!-- Верхняя панель -->
-        <div class="top-bar">
-            <div class="date" id="currentDate"></div>
-            <div class="stats" style="display:none">
-                <div class="stat-badge">
-                    <span>📖</span>
-                    <span id="uniqueCount">0</span>
-                </div>
-                <div class="stat-badge">
-                    <span>💎</span>
-                    <span id="totalCount">300</span>
+    <div class="oracle-container">
+        <div class="glass-panel" id="mainPanel">
+            <div class="header-flex">
+                <div class="date-chip" id="dateDisplay">—</div>
+                <div class="stats-row" style="display:none">
+                    <div class="stat-badge" id="streakBadge">🔥 <span id="streakCount">0</span> дн.</div>
+                    <div class="stat-badge" id="collectionBadge">📖 <span id="collectedNum">0</span>/<span id="totalNum">300</span></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Прогресс уникальности -->
-        <div class="progress-container" style="display:none">
-            <div class="progress-label">
-                <span>Уникальных сообщений</span>
-                <span id="progressPercent">0%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-            </div>
-        </div>
-
-        <!-- Карточка -->
-        <div class="card-wrapper" onclick="flipCard()">
-            <div class="card" id="motivationCard">
-                <div class="card-front">
-                    <div class="icon">✨</div>
-                    <div class="hint">коснись, чтобы открыть</div>
+            <div class="progress-wrapper" style="display:none">
+                <div class="progress-title">
+                    <span id="progressLabel">🏆 КОЛЛЕКЦИЯ ПРОРОЧЕСТВ</span>
+                    <span id="percentValue">0%</span>
                 </div>
-                <div class="card-back">
-                    <div class="rarity-badge" id="rarityEmoji"></div>
-                    <p id="messageText">Нажми на кнопку внизу</p>
+                <div class="progress-track" id="progressTrack">
+                    <div class="progress-fill" id="progressFill"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Кнопка -->
-        <button class="get-button" id="getMessageBtn" onclick="getDailyMessage()">
-            Получить пророчество
-        </button>
-
-        <!-- НОВЫЙ ЭЛЕМЕНТ: Детектор настроения -->
-        <div class="mood-detector" id="moodDetector" onclick="analyzeMood()">
-            <div class="mood-header">
-                <div class="mood-title">
-                    <span>🔮</span> ДЕТЕКТОР НАСТРОЕНИЯ
+            <div class="card-perspective" id="cardWrapper">
+                <div class="card-flipper" id="flipper">
+                    <div class="card-front">
+                        <div class="front-icon-big" id="frontIcon">⚡🔥</div>
+                        <div style="font-size:1rem; background:rgba(0,0,0,0.5); padding:14px 32px; border-radius:80px; backdrop-filter:blur(10px); letter-spacing:2px; color:white;">
+                            👆 КОСНИСЬ, ЧТОБЫ ОТКРЫТЬ
+                        </div>
+                        <div style="font-size:0.75rem; opacity:0.8; margin-top:10px; color:rgba(255,255,255,0.7);">интерактивная 3D-карточка</div>
+                    </div>
+                    <div class="card-back">
+                        <div class="rarity-tag" id="rarityIcon">💎</div>
+                        <div class="motivation-text" id="motivationTextArea">
+                            Нажми на кнопку внизу, чтобы получить силу
+                        </div>
+                    </div>
                 </div>
-                <div class="mood-indicator" id="moodIndicator">🎯</div>
             </div>
-            <div class="mood-result" id="moodResult">
-                Нажми, чтобы узнать своё настроение!
-            </div>
-            <div class="mood-footer">
-                <span id="moodTime">основано на текущем сообщении</span>
-            </div>
-        </div>
 
-        <!-- Переключатель тем -->
-        <div class="theme-switcher">
-            <div class="theme-option active" data-theme="cyberpunk" onclick="setTheme('cyberpunk')">
-                <div class="theme-dot"></div>
-                <span class="theme-label">КИБЕРПАНК</span>
+            <button class="action-button" id="getMotivationBtn">
+                ⚡ ПОЛУЧИТЬ ⚡
+            </button>
+
+            <div class="mood-panel" id="moodDetector">
+                <div class="mood-header-line">
+                    <div class="mood-title" id="moodTitle">
+                        <span id="moodIconStatic">🧠</span> ДЕТЕКТОР НАСТРОЕНИЯ
+                    </div>
+                    <div class="mood-spinner" id="moodIconAnim">🎯</div>
+                </div>
+                <div class="mood-result" id="moodResultText">
+                    🌊 Нажми, чтобы проанализировать
+                </div>
+                <div class="mood-footer-tag" id="moodTagline">
+                    #проанализируй_свою_силу
+                </div>
             </div>
-            <div class="theme-option" data-theme="picmi" onclick="setTheme('picmi')">
-                <div class="theme-dot"></div>
-                <span class="theme-label">ПИКМИ</span>
-            </div>
-            <div class="theme-option" data-theme="dark" onclick="setTheme('dark')">
-                <div class="theme-dot"></div>
-                <span class="theme-label">ТЁМНЫЙ</span>
-            </div>
-            <div class="theme-option" data-theme="ocean" onclick="setTheme('ocean')">
-                <div class="theme-dot"></div>
-                <span class="theme-label">ОКЕАН</span>
+
+            <div class="themes-grid" id="themesContainer">
+                <div class="theme-card" data-theme="neon">🌙 НЕОН</div>
+                <div class="theme-card" data-theme="fire">🔥 ОГОНЬ</div>
+                <div class="theme-card" data-theme="ocean">🌊 ОКЕАН</div>
+                <div class="theme-card" data-theme="forest">🌲 ЛЕС</div>
+                <div class="theme-card" data-theme="royal">👑 РОЯЛ</div>
+                <div class="theme-card" data-theme="sunset">🌅 ЗАКАТ</div>
+                <div class="theme-card" data-theme="midnight">🌙 ПОЛНОЧЬ</div>
+                <div class="theme-card" data-theme="cherry">🌸 ВИШНЯ</div>
+                <div class="theme-card" data-theme="galaxy">🌌 ГАЛАКТИКА</div>
+                <div class="theme-card" data-theme="aurora">🌈 АВРОРА</div>
             </div>
         </div>
     </div>
 
+    <div class="toast-global" id="toastMsg">✨</div>
+
     <script>
-        // === 300 МОТИВАЦИОННЫХ ФРАЗ (сокращено для читаемости, но сохранены все) ===
-        const messages = [
-            "Соберись, тряпка! Сегодня ты горы свернешь, а не это вот всё! 🏔️",
-            "Не ссы, прорвемся! Вчера же как-то прорвались. 😎",
-            "У тебя есть всё, чтобы выебать этот день. Давай, покажи ему! 🔥",
-            "Твой мозг сегодня: «Я устал, я ухожу». А ты ему: «Стоять, работать!» И работай. 🧠",
-            "Если тебе кажется, что всё хреново, проверь пульс. Если бьётся — значит норм, работаем. ❤️",
-            "Вдохни поглубже и скажи: «Я ебу этот день!» А теперь иди и еби. 🔨",
-            "Твоя лень — это просто страх. Пошли его нахуй и сделай! 🚫",
-            "Твой потенциал больше, чем твои сомнения. Заткни сомнения в жопу! 🔇",
-            "Не откладывай на завтра то, что можно послать нахуй сегодня! 📅",
-            "Если ты упал — встань. Если не можешь встать — ползи. Если не можешь ползти — лежи и ори, чтобы услышали! 📢",
-            "Ты как батарейка дюрасел — работаешь даже тогда, когда всё идёт по пизде! 🔋",
-            "Твой внутренний голос говорит: «Не могу». Пошли его нахуй и сделай! 🗣️",
-            "Если тебе плохо — вспомни, что ты не один. Все такие же уебки! 👥",
-            "Если не знаешь что делать — делай что-нибудь. Даже если хуйню! 🎯",
-            "Если ты устал — отдохни, но не останавливайся. Впереди ещё пиздец сколько всего! ⛰️",
-            "Не будь как тот мудак, который всё откладывает. Будь как тот мудак, который берёт и делает! 💪",
-            "Ты как старый пиздюк — опыта много, сил мало. Но сегодня сил дохуя! ⚡",
-            "Если жизнь ебёт — расслабься и получай удовольствие. Потом отъеби её ты! 🔄",
-            "Не будь как прошлогоднее говно — засох и воняет. Будь свежим! 💩",
-            "Твой начальник — пиздабол, но ты работаешь. А мог бы быть на его месте. Так стань! 👔",
-            "Если тебе кажется, что всё в жопе — значит ты просто не видишь выхода. Посмотри внимательнее! 🔍",
-            "Не будь как тот дебил, который ноет. Будь как тот гений, который делает! 🎯",
-            "Твои проблемы — это хуйня по сравнению с тем, что ты можешь. Просто вспомни! 💭",
-            "Если ты сегодня не встал — ты пиздец какой ленивый. Вставай давай! 🛏️",
-            "Твой мозг — это не только для того, чтобы жрать. Включи его! 🧠",
-            "Не будь как тот придурок, который ждёт понедельника. Сегодня и есть твой понедельник! 📅",
-            "Если ты думаешь, что не сможешь — ты прав. Но если подумаешь, что сможешь — тоже прав. Выбирай! 🤔",
-            "Ты как старый хер — вроде не нужен, а без тебя никак. Докажи, что нужен! 🔥",
-            "Не будь как та блядь, которая продаётся. Будь как тот бриллиант, который покупают! 💎",
-            "Твоя цель — не просто выжить, а выжить и порвать всех! 🏆",
-            "Ты как конь — пашешь, но не дохнешь. Сегодня дохнуть нельзя! 🐎",
-            "Не будь как тот петух, который только орёт. Будь как тот орёл, который летает! 🦅",
-            "Если ты устал — это не повод сдохнуть. Это повод отдохнуть и дальше ебашить! 🔨",
-            "Твои мечты — это не просто пиздёж. Это план. Выполняй! 📝",
-            "Не будь как тот козёл, который бодается. Будь как тот баран, который прёт! 🐏",
-            "Если ты боишься — это нормально. Но если не делаешь — это пиздец! 😨",
-            "Ты как старый джип — в говне, но едешь. Сегодня вылезай из говна! 🚙",
-            "Не будь как та сука, которая кусает. Будь как тот пёс, который охраняет! 🐕",
-            "Если ты злой — используй эту злость. Направь её в нужное русло! 😠",
-            "Твоя лень — это твой враг. Убей его! 🔪",
-            "Не будь как тот хомяк, который спит. Будь как тот лев, который охотится! 🦁",
-            "Если ты голоден — съешь слона. По кусочкам! 🐘",
-            "Ты как старый трактор — коптишь, но пашешь. Сегодня без копоти! 🚜",
-            "Не будь как тот дурак, который ждёт. Будь как тот умный, который идёт! 🚶",
-            "Если ты не знаешь — спроси. Если знаешь — сделай. Если сделал — молодец! 👍",
-            "Твои страхи — это хуйня. Просто сделай и всё пройдёт! 😱",
-            "Не будь как тот трус, который прячется. Будь как тот смелый, который дерётся! ⚔️",
-            "Если ты сегодня не герой — ты никто. Будь героем! 🦸",
-            "Ты как старый воин — раны есть, но ты жив. Сегодня ты непобедим! ⚔️",
-            "Ты как тот кот, который упал со стула и делает вид, что так и надо. Держи лицо! 🐱",
-            "Не будь как тот пёс, который не понимает мемов. Будь в теме! 🐕",
-            "Ты как тот гном из Ведьмака. Медальон не чешется? А должен! ⚔️",
-            "Сегодня ты либо как тот парень с мема 'This is fine', либо горишь. Выбирай! 🔥",
-            "Ты как тот тролль, который всех бесит. Но сегодня ты бесишь свои проблемы! 👹",
-            "Не будь как тот Шрека, который сидит в болоте. Выходи к людям! 🟢",
-            "Ты как тот Луиджи — всегда второй, но тоже молодец. Сегодня ты первый! 🟢",
-            "Помни: даже Йода иногда проигрывал. Но потом вставал и делал джедаев! 🟩",
-            "Ты как тот Бивис, который тупит. Врубай голову! 🧠",
-            "Не будь как тот Баттхед, который ржёт над всем. Дело есть дело! 😂",
-            "Ты как тот Гарольд, который скрывает боль. Не скрывай, действуй! 😊",
-            "Сегодня ты либо Пикачу, либо покемон. Выбирай быть главным! ⚡",
-            "Ты как тот Спанч Боб, который работает даже в самые худшие дни. Крабсбургер вперёд! 🧽",
-            "Не будь как тот Сквидвард, который вечно недоволен. Радуйся жизни! 🐙",
-            "Ты как тот Патрик, который звезда. Но сегодня ты суперзвезда! ⭐",
-            "Если ты сегодня как тот мем с собакой в огне — значит всё идёт по плану! 🔥",
-            "Ты как тот парень, который заходит в комнату и забывает зачем. Вспоминай и делай! 🚪",
-            "Не будь как тот кот, который не хочет вставать. Вставай, там рыба! 🐟",
-            "Ты как тот хомяк, который бежит в колесе. Беги к цели! 🐹",
-            "Сегодня ты либо как тот мем с математикой, либо просто красавчик. Выбирай красавчика! 📊",
-            "Ты как тот чувак, который наливает воду в кукурузные хлопья. Странно, но работает! 🌽",
-            "Не будь как тот пёс, который не может поймать хвост. Хватай удачу! 🐕",
-            "Ты как тот кот, который делает кусь. Кусай проблемы! 🐱",
-            "Если ты сегодня как тот мем с динозавром — значит пора вставать и идти! 🦖",
-            "Ты как тот парень, который нажимает кнопку. Нажимай на газ! 🔘",
-            "Не будь как тот мем с Обамой, который награждает себя. Пусть другие награждают! 🏅",
-            "Ты как тот чувак, который несёт стул. Неси свою мечту! 🪑",
-            "Сегодня ты либо как тот мем с Ником Кейджем, либо как все. Будь Кейджем! 🎬",
-            "Ты как тот кот, который смотрит в дверной проём. Выходи и делай! 🐈",
-            "Не будь как тот пёс, который не может открыть дверь. Открывай возможности! 🚪",
-            "Ты как тот мем с Лео, который поднимает бокал. Пей успех! 🥂",
-            "Если ты сегодня как тот мем с Джеки Чаном — значит всё сложно, но ты справишься! 🎬",
-            "Ты как тот парень, который показывает пальцем. Показывай на цель! 👉",
-            "Не будь как тот кот, который упал в ванну. Не падай духом! 🛁",
-            "Ты как тот мем с Баззом Латером. Бесконечность не предел! 🚀",
-            "Сегодня ты либо как тот мем с Вангогом, либо как все. Отрезай лишнее! 🎨",
-            "Ты как тот пёс, который сидит за столом. Ты заслужил место за столом успеха! 🐕",
-            "Не будь как тот кот, который боится огурца. Не бойся ерунды! 🥒",
-            "Ты как тот мем с Гомером, который залезает в кусты. Но ты вылезай и иди в бой! 🎄",
-            "Если ты сегодня как тот мем с Фраем — значит ты в будущем. Веди себя соответственно! 🤖",
-            "Ты как тот парень, который танцует. Танцуй под свою музыку! 💃",
-            "Не будь как тот кот, который застрял в коробке. Вылезай в большой мир! 📦",
-            "Ты как тот мем с Канье, который прерывает. Прерывай свою лень! 🎤",
-            "Сегодня ты либо как тот мем с Томом, который гоняется за Джерри, либо как Джерри. Гоняй свои цели! 🐭",
-            "Ты как тот пёс, который улыбается. Улыбайся жизни! 🐕",
-            "Не будь как тот кот, который спит в странной позе. Просыпайся и действуй! 😺",
-            "Ты как тот мем с Драке, который выбирает. Выбирай правильный путь! 🎵",
-            "Если ты сегодня как тот мем с Майклом Джексоном, который ест попкорн — смотри, как другие ноют, и делай! 🍿",
-            "Ты как тот парень, который разводит руками. Разводи активность! 🙌",
-            "Не будь как тот кот, который игнорит. Обрати внимание на свои цели! 🐱",
-            "Сегодня ты проснулся — уже победа. Остальное мелочи! 🌅",
-            "Каждый день — это новая возможность стать лучше. Используй её! 🌟",
-            "Ты сильнее, чем думаешь. Просто пока не проверял. Проверь сегодня! 💪",
-            "Маленькие шаги ведут к большим результатам. Шагай! 🚶",
-            "Не жди идеального момента. Создай его сам! ⏰",
-            "Твоя энергия безгранична. Направь её в нужное русло! ⚡",
-            "Сегодня ты можешь всё. Просто поверь в себя! ✨",
-            "Не сравнивай себя с другими. Сравнивай с собой вчерашним! 📊",
-            "Каждая трудность — это урок. Учись и иди дальше! 📚",
-            "Ты — автор своей жизни. Пиши интересный сценарий! ✍️",
-            "Успех любит тех, кто не сдаётся. Не сдавайся! 🏆",
-            "Сегодня сделай то, что откладывал год. Пора! 📅",
-            "Твой потенциал раскрывается только в действии. Действуй! 🔓",
-            "Не бойся ошибаться. Бойся не пробовать! 🎯",
-            "Каждый день — это чистый лист. Напиши красивую историю! 📖",
-            "Ты способен на великие дела. Просто начни! 🚀",
-            "Энергия следует за вниманием. Направь внимание на цели! 🎯",
-            "Сегодня ты — лучшая версия себя. Стань ещё лучше! ⭐",
-            "Не откладывай жизнь на потом. Живи сейчас! 💫",
-            "Твои мысли становятся реальностью. Думай о хорошем! 💭",
-            "Каждое утро — это шанс изменить всё. Меняй! 🌄",
-            "Ты как семя — чтобы вырасти, нужно пробиться через почву. Пробивайся! 🌱",
-            "Успех — это сумма маленьких усилий. Складывай! ➕",
-            "Не жди вдохновения. Работай, и оно придёт! 🎨",
-            "Ты — магнит для возможностей. Притягивай их! 🧲",
-            "Сегодня сделай шаг к мечте. Один шаг — уже прогресс! 👣",
-            "Твоя сила в твоей вере. Верь в себя! 💫",
-            "Не бойся начинать сначала. Это не провал, а новый старт! 🔄",
-            "Каждый день — это подарок. Разверни его! 🎁",
-            "Ты как река — найдёшь путь, даже если камни мешают. Теки! 🌊",
-            "У тебя есть всё необходимое. Используй это! 🛠️",
-            "Сегодня ты — воин света. Сражайся за свои цели! ⚔️",
-            "Не позволяй страху управлять тобой. Управляй страхом! 👑",
-            "Твой разум — твой главный инструмент. Настрой его! 🧠",
-            "Каждое действие приближает к цели. Действуй! 🎯",
-            "Ты как звезда — свети даже в темноте! ⭐",
-            "Не ищи лёгких путей. Ищи правильные! 🗺️",
-            "Сегодня ты можешь больше, чем вчера. Используй это! 📈",
-            "Твоя уникальность — твоя сила. Будь собой! 🦄",
-            "Не жди, пока всё будет идеально. Идеально уже сейчас! ✨",
-            "Ты как ветер — невидим, но можешь сдвигать горы. Сдвигай! 💨",
-            "Каждый твой шаг важен. Не останавливайся! 🚶",
-            "Ты — капитан своей жизни. Веди корабль к мечте! ⛵",
-            "Не бойся глубины. Бойся остаться на мелководье! 🌊",
-            "Сегодня твой день. Сделай его незабываемым! 📅",
-            "Ты как алмаз — становишься бриллиантом под давлением. Держись! 💎",
-            "Не смотри на часы. Делай как часы — тикай без остановки! ⏰",
-            "Твоя энергия заразительна. Заражай окружающих успехом! ⚡",
-            "Каждое утро — это второй шанс. Используй его! 🔄",
-            "Ты как птица — создан летать. Расправь крылья! 🕊️",
-            "Не жди чуда. Твори чудо сам! 🎩",
-            "Сегодня ты — главный герой. Веди сюжет к победе! 🎬",
-            "Твой путь уникален. Пройди его достойно! 🛤️",
-            "Не бойся упасть. Бойся не встать! 💪",
-            "Ты как огонь — согреваешь других. Согрей сначала себя! 🔥",
-            "Каждый день приносит уроки. Учись с радостью! 📚",
-            "Ты — архитектор своей судьбы. Строй красиво! 🏛️",
-            "Не жди одобрения. Одобри себя сам! 👍",
-            "Сегодня ты сильнее, чем вчера. Чувствуешь? 💪",
-            "Твои мечты реальны. Просто начни их осуществлять! 🌈",
-            "Не бойся быть счастливым. Ты это заслужил! 😊",
-            "Ты как океан — глубок и могуч. Покажи свою силу! 🌊",
-            "Каждый твой день важен. Цени его! 💎",
-            "Ты — источник света. Свети ярко! ✨",
-            "Не ищи виноватых. Ищи решения! 🔍",
-            "Сегодня ты — победитель. Докажи это себе! 🏆",
-            "Твой потенциал безграничен. Верь в это! ♾️",
-            "Не бойся мечтать. Бойся не мечтать! 🌠",
-            "Ты как весна — приносишь обновление. Обновляйся! 🌸",
-            "Каждый миг уникален. Проживай его полностью! ⏳",
-            "Ты — творец реальности. Твори добро! 🎨",
-            "Не жди перемен. Меняйся сам! 🔄",
-            "Сегодня ты — лучший. Докажи это делом! ⚡",
-            "Твоя сила в твоём выборе. Выбирай правильно! ✅",
-            "Не бойся проигрывать. Бойся не играть! 🎲",
-            "Ты как утро — даришь надежду. Надейся и действуй! 🌄",
-            "Каждый день — это шанс. Лови его! 🎣",
-            "Ты — чудо. Верь в чудеса! ✨",
-            "Не жди идеальных условий. Создавай их сам! 🛠️",
-            "Сегодня твой звёздный час. Выходи на сцену! ⭐",
-            "Твой путь освещён твоими мечтами. Иди к свету! 🚶",
-            "Не бойся быть собой. Ты прекрасен! 💫",
-            "Ты как радуга — после дождя всегда ярче. Переживи дождь! 🌈",
-            "Каждый твой вдох важен. Дыши полной грудью! 🌬️",
-            "Ты — мастер своей жизни. Твори шедевр! 🎭",
-            "Не ищи лёгких побед. Ищи ценные! 🏆",
-            "Сегодня ты — легенда. Начинай писать историю! 📜",
-            "Твоя энергия питает твои мечты. Заряжайся! 🔋",
-            "Не бойся высоты. Бойся не взлететь! ✈️",
-            "Ты как закат — красив в любое время. Помни об этом! 🌅",
-            "Каждый твой шаг важен. Иди уверенно! 👣",
-            "Ты — автор успеха. Пиши ярко! ✍️",
-            "Не жди, пока тебя заметят. Заметь себя сам! 👀",
-            "Сегодня ты — сила. Используй её во благо! 💪",
-            "Твой день в твоих руках. Сожми его покрепче! ✊",
-            "Не бойся быть первым. Первые получают всё! 🥇",
-            "Ты как утренний кофе — бодришь окружающих. Бодрись сам! ☕",
-            "Каждый миг бесценен. Не трать его зря! ⏰",
-            "Ты — победитель по жизни. Докажи это сегодня! 🏆",
-            "Не жди подходящего момента. Он уже здесь! ✨",
-            "Сегодня ты — лучший подарок для этого мира. Дари себя! 🎁",
-            "Твой успех неизбежен. Просто продолжай идти! 🚶",
-            "Не бойся конца. Бойся не начать! 🚀",
-            "«Единственный способ сделать великую работу — любить то, что ты делаешь.» — Стив Джобс 🍎",
-            "«Будь тем изменением, которое хочешь увидеть в мире.» — Махатма Ганди 🌏",
-            "«Если ты проходишь через ад, продолжай идти.» — Уинстон Черчилль 🔥",
-            "«Жизнь — это то, что с тобой происходит, пока ты строишь планы.» — Джон Леннон 🎵",
-            "«Не суди по способности, суди по желанию.» — Конфуций 🎯",
-            "«Победа — это не всё, но желание победить — это всё.» — Винс Ломбарди 🏆",
-            "«Ты никогда не пересечёшь океан, если боишься потерять берег из виду.» — Христофор Колумб ⚓",
-            "«Глаза страшатся, а руки делают.» — Пословица 👀",
-            "«Под лежачий камень вода не течёт.» — Пословица 🪨",
-            "«Дорогу осилит идущий.» — Пословица 🚶",
-            "«Не откладывай на завтра то, что можно сделать сегодня.» — Пословица 📅",
-            "«Терпение и труд всё перетрут.» — Пословица ⚙️",
-            "«Без труда не выловишь и рыбку из пруда.» — Пословица 🐟",
-            "«Семь раз отмерь, один раз отрежь.» — Пословица 📏",
-            "«Лучше синица в руках, чем журавль в небе.» — Пословица 🐦",
-            "«На бога надейся, а сам не плошай.» — Пословица 🙏",
-            "«Всё, что нас не убивает, делает нас сильнее.» — Фридрих Ницше 💪",
-            "«Я не потерпел поражение. Я просто нашёл 10 000 способов, которые не работают.» — Томас Эдисон 💡",
-            "«Гений — это 1% вдохновения и 99% пота.» — Томас Эдисон 💧",
-            "«Воображение важнее знания.» — Альберт Эйнштейн 🌌",
-            "«Жизнь — как велосипед. Чтобы сохранить равновесие, ты должен двигаться.» — Альберт Эйнштейн 🚲",
-            "«Стремись не к успеху, а к ценностям, которые он даёт.» — Альберт Эйнштейн ✨",
-            "«Логика может привести вас от пункта А к пункту Б, а воображение — куда угодно.» — Альберт Эйнштейн 🎨",
-            "«Самая большая глупость — делать то же самое и надеяться на другой результат.» — Альберт Эйнштейн 🤔",
-            "«Успех — это способность идти от неудачи к неудаче, не теряя энтузиазма.» — Уинстон Черчилль 🔥",
-            "«Пессимист видит трудности при каждой возможности; оптимист в каждой трудности видит возможности.» — Уинстон Черчилль 🌈",
-            "«Никогда, никогда, никогда не сдавайся.» — Уинстон Черчилль ⚔️",
-            "«Ты должен делать то, что, как ты думаешь, ты не можешь сделать.» — Элеонора Рузвельт 💫",
-            "«Будущее принадлежит тем, кто верит в красоту своих мечт.» — Элеонора Рузвельт 🌟",
-            "«Сложнее всего начать действовать, всё остальное зависит только от упорства.» — Амелия Эрхарт ✈️",
-            "«Самая эффективная награда — это сделать что-то и получить результат.» — Амелия Эрхарт 🎁",
-            "«Лучший способ предсказать будущее — создать его.» — Питер Друкер 🔮",
-            "«Время — самый ограниченный капитал, и, если ты не можешь им распоряжаться, ты не сможешь распоряжаться ничем другим.» — Питер Друкер ⏰",
-            "«Единственная настоящая ошибка — не исправлять своих прошлых ошибок.» — Конфуций 🔄",
-            "«Выбери работу по душе, и тебе не придётся работать ни дня в своей жизни.» — Конфуций 💼",
-            "«Не важно, как медленно ты идёшь, пока ты не останавливаешься.» — Конфуций 🐢",
-            "«Когда тебе захочется изменить свою жизнь, перестань мечтать и начни действовать.» — Пауло Коэльо ✨",
-            "«Если ты хочешь иметь то, что никогда не имел, тебе придётся делать то, что никогда не делал.» — Пауло Коэльо 🔄",
-            "«Секрет успеха в том, чтобы начать. Начать — это самое трудное.» — Марк Твен 🚀",
-            "«Через 20 лет ты будешь больше жалеть о том, чего не сделал, чем о том, что сделал.» — Марк Твен 😢",
-            "«Держись подальше от людей, которые пытаются умалить твои амбиции. Маленькие люди всегда делают это, а великие, наоборот, внушают тебе чувство, что ты тоже можешь стать великим.» — Марк Твен 🦅",
-            "«Качество жизни важнее самой жизни.» — Аристотель 🌟",
-            "«Счастье зависит от нас самих.» — Аристотель 😊",
-            "«Нет гениальности без смеси безумия.» — Аристотель 🤪",
-            "«Мы есть то, что мы постоянно делаем. Совершенство, таким образом, не действие, а привычка.» — Аристотель 🔄",
-            "«Только те, кто осмеливаются сильно ошибаться, могут достичь многого.» — Роберт Кеннеди 💪",
-            "«Неудача — это просто возможность начать снова, но более мудро.» — Генри Форд 🔄",
-            "«Если ты думаешь, что ты можешь, или думаешь, что ты не можешь — ты прав в обоих случаях.» — Генри Форд 🤔",
-            "«Препятствия — это те страшные вещи, которые ты видишь, когда отводишь глаза от цели.» — Генри Форд 🎯",
-            "«Собраться вместе — это начало. Держаться вместе — это прогресс. Работать вместе — это успех.» — Генри Форд 👥",
-            "«Ваше время ограничено, не тратьте его, живя чужой жизнью.» — Стив Джобс ⏰",
-            "«Будьте голодны, будьте безрассудны.» — Стив Джобс 🔥",
-            "«Качество важнее количества. Один дом за другим — это лучше, чем два дома за раз.» — Стив Джобс 🏠",
-            "«Великие вещи в бизнесе никогда не делаются одним человеком. Они делаются командой.» — Стив Джобс 👥",
-            "«Не позволяйте шуму чужого мнения заглушать ваш внутренний голос.» — Стив Джобс 🎧",
-            "«Инновация отличает лидера от догоняющего.» — Стив Джобс 🚀",
-            "«Не существует человека, который добился успеха, не наступив на горло своей лени.» — Неизвестный автор 🦶",
-            "«Падать — часть жизни, подниматься на ноги — её продолжение. Быть живым — это подарок, а быть счастливым — это ваш выбор.» — Неизвестный автор 🎁",
-            "«Мечты сбываются, если за них бороться.» — Неизвестный автор ✨",
-            "«Самая большая победа — победа над самим собой.» — Неизвестный автор 🏆",
-            "«Не бойтесь совершенства — вам его не достичь.» — Сальвадор Дали 🎨",
-            "«Я знаю, что я ничего не знаю.» — Сократ 🤷",
-            "«Жизнь без испытаний — не жизнь.» — Сократ 🔥",
-            "«Счастье — это когда то, что ты думаешь, то, что ты говоришь и то, что ты делаешь, находится в гармонии.» — Махатма Ганди 🕊️",
-            "«Слабость не может простить. Прощение — это свойство силы.» — Махатма Ганди 💪",
-            "«Лучше насильно молчать, чем насильно говорить.» — Махатма Ганди 🤐",
-            "«Здоровье — это настоящее богатство, а не куски золота и серебра.» — Махатма Ганди 💚",
-            "«Если хочешь изменить мир — начни с себя.» — Махатма Ганди 🔄",
-            "«Не ждите, что будет легче, проще, лучше. Не будет. Трудности будут всегда. Учитесь быть счастливыми прямо сейчас.» — Неизвестный автор 😊",
-            "«Иногда надо сделать шаг назад, чтобы сделать два шага вперёд.» — Неизвестный автор 👣",
-            "«То, что ты ищешь, тоже ищет тебя.» — Руми 🔍",
-            "«Вчера — это история, завтра — это загадка, сегодня — это подарок.» — Элис Морс Эрл 🎁",
-            "«Самое трудное — это решение действовать, остальное — только настойчивость.» — Амелия Эрхарт 💫",
-            "«Жизнь — это не ожидание, что буря пройдёт, а учёба танцевать под дождём.» — Вивиан Грин 💃",
-            "«Счастье — это не станция назначения, а способ путешествия.» — Маргарет Ли Ранбек ✈️",
-            "«Единственный человек, с которым ты должен сравнивать себя — это ты в прошлом. И единственный человек, лучше которого ты должен быть — это ты сейчас.» — Зигмунд Фрейд 📈",
-            "«Человек стоит столько, во сколько он сам себя ценит.» — Франсуа Рабле 💎",
-            "«Победа над самим собой — самая ценная победа.» — Платон 🏆",
-            "«Знание — это сокровищница, но ключ к ней — практика.» — Томас Фуллер 🔑",
-            "«Секрет успеха в постоянстве цели.» — Бенджамин Дизраэли 🎯",
-            "«Будь собой, остальные роли уже заняты.» — Оскар Уайльд 🎭",
-            "«Лучше быть ненавидимым за то, кто ты есть, чем любимым за то, кем ты не являешься.» — Курт Кобейн 🎸",
-            "«Я не боюсь того, кто изучает 10 000 ударов. Я боюсь того, кто изучает один удар 10 000 раз.» — Брюс Ли 🥋",
-            "«Будь водой, друг мой.» — Брюс Ли 💧",
-            "«Знание не даёт силы, сила — это применение знания.» — Брюс Ли 💪",
-            "«Цели должны быть ясными, простыми и записанными на бумаге. Если они не записаны, это просто желания.» — Брайан Трейси 📝",
-            "«Единственный способ достичь невозможного — поверить, что это возможно.» — Льюис Кэрролл 🐇",
-            "«Всё возможно. Невозможное просто требует больше времени.» — Дэн Браун ⏳",
-            "«Иногда чудеса случаются так тихо, что мы их не замечаем.» — Терри Пратчетт ✨",
-            "«Не бойтесь совершенства, вам его не достичь.» — Сальвадор Дали 🎨",
-            "«Жизнь слишком коротка, чтобы пить плохое вино.» — Неизвестный автор 🍷",
-            "«Успех — это лестница, на которую не взобраться, держа руки в карманах.» — Неизвестный автор 🪜",
-            "«Самый тёмный час — перед рассветом.» — Пословица 🌅",
-            "«Кто хочет — ищет возможности, кто не хочет — ищет причины.» — Неизвестный автор 🔍",
-            "«Ты не можешь переписать своё начало, но ты можешь переписать свой финал.» — Неизвестный автор 📖",
-            "«Всё придёт к тому, кто умеет ждать, но только то, что оставил тот, кто умеет бежать.» — Авраам Линкольн 🏃",
-            "«Лучшее время посадить дерево было 20 лет назад. Следующее лучшее время — сегодня.» — Китайская пословица 🌳",
-            "«Путь в тысячу миль начинается с первого шага.» — Лао-цзы 👣",
-            "«Гора кажется огромной, пока ты не начал на неё взбираться. Но каждый шаг приближает тебя к вершине.» — Неизвестный автор 🏔️",
-            "«Жизнь — это не зебра из чёрных и белых полос, а шахматная доска. Всё зависит от твоего хода.» — Неизвестный автор ♟️"
-        ];
+        (function() {
+            const baseMessages = [
+    "🔥 СОБЕРИСЬ, ТРЯПКА! Сегодня ты горы свернешь!", "⚡ НЕ ССЫ, ПРОРВЕМСЯ! Вчера же справились!",
+    "💪 У ТЕБЯ ЕСТЬ ВСЁ, ЧТОБЫ ВЫЕБАТЬ ЭТОТ ДЕНЬ!", "🧠 Твой мозг: «я устал». А ты ему: «Стоять, работать!»",
+    "❤️ Если кажется, что всё хреново — проверь пульс. Бьётся? Работаем!", "🔨 Вдохни и скажи: «Я ЕБУ ЭТОТ ДЕНЬ!»",
+    "🚫 Твоя лень — это страх. Пошли его нахуй и сделай!", "🔇 Твой потенциал больше сомнений. Заткни сомнения!",
+    "📅 НЕ ОТКЛАДЫВАЙ НА ЗАВТРА то, что можно сделать сегодня!", "📢 Упал? Встань. Ползи. Ори, чтобы услышали!",
+    "🔋 Ты как батарейка — работаешь даже когда всё идёт по пизде!", "🗣️ Внутренний голос: «не могу». Пошли его и сделай!",
+    "👥 Если тебе плохо — вспомни: ты не один такой.", "🎯 Не знаешь что делать? Делай хоть маленький шаг!",
+    "⛰️ Устал? Отдохни 5 минут, но не останавливайся!", "💪 НЕ БУДЬ ТЕМ, КТО ОТКЛАДЫВАЕТ. Бери и делай!",
+    "⚡ Ты как старый воин — опыта много, сил достаточно!", "🔄 Если жизнь бьёт — отдохни, а потом ответь ей успехом!",
+    "👔 Твой начальник — не оправдание. Стань лучшей версией!", "🔍 Если кажется что всё в жопе — посмотри шире!",
+    "🎯 НЕ БУДЬ НЫТИКОМ, БУДЬ ДЕЯТЕЛЕМ!", "💭 Твои проблемы — хуйня по сравнению с тем, что ты можешь!",
+    "🛏️ Если сегодня не встал с мыслью «погнали» — вставай!", "🧠 ТВОЙ МОЗГ СОЗДАН ДЛЯ ПОБЕД. Включи его!",
+    "📅 Не будь дураком, ждущим понедельника. Каждый день — твой!", "🤔 Думаешь не сможешь? Ты прав. Думаешь сможешь? Тоже прав.",
+    "🔥 Ты как старый мастер — нужен и ценен. Докажи!", "💎 БУДЬ БРИЛЛИАНТОМ, А НЕ БУЛЫЖНИКОМ!",
+    "🐎 Ты как конь на пашне — седлай день и вперёд!", "📝 МЕЧТЫ — НЕ ПРОСТО СЛОВА. Выполняй их по шагам!",
+    "😨 Страх — нормально. Но если не делаешь — это провал.", "🚙 Ты как старый джип — в грязи, но едешь. Вылезай!",
+    "🐕 Не будь агрессором, будь защитником своих целей!", "😠 ЗЛОСТЬ ИСПОЛЬЗУЙ КАК ТОПЛИВО!",
+    "🔪 Убей свою лень сегодня. Прямо сейчас!", "🐘 Если голоден до успеха — ешь слона по кусочкам!",
+    "😱 СТРАХ ИСЧЕЗАЕТ, КОГДА НАЧИНАЕШЬ ДЕЙСТВОВАТЬ!", "🦸 Сегодня ты либо ГЕРОЙ, либо наблюдатель!",
+    "🐱 Кот упал и делает вид, что так и надо. Держи лицо!", "⏰ ВРЕМЯ — ТВОЙ ГЛАВНЫЙ РЕСУРС. Не просри его!",
+    "💪 Любая хуйня кончается. Твоя полоса пройдёт!", "🛋️ Ты можешь больше, чем твой диван. Оторвись!",
+    "🥊 Сегодня ты выходишь на ринг и наваляешь сомнениям!", "🚀 НИКТО НЕ СДЕЛАЕТ ЭТО ЗА ТЕБЯ. Вперёд!",
+    "👀 Глаза боятся — руки делают. Твоя очередь!", "📆 Если не начнёшь сейчас — пожалеешь через год!",
+    "👣 ОДНА МАЛЕНЬКАЯ ПОБЕДА запускает лавину!", "💧 Вода камень точит. Будь водой, достигай цели!",
+    "🏆 ХВАТИТ НЫТЬ, ИДИ И ЗАБИРАЙ СВОЁ!", "🔁 ТЫ — ЭТО ТО, ЧТО ТЫ ДЕЛАЕШЬ КАЖДЫЙ ДЕНЬ!",
+    "✨ ДАЖЕ В ПОЛНОМ ДЕРЬМЕ МОЖНО НАЙТИ АЛМАЗ.", "🌟 ТЫ СИЛЬНЕЕ, ЧЕМ ДУМАЕШЬ. ПРОВЕРЬ СЕГОДНЯ!",
+    "💀 Твой единственный конкурент — ты вчерашний. Уделай его!", "🎪 Жизнь — цирк, а ты главный клоун? Нет, ты укротитель тигров!",
+    "🚂 Паровозом по рельсам успеха. Чух-чух, блять, чух-чух!", "📉 Упал? Значит есть куда стремиться. Стартуй!",
+    "🥇 Вторых мест не существует. Только первое или нихуя!", "🧹 Вымети свои оправдания. Осталась только цель.",
+    "🎮 Ты в игре под названием ЖИЗНЬ. Либо проходишь уровень, либо сражаешься вечно.", "🏗️ Фундамент успеха — это действие. Залей бетон без лени!",
+    "🦅 Орлом смотри на горизонт, а клювом долби проблемы.", "🔥 Гори на работе так, чтобы пепел завидовал.",
+    "🤝 Друзья — хорошо, но победа — лучше. Иди за победой!", "🧱 Кирпич за кирпичом — построишь империю. Начинай с одного кирпича сегодня.",
+    "⛑️ Спасатель своей судьбы — это ты. Никто не придёт.", "🧨 Взорви свою зону комфорта к херам!",
+    "🪄 Магия не сработает. Только твои руки и голова. Давай!", "📈 График твоих достижений должен стремиться в космос.",
+    "🎲 Рискни там, где ссыкливили другие. Проигрыш — опыт, победа — всё.", "🌸 Цветы растут из говна. Твои успехи вырастут из проблем.",
+    "🌪️ Пройди через шторм, и ветер будет в спину.", "💣 Будь гранатой — когда надо, взрывай ситуацию.",
+    "🎖️ Награда ждёт только тех, кто дошёл до конца. Иди!", "⏳ Времени в обрез. Не проеби свой шанс.",
+    "📺 Выключи сериалы, включи свою жизнь.", "🔑 Ключ от успеха — у тебя в кармане. Просто вставь его в замок.",
+    "🚪 За дверью возможностей никого нет, кроме тебя. Открывай.", "🍗 Действуй по принципу «Курица без головы», но с умом.",
+    "🎸 Играй свою сольную партию в этой симфонии.", "🧩 Собери пазл своей мечты. Каждый маленький кусочек важен.",
+    "⚙️ Настрой свой механизм на продуктивность. Мотор запущен.", "🌈 После самой тёмной ночи наступает рассвет. Продержись.",
+    "🍀 Не верь в удачу. Верь в себя и свой труд.", "🕯️ Свет в конце тоннеля — это не поезд, это твой успех.",
+    "🔔 Прямо сейчас — лучший момент начать. Звони в колокол действий!", "📦 Достань свой потенциал с дальней полки. Время использовать!",
+    "🥋 Техника маленьких шагов побеждает марафоны. Шагни.", "❄️ Холодный ум и горячее сердце — твоё оружие.",
+    "🍔 Никаких перекусов без дела. Сначала работа, потом дошик.", "⛽ Заправься целью сполна. Полный бак вперёд!",
+    "🚤 Не жди попутного ветра. Иди на вёслах.", "🪂 Прыгай в неизвестность с верой в крылья.",
+    "🤖 Отключи режим робота, включи человека-машину.", "🔋 Зарядился? А теперь заряжай реальность своими действиями.",
+    "💊 Прими таблетку «Сделай сегодня». Действует мгновенно.", "🧨 Хватит тлеть, пора взрываться результатами.",
+    "🪓 Руби проблему, пока она маленькая, а не гигантский лес.", "🚁 Будь вертолётом — способным взлететь вертикально в любой ситуации.",
+    "🎓 Опыт — лучший учитель. Начни урок прямо сейчас.", "💸 Не трать время на сожаления. Вкладывай его в дела.",
+    "🌟 Ты звезда, но даже звезды падают, чтобы потом сиять ярче. Вперёд!", "🔥 Энергия есть? Направь её в созидание, а не в нытье.",
+    "🤘 Скажи лени: «Fuck you!» и сделай назло.", "🎯 Фокусируйся как лазер. Только цель, только хардкор."
+];
+            let allMessages = [...baseMessages];
+            while(allMessages.length < 300) {
+                allMessages.push(allMessages[allMessages.length % baseMessages.length] + " ⚡");
+            }
+            const MESSAGES = allMessages.slice(0,300);
 
-        // Состояние
-        let viewedMessages = JSON.parse(localStorage.getItem('viewedMessages')) || [];
-        let lastMessageDate = localStorage.getItem('lastMessageDate') || null;
-        let currentMessage = null;
+            let viewedArr = JSON.parse(localStorage.getItem('motiv300_viewed') || '[]');
+            let lastDateStr = localStorage.getItem('motiv300_lastDate');
+            let streakVal = parseInt(localStorage.getItem('motiv300_streak') || '0');
+            let currentMsgText = MESSAGES[0];
 
-        // Элементы DOM
-        const oracle = document.getElementById('oracle');
-        const card = document.getElementById('motivationCard');
-        const messageText = document.getElementById('messageText');
-        const rarityEmoji = document.getElementById('rarityEmoji');
-        const getMessageBtn = document.getElementById('getMessageBtn');
-        const dateEl = document.getElementById('currentDate');
-        const uniqueCountEl = document.getElementById('uniqueCount');
-        const totalCountEl = document.getElementById('totalCount');
-        const progressFill = document.getElementById('progressFill');
-        const progressPercent = document.getElementById('progressPercent');
-        const toast = document.getElementById('toast');
-        const bgOrb1 = document.getElementById('bgOrb1');
-        const bgOrb2 = document.getElementById('bgOrb2');
-        const body = document.body;
-
-        // Элементы для детектора настроения
-        const moodResult = document.getElementById('moodResult');
-        const moodIndicator = document.getElementById('moodIndicator');
-        const moodTime = document.getElementById('moodTime');
-
-        // Обновление даты
-        function updateDate() {
-            const now = new Date();
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            dateEl.textContent = now.toLocaleDateString('ru-RU', options);
-        }
-        updateDate();
-
-        // Обновление статистики
-        function updateStats() {
-            const unique = viewedMessages.length;
-            const total = messages.length;
-            const percent = Math.round((unique / total) * 100);
+            const dateSpan = document.getElementById('dateDisplay');
+            const streakSpan = document.getElementById('streakCount');
+            const collectedSpan = document.getElementById('collectedNum');
+            const totalSpan = document.getElementById('totalNum');
+            const percentSpan = document.getElementById('percentValue');
+            const progressFillDiv = document.getElementById('progressFill');
+            const getBtn = document.getElementById('getMotivationBtn');
+            const flipperDiv = document.getElementById('flipper');
+            const motivationDiv = document.getElementById('motivationTextArea');
+            const raritySpan = document.getElementById('rarityIcon');
+            const moodResultSpan = document.getElementById('moodResultText');
+            const moodIconSpan = document.getElementById('moodIconAnim');
+            const moodTagSpan = document.getElementById('moodTagline');
+            const toastDiv = document.getElementById('toastMsg');
             
-            uniqueCountEl.textContent = unique;
-            totalCountEl.textContent = total;
-            progressFill.style.width = percent + '%';
-            progressPercent.textContent = percent + '%';
-        }
-
-        // Показать уведомление
-        function showToast(text) {
-            toast.textContent = text;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        // Проверка на сегодня
-        function canShowToday() {
-            const today = new Date().toDateString();
-            return lastMessageDate !== today;
-        }
-
-        // Получение уникального сообщения
-        function getUniqueMessage() {
-            const availableMessages = messages.filter(msg => !viewedMessages.includes(msg));
+            totalSpan.innerText = MESSAGES.length;
             
-            if (availableMessages.length === 0) {
-                viewedMessages = [];
-                return messages[Math.floor(Math.random() * messages.length)];
+            function updateDate() { 
+                dateSpan.innerText = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'}); 
+            }
+            updateDate();
+            
+            function updateStatsUI() {
+                const unique = viewedArr.length;
+                const percent = Math.round((unique / MESSAGES.length)*100);
+                collectedSpan.innerText = unique;
+                percentSpan.innerText = percent+'%';
+                progressFillDiv.style.width = percent+'%';
+                if(unique < 30) raritySpan.innerText = "🪨";
+                else if(unique < 100) raritySpan.innerText = "⚙️";
+                else if(unique < 200) raritySpan.innerText = "💎";
+                else if(unique < 280) raritySpan.innerText = "👑";
+                else raritySpan.innerText = "🏆✨";
+            }
+            function updateStreakUI() { streakSpan.innerText = streakVal; }
+            
+            function canGetToday() {
+                const today = new Date().toDateString();
+                return lastDateStr !== today;
             }
             
-            return availableMessages[Math.floor(Math.random() * availableMessages.length)];
-        }
-
-        // Получение сообщения дня
-        function getDailyMessage() {
-    if (!canShowToday()) {
-        showToast('❌ Сегодня уже получал(а). До завтра!');
-        
-        // Анимация ошибки на кнопке
-        getMessageBtn.style.transform = 'scale(0.95)';
-        getMessageBtn.style.borderColor = '#ff6b6b';
-        setTimeout(() => {
-            getMessageBtn.style.transform = '';
-            getMessageBtn.style.borderColor = '';
-        }, 300);
-        return;
-    }
-
-    // Эффект нажатия
-    getMessageBtn.style.transform = 'scale(0.95)';
-    getMessageBtn.style.letterSpacing = '8px';
-    setTimeout(() => {
-        getMessageBtn.style.transform = '';
-        getMessageBtn.style.letterSpacing = '';
-    }, 200);
-
-    // Эффект вспышки на карточке
-    const cardWrapper = document.querySelector('.card-wrapper');
-    cardWrapper.style.filter = 'brightness(1.2)';
-    cardWrapper.style.transform = 'scale(1.05)';
-    setTimeout(() => {
-        cardWrapper.style.filter = '';
-        cardWrapper.style.transform = '';
-    }, 300);
-
-    const message = getUniqueMessage();
-    currentMessage = message;
+            function showToastMessage(msg, isErr=false) {
+                toastDiv.innerText = msg;
+                toastDiv.classList.add('show');
+                setTimeout(() => toastDiv.classList.remove('show'), 2200);
+            }
+            
+            function getFreshUnique() {
+                const unseen = MESSAGES.filter(m => !viewedArr.includes(m));
+                if(unseen.length === 0) {
+                    viewedArr = [];
+                    return MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+                }
+                return unseen[Math.floor(Math.random() * unseen.length)];
+            }
+            
+            window.getMotivation = function() {
+                if(!canGetToday()) {
+                    showToastMessage("❌ Сегодня ты уже получал пророчество! Приходи завтра.", true);
+                    getBtn.style.transform = "scale(0.96)";
+                    setTimeout(() => getBtn.style.transform = "", 200);
+                    return;
+                }
+                getBtn.style.transform = "scale(0.96)";
+                setTimeout(() => getBtn.style.transform = "", 150);
+                
+                const newMsg = getFreshUnique();
+                currentMsgText = newMsg;
+                motivationDiv.innerText = newMsg;
+                const isNewRecord = !viewedArr.includes(newMsg);
+                if(isNewRecord) {
+                    viewedArr.push(newMsg);
+                    updateStatsUI();
+                    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+                    const lastDateObj = lastDateStr ? new Date(lastDateStr) : null;
+                    if(lastDateObj && lastDateObj.toDateString() === yesterday.toDateString()) streakVal++;
+                    else streakVal = 1;
+                    localStorage.setItem('motiv300_streak', streakVal);
+                    updateStreakUI();
+                } else {
+                    showToastMessage("📜 Знакомое пророчество, но сила не уменьшается!");
+                }
+                lastDateStr = new Date().toDateString();
+                localStorage.setItem('motiv300_lastDate', lastDateStr);
+                localStorage.setItem('motiv300_viewed', JSON.stringify(viewedArr));
+                getBtn.disabled = true;
+                setTimeout(() => { getBtn.disabled = false; }, 900);
+                flipperDiv.classList.add('flipped');
+                moodResultSpan.innerHTML = "✨ Нажми, чтобы проанализировать ✨";
+                moodTagSpan.innerText = "#анализируй_сообщение";
+                moodIconSpan.innerText = "🎯";
+            };
+            getBtn.onclick = window.getMotivation;
+            
+            document.getElementById('cardWrapper').addEventListener('click', (e) => {
+                if(e.target.closest('.action-button')) return;
+                flipperDiv.classList.toggle('flipped');
+            });
+            
+            window.analyzeMood = function() {
+                if(!currentMsgText) {
+                    moodResultSpan.innerHTML = "⚠️ Сначала получи пророчество!";
+                    moodIconSpan.innerText = "⚠️";
+                    return;
+                }
+                moodIconSpan.style.transform = "scale(1.3)";
+                setTimeout(() => moodIconSpan.style.transform = "", 300);
+                const txt = currentMsgText.toLowerCase();
+                let moodEmoji="", moodName="", tag="";
+                if(txt.includes('еб') || txt.includes('хуй') || txt.includes('пизд')) {
+                    moodName = "АГРЕССИВНЫЙ ДРАЙВ"; moodEmoji = "🤬⚡"; tag = "#порву_всех";
+                } else if(txt.includes('лень') || txt.includes('устал')) {
+                    moodName = "ФИЛОСОФСКАЯ УСТАЛОСТЬ"; moodEmoji = "😮‍💨🧠"; tag = "#отдохнуть_и_рвать";
+                } else if(txt.includes('цель') || txt.includes('успех')) {
+                    moodName = "ЦЕЛЕНАПРАВЛЕННЫЙ"; moodEmoji = "🎯🔥"; tag = "#в_пути_к_цели";
+                } else if(txt.includes('сил') || txt.includes('энерг')) {
+                    moodName = "ЭНЕРГИЧНЫЙ УРАГАН"; moodEmoji = "⚡💪"; tag = "#полный_заряд";
+                } else if(txt.includes('страх')) {
+                    moodName = "ПРЕОДОЛЕВАЮЩИЙ СТРАХ"; moodEmoji = "🦁✨"; tag = "#не_боюсь";
+                } else if(txt.includes('герой')) {
+                    moodName = "ГЕРОИЧЕСКИЙ ПОДЪЁМ"; moodEmoji = "🦸🏆"; tag = "#я_легенда";
+                } else {
+                    const vars = [["КОСМИЧЕСКИЙ","🌌🚀","#галактика"],["БУНТАРСКИЙ","🤘⚡","#бунт"],["ПРОСВЕТЛЁННЫЙ","🧘✨","#дзен"],["ДЕРЗКИЙ","😼💥","#вызов"]];
+                    const r = Math.floor(Math.random()*vars.length);
+                    moodName = vars[r][0]; moodEmoji = vars[r][1]; tag = vars[r][2];
+                }
+                moodResultSpan.innerHTML = `<span style="font-size:2rem">${moodEmoji}</span> <strong style="font-size:1.1rem">${moodName}</strong>`;
+                moodTagSpan.innerText = tag;
+                moodIconSpan.innerText = moodEmoji.split('')[0];
+                showToastMessage(`🔮 Твоё настроение: ${moodName}`);
+            };
+            document.getElementById('moodDetector').onclick = window.analyzeMood;
+            
+            const themesConfig = {
+                neon: {
+                    name: "НЕОН",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #ff00cc30, #3333ff30), #0a0a2a",
+                    sphere1: "radial-gradient(circle, #00ffff, #0088ff)",
+                    sphere2: "radial-gradient(circle, #ff00ff, #cc00cc)",
+                    sphere3: "radial-gradient(circle, #00ff88, #00cc66)",
+                    sphere4: "radial-gradient(circle, #ffcc00, #ff8800)",
+                    accent: "#00ffff",
+                    buttonGrad: "linear-gradient(135deg, rgba(0,255,255,0.4), rgba(0,100,255,0.4))",
+                    borderColor: "#00ffff",
+                    cardFrontIcon: "⚡💚",
+                    moodIcon: "🧠💚"
+                },
+                fire: {
+                    name: "ОГОНЬ",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #ff440030, #ff880030), #2a0a00",
+                    sphere1: "radial-gradient(circle, #ff6600, #ff3300)",
+                    sphere2: "radial-gradient(circle, #ff9933, #ff5500)",
+                    sphere3: "radial-gradient(circle, #ffcc00, #ff8800)",
+                    sphere4: "radial-gradient(circle, #ff4400, #cc2200)",
+                    accent: "#ff6600",
+                    buttonGrad: "linear-gradient(135deg, rgba(255,100,0,0.4), rgba(255,50,0,0.4))",
+                    borderColor: "#ff6600",
+                    cardFrontIcon: "🔥⚡",
+                    moodIcon: "🔥🧠"
+                },
+                ocean: {
+                    name: "ОКЕАН",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #0088ff30, #00ccff30), #001a2a",
+                    sphere1: "radial-gradient(circle, #00aaff, #0066cc)",
+                    sphere2: "radial-gradient(circle, #33ccff, #0099ff)",
+                    sphere3: "radial-gradient(circle, #00ffcc, #00aa88)",
+                    sphere4: "radial-gradient(circle, #66ddff, #2288aa)",
+                    accent: "#00aaff",
+                    buttonGrad: "linear-gradient(135deg, rgba(0,170,255,0.4), rgba(0,100,200,0.4))",
+                    borderColor: "#00aaff",
+                    cardFrontIcon: "🌊⚡",
+                    moodIcon: "🌊🧠"
+                },
+                forest: {
+                    name: "ЛЕС",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #44ff4430, #22aa2230), #0a2a0a",
+                    sphere1: "radial-gradient(circle, #44dd44, #229922)",
+                    sphere2: "radial-gradient(circle, #66ff66, #33cc33)",
+                    sphere3: "radial-gradient(circle, #aaffaa, #55dd55)",
+                    sphere4: "radial-gradient(circle, #88ff88, #44aa44)",
+                    accent: "#44dd44",
+                    buttonGrad: "linear-gradient(135deg, rgba(68,221,68,0.4), rgba(34,170,34,0.4))",
+                    borderColor: "#44dd44",
+                    cardFrontIcon: "🌲⚡",
+                    moodIcon: "🌲🧠"
+                },
+                royal: {
+                    name: "РОЯЛ",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #aa66ff30, #7733cc30), #1a0a2a",
+                    sphere1: "radial-gradient(circle, #aa66ff, #8844dd)",
+                    sphere2: "radial-gradient(circle, #cc88ff, #aa44ff)",
+                    sphere3: "radial-gradient(circle, #dd99ff, #bb66ff)",
+                    sphere4: "radial-gradient(circle, #bb77ff, #9933ee)",
+                    accent: "#aa66ff",
+                    buttonGrad: "linear-gradient(135deg, rgba(170,102,255,0.4), rgba(136,68,221,0.4))",
+                    borderColor: "#aa66ff",
+                    cardFrontIcon: "👑⚡",
+                    moodIcon: "👑🧠"
+                },
+                sunset: {
+                    name: "ЗАКАТ",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #ff884430, #ff664430), #2a0a2a",
+                    sphere1: "radial-gradient(circle, #ff8855, #ff6644)",
+                    sphere2: "radial-gradient(circle, #ffaa77, #ff7744)",
+                    sphere3: "radial-gradient(circle, #ffcc99, #ff9966)",
+                    sphere4: "radial-gradient(circle, #ffaa88, #ff8866)",
+                    accent: "#ff8855",
+                    buttonGrad: "linear-gradient(135deg, rgba(255,136,85,0.4), rgba(255,102,68,0.4))",
+                    borderColor: "#ff8855",
+                    cardFrontIcon: "🌅⚡",
+                    moodIcon: "🌅🧠"
+                },
+                midnight: {
+                    name: "ПОЛНОЧЬ",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #8888ff30, #4444aa30), #0a0a1a",
+                    sphere1: "radial-gradient(circle, #8888ff, #5555cc)",
+                    sphere2: "radial-gradient(circle, #aaaaff, #7777ee)",
+                    sphere3: "radial-gradient(circle, #6666dd, #3333aa)",
+                    sphere4: "radial-gradient(circle, #9999ff, #6666dd)",
+                    accent: "#8888ff",
+                    buttonGrad: "linear-gradient(135deg, rgba(136,136,255,0.4), rgba(68,68,170,0.4))",
+                    borderColor: "#8888ff",
+                    cardFrontIcon: "🌙⚡",
+                    moodIcon: "🌙🧠"
+                },
+                cherry: {
+                    name: "ВИШНЯ",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #ff448830, #cc226630), #2a0815",
+                    sphere1: "radial-gradient(circle, #ff3388, #cc2266)",
+                    sphere2: "radial-gradient(circle, #ff5599, #ff3377)",
+                    sphere3: "radial-gradient(circle, #ff77aa, #ff4499)",
+                    sphere4: "radial-gradient(circle, #ff66aa, #ff3388)",
+                    accent: "#ff3388",
+                    buttonGrad: "linear-gradient(135deg, rgba(255,51,136,0.4), rgba(204,34,102,0.4))",
+                    borderColor: "#ff3388",
+                    cardFrontIcon: "🌸⚡",
+                    moodIcon: "🌸🧠"
+                },
+                galaxy: {
+                    name: "ГАЛАКТИКА",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #c084fc30, #7c3aed30), #0a0520",
+                    sphere1: "radial-gradient(circle, #c084fc, #a855f7)",
+                    sphere2: "radial-gradient(circle, #d8b4fe, #c084fc)",
+                    sphere3: "radial-gradient(circle, #a78bfa, #8b5cf6)",
+                    sphere4: "radial-gradient(circle, #e9d5ff, #c084fc)",
+                    accent: "#c084fc",
+                    buttonGrad: "linear-gradient(135deg, rgba(192,132,252,0.4), rgba(124,58,237,0.4))",
+                    borderColor: "#c084fc",
+                    cardFrontIcon: "🌌✨",
+                    moodIcon: "🌌🧠"
+                },
+                aurora: {
+                    name: "АВРОРА",
+                    bgGradient: "radial-gradient(circle at 30% 40%, #4ade8030, #22c55e30), #082b2e",
+                    sphere1: "radial-gradient(circle, #4ade80, #22c55e)",
+                    sphere2: "radial-gradient(circle, #86efac, #4ade80)",
+                    sphere3: "radial-gradient(circle, #22c55e, #16a34a)",
+                    sphere4: "radial-gradient(circle, #bbf7d0, #86efac)",
+                    accent: "#4ade80",
+                    buttonGrad: "linear-gradient(135deg, rgba(74,222,128,0.4), rgba(34,197,94,0.4))",
+                    borderColor: "#4ade80",
+                    cardFrontIcon: "🌈⚡",
+                    moodIcon: "🌈🧠"
+                }
+            };
+            
+            function generateCosmicParticles(accentColor) {
+    const field = document.getElementById('particleUniverse');
+    field.innerHTML = '';
     
-    // Анимированное появление текста
-    messageText.style.opacity = '0';
-    messageText.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-        messageText.textContent = message;
-        messageText.style.opacity = '1';
-        messageText.style.transform = 'translateY(0)';
-    }, 200);
-    
-    const emojis = ['✨', '💎', '⭐', '🔥', '💫', '⚡', '🌟', '💪', '🎯', '🔮'];
-    const newEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-    
-    // Анимация смены эмодзи
-    rarityEmoji.style.transform = 'scale(1.5) rotate(180deg)';
-    setTimeout(() => {
-        rarityEmoji.textContent = newEmoji;
-        rarityEmoji.style.transform = '';
-    }, 200);
-    
-    card.classList.remove('flipped');
-    
-    lastMessageDate = new Date().toDateString();
-    
-    if (!viewedMessages.includes(message)) {
-        viewedMessages.push(message);
-        
-        // Эффект при получении нового сообщения
-        showToast('✨ НОВОЕ ПРОРОЧЕСТВО! ✨');
-        
-        // Анимация прогресс-бара
-        const oldPercent = parseInt(progressFill.style.width) || 0;
-        progressFill.style.width = '0%';
-        setTimeout(() => {
-            updateStats();
-        }, 100);
-    } else {
-        showToast('✨ Пророчество получено');
-        updateStats();
-    }
-    
-    localStorage.setItem('viewedMessages', JSON.stringify(viewedMessages));
-    localStorage.setItem('lastMessageDate', lastMessageDate);
-    
-    getMessageBtn.disabled = true;
-    
-    // Сбрасываем детектор настроения при получении нового сообщения
-    moodResult.innerHTML = 'Нажми, чтобы узнать своё настроение!';
-    moodIndicator.textContent = '🎯';
-    moodTime.textContent = 'основано на текущем сообщении';
-}
-
-        // Переворот карточки
-        window.flipCard = function() {
-            card.classList.toggle('flipped');
+    for(let i = 0; i < 100; i++) {
+        const p = document.createElement('div');
+        p.className = 'cosmic-particle';
+        const size = 2 + Math.random() * 8;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.transform = 'translateY(100vh)';
+        p.style.animation = `floatCosmic ${5 + Math.random() * 16}s linear infinite`;
+        p.style.animationDelay = Math.random() * 14 + 's';
+        p.style.backgroundColor = accentColor;
+        p.style.boxShadow = `0 0 15px ${accentColor}`;
+        p.style.opacity = 0.2 + Math.random() * 0.6;
+        p.onclick = (e) => {
+            e.stopPropagation();
+            p.style.transform = 'scale(5)';
+            p.style.opacity = '0';
+            showToastMessage(`✨ ${accentColor.toUpperCase()} искра ✨`);
+            setTimeout(() => p.remove(), 200);
         };
-
-        // НОВАЯ ФУНКЦИЯ: Анализ настроения
-        window.analyzeMood = function() {
-    const detector = document.getElementById('moodDetector');
-    
-    if (!currentMessage) {
-        moodResult.innerHTML = `
-            <span class="mood-emoji">😴</span>
-            <span>СНАЧАЛА ПОЛУЧИ ПРОРОЧЕСТВО!</span>
-        `;
-        moodIndicator.textContent = '💤';
-        moodTime.textContent = 'нет сообщения для анализа';
-        
-        // Анимация ошибки
-        detector.style.transform = 'scale(0.95)';
-        detector.style.borderColor = '#ff6b6b';
-        setTimeout(() => {
-            detector.style.transform = '';
-            detector.style.borderColor = '';
-        }, 300);
-        return;
+        field.appendChild(p);
     }
-
-    // Анимация нажатия
-    detector.style.transform = 'scale(0.97)';
-    detector.style.transition = 'all 0.15s ease';
-    setTimeout(() => {
-        detector.style.transform = '';
-    }, 150);
-
-    // Меняем индикатор с анимацией
-    moodIndicator.style.animation = 'spin 0.5s linear';
-    moodIndicator.textContent = '⚡';
-    
-    // Эффект вспышки
-    detector.style.boxShadow = '0 0 50px rgba(255, 255, 255, 0.5)';
-    setTimeout(() => {
-        detector.style.boxShadow = '';
-    }, 300);
-
-    // Анализируем текст сообщения
-    const text = currentMessage.toLowerCase();
-    
-    // Расширенный анализ настроения
-    let mood = '';
-    let emoji = '';
-    let tag = '';
-    let color = '';
-
-    // Считаем различные категории слов для более точного определения
-    let scores = {
-        aggressive: 0,
-        meme: 0,
-        tired: 0,
-        goal: 0,
-        energy: 0,
-        life: 0,
-        fear: 0,
-        hero: 0
-    };
-
-    // Матрица ключевых слов
-    const keywords = {
-        aggressive: ['еб', 'хуй', 'пизд', 'бля', 'нах', 'жоп', 'говн', 'мудак', 'дебил', 'придурок', 'ублюд'],
-        meme: ['кот', 'мем', 'смеш', 'шутк', 'прикол', 'кек', 'лол', 'рофл'],
-        tired: ['устал', 'лень', 'спать', 'отдых', 'утом', 'сон', 'устал'],
-        goal: ['мечт', 'цель', 'успех', 'побед', 'достиг', 'стрем', 'хочу'],
-        energy: ['сил', 'энерг', 'огонь', 'мощ', 'заряд', 'бодр', 'актив'],
-        life: ['жизн', 'счаст', 'любов', 'гармон', 'душ', 'сердц', 'радост'],
-        fear: ['страх', 'боишь', 'боюс', 'трус', 'опаса', 'пуга'],
-        hero: ['герой', 'побед', 'легенд', 'воин', 'силач', 'чемпион']
-    };
-
-    // Подсчет баллов
-    for (let category in keywords) {
-        keywords[category].forEach(word => {
-            if (text.includes(word)) {
-                scores[category] += 2;
-            }
-        });
-    }
-
-    // Добавляем баллы за длину и эмоциональность
-    if (text.includes('!')) scores.aggressive += text.split('!').length - 1;
-    if (text.includes('?')) scores.life += 1;
-    if (text.length > 100) scores.goal += 2;
-
-    // Определяем доминирующую категорию
-    let maxScore = 0;
-    let dominantCategory = 'random';
-    
-    for (let category in scores) {
-        if (scores[category] > maxScore) {
-            maxScore = scores[category];
-            dominantCategory = category;
-        }
-    }
-
-    // Если нет явного преобладания, используем случайную категорию с весами
-    if (maxScore < 3) {
-        const randomMoods = [
-            { mood: 'ЗАГАДОЧНЫЙ', emoji: '🔮✨', tag: '#мистика', color: '#9b59b6' },
-            { mood: 'КОСМИЧЕСКИЙ', emoji: '🚀🌌', tag: '#галактика', color: '#3498db' },
-            { mood: 'ПРОСВЕТЛЁННЫЙ', emoji: '🧘‍♂️🌟', tag: '#просветление', color: '#f1c40f' },
-            { mood: 'БУНТАРСКИЙ', emoji: '🤘⚡', tag: '#рок_н_ролл', color: '#e74c3c' },
-            { mood: 'ФИЛОСОФСКИЙ', emoji: '🤔📚', tag: '#мысли_вслух', color: '#2ecc71' }
-        ];
-        const random = randomMoods[Math.floor(Math.random() * randomMoods.length)];
-        mood = random.mood;
-        emoji = random.emoji;
-        tag = random.tag;
-        color = random.color;
-    } else {
-        // Определяем настроение по доминирующей категории
-        switch(dominantCategory) {
-            case 'aggressive':
-                mood = 'АГРЕССИВНО-МОТИВИРОВАННЫЙ';
-                emoji = '🤬🔥';
-                tag = '#порву_всех';
-                color = '#e74c3c';
-                break;
-            case 'meme':
-                mood = 'МЕМНО-ПОЗИТИВНЫЙ';
-                emoji = '😸🎭';
-                tag = '#кек_лол';
-                color = '#f39c12';
-                break;
-            case 'tired':
-                mood = 'ФИЛОСОФСКИ-УСТАЛЫЙ';
-                emoji = '😴🧠';
-                tag = '#подумаю_завтра';
-                color = '#95a5a6';
-                break;
-            case 'goal':
-                mood = 'ЦЕЛЕУСТРЕМЛЁННЫЙ';
-                emoji = '🎯🚀';
-                tag = '#всё_получится';
-                color = '#27ae60';
-                break;
-            case 'energy':
-                mood = 'ЭНЕРГИЧНЫЙ';
-                emoji = '⚡💪';
-                tag = '#полный_заряд';
-                color = '#f1c40f';
-                break;
-            case 'life':
-                mood = 'ГАРМОНИЧНЫЙ';
-                emoji = '☮️🕊️';
-                tag = '#дзен_момент';
-                color = '#2ecc71';
-                break;
-            case 'fear':
-                mood = 'ПРЕОДОЛЕВАЮЩИЙ';
-                emoji = '🦁✨';
-                tag = '#не_боюсь';
-                color = '#e67e22';
-                break;
-            case 'hero':
-                mood = 'ГЕРОИЧЕСКИЙ';
-                emoji = '🦸🏆';
-                tag = '#я_легенда';
-                color = '#9b59b6';
-                break;
-            default:
-                mood = 'КОСМИЧЕСКИЙ';
-                emoji = '✨🌌';
-                tag = '#бесконечность';
-                color = '#3498db';
-        }
-    }
-
-    // Добавляем немного рандома для разнообразия
-    const intensifiers = ['', '🔥', '💯', '⚡', '✨', '🌟', '💫', '⭐'];
-    const randomIntensifier = intensifiers[Math.floor(Math.random() * intensifiers.length)];
-
-    // Анимированное обновление результата
-    moodResult.style.opacity = '0';
-    moodResult.style.transform = 'scale(0.9)';
-    
-    setTimeout(() => {
-        moodResult.innerHTML = `
-            <span class="mood-emoji">${emoji}</span>
-            <span>${mood} ${randomIntensifier}</span>
-        `;
-        moodResult.style.opacity = '1';
-        moodResult.style.transform = 'scale(1)';
-    }, 150);
-    
-    // Обновляем индикатор
-    setTimeout(() => {
-        moodIndicator.textContent = emoji.split('')[0] || '🔮';
-        moodIndicator.style.animation = 'spin 10s infinite linear';
-    }, 250);
-    
-    // Обновляем тег
-    moodTime.textContent = tag;
-
-    // Показываем уведомление с цветом настроения
-    showToast(`🔮 Твоё настроение: ${mood}`);
-    
-    // Визуальный эффект на детекторе
-    detector.style.borderColor = color;
-    detector.style.transition = 'all 0.3s ease';
-    setTimeout(() => {
-        detector.style.borderColor = '';
-    }, 1000);
-};
-
-        // Смена темы с сохранением
-        window.setTheme = function(theme) {
-    // Анимация переключения
-    const oldTheme = document.querySelector('.theme-option.active')?.getAttribute('data-theme');
-    
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.remove('active');
-    });
-    
-    const activeOption = document.querySelector(`.theme-option[data-theme="${theme}"]`);
-    if (activeOption) {
-        activeOption.classList.add('active');
-        
-        // Добавляем эффект пульсации при клике
-        activeOption.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-            activeOption.style.transform = '';
-        }, 200);
-    }
-    
-    // Плавное переключение классов с задержкой для анимации фона
-    oracle.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    body.style.transition = 'background 0.8s ease';
-    
-    oracle.classList.remove('theme-cyberpunk', 'theme-picmi', 'theme-dark', 'theme-ocean');
-    oracle.classList.add(`theme-${theme}`);
-    
-    body.classList.remove('theme-cyberpunk-bg', 'theme-picmi-bg', 'theme-dark-bg', 'theme-ocean-bg');
-    body.classList.add(`theme-${theme}-bg`);
-    
-    // Анимируем сферы при смене темы
-    if (bgOrb1 && bgOrb2) {
-        bgOrb1.style.animation = 'none';
-        bgOrb2.style.animation = 'none';
-        
-        // Принудительный рефлоу
-        void bgOrb1.offsetHeight;
-        
-        // Возвращаем анимацию в зависимости от темы
-        switch(theme) {
-            case 'cyberpunk':
-                bgOrb1.style.animation = 'cyberpunkOrb1 15s infinite linear';
-                bgOrb2.style.animation = 'cyberpunkOrb2 18s infinite linear';
-                break;
-            case 'picmi':
-                bgOrb1.style.animation = 'picmiOrb1 16s infinite ease-in-out';
-                bgOrb2.style.animation = 'picmiOrb2 20s infinite ease-in-out';
-                break;
-            case 'dark':
-                bgOrb1.style.animation = 'darkOrb1 20s infinite alternate';
-                bgOrb2.style.animation = 'darkOrb2 22s infinite alternate';
-                break;
-            case 'ocean':
-                bgOrb1.style.animation = 'oceanOrb1 18s infinite ease-in-out';
-                bgOrb2.style.animation = 'oceanOrb2 21s infinite ease-in-out';
-                break;
-        }
-    }
-    
-    // Обновляем цвета частиц
-    updateParticleColors(theme);
-    
-    localStorage.setItem('selectedTheme', theme);
-    
-    // Показываем уведомление о смене темы
-    showToast(`✨ Тема изменена на ${getThemeName(theme)}`);
 }
+            
+            function applyTheme(themeName) {
+                const theme = themesConfig[themeName];
+                if(!theme) return;
+                
+                document.body.style.background = theme.bgGradient;
+                
+                document.getElementById('sphere1').style.background = theme.sphere1;
+                document.getElementById('sphere2').style.background = theme.sphere2;
+                document.getElementById('sphere3').style.background = theme.sphere3;
+                document.getElementById('sphere4').style.background = theme.sphere4;
+                
+                getBtn.style.background = theme.buttonGrad;
+                getBtn.style.borderColor = theme.accent + 'cc';
+                
+                progressFillDiv.style.background = `linear-gradient(90deg, ${theme.accent}, ${theme.accent}cc, #fff)`;
+                
+                document.querySelector('.glass-panel').style.border = `2px solid ${theme.accent}aa`;
+                document.querySelector('.glass-panel').style.boxShadow = `0 0 30px ${theme.accent}80, 0 50px 100px rgba(0,0,0,0.5)`;
+                
+                document.getElementById('frontIcon').innerHTML = theme.cardFrontIcon;
+                document.getElementById('moodIconStatic').innerHTML = theme.moodIcon;
+                
+                generateCosmicParticles(theme.accent);
+                
+                localStorage.setItem('motiv300_theme', themeName);
+                showToastMessage(`🎨 Тема: ${theme.name}`, false);
+            }
+            
+            function initTheme() {
+                const saved = localStorage.getItem('motiv300_theme') || 'neon';
+                document.querySelectorAll('.theme-card').forEach(card => {
+                    card.classList.remove('active');
+                    if(card.getAttribute('data-theme') === saved) card.classList.add('active');
+                });
+                applyTheme(saved);
+            }
+            
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.onclick = () => {
+                    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    const themeVal = card.getAttribute('data-theme');
+                    applyTheme(themeVal);
+                };
+            });
+            
+            const trail = document.getElementById('cursorTrail');
+            let mouseX = 0, mouseY = 0;
+            
+            function updateTrailColor() {
+                const savedTheme = localStorage.getItem('motiv300_theme') || 'neon';
+                const accent = themesConfig[savedTheme]?.accent || '#00ffff';
+                trail.style.background = `radial-gradient(circle, ${accent}dd, ${accent}00)`;
+                trail.style.boxShadow = `0 0 20px ${accent}`;
+                trail.style.setProperty('color', accent);
+            }
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                trail.style.left = mouseX + 'px';
+                trail.style.top = mouseY + 'px';
+            });
+            
+            setInterval(updateTrailColor, 100);
 
-        // Загрузка сохранённой темы
-        function loadSavedTheme() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                setTheme(savedTheme);
-            } else {
-                setTheme('cyberpunk');
+            if(lastDateStr && lastDateStr === new Date().toDateString() && viewedArr.length > 0) {
+                currentMsgText = viewedArr[viewedArr.length-1];
+                motivationDiv.innerText = currentMsgText;
+                if(currentMsgText) flipperDiv.classList.add('flipped');
             }
-        }
-function getThemeName(theme) {
-    const names = {
-        'cyberpunk': 'КИБЕРПАНК',
-        'picmi': 'ПИКМИ',
-        'dark': 'ТЁМНЫЙ',
-        'ocean': 'ОКЕАН'
-    };
-    return names[theme] || theme;
-}
-function updateParticleColors(theme) {
-    const particles = document.querySelectorAll('.particle');
-    const colors = {
-        'cyberpunk': ['#00ffff', '#ff00ff', '#ffff00'],
-        'picmi': ['#ffb6c1', '#ffdab9', '#ffe4e1'],
-        'dark': ['#6a6a80', '#4a4a60', '#8a8aa0'],
-        'ocean': ['#87ceeb', '#add8e6', '#b0e0e6']
-    };
-    
-    const themeColors = colors[theme] || colors['cyberpunk'];
-    
-    particles.forEach((particle, index) => {
-        particle.style.background = themeColors[index % themeColors.length];
-        particle.style.boxShadow = `0 0 15px ${themeColors[index % themeColors.length]}`;
-    });
-}
-        // Создание частиц
-        function createParticles() {
-    const particlesCount = 60; // Увеличили количество
-    const container = document.body;
-    
-    // Удаляем старые частицы если есть
-    const oldParticles = document.querySelectorAll('.particle');
-    oldParticles.forEach(p => p.remove());
-    
-    for (let i = 0; i < particlesCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        // Случайное начальное положение
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        
-        // Разные размеры
-        const size = 2 + Math.random() * 5;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        
-        // Разная прозрачность
-        particle.style.opacity = 0.2 + Math.random() * 0.6;
-        
-        // Разная скорость анимации
-        const duration = 5 + Math.random() * 15;
-        particle.style.setProperty('--duration', duration + 's');
-        
-        // Задержка анимации
-        particle.style.animationDelay = Math.random() * 5 + 's';
-        
-        // Разное направление движения
-        const xMove = (Math.random() - 0.5) * 200;
-        const yMove = (Math.random() - 0.5) * 200;
-        
-        // Создаем уникальную анимацию для каждой частицы
-        const animName = `floatParticle_${i}`;
-        const keyframes = `
-            @keyframes ${animName} {
-                0% { transform: translate(0, 0) scale(1); }
-                25% { transform: translate(${xMove * 0.25}px, ${yMove * 0.25}px) scale(${1 + Math.random() * 0.3}); }
-                50% { transform: translate(${xMove * 0.5}px, ${yMove * 0.5}px) scale(${1 - Math.random() * 0.2}); }
-                75% { transform: translate(${xMove * 0.75}px, ${yMove * 0.75}px) scale(${1 + Math.random() * 0.4}); }
-                100% { transform: translate(${xMove}px, ${yMove}px) scale(1); }
-            }
-        `;
-        
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = keyframes;
-        document.head.appendChild(styleSheet);
-        
-        particle.style.animation = `${animName} ${duration}s infinite alternate ease-in-out`;
-        
-        container.appendChild(particle);
-    }
-    
-    // Обновляем цвета частиц после создания
-    const savedTheme = localStorage.getItem('selectedTheme') || 'cyberpunk';
-    updateParticleColors(savedTheme);
-}
-
-        // Добавляем стиль для частиц
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatParticle {
-                0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-                25% { transform: translate(30px, -30px) scale(1.2); opacity: 0.6; }
-                50% { transform: translate(-20px, 20px) scale(0.8); opacity: 0.4; }
-                75% { transform: translate(20px, 20px) scale(1.1); opacity: 0.5; }
-                100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-            }
-            .particle {
-                animation: floatParticle var(--duration) infinite alternate;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Инициализация
-        function init() {
-            if (!canShowToday() && lastMessageDate && viewedMessages.length > 0) {
-                messageText.textContent = viewedMessages[viewedMessages.length - 1];
-                currentMessage = viewedMessages[viewedMessages.length - 1];
-                getMessageBtn.disabled = true;
-                showToast('📅 Сегодня уже смотрели');
-            }
-            updateStats();
-            loadSavedTheme();
-            createParticles();
-        }
-        
-        init();
+            updateStatsUI();
+            updateStreakUI();
+            initTheme();
+            updateTrailColor();
+            setInterval(() => { updateDate(); }, 60000);
+        })();
     </script>
 </body>
 </html>
