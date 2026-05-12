@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подкидной дурак 🃏</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --table: #1b4d3e;
+            --table-light: #236b54;
+            --card-bg: #fefefe;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            --card-red: #c0392b;
+            --card-black: #1a1a1a;
+            --accent: #e2a03f;
+            --accent2: #d4a017;
+            --button: #2c3e50;
+            --button-hover: #34495e;
+            --danger: #b33a3a;
+            --danger-hover: #8e2d2d;
+            --text: #e0e0e0;
+            --text-dark: #2c2c2c;
+            --gold: #f0c060;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+            background: radial-gradient(ellipse at center, #16213e 0%, #0f0f1a 100%);
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1300px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 10px 20px;
+        }
+
+        /* Экраны */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex: 1;
+            gap: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes cardDeal {
+            from {
+                opacity: 0;
+                transform: translateY(-40px) scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(240, 192, 96, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 0 18px rgba(240, 192, 96, 0);
+            }
+        }
+
+        /* Карточки интерфейса */
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            padding: 30px 35px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .panel h1 {
+            font-size: 2.4em;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .panel .subtitle {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        .panel input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1.05em;
+            border-radius: var(--radius-sm);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            outline: none;
+            transition: var(--transition);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .panel input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(226, 160, 63, 0.25);
+        }
+        .panel input::placeholder {
+            color: #888;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+        button {
+            padding: 13px 26px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all var(--transition);
+            background: var(--button);
+            color: #fff;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+        }
+        button:active {
+            transform: scale(0.96);
+            transition: 0.08s;
+        }
+        button.primary {
+            background: var(--accent);
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+        button.primary:hover {
+            background: var(--accent2);
+            box-shadow: 0 8px 30px rgba(226, 160, 63, 0.45);
+        }
+        button.danger {
+            background: var(--danger);
+        }
+        button.danger:hover {
+            background: var(--danger-hover);
+        }
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: none;
+            box-shadow: none;
+        }
+        button .badge {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 2px 9px;
+            font-size: 0.8em;
+            margin-left: 6px;
+        }
+
+        /* Лобби */
+        .lobby-players {
+            list-style: none;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        .lobby-players li {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .lobby-players li .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            flex-shrink: 0;
+        }
+        .lobby-players li.host .dot {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        .room-code-display {
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--gold);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px 22px;
+            border-radius: 30px;
+            margin: 8px 0;
+        }
+
+        /* Игровой стол */
+        #screen-game {
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            gap: 0;
+            padding: 10px 0;
+        }
+        .game-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 48px;
+        }
+        .game-top-bar .info-pill {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .game-top-bar .trump-badge {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        .trump-red {
+            color: #e74c3c;
+        }
+        .trump-black {
+            color: #ccc;
+        }
+
+        .other-players-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 10px 15px;
+        }
+        .opponent-widget {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius);
+            padding: 12px 18px;
+            text-align: center;
+            min-width: 100px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            position: relative;
+        }
+        .opponent-widget.active-turn {
+            border-color: var(--gold);
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 25px rgba(240, 192, 96, 0.35);
+        }
+        .opponent-widget.defender {
+            border-color: #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.4);
+        }
+        .opponent-widget .opp-name {
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .opponent-widget .opp-cards {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-top: 3px;
+        }
+        .opponent-widget .role-tag {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+
+        .table-zone {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            padding: 15px 20px;
+            position: relative;
+            border-radius: 50%;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 750px;
+            background: radial-gradient(ellipse at center,
+                    rgba(27, 77, 62, 0.7) 0%,
+                    rgba(27, 77, 62, 0.2) 70%,
+                    transparent 100%);
+            flex-wrap: wrap;
+            gap: 8px;
+            align-content: center;
+        }
+        .table-pair {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            animation: cardDeal 0.35s ease;
+            position: relative;
+        }
+        .table-pair .card {
+            margin: 0;
+        }
+        .table-pair .card.attacker-card {
+            font-size: 0.9em;
+        }
+        .table-pair .card.defender-card {
+            font-size: 0.9em;
+            border: 2px solid #4caf50;
+        }
+        .vs-arrow {
+            color: #888;
+            font-weight: 700;
+            font-size: 0.8em;
+        }
+
+        /* Карты */
+        .card {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 62px;
+            height: 90px;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border-radius: 7px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            letter-spacing: -0.5px;
+            border: 2px solid #ddd;
+            flex-shrink: 0;
+            margin: 3px;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            border-color: #aaa;
+        }
+        .card.selected {
+            transform: translateY(-18px);
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 30px rgba(240, 192, 96, 0.7), 0 14px 30px rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            background: #fffef5;
+        }
+        .card.red {
+            color: var(--card-red);
+        }
+        .card.black {
+            color: var(--card-black);
+        }
+        .card .rank {
+            font-size: 1.3em;
+            line-height: 1;
+        }
+        .card .suit {
+            font-size: 1.6em;
+            line-height: 1;
+        }
+        .card.small {
+            width: 48px;
+            height: 68px;
+            font-size: 0.75em;
+            border-radius: 5px;
+            margin: 1px;
+        }
+        .card.small .rank {
+            font-size: 1em;
+        }
+        .card.small .suit {
+            font-size: 1.2em;
+        }
+        .card.unselectable {
+            cursor: default;
+            opacity: 0.7;
+        }
+        .card.unselectable:hover {
+            transform: none;
+            box-shadow: var(--card-shadow);
+            border-color: #ddd;
+            z-index: 1;
+        }
+
+        .my-hand {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 15px 10px 20px;
+            min-height: 110px;
+            align-items: flex-end;
+            perspective: 800px;
+        }
+        .my-hand .card {
+            margin-left: -14px;
+            transition: all var(--transition);
+        }
+        .my-hand .card:first-child {
+            margin-left: 0;
+        }
+        .my-hand .card:hover {
+            margin-left: -14px;
+            margin-right: 8px;
+            z-index: 10;
+        }
+        .my-hand .card:first-child:hover {
+            margin-left: 0;
+            margin-right: 8px;
+        }
+
+        .deck-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .deck-pile {
+            width: 48px;
+            height: 68px;
+            background: linear-gradient(135deg, #3a3a5c, #252542);
+            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-weight: 700;
+            font-size: 0.8em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .trump-card-mini {
+            position: absolute;
+            bottom: -8px;
+            right: -10px;
+            width: 36px;
+            height: 50px;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.6em;
+            border: 1px solid #ccc;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            transform: rotate(8deg);
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 10px 15px 15px;
+            flex-wrap: wrap;
+            min-height: 55px;
+            align-items: center;
+        }
+        .message-toast {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--gold);
+            padding: 4px 0;
+            min-height: 24px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Победный экран */
+        .game-over-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--modal-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.5s ease;
+        }
+        .game-over-overlay .panel {
+            background: #1e1e35;
+            border: 2px solid var(--gold);
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .card {
+                width: 46px;
+                height: 66px;
+                font-size: 0.7em;
+                border-radius: 5px;
+                margin: 1px;
+            }
+            .card .rank {
+                font-size: 0.95em;
+            }
+            .card .suit {
+                font-size: 1.1em;
+            }
+            .my-hand .card {
+                margin-left: -18px;
+            }
+            .my-hand .card:hover {
+                margin-left: -18px;
+                margin-right: 4px;
+            }
+            .table-zone {
+                min-height: 120px;
+                padding: 8px;
+            }
+            .panel {
+                padding: 20px;
+            }
+            .panel h1 {
+                font-size: 1.6em;
+            }
+            button {
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
+        }
+        /* ---------- ЧАТ ---------- */
+#chat-panel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: calc(100vh - 20px);
+    background: rgba(20, 20, 35, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    z-index: 80;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    overflow: hidden;
+}
+#chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    max-height: calc(100% - 130px);
+    font-size: 0.85em;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+#chat-messages::-webkit-scrollbar { width: 4px; }
+#chat-messages::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+.chat-msg {
+    background: rgba(255,255,255,0.08);
+    padding: 6px 10px;
+    border-radius: 12px;
+    word-break: break-word;
+    animation: fadeIn 0.2s ease;
+}
+.chat-msg .author {
+    font-weight: 700;
+    font-size: 0.8em;
+    color: var(--accent);
+    margin-right: 4px;
+}
+.chat-input-row {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 6px 8px;
+}
+#chat-emoji-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.4em;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: 0.2s;
+    margin-right: 4px;
+}
+#chat-emoji-btn:hover { background: rgba(255,255,255,0.1); }
+#chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 7px 12px;
+    color: #fff;
+    outline: none;
+    font-size: 0.9em;
+}
+#chat-input:focus { border-color: var(--accent); }
+#chat-send {
+    background: var(--accent);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: 0.2s;
+}
+#chat-send:hover { background: #e0b04a; }
+
+.emoji-palette {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 8px;
+}
+.emoji-categories {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+.emoji-cat {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #ccc;
+    font-size: 0.7em;
+    padding: 4px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.emoji-cat.active { background: var(--accent); color: #1a1a1a; font-weight: 600; }
+.emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 1.3em;
+    max-height: 160px;
+    overflow-y: auto;
+    justify-content: center;
+}
+.emoji-grid span {
+    cursor: pointer;
+    transition: 0.15s;
+    user-select: none;
+    padding: 2px;
+}
+.emoji-grid span:hover { transform: scale(1.4); background: rgba(255,255,255,0.15); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="app">
+
+        <!-- ЭКРАН ВХОДА -->
+        <div class="screen active" id="screen-login">
+            <div class="panel">
+                <h1>🃏 Подкидной дурак</h1>
+                <p class="subtitle">Играй с друзьями в реальном времени</p>
+                <input type="text" id="input-name" placeholder="Твоё имя" maxlength="20" autocomplete="off">
+                <div class="btn-row" style="margin-top:16px;">
+                    <button class="primary" id="btn-create">✨ Создать комнату</button>
+                    <button id="btn-join-show">🔗 Присоединиться</button>
+                </div>
+                <div id="join-area" style="display:none; margin-top:14px; width:100%;">
+                    <input type="text" id="input-room-code" placeholder="Код комнаты" maxlength="6" autocomplete="off" style="margin-bottom:10px;">
+                    <button class="primary" id="btn-join">🚪 Войти в комнату</button>
+                </div>
+                <p style="margin-top:12px;font-size:0.75em;color:#777;">Подкидной дурак · 36 карт · 2–4 игрока</p>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ЛОББИ -->
+        <div class="screen" id="screen-lobby">
+            <div class="panel">
+                <h1>🏠 Комната</h1>
+                <div class="room-code-display" id="lobby-room-code">—</div>
+                <p style="color:#aaa;font-size:0.85em;">Сообщи код друзьям</p>
+                <ul class="lobby-players" id="lobby-player-list"></ul>
+                <div class="btn-row" style="margin-top:14px;">
+                    <button class="primary" id="btn-start-game" disabled>🎯 Начать игру (2–4 игрока)</button>
+                    <button id="btn-leave-lobby" class="danger">🚪 Покинуть</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ИГРЫ -->
+        <div class="screen" id="screen-game">
+            <div class="game-top-bar">
+                <div class="deck-info">
+                    <div class="deck-pile" id="deck-pile-display">
+                        🂠
+                        <div class="trump-card-mini" id="trump-mini"></div>
+                    </div>
+                    <span>Колода: <strong id="deck-count">0</strong></span>
+                    <span style="margin-left:8px;">Козырь: <span id="trump-suit-display" class="trump-badge">—</span></span>
+                </div>
+                <div class="info-pill" id="phase-display">Ожидание...</div>
+            </div>
+            <div class="other-players-row" id="opponents-row"></div>
+            <div class="table-zone" id="table-zone"></div>
+            <div class="message-toast" id="message-toast"></div>
+            <div class="my-hand" id="my-hand"></div>
+            <div class="action-bar" id="action-bar"></div>
+        </div>
+        <div id="chat-panel" style="display:none;">
+            <div id="chat-messages"></div>
+            <div class="chat-input-row">
+                <button id="chat-emoji-btn" title="Смайлы">😊</button>
+                <input type="text" id="chat-input" placeholder="Сообщение..." maxlength="150" autocomplete="off">
+                <button id="chat-send">➤</button>
+            </div>
+            <div class="emoji-palette" id="emoji-palette" style="display:none;">
+                <div class="emoji-categories" id="emoji-categories">
+                    <button class="emoji-cat active" data-cat="smiles">😀 Смайлы</button>
+                    <button class="emoji-cat" data-cat="gestures">👍 Жесты</button>
+                    <button class="emoji-cat" data-cat="hearts">❤️ Сердца</button>
+                    <button class="emoji-cat" data-cat="animals">🐱 Животные</button>
+                    <button class="emoji-cat" data-cat="food">🍕 Еда</button>
+                    <button class="emoji-cat" data-cat="misc">✨ Разное</button>
+                </div>
+                <div class="emoji-grid" id="emoji-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js">
+    </script>
+
+    <script>
+        // ==================== FIREBASE КОНФИГ ====================
+        // ⚠️ Замените на свои данные Firebase!
+        const firebaseConfig = {
+    apiKey: "AIzaSyDXYBN7Cn08VZ3YJoAcS3IoKbdve4s0Y78",
+    authDomain: "fool-card-game.firebaseapp.com",
+    databaseURL: "https://fool-card-game-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "fool-card-game",
+    storageBucket: "fool-card-game.firebasestorage.app",
+    messagingSenderId: "2930401595",
+    appId: "1:2930401595:web:3191b624e359e4eabd171e"
+  };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const roomsRef = db.collection('rooms');
+
+        // ==================== ГЛОБАЛЬНОЕ СОСТОЯНИЕ ====================
+        let currentUser = null; // { id, name }
+        let roomCode = null;
+        let gameState = null; // Последнее состояние из Firestore
+        let unsubscribe = null; // Функция отписки от onSnapshot
+        let selectedCards = new Set(); // Индексы выбранных карт в руке (для атаки/подкидывания)
+        let defenseMapping = {}; // { tableAttackIndex: handCardIndex } — для защиты
+
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ КАРТ ====================
+        const SUITS = ['♠', '♣', '♥', '♦'];
+        const SUIT_NAMES = { '♠': 'spades', '♣': 'clubs', '♥': 'hearts', '♦': 'diamonds' };
+        const RANKS = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const RANK_VALUES = { '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+
+        function createDeck() {
+            const deck = [];
+            for (const suit of SUITS) {
+                for (const rank of RANKS) {
+                    deck.push({ suit, rank });
+                }
+            }
+            return shuffleArray(deck);
+        }
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function cardRankValue(card) {
+            return RANK_VALUES[card.rank] || 0;
+        }
+
+        function isRedSuit(suit) {
+            return suit === '♥' || suit === '♦';
+        }
+
+        function canBeat(defenderCard, attackerCard, trumpSuit) {
+            const aRank = cardRankValue(attackerCard);
+            const dRank = cardRankValue(defenderCard);
+            const aIsTrump = attackerCard.suit === trumpSuit;
+            const dIsTrump = defenderCard.suit === trumpSuit;
+
+            if (dIsTrump && !aIsTrump) return true; // Козырь бьёт некозырь
+            if (!dIsTrump && aIsTrump) return false; // Некозырь не бьёт козырь
+            if (dIsTrump && aIsTrump) return dRank > aRank; // Старший козырь бьёт младший
+            // Обе некозырные — должны быть одной масти и старше
+            if (defenderCard.suit !== attackerCard.suit) return false;
+            return dRank > aRank;
+        }
+
+        function cardToString(card) {
+            return card.rank + card.suit;
+        }
+
+        function getCardDisplay(card) {
+            return { rank: card.rank, suit: card.suit, isRed: isRedSuit(card.suit) };
+        }
+
+        // ==================== УТИЛИТЫ ====================
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 5; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return code;
+        }
+
+        function generatePlayerId() {
+            return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        }
+
+        // ==================== РЕНДЕРИНГ ====================
+        function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
+
+    // Чат виден только в лобби и в игре
+    const chatPanel = document.getElementById('chat-panel');
+    if (chatPanel) {
+        chatPanel.style.display = (screenId === 'screen-login') ? 'none' : 'flex';
+    }
+}
+
+        function renderLobby(players, isHost) {
+    const list = document.getElementById('lobby-player-list');
+    const btnStart = document.getElementById('btn-start-game');
+    document.getElementById('lobby-room-code').textContent = roomCode;
+
+    if (!list) return;
+    list.innerHTML = '';
+    if (!Array.isArray(players)) {
+        console.warn('renderLobby: players не массив', players);
+        return;
+    }
+    players.forEach(p => {
+    const li = document.createElement('li');
+    if (p.id === players[0].id) {
+        li.classList.add('host');          // добавляем класс только для создателя
+    }
+    li.innerHTML = `<span class="dot"></span> ${escapeHtml(p.name)}${p.id === players[0].id ? ' (создатель)' : ''}`;
+    list.appendChild(li);
+});
+
+    btnStart.disabled = !(isHost && players.length >= 2 && players.length <= 4);
+    if (isHost && players.length >= 2) {
+        btnStart.textContent = `🎯 Начать игру (${players.length} игрока)`;
+    } else if (isHost) {
+        btnStart.textContent = '🎯 Ожидание игроков...';
+    } else {
+        btnStart.textContent = '🎯 Ожидание начала...';
+        btnStart.disabled = true;
+    }
+    console.log('🔄 Лобби обновлено, игроков:', players.length);
+}
+
+        function renderGame() {
+            if (!gameState || !currentUser) return;
+
+            const gs = gameState;
+            const myPlayer = gs.players.find(p => p.id === currentUser.id);
+            if (!myPlayer) return;
+
+            // Фаза
+            const phaseMap = {
+                'attack': '⚔️ Атака',
+                'defense': '🛡️ Защита',
+                'toss': '🎯 Подкидывание',
+                'draw': '📥 Добор карт',
+                'gameOver': '🏁 Игра окончена'
+            };
+            document.getElementById('phase-display').textContent = phaseMap[gs.phase] || gs.phase;
+
+            // Колода и козырь
+            document.getElementById('deck-count').textContent = gs.deck.length;
+            const trumpEl = document.getElementById('trump-suit-display');
+            trumpEl.textContent = gs.trump;
+            trumpEl.className = 'trump-badge ' + (isRedSuit(gs.trump) ? 'trump-red' : 'trump-black');
+            document.getElementById('deck-pile-display').style.display = gs.deck.length > 0 ? 'flex' : 'none';
+
+            // Мини-козырь
+            const trumpMini = document.getElementById('trump-mini');
+            if (gs.deck.length > 0) {
+                const trumpCard = gs.deck[gs.deck.length - 1];
+                trumpMini.innerHTML =
+                    `<span style="font-size:0.8em;">${trumpCard.rank}</span><span style="font-size:1em;color:${isRedSuit(trumpCard.suit)?'#c0392b':'#1a1a1a'}">${trumpCard.suit}</span>`;
+                trumpMini.style.display = 'flex';
+            } else {
+                trumpMini.style.display = 'none';
+            }
+
+            // Противники
+            const oppRow = document.getElementById('opponents-row');
+            oppRow.innerHTML = '';
+            const otherPlayers = gs.players.filter(p => p.id !== currentUser.id);
+            const turnOrder = gs.turnOrder || [];
+            const attId = turnOrder[gs.currentAttackerIndex] || null;
+            const defId = turnOrder[gs.currentDefenderIndex] || null;
+
+            otherPlayers.forEach(p => {
+                const div = document.createElement('div');
+                div.classList.add('opponent-widget');
+                if (p.id === attId && gs.phase !== 'gameOver') div.classList.add('active-turn');
+                if (p.id === defId && gs.phase !== 'gameOver') div.classList.add('defender');
+                let roleTag = '';
+                if (p.id === attId && gs.phase === 'attack') roleTag = 'Атакует';
+                if (p.id === defId && (gs.phase === 'defense' || gs.phase === 'toss')) roleTag = 'Защищается';
+                if (p.id === attId && gs.phase === 'toss') roleTag = 'Подкидывает';
+                div.innerHTML = `
+                    <div class="opp-name">${escapeHtml(p.name)}</div>
+                    <div class="opp-cards">🂠 ×${p.hand.length}</div>
+                    ${roleTag ? `<div class="role-tag">${roleTag}</div>` : ''}
+                `;
+                oppRow.appendChild(div);
+            });
+
+            // Стол
+            const tableZone = document.getElementById('table-zone');
+            tableZone.innerHTML = '';
+            if (gs.table && gs.table.length > 0) {
+                gs.table.forEach((attack, idx) => {
+                    const pair = document.createElement('div');
+                    pair.classList.add('table-pair');
+                    const attCard = createCardElement(attack.card, false, 'attacker-card');
+                    pair.appendChild(attCard);
+                    if (attack.coveredBy) {
+                        const vsSpan = document.createElement('span');
+                        vsSpan.classList.add('vs-arrow');
+                        vsSpan.textContent = '→';
+                        pair.appendChild(vsSpan);
+                        const defCard = createCardElement(attack.coveredBy, false, 'defender-card');
+                        pair.appendChild(defCard);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.style.cssText =
+                            'width:48px;height:68px;border:2px dashed rgba(255,255,255,0.25);border-radius:5px;margin:0 4px;';
+                        placeholder.title = 'Ожидает отбития';
+                        pair.appendChild(placeholder);
+                    }
+                    tableZone.appendChild(pair);
+                });
+            } else {
+                tableZone.innerHTML =
+                    '<span style="color:#555;font-style:italic;">Стол пуст — ожидайте хода</span>';
+            }
+
+            // Сообщение
+            document.getElementById('message-toast').textContent = gs.message || '';
+
+            // Рука игрока
+            renderMyHand(myPlayer, gs);
+
+            // Кнопки действий
+            renderActionButtons(myPlayer, gs);
+        }
+
+        function createCardElement(card, selectable = true, extraClass = '') {
+            const div = document.createElement('div');
+            const display = getCardDisplay(card);
+            div.classList.add('card');
+            if (display.isRed) div.classList.add('red');
+            else div.classList.add('black');
+            if (!selectable) div.classList.add('unselectable');
+            if (extraClass) div.classList.add(extraClass);
+            div.innerHTML = `<span class="rank">${display.rank}</span><span class="suit">${display.suit}</span>`;
+            div.dataset.cardStr = cardToString(card);
+            return div;
+        }
+
+        function renderMyHand(myPlayer, gs) {
+            const handEl = document.getElementById('my-hand');
+            handEl.innerHTML = '';
+            selectedCards.clear();
+            defenseMapping = {};
+
+            myPlayer.hand.forEach((card, index) => {
+                const cardEl = createCardElement(card, true);
+                cardEl.dataset.index = index;
+                cardEl.addEventListener('click', () => onCardClick(index, card, cardEl, myPlayer, gs));
+                handEl.appendChild(cardEl);
+            });
+
+            // Обновить визуал выделения
+            updateCardSelectionUI();
+        }
+
+        function updateCardSelectionUI() {
+            const handEl = document.getElementById('my-hand');
+            const allCards = handEl.querySelectorAll('.card');
+            allCards.forEach(el => {
+                const idx = parseInt(el.dataset.index);
+                if (selectedCards.has(idx)) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+
+        function onCardClick(index, card, cardEl, myPlayer, gs) {
+    if (gs.phase === 'gameOver') return;
+
+    const myId = currentUser.id;
+    const turnOrder = gs.turnOrder || [];
+    const attId = turnOrder[gs.currentAttackerIndex];
+    const defId = turnOrder[gs.currentDefenderIndex];
+
+    // ================== АТАКА ==================
+    if (gs.phase === 'attack') {
+        // Только атакующий выбирает карты
+        if (myId !== attId) return;
+        // Переключение выбора карты того же достоинства
+        const clickedRank = card.rank;
+        if (selectedCards.has(index)) {
+            selectedCards.delete(index);
+        } else {
+            // Если уже выбраны карты другого достоинства — сбросить
+            const existingRank = selectedCards.size > 0 ?
+                myPlayer.hand[Array.from(selectedCards)[0]].rank :
+                null;
+            if (existingRank && existingRank !== clickedRank) {
+                selectedCards.clear();
+            }
+            // Проверка лимита: не больше чем у защищающегося и не больше 6
+            const defender = gs.players.find(p => p.id === defId);
+            const maxAttack = Math.min(defender ? defender.hand.length : 6, 6);
+            if (selectedCards.size < maxAttack) {
+                selectedCards.add(index);
+            }
+        }
+        updateCardSelectionUI();
+        renderActionButtons(myPlayer, gs);   // обновляем кнопку "Сходить"
+    }
+
+    // ================== ЗАЩИТА ==================
+    else if (gs.phase === 'defense') {
+        // Только защищающийся может выбирать карты для отбития
+        if (myId !== defId) return;
+
+        // 1) Если эта карта уже выбрана для какой‑то атаки – отменяем выбор
+        const existingAttackIndex = Object.keys(defenseMapping).find(
+            key => defenseMapping[key] === index
+        );
+        if (existingAttackIndex !== undefined) {
+            delete defenseMapping[existingAttackIndex];
+            selectedCards.delete(index);
+            clearTableHighlight(parseInt(existingAttackIndex));
+            updateCardSelectionUI();
+            renderActionButtons(myPlayer, gs);
+            return;
+        }
+
+        // 2) Ищем незакрытые атаки, которые можно побить этой картой
+        const uncovered = [];
+        gs.table.forEach((att, i) => {
+            if (!att.coveredBy) uncovered.push({ index: i, card: att.card });
+        });
+        if (uncovered.length === 0) return;
+
+        // Пытаемся побить первую подходящую незакрытую атаку,
+        // которую ещё не бьёт другая выбранная карта
+        let bestTarget = null;
+        for (const uc of uncovered) {
+            if (canBeat(card, uc.card, gs.trump) &&
+                !Object.keys(defenseMapping).some(key => parseInt(key) === uc.index)) {
+                bestTarget = uc.index;
+                break;
+            }
+        }
+
+        if (bestTarget !== null) {
+            defenseMapping[bestTarget] = index;
+            selectedCards.add(index);
+            updateCardSelectionUI();
+            highlightTableAttack(bestTarget);
+            renderActionButtons(myPlayer, gs);   // обновляем кнопку "Отбить"
+        }
+    }
+
+    // ================== ПОДКИДЫВАНИЕ ==================
+    else if (gs.phase === 'toss') {
+        const tossOrder = gs.tossOrder || [];
+        const tossIdx = gs.currentTossIndex || 0;
+        const currentTosserId = tossOrder[tossIdx];
+        if (myId !== currentTosserId) return;
+
+        const clickedRank = card.rank;
+        // Достоинство должно совпадать с уже лежащими на столе
+        const ranksOnTable = new Set(gs.table.map(a => a.card.rank));
+        if (!ranksOnTable.has(clickedRank)) return;
+
+        if (selectedCards.has(index)) {
+            selectedCards.delete(index);
+        } else {
+            const existingRank = selectedCards.size > 0 ?
+                myPlayer.hand[Array.from(selectedCards)[0]].rank :
+                null;
+            if (existingRank && existingRank !== clickedRank) {
+                selectedCards.clear();
+            }
+            const defender = gs.players.find(p => p.id === defId);
+            const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
+            const currentOnTable = gs.table.length;
+            if (currentOnTable + selectedCards.size < maxOnTable) {
+                selectedCards.add(index);
+            }
+        }
+        updateCardSelectionUI();
+        renderActionButtons(myPlayer, gs);   // обновляем кнопку "Подкинуть"
+    }
+}
+
+        function highlightTableAttack(attackIndex) {
+            const tableZone = document.getElementById('table-zone');
+            const pairs = tableZone.querySelectorAll('.table-pair');
+            pairs.forEach((pair, i) => {
+                if (i === attackIndex) {
+                    pair.style.outline = '2px solid #4caf50';
+                    pair.style.outlineOffset = '4px';
+                    pair.style.borderRadius = '6px';
+                } else {
+                    pair.style.outline = '';
+                    pair.style.outlineOffset = '';
+                }
+            });
+        }
+
+        function renderActionButtons(myPlayer, gs) {
+            const bar = document.getElementById('action-bar');
+            bar.innerHTML = '';
+            const myId = currentUser.id;
+            const turnOrder = gs.turnOrder || [];
+            const attId = turnOrder[gs.currentAttackerIndex];
+            const defId = turnOrder[gs.currentDefenderIndex];
+
+            if (gs.phase === 'gameOver') {
+                const btn = document.createElement('button');
+                btn.textContent = '🏠 Выйти в лобби';
+                btn.classList.add('danger');
+                btn.addEventListener('click', leaveGame);
+                bar.appendChild(btn);
+                return;
+            }
+
+            if (gs.phase === 'attack' && myId === attId) {
+                const btn = document.createElement('button');
+                btn.classList.add('primary');
+                btn.textContent = `⚔️ Сходить (${selectedCards.size})`;
+                btn.disabled = selectedCards.size === 0;
+                btn.addEventListener('click', doAttack);
+                bar.appendChild(btn);
+            }
+
+            if (gs.phase === 'defense' && myId === defId) {
+                const uncoveredCount = gs.table.filter(a => !a.coveredBy).length;
+                const canDefendAll = Object.keys(defenseMapping).length >= uncoveredCount && uncoveredCount > 0;
+                const btnDefend = document.createElement('button');
+                btnDefend.classList.add('primary');
+                btnDefend.textContent = `🛡️ Отбить (${Object.keys(defenseMapping).length}/${uncoveredCount})`;
+                btnDefend.disabled = !canDefendAll;
+                btnDefend.addEventListener('click', doDefend);
+                bar.appendChild(btnDefend);
+
+                const btnTake = document.createElement('button');
+                btnTake.classList.add('danger');
+                btnTake.textContent = '📥 Забрать всё';
+                btnTake.addEventListener('click', doTake);
+                bar.appendChild(btnTake);
+            }
+
+            if (gs.phase === 'toss') {
+                const tossOrder = gs.tossOrder || [];
+                const tossIdx = gs.currentTossIndex || 0;
+                const currentTosserId = tossOrder[tossIdx];
+                if (myId === currentTosserId) {
+                    const btnToss = document.createElement('button');
+                    btnToss.classList.add('primary');
+                    btnToss.textContent = `🎯 Подкинуть (${selectedCards.size})`;
+                    btnToss.disabled = selectedCards.size === 0;
+                    btnToss.addEventListener('click', doToss);
+                    bar.appendChild(btnToss);
+
+                    const btnPass = document.createElement('button');
+                    btnPass.textContent = '⏭️ Пас';
+                    btnPass.addEventListener('click', doPassToss);
+                    bar.appendChild(btnPass);
+                } else if (myId === defId && gs.table.every(a => a.coveredBy)) {
+                    // Все карты отбиты, ждём подкидывания других
+                    const info = document.createElement('span');
+                    info.style.color = '#aaa';
+                    info.textContent = 'Ожидание подкидывания другими игроками...';
+                    bar.appendChild(info);
+                }
+            }
+
+            if (gs.phase === 'draw') {
+                const info = document.createElement('span');
+                info.style.color = '#aaa';
+                info.textContent = 'Добор карт...';
+                bar.appendChild(info);
+            }
+
+            // Кнопка "Покинуть игру" всегда доступна
+            const btnLeave = document.createElement('button');
+            btnLeave.textContent = '🚪 Покинуть';
+            btnLeave.style.fontSize = '0.8em';
+            btnLeave.style.opacity = '0.7';
+            btnLeave.addEventListener('click', leaveGame);
+            bar.appendChild(btnLeave);
+        }
+
+        // ==================== ИГРОВЫЕ ДЕЙСТВИЯ ====================
+        async function doAttack() {
+    if (!gameState || gameState.phase !== 'attack') return;
+    const myId = currentUser.id;
+    const turnOrder = gameState.turnOrder || [];
+    if (turnOrder[gameState.currentAttackerIndex] !== myId) return;
+
+    const myPlayer = gameState.players.find(p => p.id === myId);
+    if (!myPlayer || selectedCards.size === 0) return;
+
+    const selectedIndices = Array.from(selectedCards).sort((a, b) => b - a);
+    const attackCards = selectedIndices.map(i => myPlayer.hand[i]);
+    const defender = gameState.players.find(p => p.id === turnOrder[gameState.currentDefenderIndex]);
+    if (!defender || attackCards.length > defender.hand.length || attackCards.length > 6) return;
+
+    const rank = attackCards[0].rank;
+    if (!attackCards.every(c => c.rank === rank)) return;
+
+    const newHand = [...myPlayer.hand];
+    for (const idx of selectedIndices.sort((a, b) => b - a)) {
+        newHand.splice(idx, 1);
+    }
+
+    const newTable = [...(gameState.table || [])];
+    attackCards.forEach(card => {
+        newTable.push({ card, coveredBy: null, playedBy: myId });
+    });
+
+    const updatedPlayers = gameState.players.map(p => {
+        if (p.id === myId) return { ...p, hand: newHand };
+        return p;
+    });
+
+    // === ИСПРАВЛЕНИЕ: атакующий включается в tossOrder ===
+    const allIds = turnOrder;
+    const defId = turnOrder[gameState.currentDefenderIndex];
+    const newTossOrder = [];
+    // Первым идёт сам атакующий
+    newTossOrder.push(myId);
+    // Затем все остальные, кроме защищающегося и атакующего (он уже есть)
+    for (const id of allIds) {
+        if (id !== myId && id !== defId) {
+            newTossOrder.push(id);
+        }
+    }
+
+    await updateRoom({
+        players: updatedPlayers,
+        table: newTable,
+        phase: 'defense',
+        message: `🛡️ ${escapeHtml(defender.name)} отбивается`,
+        tossOrder: newTossOrder,
+        currentTossIndex: 0,
+        initialDefenderHandSize: defender.hand.length,
+    });
+    selectedCards.clear();
+    defenseMapping = {};
+}
+
+        async function doDefend() {
+            if (!gameState || gameState.phase !== 'defense') return;
+            const myId = currentUser.id;
+            const turnOrder = gameState.turnOrder || [];
+            if (turnOrder[gameState.currentDefenderIndex] !== myId) return;
+
+            const uncovered = [];
+            gameState.table.forEach((att, i) => {
+                if (!att.coveredBy) uncovered.push(i);
+            });
+            if (uncovered.length === 0) return;
+            if (Object.keys(defenseMapping).length < uncovered.length) return;
+
+            const myPlayer = gameState.players.find(p => p.id === myId);
+            if (!myPlayer) return;
+
+            // Проверить валидность всех защит
+            const newHand = [...myPlayer.hand];
+            const indicesToRemove = [];
+            const newTable = gameState.table.map((att, i) => {
+                if (defenseMapping[i] !== undefined) {
+                    const defCard = newHand[defenseMapping[i]];
+                    if (!canBeat(defCard, att.card, gameState.trump)) return att; // Невалидно
+                    indicesToRemove.push(defenseMapping[i]);
+                    return { ...att, coveredBy: defCard };
+                }
+                return att;
+            });
+
+            // Удаляем использованные карты (с конца)
+            const sortedRemovals = [...new Set(indicesToRemove)].sort((a, b) => b - a);
+            for (const idx of sortedRemovals) {
+                newHand.splice(idx, 1);
+            }
+
+            const updatedPlayers = gameState.players.map(p => {
+                if (p.id === myId) return { ...p, hand: newHand };
+                return p;
+            });
+
+            // Проверяем, все ли карты отбиты
+            const allCovered = newTable.every(a => a.coveredBy !== null);
+
+            if (allCovered) {
+                // Переходим к подкидыванию
+                const tossOrder = gameState.tossOrder || [];
+                if (tossOrder.length === 0) {
+                    // Никто не может подкидывать — завершаем раунд
+                    await finishRound(updatedPlayers, newTable, myId);
+                } else {
+                    await updateRoom({
+                        players: updatedPlayers,
+                        table: newTable,
+                        phase: 'toss',
+                        message: `🎯 Подкидывание — ход ${escapeHtml(gameState.players.find(p => p.id === tossOrder[0])?.name || '?')}`,
+                        currentTossIndex: 0,
+                    });
+                }
+            } else {
+                await updateRoom({
+                    players: updatedPlayers,
+                    table: newTable,
+                    message: `🛡️ ${escapeHtml(myPlayer.name)} отбивается (осталось отбить ${newTable.filter(a=>!a.coveredBy).length})`,
+                });
+            }
+            defenseMapping = {};
+            selectedCards.clear();
+        }
+
+        async function doTake() {
+            if (!gameState || gameState.phase !== 'defense') return;
+            const myId = currentUser.id;
+            const turnOrder = gameState.turnOrder || [];
+            if (turnOrder[gameState.currentDefenderIndex] !== myId) return;
+
+            const myPlayer = gameState.players.find(p => p.id === myId);
+            if (!myPlayer) return;
+
+            // Забрать все карты со стола
+            const allCardsOnTable = [];
+            gameState.table.forEach(att => {
+                allCardsOnTable.push(att.card);
+                if (att.coveredBy) allCardsOnTable.push(att.coveredBy);
+            });
+            const newHand = [...myPlayer.hand, ...allCardsOnTable];
+            const updatedPlayers = gameState.players.map(p => {
+                if (p.id === myId) return { ...p, hand: newHand };
+                return p;
+            });
+
+            // Ход переходит: атакующим становится следующий после защищавшегося
+            const defIndex = gameState.currentDefenderIndex;
+            const newAttIndex = (defIndex + 1) % turnOrder.length;
+            const newDefIndex = (newAttIndex + 1) % turnOrder.length;
+
+            await updateRoom({
+                players: updatedPlayers,
+                table: [],
+                phase: 'draw',
+                message: `📥 ${escapeHtml(myPlayer.name)} забирает карты`,
+                currentAttackerIndex: newAttIndex,
+                currentDefenderIndex: newDefIndex,
+                pendingDraw: true,
+                tossOrder: [],
+                currentTossIndex: 0,
+            });
+
+            // Автоматический добор
+            await performDraw(updatedPlayers, newAttIndex);
+            selectedCards.clear();
+            defenseMapping = {};
+        }
+
+        async function doToss() {
+            if (!gameState || gameState.phase !== 'toss') return;
+            const myId = currentUser.id;
+            const tossOrder = gameState.tossOrder || [];
+            const tossIdx = gameState.currentTossIndex || 0;
+            if (tossOrder[tossIdx] !== myId) return;
+
+            const myPlayer = gameState.players.find(p => p.id === myId);
+            if (!myPlayer || selectedCards.size === 0) return;
+
+            const selectedIndices = Array.from(selectedCards).sort((a, b) => b - a);
+            const tossCards = selectedIndices.map(i => myPlayer.hand[i]);
+            const rank = tossCards[0].rank;
+            if (!tossCards.every(c => c.rank === rank)) return;
+
+            // Проверить, есть ли такое достоинство на столе
+            const ranksOnTable = new Set(gameState.table.map(a => a.card.rank));
+            if (!ranksOnTable.has(rank)) return;
+
+            const defender = gameState.players.find(p => p.id === gameState.turnOrder[gameState.currentDefenderIndex]);
+            const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
+            if (gameState.table.length + tossCards.length > maxOnTable) return;
+
+            const newHand = [...myPlayer.hand];
+            for (const idx of selectedIndices.sort((a, b) => b - a)) {
+                newHand.splice(idx, 1);
+            }
+            const newTable = [...gameState.table];
+            tossCards.forEach(card => {
+                newTable.push({ card, coveredBy: null, playedBy: myId });
+            });
+
+            const updatedPlayers = gameState.players.map(p => {
+                if (p.id === myId) return { ...p, hand: newHand };
+                return p;
+            });
+
+            await updateRoom({
+                players: updatedPlayers,
+                table: newTable,
+                phase: 'defense',
+                message: `🛡️ ${escapeHtml(defender?.name || 'Защищающийся')} отбивает подкинутые карты`,
+                currentTossIndex: tossIdx,
+            });
+            selectedCards.clear();
+            defenseMapping = {};
+        }
+
+        async function doPassToss() {
+            if (!gameState || gameState.phase !== 'toss') return;
+            const myId = currentUser.id;
+            const tossOrder = gameState.tossOrder || [];
+            const tossIdx = gameState.currentTossIndex || 0;
+            if (tossOrder[tossIdx] !== myId) return;
+
+            const nextIdx = tossIdx + 1;
+            if (nextIdx >= tossOrder.length) {
+                // Все пропустили — завершаем раунд
+                const myPlayer = gameState.players.find(p => p.id === myId);
+                await finishRound(gameState.players, gameState.table, gameState.turnOrder[gameState.currentDefenderIndex]);
+            } else {
+                const nextTosser = gameState.players.find(p => p.id === tossOrder[nextIdx]);
+                await updateRoom({
+                    currentTossIndex: nextIdx,
+                    message: `🎯 Подкидывание — ход ${escapeHtml(nextTosser?.name || '?')}`,
+                });
+            }
+        }
+
+        async function finishRound(players, table, defenderId) {
+            // Все карты со стола в сброс
+            const turnOrder = gameState.turnOrder || [];
+            const defIndex = gameState.currentDefenderIndex;
+            // Отбившийся становится атакующим
+            const newAttIndex = defIndex;
+            const newDefIndex = (newAttIndex + 1) % turnOrder.length;
+
+            const updatedPlayers = players.map(p => ({ ...p }));
+
+            await updateRoom({
+                players: updatedPlayers,
+                table: [],
+                discard: [...(gameState.discard || []), ...table.flatMap(a => [a.card, a.coveredBy].filter(Boolean))],
+                phase: 'draw',
+                message: '📥 Добор карт...',
+                currentAttackerIndex: newAttIndex,
+                currentDefenderIndex: newDefIndex,
+                pendingDraw: true,
+                tossOrder: [],
+                currentTossIndex: 0,
+                initialDefenderHandSize: null,
+            });
+
+            await performDraw(updatedPlayers, newAttIndex);
+        }
+
+        async function performDraw(players, startFromIndex) {
+            // Добираем карты до 6 по порядку turnOrder, начиная с startFromIndex
+            const turnOrder = gameState.turnOrder || [];
+            const gs = gameState;
+            if (!gs) return;
+
+            let currentDeck = [...gs.deck];
+            const updatedPlayers = players.map(p => ({ ...p, hand: [...p.hand] }));
+            const order = [];
+            for (let i = 0; i < turnOrder.length; i++) {
+                const idx = (startFromIndex + i) % turnOrder.length;
+                order.push(turnOrder[idx]);
+            }
+
+            for (const pid of order) {
+                const player = updatedPlayers.find(p => p.id === pid);
+                if (!player) continue;
+                while (player.hand.length < 6 && currentDeck.length > 0) {
+                    const drawnCard = currentDeck.shift();
+                    player.hand.push(drawnCard);
+                }
+            }
+
+            // Проверка на победителей
+            const winnerIds = [...(gs.winnerIds || [])];
+            for (const p of updatedPlayers) {
+                if (p.hand.length === 0 && !winnerIds.includes(p.id)) {
+                    winnerIds.push(p.id);
+                }
+            }
+
+            const playersWithCards = updatedPlayers.filter(p => p.hand.length > 0);
+            let phase = 'attack';
+            let message = '';
+            let gameOver = false;
+
+            if (playersWithCards.length <= 1 && currentDeck.length === 0 && gs.table.length === 0) {
+                phase = 'gameOver';
+                gameOver = true;
+                const loser = playersWithCards[0];
+                if (loser) {
+                    message = `🏁 Игра окончена! ${escapeHtml(loser.name)} — дурак! 🃏`;
+                } else {
+                    message = '🏁 Ничья! Все избавились от карт!';
+                }
+            } else {
+                // Сдвигаем очередь, если нужно
+                let attIndex = gs.currentAttackerIndex;
+                let defIndex = gs.currentDefenderIndex;
+                // Пропускаем вышедших
+                const activeIds = updatedPlayers.filter(p => p.hand.length > 0).map(p => p.id);
+                const activeTurnOrder = turnOrder.filter(id => activeIds.includes(id));
+                if (activeTurnOrder.length >= 2) {
+                    attIndex = activeTurnOrder.indexOf(turnOrder[attIndex]);
+                    if (attIndex < 0) attIndex = 0;
+                    defIndex = (attIndex + 1) % activeTurnOrder.length;
+                    // Обновляем turnOrder
+                    const newTurnOrder = activeTurnOrder;
+                    const attId = newTurnOrder[attIndex];
+                    const defId = newTurnOrder[defIndex];
+                    message = `⚔️ Ход ${escapeHtml(updatedPlayers.find(p => p.id === attId)?.name || '?')}`;
+                    phase = 'attack';
+
+                    await updateRoom({
+                        players: updatedPlayers,
+                        deck: currentDeck,
+                        phase: phase,
+                        message: message,
+                        currentAttackerIndex: attIndex,
+                        currentDefenderIndex: defIndex,
+                        turnOrder: newTurnOrder,
+                        winnerIds: winnerIds,
+                        pendingDraw: false,
+                        table: [],
+                        tossOrder: [],
+                        currentTossIndex: 0,
+                    });
+                    return;
+                } else {
+                    phase = 'gameOver';
+                    gameOver = true;
+                    message = '🏁 Игра окончена!';
+                }
+            }
+
+            await updateRoom({
+                players: updatedPlayers,
+                deck: currentDeck,
+                phase: phase,
+                message: message,
+                winnerIds: winnerIds,
+                pendingDraw: false,
+                table: [],
+                tossOrder: [],
+                currentTossIndex: 0,
+            });
+        }
+
+        // ==================== РАБОТА С FIRESTORE ====================
+        async function updateRoom(data) {
+            if (!roomCode) return;
+            try {
+                await roomsRef.doc(roomCode).update(data);
+            } catch (err) {
+                console.error('Ошибка обновления комнаты:', err);
+            }
+        }
+
+        async function createRoom(playerName) {
+            const code = generateRoomCode();
+            const playerId = generatePlayerId();
+            const deck = createDeck();
+            const trumpSuit = deck[deck.length - 1].suit; // Козырь — масть последней карты
+
+            const roomData = {
+                players: [{ id: playerId, name: playerName, hand: [], isDefender: false, isAttacker: false,
+                    isActive: false }],
+                deck: deck,
+                messages: [],
+                trump: trumpSuit,
+                table: [],
+                phase: 'waiting',
+                turnOrder: [playerId],
+                currentAttackerIndex: 0,
+                currentDefenderIndex: 0,
+                discard: [],
+                gameStarted: false,
+                winnerIds: [],
+                message: 'Ожидание игроков...',
+                tossOrder: [],
+                currentTossIndex: 0,
+                initialDefenderHandSize: null,
+                pendingDraw: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+
+            await roomsRef.doc(code).set(roomData);
+            return { code, playerId };
+        }
+
+        async function joinRoom(code, playerName) {
+    const docRef = roomsRef.doc(code);
+    const doc = await docRef.get();
+    if (!doc.exists) throw new Error('Комната не найдена');
+    const data = doc.data();
+    if (data.gameStarted) throw new Error('Игра уже началась');
+    if (data.players.length >= 4) throw new Error('Комната заполнена (максимум 4 игрока)');
+
+    const playerId = generatePlayerId();
+    const newPlayer = { id: playerId, name: playerName, hand: [], isDefender: false, isAttacker: false, isActive: false };
+    const updatedPlayers = [...data.players, newPlayer];
+    const updatedTurnOrder = [...(data.turnOrder || []), playerId];
+
+    await docRef.update({
+        players: updatedPlayers,
+        turnOrder: updatedTurnOrder,
+        message: `👋 ${playerName} присоединился!`,
+    });
+
+    // Устанавливаем локальные переменные ДО подписки
+    currentUser = { id: playerId, name: playerName };
+    roomCode = code;
+
+    // Подписываемся на изменения (onSnapshot сразу получит актуальный документ)
+    subscribeToRoom(code);
+
+    // Принудительно показываем лобби (на случай, если onSnapshot ещё не отработал)
+    showScreen('screen-lobby');
+    // Рендерим с данными, которые мы только что отправили (можно взять updatedPlayers)
+    renderLobby(updatedPlayers, false);
+    console.log('✅ Игрок присоединился, локальное лобби отрендерено');
+    return playerId;
+}
+
+        async function startGame() {
+            if (!roomCode || !gameState) return;
+            const gs = gameState;
+            if (gs.players.length < 2 || gs.players.length > 4) return;
+
+            const deck = createDeck();
+            const trumpSuit = deck[deck.length - 1].suit;
+            const playersWithCards = gs.players.map(p => ({ ...p, hand: [] }));
+
+            // Раздача по 6 карт
+            for (const p of playersWithCards) {
+                for (let i = 0; i < 6; i++) {
+                    if (deck.length > 0) p.hand.push(deck.shift());
+                }
+            }
+
+            // Первый ход — создатель комнаты
+            const turnOrder = playersWithCards.map(p => p.id);
+            const attIndex = 0;
+            const defIndex = 1;
+            const attPlayer = playersWithCards[attIndex];
+
+            await updateRoom({
+                players: playersWithCards,
+                deck: deck,
+                trump: trumpSuit,
+                table: [],
+                phase: 'attack',
+                turnOrder: turnOrder,
+                currentAttackerIndex: attIndex,
+                currentDefenderIndex: defIndex,
+                gameStarted: true,
+                message: `⚔️ Ход ${escapeHtml(attPlayer.name)}`,
+                tossOrder: [],
+                currentTossIndex: 0,
+                winnerIds: [],
+                discard: [],
+                initialDefenderHandSize: null,
+                pendingDraw: false,
+            });
+        }
+
+        async function leaveGame() {
+            if (!roomCode || !currentUser || !gameState) {
+                resetAll();
+                return;
+            }
+            const gs = gameState;
+            const updatedPlayers = gs.players.filter(p => p.id !== currentUser.id);
+            const updatedTurnOrder = (gs.turnOrder || []).filter(id => id !== currentUser.id);
+
+            if (updatedPlayers.length === 0) {
+                // Удаляем комнату
+                try { await roomsRef.doc(roomCode).delete(); } catch (e) {}
+                resetAll();
+                return;
+            }
+
+            // Пересчитываем индексы
+            let newAtt = gs.currentAttackerIndex;
+            let newDef = gs.currentDefenderIndex;
+            if (updatedTurnOrder.length >= 2) {
+                newAtt = Math.min(newAtt, updatedTurnOrder.length - 1);
+                newDef = (newAtt + 1) % updatedTurnOrder.length;
+            }
+
+            await updateRoom({
+                players: updatedPlayers,
+                turnOrder: updatedTurnOrder,
+                currentAttackerIndex: newAtt,
+                currentDefenderIndex: newDef,
+                message: `🚪 ${escapeHtml(currentUser.name)} покинул игру`,
+                phase: updatedPlayers.length < 2 ? 'gameOver' : gs.phase,
+            });
+
+            resetAll();
+        }
+
+        function resetAll() {
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
+            roomCode = null;
+            gameState = null;
+            currentUser = null;
+            selectedCards.clear();
+            defenseMapping = {};
+            showScreen('screen-login');
+            document.getElementById('chat-panel').style.display = 'none';
+    document.getElementById('chat-input').value = '';
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) chatMessages.innerHTML = '';
+            document.getElementById('join-area').style.display = 'none';
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-room-code').value = '';
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ==================== ПОДПИСКА НА КОМНАТУ ====================
+        function subscribeToRoom(code) {
+    if (unsubscribe) unsubscribe();
+    unsubscribe = roomsRef.doc(code).onSnapshot(
+        (doc) => {
+            if (!doc.exists) {
+                alert('Комната была удалена.');
+                resetAll();
+                return;
+            }
+            const prevPhase = gameState ? gameState.phase : null;
+            gameState = doc.data();
+            gameState._id = doc.id;
+            if (gameState.messages) {
+                renderChat(gameState.messages);
+            }
+
+            // Диагностика: смотрим, что приходит из Firestore
+            console.log('📡 Обновление комнаты:', gameState);
+
+            if (gameState.phase === 'waiting' || !gameState.gameStarted) {
+                showScreen('screen-lobby');
+                const isHost = gameState.players.length > 0 && gameState.players[0].id === currentUser?.id;
+                renderLobby(gameState.players, isHost);
+                console.log('👥 Игроки в лобби:', gameState.players);
+            } else if (gameState.gameStarted) {
+                showScreen('screen-game');
+                renderGame();
+                if (prevPhase !== gameState.phase) {
+                    selectedCards.clear();
+                    defenseMapping = {};
+                    updateCardSelectionUI();
+                }
+            }
+
+            if (gameState.phase === 'gameOver') {
+                showGameOverOverlay(gameState);
+            }
+        },
+        (error) => {
+            console.error('❌ Ошибка подписки:', error);
+            alert('Ошибка соединения с сервером.');
+        }
+    );
+}
+
+        function showGameOverOverlay(gs) {
+            // Удаляем старый оверлей если есть
+            const existing = document.querySelector('.game-over-overlay');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.classList.add('game-over-overlay');
+            const playersWithCards = gs.players.filter(p => p.hand.length > 0);
+            const losers = playersWithCards.map(p => escapeHtml(p.name)).join(', ');
+            const winners = gs.players.filter(p => p.hand.length === 0).map(p => escapeHtml(p.name)).join(', ');
+
+            overlay.innerHTML = `
+                <div class="panel">
+                    <h1>🏁 Игра окончена!</h1>
+                    ${losers ? `<p style="font-size:1.3em;color:#e74c3c;"><strong>${losers}</strong> — дурак! 🃏</p>` : '<p>Все вышли!</p>'}
+                    ${winners ? `<p style="color:#4caf50;">Победители: ${winners}</p>` : ''}
+                    <p style="color:#aaa;font-size:0.85em;">${gs.message || ''}</p>
+                    <button class="primary" id="btn-back-to-lobby" style="margin-top:16px;">🏠 Выйти</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btn-back-to-lobby').addEventListener('click', () => {
+                overlay.remove();
+                leaveGame();
+            });
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.remove();
+                    leaveGame();
+                }
+            });
+        }
+
+        // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
+        document.getElementById('btn-create').addEventListener('click', async () => {
+            const name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('Введите имя!');
+            try {
+                const { code, playerId } = await createRoom(name);
+                currentUser = { id: playerId, name };
+                roomCode = code;
+                subscribeToRoom(code);
+                showScreen('screen-lobby');
+            } catch (err) {
+                alert('Ошибка создания комнаты: ' + err.message);
+            }
+        });
+
+        document.getElementById('btn-join-show').addEventListener('click', () => {
+            const area = document.getElementById('join-area');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('btn-join').addEventListener('click', async () => {
+            const name = document.getElementById('input-name').value.trim();
+            const code = document.getElementById('input-room-code').value.trim().toUpperCase();
+            if (!name) return alert('Введите имя!');
+            if (!code) return alert('Введите код комнаты!');
+            try {
+                const playerId = await joinRoom(code, name);
+                currentUser = { id: playerId, name };
+                roomCode = code;
+                subscribeToRoom(code);
+                showScreen('screen-lobby');
+            } catch (err) {
+                alert('Ошибка: ' + err.message);
+            }
+        });
+
+        document.getElementById('btn-start-game').addEventListener('click', async () => {
+            if (!gameState || gameState.players[0].id !== currentUser?.id) return;
+            if (gameState.players.length < 2) return alert('Нужно минимум 2 игрока!');
+            await startGame();
+        });
+
+        document.getElementById('btn-leave-lobby').addEventListener('click', async () => {
+            if (roomCode && currentUser && gameState) {
+                const updatedPlayers = gameState.players.filter(p => p.id !== currentUser.id);
+                if (updatedPlayers.length === 0) {
+                    try { await roomsRef.doc(roomCode).delete(); } catch (e) {}
+                } else {
+                    await updateRoom({
+                        players: updatedPlayers,
+                        turnOrder: (gameState.turnOrder || []).filter(id => id !== currentUser.id),
+                        message: `🚪 ${escapeHtml(currentUser.name)} покинул комнату`,
+                    });
+                }
+            }
+            resetAll();
+        });
+
+        // Enter в полях ввода
+        document.getElementById('input-name').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('btn-create').click();
+        });
+        document.getElementById('input-room-code').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('btn-join').click();
+        });
+function clearTableHighlight(attackIndex) {
+    const tableZone = document.getElementById('table-zone');
+    const pairs = tableZone.querySelectorAll('.table-pair');
+    if (pairs[attackIndex]) {
+        pairs[attackIndex].style.outline = '';
+        pairs[attackIndex].style.outlineOffset = '';
+    }
+}
+// ==================== ЧАТ ====================
+const EMOJI_CATEGORIES = {
+    smiles: ['😀','😂','🤣','😅','😊','😇','😍','🤩','😎','😢','😡','🤔','🙄','😴','😜','🥳'],
+    gestures: ['👍','👎','👏','🙌','💪','🤝','✌️','🤞','👋','🤘','✊','👌','🖖','🤙'],
+    hearts: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','💕','💖','💗','💝','💟'],
+    animals: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐒'],
+    food: ['🍕','🍔','🍟','🌭','🍿','🥨','🍩','🎂','🧁','☕','🍺','🍷','🍎','🍇','🍒'],
+    misc: ['✨','🔥','⭐','🎉','🎈','🏆','💯','✅','❌','⏰','💡','📌','🃏','🎲']
+};
+
+let currentEmojiCat = 'smiles';
+
+function renderEmojiGrid(category) {
+    const grid = document.getElementById('emoji-grid');
+    if (!grid) return;
+    const emojis = EMOJI_CATEGORIES[category] || EMOJI_CATEGORIES.smiles;
+    grid.innerHTML = '';
+    emojis.forEach(emoji => {
+        const span = document.createElement('span');
+        span.textContent = emoji;
+        span.addEventListener('click', () => {
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value += emoji;
+                input.focus();
+            }
+        });
+        grid.appendChild(span);
+    });
+}
+
+function renderChat(messages) {
+    const container = document.getElementById('chat-messages');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!Array.isArray(messages) || messages.length === 0) {
+        container.innerHTML = '<div style="color:#666;text-align:center;font-size:0.8em;">Чат пуст</div>';
+        return;
+    }
+    const recent = messages.slice(-100);
+    recent.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'chat-msg';
+        div.innerHTML = `<span class="author">${escapeHtml(msg.senderName)}:</span> ${escapeHtml(msg.text)}`;
+        container.appendChild(div);
+    });
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || !roomCode || !currentUser) return;
+
+    const message = {
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        text: text,
+        timestamp: Date.now()
+    };
+
+    input.value = '';
+    try {
+        await roomsRef.doc(roomCode).update({
+            messages: firebase.firestore.FieldValue.arrayUnion(message)
+        });
+    } catch (err) {
+        console.error('Ошибка отправки сообщения:', err);
+        input.value = text; // восстановить текст при ошибке
+    }
+}
+
+function setupChatListeners() {
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send');
+    const emojiBtn = document.getElementById('chat-emoji-btn');
+    const palette = document.getElementById('emoji-palette');
+    const catContainer = document.getElementById('emoji-categories');
+
+    if (!input || !sendBtn) return;
+
+    sendBtn.onclick = () => sendChatMessage();
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    };
+
+    // Открытие/закрытие палитры
+    if (emojiBtn && palette) {
+        emojiBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = palette.style.display === 'block';
+            palette.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                renderEmojiGrid(currentEmojiCat);
+                document.querySelectorAll('.emoji-cat').forEach(b => {
+                    b.classList.toggle('active', b.dataset.cat === currentEmojiCat);
+                });
+            }
+        });
+        // Закрытие палитры при клике вне неё
+        document.addEventListener('click', (e) => {
+            if (!palette.contains(e.target) && e.target !== emojiBtn) {
+                palette.style.display = 'none';
+            }
+        });
+    }
+
+    // Переключение категорий
+    if (catContainer) {
+        catContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji-cat')) {
+                const cat = e.target.dataset.cat;
+                if (cat) {
+                    currentEmojiCat = cat;
+                    renderEmojiGrid(cat);
+                    document.querySelectorAll('.emoji-cat').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                }
+            }
+        });
+    }
+
+    // Инициализация первой категории
+    renderEmojiGrid('smiles');
+}
+
+// Активируем слушатели чата при загрузке страницы
+window.addEventListener('DOMContentLoaded', () => {
+    setupChatListeners();
+});
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        console.log('🃏 Подкидной дурак готов!');
+        console.log('Firebase проект:', firebaseConfig.projectId);
+        console.log('Для начала игры замените firebaseConfig на свои данные.');
+        showScreen('screen-login');
+    </script>
+</body>
+</html>
