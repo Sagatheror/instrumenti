@@ -1278,14 +1278,17 @@ button.danger:hover {
 
         const defender = gs.players.find(p => p.id === defId);
         const maxAttack = Math.min(defender ? defender.hand.length : 6, 6);
-        const uncoveredAttacks = gs.table.filter(a => !a.coveredBy).length;
-        const totalAfterAdd = uncoveredAttacks + selectedCards.size + 1;
+        
+        // Считаем только атакующие карты на столе (те, что ещё не отбиты)
+        const attackingCardsOnTable = gs.table.filter(a => !a.coveredBy).length;
+        const totalAttackingAfterAdd = attackingCardsOnTable + selectedCards.size + 1;
 
-        if (totalAfterAdd <= maxAttack && gs.table.length + selectedCards.size < maxAttack) {
+        // Проверяем лимит: не больше 6 атакующих карт И не больше чем карт у защищающегося
+        if (totalAttackingAfterAdd <= maxAttack) {
             selectedCards.add(index);
         } else {
             document.getElementById('message-toast').textContent =
-                `⚠️ Нельзя подкинуть больше ${maxAttack} карт, или число атакующих карт превысит лимит`;
+                `⚠️ Нельзя подкинуть больше ${maxAttack} атакующих карт (у защищающегося ${defender ? defender.hand.length : 0} карт)`;
         }
     }
     updateCardSelectionUI();
@@ -1424,15 +1427,19 @@ button.danger:hover {
         return p;
     });
 
-    // === ИСПРАВЛЕНИЕ: атакующий включается в tossOrder ===
+    // === ИСПРАВЛЕНИЕ: Фильтруем tossOrder от игроков, которых нет в players ===
     const allIds = turnOrder;
     const defId = turnOrder[gameState.currentDefenderIndex];
     const newTossOrder = [];
-    // Первым идёт сам атакующий
-    newTossOrder.push(myId);
-    // Затем все остальные, кроме защищающегося и атакующего (он уже есть)
+    
+    // Первым идёт сам атакующий (если он ещё в игре)
+    if (gameState.players.find(p => p.id === myId)) {
+        newTossOrder.push(myId);
+    }
+    
+    // Затем все остальные, кроме защищающегося и атакующего
     for (const id of allIds) {
-        if (id !== myId && id !== defId) {
+        if (id !== myId && id !== defId && gameState.players.find(p => p.id === id)) {
             newTossOrder.push(id);
         }
     }
@@ -1451,73 +1458,77 @@ button.danger:hover {
 }
 
         async function doDefend() {
-            if (!gameState || gameState.phase !== 'defense') return;
-            const myId = currentUser.id;
-            const turnOrder = gameState.turnOrder || [];
-            if (turnOrder[gameState.currentDefenderIndex] !== myId) return;
+    if (!gameState || gameState.phase !== 'defense') return;
+    const myId = currentUser.id;
+    const turnOrder = gameState.turnOrder || [];
+    if (turnOrder[gameState.currentDefenderIndex] !== myId) return;
 
-            const uncovered = [];
-            gameState.table.forEach((att, i) => {
-                if (!att.coveredBy) uncovered.push(i);
-            });
-            if (uncovered.length === 0) return;
-            if (Object.keys(defenseMapping).length < uncovered.length) return;
+    const uncovered = [];
+    gameState.table.forEach((att, i) => {
+        if (!att.coveredBy) uncovered.push(i);
+    });
+    if (uncovered.length === 0) return;
+    if (Object.keys(defenseMapping).length < uncovered.length) return;
 
-            const myPlayer = gameState.players.find(p => p.id === myId);
-            if (!myPlayer) return;
+    const myPlayer = gameState.players.find(p => p.id === myId);
+    if (!myPlayer) return;
 
-            // Проверить валидность всех защит
-            const newHand = [...myPlayer.hand];
-            const indicesToRemove = [];
-            const newTable = gameState.table.map((att, i) => {
-                if (defenseMapping[i] !== undefined) {
-                    const defCard = newHand[defenseMapping[i]];
-                    if (!canBeat(defCard, att.card, gameState.trump)) return att; // Невалидно
-                    indicesToRemove.push(defenseMapping[i]);
-                    return { ...att, coveredBy: defCard };
-                }
-                return att;
-            });
-
-            // Удаляем использованные карты (с конца)
-            const sortedRemovals = [...new Set(indicesToRemove)].sort((a, b) => b - a);
-            for (const idx of sortedRemovals) {
-                newHand.splice(idx, 1);
-            }
-
-            const updatedPlayers = gameState.players.map(p => {
-                if (p.id === myId) return { ...p, hand: newHand };
-                return p;
-            });
-
-            // Проверяем, все ли карты отбиты
-            const allCovered = newTable.every(a => a.coveredBy !== null);
-
-            if (allCovered) {
-                // Переходим к подкидыванию
-                const tossOrder = gameState.tossOrder || [];
-                if (tossOrder.length === 0) {
-                    // Никто не может подкидывать — завершаем раунд
-                    await finishRound(updatedPlayers, newTable, myId);
-                } else {
-                    await updateRoom({
-                        players: updatedPlayers,
-                        table: newTable,
-                        phase: 'toss',
-                        message: `🎯 Подкидывание — ход ${escapeHtml(gameState.players.find(p => p.id === tossOrder[0])?.name || '?')}`,
-                        currentTossIndex: 0,
-                    });
-                }
-            } else {
-                await updateRoom({
-                    players: updatedPlayers,
-                    table: newTable,
-                    message: `🛡️ ${escapeHtml(myPlayer.name)} отбивается (осталось отбить ${newTable.filter(a=>!a.coveredBy).length})`,
-                });
-            }
-            defenseMapping = {};
-            selectedCards.clear();
+    // Проверить валидность всех защит
+    const newHand = [...myPlayer.hand];
+    const indicesToRemove = [];
+    const newTable = gameState.table.map((att, i) => {
+        if (defenseMapping[i] !== undefined) {
+            const defCard = newHand[defenseMapping[i]];
+            if (!canBeat(defCard, att.card, gameState.trump)) return att; // Невалидно
+            indicesToRemove.push(defenseMapping[i]);
+            return { ...att, coveredBy: defCard };
         }
+        return att;
+    });
+
+    // Удаляем использованные карты (с конца)
+    const sortedRemovals = [...new Set(indicesToRemove)].sort((a, b) => b - a);
+    for (const idx of sortedRemovals) {
+        newHand.splice(idx, 1);
+    }
+
+    const updatedPlayers = gameState.players.map(p => {
+        if (p.id === myId) return { ...p, hand: newHand };
+        return p;
+    });
+
+    // Проверяем, все ли карты отбиты
+    const allCovered = newTable.every(a => a.coveredBy !== null);
+
+    if (allCovered) {
+        // Фильтруем tossOrder от вышедших игроков
+        const tossOrder = (gameState.tossOrder || []).filter(id => 
+            gameState.players.find(p => p.id === id)
+        );
+        
+        if (tossOrder.length === 0) { // <-- Используем отфильтрованный список
+            // Никто не может подкидывать — завершаем раунд
+            await finishRound(updatedPlayers, newTable, myId);
+        } else {
+            await updateRoom({
+                players: updatedPlayers,
+                table: newTable,
+                phase: 'toss',
+                message: `🎯 Подкидывание — ход ${escapeHtml(gameState.players.find(p => p.id === tossOrder[0])?.name || '?')}`,
+                tossOrder: tossOrder, // <-- Сохраняем отфильтрованный список
+                currentTossIndex: 0,
+            });
+        }
+    } else {
+        await updateRoom({
+            players: updatedPlayers,
+            table: newTable,
+            message: `🛡️ ${escapeHtml(myPlayer.name)} отбивается (осталось отбить ${newTable.filter(a=>!a.coveredBy).length})`,
+        });
+    }
+    defenseMapping = {};
+    selectedCards.clear();
+}
 
         async function doTake() {
             if (!gameState || gameState.phase !== 'defense') return;
@@ -1564,77 +1575,89 @@ button.danger:hover {
         }
 
         async function doToss() {
-            if (!gameState || gameState.phase !== 'toss') return;
-            const myId = currentUser.id;
-            const tossOrder = gameState.tossOrder || [];
-            const tossIdx = gameState.currentTossIndex || 0;
-            if (tossOrder[tossIdx] !== myId) return;
+    if (!gameState || gameState.phase !== 'toss') return;
+    const myId = currentUser.id;
+    const tossOrder = gameState.tossOrder || [];
+    const tossIdx = gameState.currentTossIndex || 0;
+    if (tossOrder[tossIdx] !== myId) return;
 
-            const myPlayer = gameState.players.find(p => p.id === myId);
-            if (!myPlayer || selectedCards.size === 0) return;
+    const myPlayer = gameState.players.find(p => p.id === myId);
+    if (!myPlayer || selectedCards.size === 0) return;
 
-            const selectedIndices = Array.from(selectedCards).sort((a, b) => b - a);
-            const tossCards = selectedIndices.map(i => myPlayer.hand[i]);
-            const rank = tossCards[0].rank;
-            if (!tossCards.every(c => c.rank === rank)) return;
+    const selectedIndices = Array.from(selectedCards).sort((a, b) => b - a);
+    const tossCards = selectedIndices.map(i => myPlayer.hand[i]);
+    const rank = tossCards[0].rank;
+    if (!tossCards.every(c => c.rank === rank)) return;
 
-            // Проверить, есть ли такое достоинство на столе
-            const ranksOnTable = new Set();
-gameState.table.forEach(att => {
-    ranksOnTable.add(att.card.rank);
-    if (att.coveredBy) ranksOnTable.add(att.coveredBy.rank);
-});
-            if (!ranksOnTable.has(rank)) return;
+    // Проверить, есть ли такое достоинство на столе
+    const ranksOnTable = new Set();
+    gameState.table.forEach(att => {
+        ranksOnTable.add(att.card.rank);
+        if (att.coveredBy) ranksOnTable.add(att.coveredBy.rank);
+    });
+    if (!ranksOnTable.has(rank)) return;
 
-            const defender = gameState.players.find(p => p.id === gameState.turnOrder[gameState.currentDefenderIndex]);
-            const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
-            if (gameState.table.length + tossCards.length > maxOnTable) return;
+    const defender = gameState.players.find(p => p.id === gameState.turnOrder[gameState.currentDefenderIndex]);
+    const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
+    
+    // Считаем только атакующие карты (неотбитые)
+    const attackingCardsOnTable = gameState.table.filter(a => !a.coveredBy).length;
+    if (attackingCardsOnTable + tossCards.length > maxOnTable) return;
 
-            const newHand = [...myPlayer.hand];
-            for (const idx of selectedIndices.sort((a, b) => b - a)) {
-                newHand.splice(idx, 1);
-            }
-            const newTable = [...gameState.table];
-            tossCards.forEach(card => {
-                newTable.push({ card, coveredBy: null, playedBy: myId });
-            });
+    const newHand = [...myPlayer.hand];
+    for (const idx of selectedIndices.sort((a, b) => b - a)) {
+        newHand.splice(idx, 1);
+    }
+    const newTable = [...gameState.table];
+    tossCards.forEach(card => {
+        newTable.push({ card, coveredBy: null, playedBy: myId });
+    });
 
-            const updatedPlayers = gameState.players.map(p => {
-                if (p.id === myId) return { ...p, hand: newHand };
-                return p;
-            });
+    const updatedPlayers = gameState.players.map(p => {
+        if (p.id === myId) return { ...p, hand: newHand };
+        return p;
+    });
 
-            await updateRoom({
-                players: updatedPlayers,
-                table: newTable,
-                phase: 'defense',
-                message: `🛡️ ${escapeHtml(defender?.name || 'Защищающийся')} отбивает подкинутые карты`,
-                currentTossIndex: tossIdx,
-            });
-            selectedCards.clear();
-            defenseMapping = {};
-        }
+    await updateRoom({
+        players: updatedPlayers,
+        table: newTable,
+        phase: 'defense',
+        message: `🛡️ ${escapeHtml(defender?.name || 'Защищающийся')} отбивает подкинутые карты`,
+        currentTossIndex: tossIdx,
+    });
+    selectedCards.clear();
+    defenseMapping = {};
+}
 
         async function doPassToss() {
-            if (!gameState || gameState.phase !== 'toss') return;
-            const myId = currentUser.id;
-            const tossOrder = gameState.tossOrder || [];
-            const tossIdx = gameState.currentTossIndex || 0;
-            if (tossOrder[tossIdx] !== myId) return;
+    if (!gameState || gameState.phase !== 'toss') return;
+    const myId = currentUser.id;
+    const tossOrder = gameState.tossOrder || [];
+    const tossIdx = gameState.currentTossIndex || 0;
+    if (tossOrder[tossIdx] !== myId) return;
 
-            const nextIdx = tossIdx + 1;
-            if (nextIdx >= tossOrder.length) {
-                // Все пропустили — завершаем раунд
-                const myPlayer = gameState.players.find(p => p.id === myId);
-                await finishRound(gameState.players, gameState.table, gameState.turnOrder[gameState.currentDefenderIndex]);
-            } else {
-                const nextTosser = gameState.players.find(p => p.id === tossOrder[nextIdx]);
-                await updateRoom({
-                    currentTossIndex: nextIdx,
-                    message: `🎯 Подкидывание — ход ${escapeHtml(nextTosser?.name || '?')}`,
-                });
-            }
+    // Ищем следующего активного игрока в tossOrder
+    let nextIdx = tossIdx + 1;
+    
+    // Пропускаем вышедших игроков
+    while (nextIdx < tossOrder.length) {
+        const nextPlayerId = tossOrder[nextIdx];
+        const nextPlayer = gameState.players.find(p => p.id === nextPlayerId);
+        if (nextPlayer) {
+            // Нашли активного игрока
+            const nextTosser = nextPlayer;
+            await updateRoom({
+                currentTossIndex: nextIdx,
+                message: `🎯 Подкидывание — ход ${escapeHtml(nextTosser?.name || '?')}`,
+            });
+            return;
         }
+        nextIdx++;
+    }
+    
+    // Все пропустили или вышли — завершаем раунд
+    await finishRound(gameState.players, gameState.table, gameState.turnOrder[gameState.currentDefenderIndex]);
+}
 
         async function finishRound(players, table, defenderId) {
             // Все карты со стола в сброс
@@ -1737,7 +1760,7 @@ gameState.table.forEach(att => {
                         winnerIds: winnerIds,
                         pendingDraw: false,
                         table: [],
-                        tossOrder: [],
+                        tossOrder: activeTossOrder,
                         currentTossIndex: 0,
                     });
                     return;
@@ -1880,40 +1903,50 @@ gameState.table.forEach(att => {
         }
 
         async function leaveGame() {
-            if (!roomCode || !currentUser || !gameState) {
-                resetAll();
-                return;
-            }
-            const gs = gameState;
-            const updatedPlayers = gs.players.filter(p => p.id !== currentUser.id);
-            const updatedTurnOrder = (gs.turnOrder || []).filter(id => id !== currentUser.id);
+    if (!roomCode || !currentUser || !gameState) {
+        resetAll();
+        return;
+    }
+    const gs = gameState;
+    const updatedPlayers = gs.players.filter(p => p.id !== currentUser.id);
+    const updatedTurnOrder = (gs.turnOrder || []).filter(id => id !== currentUser.id);
+    const updatedTossOrder = (gs.tossOrder || []).filter(id => id !== currentUser.id); // <-- Добавить
 
-            if (updatedPlayers.length === 0) {
-                // Удаляем комнату
-                try { await roomsRef.doc(roomCode).delete(); } catch (e) {}
-                resetAll();
-                return;
-            }
+    if (updatedPlayers.length === 0) {
+        // Удаляем комнату
+        try { await roomsRef.doc(roomCode).delete(); } catch (e) {}
+        resetAll();
+        return;
+    }
 
-            // Пересчитываем индексы
-            let newAtt = gs.currentAttackerIndex;
-            let newDef = gs.currentDefenderIndex;
-            if (updatedTurnOrder.length >= 2) {
-                newAtt = Math.min(newAtt, updatedTurnOrder.length - 1);
-                newDef = (newAtt + 1) % updatedTurnOrder.length;
-            }
+    // Пересчитываем индексы
+    let newAtt = gs.currentAttackerIndex;
+    let newDef = gs.currentDefenderIndex;
+    let newTossIdx = gs.currentTossIndex || 0;
+    
+    if (updatedTurnOrder.length >= 2) {
+        newAtt = Math.min(newAtt, updatedTurnOrder.length - 1);
+        newDef = (newAtt + 1) % updatedTurnOrder.length;
+    }
+    
+    // Корректируем индекс подкидывания
+    if (newTossIdx >= updatedTossOrder.length) {
+        newTossIdx = Math.max(0, updatedTossOrder.length - 1);
+    }
 
-            await updateRoom({
-                players: updatedPlayers,
-                turnOrder: updatedTurnOrder,
-                currentAttackerIndex: newAtt,
-                currentDefenderIndex: newDef,
-                message: `🚪 ${escapeHtml(currentUser.name)} покинул игру`,
-                phase: updatedPlayers.length < 2 ? 'gameOver' : gs.phase,
-            });
+    await updateRoom({
+        players: updatedPlayers,
+        turnOrder: updatedTurnOrder,
+        tossOrder: updatedTossOrder, // <-- Обновить tossOrder
+        currentAttackerIndex: newAtt,
+        currentDefenderIndex: newDef,
+        currentTossIndex: newTossIdx, // <-- Обновить индекс
+        message: `🚪 ${escapeHtml(currentUser.name)} покинул игру`,
+        phase: updatedPlayers.length < 2 ? 'gameOver' : gs.phase,
+    });
 
-            resetAll();
-        }
+    resetAll();
+}
 
         function resetAll() {
             if (unsubscribe) {
