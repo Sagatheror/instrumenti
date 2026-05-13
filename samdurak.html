@@ -735,6 +735,34 @@ button.danger:hover {
     padding: 2px;
 }
 .emoji-grid span:hover { transform: scale(1.4); background: rgba(255,255,255,0.15); border-radius: 4px; }
+/* Стили для списка комнат */
+.room-item {
+    background: rgba(255,255,255,0.06);
+    padding: 12px 16px;
+    margin: 6px 0;
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.room-item:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateX(4px);
+}
+.room-item .room-code {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: var(--gold);
+}
+.room-item .room-players {
+    font-size: 0.85em;
+    color: #ccc;
+}
+#btn-refresh-rooms, #btn-modal-join {
+    margin-top: 8px;
+}
     </style>
 </head>
 <body>
@@ -750,12 +778,13 @@ button.danger:hover {
                 <div class="btn-row" style="margin-top:16px;">
                     <button class="primary" id="btn-create">✨ Создать комнату</button>
                     <button id="btn-join-show">🔗 Присоединиться</button>
+                    <button id="btn-show-rooms">🔍 Список комнат</button>
                 </div>
                 <div id="join-area" style="display:none; margin-top:14px; width:100%;">
                     <input type="text" id="input-room-code" placeholder="Код комнаты" maxlength="6" autocomplete="off" style="margin-bottom:10px;">
                     <button class="primary" id="btn-join">🚪 Войти в комнату</button>
                 </div>
-                <p style="margin-top:12px;font-size:0.75em;color:#777;">Подкидной дурак · 36 карт · 2–4 игрока</p>
+                <p style="margin-top:12px;font-size:0.75em;color:#777;">Подкидной дурак · 52 карты · 2–6 игроков</p>
             </div>
         </div>
 
@@ -811,6 +840,28 @@ button.danger:hover {
                 <div class="emoji-grid" id="emoji-grid"></div>
             </div>
         </div>
+        <div class="screen" id="screen-rooms">
+    <div class="panel" style="max-width: 600px; width: 100%;">
+        <h1>📋 Доступные комнаты</h1>
+        <div id="rooms-list-container" style="max-height: 400px; overflow-y: auto; margin: 15px 0;">
+            <p style="color:#aaa; text-align:center;">Загрузка...</p>
+        </div>
+        <button id="btn-refresh-rooms">🔄 Обновить</button>
+        <button id="btn-back-to-login" class="danger" style="margin-top:10px;">🔙 Назад</button>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ИНФОРМАЦИИ О КОМНАТЕ -->
+<div id="room-info-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
+    <div style="background:#1e1e35; border-radius:14px; padding:25px; max-width:400px; width:90%; color:#e0e0e0; text-align:center;">
+        <h2 id="modal-room-code" style="color:var(--gold);">—</h2>
+        <ul id="modal-players-list" style="list-style:none; padding:0; margin:15px 0; text-align:left;"></ul>
+        <div class="btn-row" style="justify-content:center;">
+            <button class="primary" id="btn-modal-join">🚪 Подключиться</button>
+            <button id="btn-modal-close">Закрыть</button>
+        </div>
+    </div>
+</div>
     </div>
 
     <!-- Firebase SDK (compat) -->
@@ -848,8 +899,12 @@ button.danger:hover {
         // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ КАРТ ====================
         const SUITS = ['♠', '♣', '♥', '♦'];
         const SUIT_NAMES = { '♠': 'spades', '♣': 'clubs', '♥': 'hearts', '♦': 'diamonds' };
-        const RANKS = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        const RANK_VALUES = { '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+        const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+        const RANK_VALUES = {
+    '2': 2, '3': 3, '4': 4, '5': 5,
+    '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+    'J': 11, 'Q': 12, 'K': 13, 'A': 14
+};
 
         function createDeck() {
             const deck = [];
@@ -947,7 +1002,7 @@ button.danger:hover {
     list.appendChild(li);
 });
 
-    btnStart.disabled = !(isHost && players.length >= 2 && players.length <= 4);
+    btnStart.disabled = !(isHost && players.length >= 2 && players.length <= 6);
     if (isHost && players.length >= 2) {
         btnStart.textContent = `🎯 Начать игру (${players.length} игрока)`;
     } else if (isHost) {
@@ -1184,41 +1239,59 @@ button.danger:hover {
 
     // ================== ПОДКИДЫВАНИЕ ==================
     else if (gs.phase === 'toss') {
-        const tossOrder = gs.tossOrder || [];
-        const tossIdx = gs.currentTossIndex || 0;
-        const currentTosserId = tossOrder[tossIdx];
-        if (myId !== currentTosserId) return;
+    const tossOrder = gs.tossOrder || [];
+    const tossIdx = gs.currentTossIndex || 0;
+    const currentTosserId = tossOrder[tossIdx];
+    if (myId !== currentTosserId) return;
 
-        const clickedRank = card.rank;
-        // Достоинство должно совпадать с уже лежащими на столе
-        const ranksOnTable = new Set();
-gs.table.forEach(att => {
-    ranksOnTable.add(att.card.rank);
-    if (att.coveredBy) ranksOnTable.add(att.coveredBy.rank);
-});
-        if (!ranksOnTable.has(clickedRank)) return;
+    // Достоинство должно совпадать с уже лежащими на столе
+    const ranksOnTable = new Set();
+    gs.table.forEach(att => {
+        ranksOnTable.add(att.card.rank);
+        if (att.coveredBy) ranksOnTable.add(att.coveredBy.rank);
+    });
 
-        if (selectedCards.has(index)) {
-            selectedCards.delete(index);
-        } else {
-            const existingRank = selectedCards.size > 0 ?
-                myPlayer.hand[Array.from(selectedCards)[0]].rank :
-                null;
-            if (existingRank && existingRank !== clickedRank) {
+    const clickedRank = card.rank;
+    if (!ranksOnTable.has(clickedRank)) {
+        // Визуальная обратная связь
+        cardEl.style.transition = '0.1s';
+        cardEl.style.transform = 'translateX(4px)';
+        setTimeout(() => {
+            cardEl.style.transform = '';
+            cardEl.style.transition = '';
+        }, 150);
+        document.getElementById('message-toast').textContent =
+            `⚠️ Можно подкидывать только карты достоинств: ${Array.from(ranksOnTable).join(', ')}`;
+        return;
+    }
+
+    if (selectedCards.has(index)) {
+        selectedCards.delete(index);
+    } else {
+        // Если уже выбраны карты – проверяем совпадение достоинства
+        if (selectedCards.size > 0) {
+            const existingRank = myPlayer.hand[Array.from(selectedCards)[0]].rank;
+            if (existingRank !== clickedRank) {
                 selectedCards.clear();
             }
-            const defender = gs.players.find(p => p.id === defId);
-            const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
-            const currentOnTable = gs.table.length;
-            if (currentOnTable + selectedCards.size < maxOnTable) {
-                selectedCards.add(index);
-            }
         }
-        updateCardSelectionUI();
-        renderActionButtons(myPlayer, gs);   // обновляем кнопку "Подкинуть"
-    }
-}
 
+        const defender = gs.players.find(p => p.id === defId);
+        const maxAttack = Math.min(defender ? defender.hand.length : 6, 6);
+        const uncoveredAttacks = gs.table.filter(a => !a.coveredBy).length;
+        const totalAfterAdd = uncoveredAttacks + selectedCards.size + 1;
+
+        if (totalAfterAdd <= maxAttack && gs.table.length + selectedCards.size < maxAttack) {
+            selectedCards.add(index);
+        } else {
+            document.getElementById('message-toast').textContent =
+                `⚠️ Нельзя подкинуть больше ${maxAttack} карт, или число атакующих карт превысит лимит`;
+        }
+    }
+    updateCardSelectionUI();
+    renderActionButtons(myPlayer, gs);
+}
+}
         function highlightTableAttack(attackIndex) {
             const tableZone = document.getElementById('table-zone');
             const pairs = tableZone.querySelectorAll('.table-pair');
@@ -1736,7 +1809,7 @@ gameState.table.forEach(att => {
     if (!doc.exists) throw new Error('Комната не найдена');
     const data = doc.data();
     if (data.gameStarted) throw new Error('Игра уже началась');
-    if (data.players.length >= 4) throw new Error('Комната заполнена (максимум 4 игрока)');
+    if (data.players.length >= 6) throw new Error('Комната заполнена (максимум 6 игроков)');
 
     const playerId = generatePlayerId();
     const newPlayer = { id: playerId, name: playerName, hand: [], isDefender: false, isAttacker: false, isActive: false };
@@ -1767,7 +1840,7 @@ gameState.table.forEach(att => {
         async function startGame() {
             if (!roomCode || !gameState) return;
             const gs = gameState;
-            if (gs.players.length < 2 || gs.players.length > 4) return;
+            if (gs.players.length < 2 || gs.players.length > 6) return;
 
             const deck = createDeck();
             const trumpSuit = deck[deck.length - 1].suit;
@@ -1967,7 +2040,12 @@ gameState.table.forEach(att => {
             const area = document.getElementById('join-area');
             area.style.display = area.style.display === 'none' ? 'block' : 'none';
         });
-
+document.getElementById('btn-show-rooms').addEventListener('click', () => {
+    showScreen('screen-rooms');
+    loadRoomsList();
+});
+document.getElementById('btn-refresh-rooms').addEventListener('click', loadRoomsList);
+document.getElementById('btn-back-to-login').addEventListener('click', () => showScreen('screen-login'));
         document.getElementById('btn-join').addEventListener('click', async () => {
             const name = document.getElementById('input-name').value.trim();
             const code = document.getElementById('input-room-code').value.trim().toUpperCase();
@@ -2153,6 +2231,95 @@ function setupChatListeners() {
 // Активируем слушатели чата при загрузке страницы
 window.addEventListener('DOMContentLoaded', () => {
     setupChatListeners();
+});
+async function loadRoomsList() {
+    const container = document.getElementById('rooms-list-container');
+    if (!container) return;
+    container.innerHTML = '<p style="color:#aaa;">Загрузка...</p>';
+    try {
+        const snapshot = await roomsRef
+            .where('gameStarted', '==', false)
+            .limit(20)
+            .get();
+        if (snapshot.empty) {
+            container.innerHTML = '<p style="color:#888;">Нет доступных комнат. Создайте новую!</p>';
+            return;
+        }
+        let html = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const code = doc.id;
+            const playersCount = data.players ? data.players.length : 0;
+            html += `
+                <div class="room-item" data-code="${escapeHtml(code)}">
+                    <span class="room-code">🏠 ${escapeHtml(code)}</span>
+                    <span class="room-players">👥 ${playersCount}/6</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        // Навешиваем обработчики клика
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const code = item.dataset.code;
+                openRoomInfoModal(code);
+            });
+        });
+    } catch (err) {
+        container.innerHTML = `<p style="color:#e74c3c;">Ошибка загрузки: ${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function openRoomInfoModal(code) {
+    try {
+        const doc = await roomsRef.doc(code).get();
+        if (!doc.exists) {
+            alert('Комната уже не существует.');
+            return;
+        }
+        const data = doc.data();
+        document.getElementById('modal-room-code').textContent = 'Комната «' + code + '»';
+        const playersList = document.getElementById('modal-players-list');
+        playersList.innerHTML = '';
+        if (data.players && data.players.length) {
+            data.players.forEach(p => {
+                const li = document.createElement('li');
+                li.textContent = '👤 ' + p.name;
+                playersList.appendChild(li);
+            });
+        } else {
+            playersList.innerHTML = '<li>Пока никого...</li>';
+        }
+        document.getElementById('room-info-modal').style.display = 'flex';
+        // Кнопка подключения
+        document.getElementById('btn-modal-join').onclick = async () => {
+            const name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('Сначала введите имя на главном экране!');
+            try {
+                const playerId = await joinRoom(code, name);
+                currentUser = { id: playerId, name };
+                roomCode = code;
+                subscribeToRoom(code);
+                showScreen('screen-lobby');
+                document.getElementById('room-info-modal').style.display = 'none';
+            } catch (err) {
+                alert('Ошибка: ' + err.message);
+            }
+        };
+    } catch (err) {
+        alert('Не удалось загрузить информацию: ' + err.message);
+    }
+}
+
+// Закрытие модального окна
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'room-info-modal') {
+        document.getElementById('room-info-modal').style.display = 'none';
+    }
+});
+document.getElementById('btn-modal-close').addEventListener('click', () => {
+    document.getElementById('room-info-modal').style.display = 'none';
 });
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         showScreen('screen-login');
