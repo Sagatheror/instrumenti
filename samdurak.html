@@ -800,6 +800,40 @@ button.danger:hover {
     background: rgba(226, 160, 63, 0.3);
     transform: scale(1.2);
 }
+/* ---------- МОДАЛЬНЫЕ ОКНА ПОДТВЕРЖДЕНИЙ ---------- */
+.modal-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    animation: fadeIn 0.3s ease;
+}
+.modal-confirm-box {
+    background: #1e1e35;
+    border: 2px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 30px 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    color: #e0e0e0;
+}
+.modal-confirm-box h3 {
+    margin-bottom: 16px;
+    color: var(--gold);
+}
+.modal-confirm-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+}
+.modal-confirm-buttons button {
+    min-width: 100px;
+}
     </style>
 </head>
 <body>
@@ -905,6 +939,30 @@ button.danger:hover {
         </div>
     </div>
 </div>
+<!-- Модальное окно подтверждения действия -->
+<div id="modal-confirm" class="modal-confirm-overlay" style="display: none;">
+    <div class="modal-confirm-box">
+        <h3 id="confirm-title">Подтвердите действие</h3>
+        <p id="confirm-message"></p>
+        <div class="modal-confirm-buttons">
+            <button id="confirm-yes" class="danger">Да</button>
+            <button id="confirm-no">Нет</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для выбывшего победителя -->
+<div id="modal-victory" class="modal-confirm-overlay" style="display: none;">
+    <div class="modal-confirm-box">
+        <h3>🎉 Поздравляем!</h3>
+        <p>У вас закончились карты! Вы больше не участвуете в раунде.</p>
+        <p style="font-size:0.9em; color:#aaa;">Хотите покинуть комнату или остаться наблюдателем?</p>
+        <div class="modal-confirm-buttons">
+            <button id="victory-leave" class="danger">🚪 Выйти</button>
+            <button id="victory-stay" class="primary">👁️ Остаться наблюдателем</button>
+        </div>
+    </div>
+</div>
     </div>
 <div id="emoji-name-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:300; align-items:center; justify-content:center;">
     <div style="background:#1e1e35; border-radius:14px; padding:20px; max-width:400px; width:90%; color:#e0e0e0; text-align:center;">
@@ -948,6 +1006,7 @@ button.danger:hover {
         let unsubscribe = null; // Функция отписки от onSnapshot
         let selectedCards = new Set(); // Индексы выбранных карт в руке (для атаки/подкидывания)
         let defenseMapping = {}; // { tableAttackIndex: handCardIndex } — для защиты
+        let shownVictoryModal = false;
 
         // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ КАРТ ====================
         const SUITS = ['♠', '♣', '♥', '♦'];
@@ -1023,6 +1082,48 @@ button.danger:hover {
         }
 
         // ==================== РЕНДЕРИНГ ====================
+        function showConfirmModal(title, message, onConfirm) {
+    const overlay = document.getElementById('modal-confirm');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    overlay.style.display = 'flex';
+
+    const yesBtn = document.getElementById('confirm-yes');
+    const noBtn = document.getElementById('confirm-no');
+
+    const cleanup = () => {
+        overlay.style.display = 'none';
+        yesBtn.removeEventListener('click', handleYes);
+        noBtn.removeEventListener('click', handleNo);
+    };
+
+    const handleYes = () => {
+        cleanup();
+        if (onConfirm) onConfirm();
+    };
+    const handleNo = () => {
+        cleanup();
+    };
+
+    yesBtn.addEventListener('click', handleYes);
+    noBtn.addEventListener('click', handleNo);
+}
+
+function showVictoryModal() {
+    if (shownVictoryModal) return;
+    shownVictoryModal = true;
+    const overlay = document.getElementById('modal-victory');
+    overlay.style.display = 'flex';
+
+    document.getElementById('victory-leave').onclick = () => {
+        overlay.style.display = 'none';
+        leaveGame(); // обычный выход игрока
+    };
+    document.getElementById('victory-stay').onclick = () => {
+        overlay.style.display = 'none';
+        // остаётся наблюдателем – ничего не делаем
+    };
+}
         function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(screenId);
@@ -1073,7 +1174,9 @@ button.danger:hover {
             const gs = gameState;
             const myPlayer = gs.players.find(p => p.id === currentUser.id);
             if (!myPlayer) return;
-
+if (myPlayer.hand.length === 0 && gs.winnerIds?.includes(myPlayer.id)) {
+    showVictoryModal();
+}
             // Фаза
             const phaseMap = {
                 'attack': '⚔️ Атака',
@@ -1377,88 +1480,86 @@ function applyFanLayout() {
         }
 
         function renderActionButtons(myPlayer, gs) {
-            const bar = document.getElementById('action-bar');
-            bar.innerHTML = '';
-            const myId = currentUser.id;
-            const turnOrder = gs.turnOrder || [];
-            const attId = turnOrder[gs.currentAttackerIndex];
-            const defId = turnOrder[gs.currentDefenderIndex];
+    const bar = document.getElementById('action-bar');
+    bar.innerHTML = '';
+    const myId = currentUser.id;
+    const turnOrder = gs.turnOrder || [];
+    const attId = turnOrder[gs.currentAttackerIndex];
+    const defId = turnOrder[gs.currentDefenderIndex];
 
-            if (gs.phase === 'gameOver') {
-                const btn = document.createElement('button');
-                btn.textContent = '🏠 Выйти в лобби';
-                btn.classList.add('danger');
-                btn.addEventListener('click', leaveGame);
-                bar.appendChild(btn);
-                return;
-            }
+    if (gs.phase === 'gameOver') {
+        const btn = document.createElement('button');
+        btn.textContent = '🏠 Выйти в лобби';
+        btn.classList.add('danger');
+        btn.addEventListener('click', () => showConfirmModal('Покинуть игру?', 'Вы точно хотите выйти?', leaveGame));
+        bar.appendChild(btn);
+        return;
+    }
 
-            if (gs.phase === 'attack' && myId === attId) {
-                const btn = document.createElement('button');
-                btn.classList.add('primary');
-                btn.textContent = `⚔️ Сходить (${selectedCards.size})`;
-                btn.disabled = selectedCards.size === 0;
-                btn.addEventListener('click', doAttack);
-                bar.appendChild(btn);
-            }
+    if (gs.phase === 'attack' && myId === attId) {
+        const btn = document.createElement('button');
+        btn.classList.add('primary');
+        btn.textContent = `⚔️ Сходить (${selectedCards.size})`;
+        btn.disabled = selectedCards.size === 0;
+        btn.addEventListener('click', doAttack);
+        bar.appendChild(btn);
+    }
 
-            if (gs.phase === 'defense' && myId === defId) {
-                const uncoveredCount = gs.table.filter(a => !a.coveredBy).length;
-                const canDefendAll = Object.keys(defenseMapping).length >= uncoveredCount && uncoveredCount > 0;
-                const btnDefend = document.createElement('button');
-                btnDefend.classList.add('primary');
-                btnDefend.textContent = `🛡️ Отбить (${Object.keys(defenseMapping).length}/${uncoveredCount})`;
-                btnDefend.disabled = !canDefendAll;
-                btnDefend.addEventListener('click', doDefend);
-                bar.appendChild(btnDefend);
+    if (gs.phase === 'defense' && myId === defId) {
+        const uncoveredCount = gs.table.filter(a => !a.coveredBy).length;
+        const canDefendAll = Object.keys(defenseMapping).length >= uncoveredCount && uncoveredCount > 0;
+        const btnDefend = document.createElement('button');
+        btnDefend.classList.add('primary');
+        btnDefend.textContent = `🛡️ Отбить (${Object.keys(defenseMapping).length}/${uncoveredCount})`;
+        btnDefend.disabled = !canDefendAll;
+        btnDefend.addEventListener('click', doDefend);
+        bar.appendChild(btnDefend);
 
-                const btnTake = document.createElement('button');
-                btnTake.classList.add('danger');
-                btnTake.textContent = '📥 Забрать всё';
-                btnTake.addEventListener('click', doTake);
-                bar.appendChild(btnTake);
-            }
+        const btnTake = document.createElement('button');
+        btnTake.classList.add('danger');
+        btnTake.textContent = '📥 Забрать всё';
+        btnTake.addEventListener('click', () => showConfirmModal('Забрать карты?', 'Вы уверены, что хотите забрать все карты со стола?', doTake));
+        bar.appendChild(btnTake);
+    }
 
-            if (gs.phase === 'toss') {
-                const tossOrder = gs.tossOrder || [];
-                const tossIdx = gs.currentTossIndex || 0;
-                const currentTosserId = tossOrder[tossIdx];
-                if (myId === currentTosserId) {
-                    const btnToss = document.createElement('button');
-                    btnToss.classList.add('primary');
-                    btnToss.textContent = `🎯 Подкинуть (${selectedCards.size})`;
-                    btnToss.disabled = selectedCards.size === 0;
-                    btnToss.addEventListener('click', doToss);
-                    bar.appendChild(btnToss);
+    if (gs.phase === 'toss') {
+        const tossOrder = gs.tossOrder || [];
+        const tossIdx = gs.currentTossIndex || 0;
+        const currentTosserId = tossOrder[tossIdx];
+        if (myId === currentTosserId) {
+            const btnToss = document.createElement('button');
+            btnToss.classList.add('primary');
+            btnToss.textContent = `🎯 Подкинуть (${selectedCards.size})`;
+            btnToss.disabled = selectedCards.size === 0;
+            btnToss.addEventListener('click', doToss);
+            bar.appendChild(btnToss);
 
-                    const btnPass = document.createElement('button');
-                    btnPass.textContent = '⏭️ Пас';
-                    btnPass.addEventListener('click', doPassToss);
-                    bar.appendChild(btnPass);
-                } else if (myId === defId && gs.table.every(a => a.coveredBy)) {
-                    // Все карты отбиты, ждём подкидывания других
-                    const info = document.createElement('span');
-                    info.style.color = '#aaa';
-                    info.textContent = 'Ожидание подкидывания другими игроками...';
-                    bar.appendChild(info);
-                }
-            }
-
-            if (gs.phase === 'draw') {
-                const info = document.createElement('span');
-                info.style.color = '#aaa';
-                info.textContent = 'Добор карт...';
-                bar.appendChild(info);
-            }
-
-            // Кнопка "Покинуть игру" всегда доступна
-            const btnLeave = document.createElement('button');
-            btnLeave.textContent = '🚪 Покинуть';
-            btnLeave.style.fontSize = '0.8em';
-            btnLeave.style.opacity = '0.7';
-            btnLeave.addEventListener('click', leaveGame);
-            bar.appendChild(btnLeave);
+            const btnPass = document.createElement('button');
+            btnPass.textContent = '⏭️ Пас';
+            btnPass.addEventListener('click', doPassToss);
+            bar.appendChild(btnPass);
+        } else if (myId === defId && gs.table.every(a => a.coveredBy)) {
+            const info = document.createElement('span');
+            info.style.color = '#aaa';
+            info.textContent = 'Ожидание подкидывания другими игроками...';
+            bar.appendChild(info);
         }
+    }
+
+    if (gs.phase === 'draw') {
+        const info = document.createElement('span');
+        info.style.color = '#aaa';
+        info.textContent = 'Добор карт...';
+        bar.appendChild(info);
+    }
+
+    const btnLeave = document.createElement('button');
+    btnLeave.textContent = '🚪 Покинуть';
+    btnLeave.style.fontSize = '0.8em';
+    btnLeave.style.opacity = '0.7';
+    btnLeave.addEventListener('click', () => showConfirmModal('Покинуть игру?', 'Вы точно хотите выйти?', leaveGame));
+    bar.appendChild(btnLeave);
+}
 
         // ==================== ИГРОВЫЕ ДЕЙСТВИЯ ====================
         async function doAttack() {
@@ -1539,20 +1640,18 @@ function applyFanLayout() {
     const myPlayer = gameState.players.find(p => p.id === myId);
     if (!myPlayer) return;
 
-    // Проверить валидность всех защит
     const newHand = [...myPlayer.hand];
     const indicesToRemove = [];
     const newTable = gameState.table.map((att, i) => {
         if (defenseMapping[i] !== undefined) {
             const defCard = newHand[defenseMapping[i]];
-            if (!canBeat(defCard, att.card, gameState.trump)) return att; // Невалидно
+            if (!canBeat(defCard, att.card, gameState.trump)) return att;
             indicesToRemove.push(defenseMapping[i]);
             return { ...att, coveredBy: defCard };
         }
         return att;
     });
 
-    // Удаляем использованные карты (с конца)
     const sortedRemovals = [...new Set(indicesToRemove)].sort((a, b) => b - a);
     for (const idx of sortedRemovals) {
         newHand.splice(idx, 1);
@@ -1563,17 +1662,40 @@ function applyFanLayout() {
         return p;
     });
 
-    // Проверяем, все ли карты отбиты
     const allCovered = newTable.every(a => a.coveredBy !== null);
 
     if (allCovered) {
-        // Фильтруем tossOrder от вышедших игроков
-        const tossOrder = (gameState.tossOrder || []).filter(id => 
+        // Если у защищающегося не осталось карт — сразу завершаем раунд
+        if (newHand.length === 0) {
+            const winnerIds = [...(gameState.winnerIds || [])];
+            if (!winnerIds.includes(myId)) winnerIds.push(myId);
+            const updatedTurnOrder = (gameState.turnOrder || []).filter(id => id !== myId);
+            const updatedTossOrder = (gameState.tossOrder || []).filter(id => id !== myId);
+            await updateRoom({
+                players: updatedPlayers,
+                table: newTable,
+                winnerIds: winnerIds,
+                turnOrder: updatedTurnOrder,
+                tossOrder: updatedTossOrder,
+                message: `🎉 ${escapeHtml(myPlayer.name)} избавился от карт!`
+            });
+            gameState = {
+                ...gameState,
+                players: updatedPlayers,
+                table: newTable,
+                winnerIds: winnerIds,
+                turnOrder: updatedTurnOrder,
+                tossOrder: updatedTossOrder
+            };
+            await finishRound(updatedPlayers, newTable, null);
+            return;
+        }
+
+        // Обычное завершение отбития
+        const tossOrder = (gameState.tossOrder || []).filter(id =>
             gameState.players.find(p => p.id === id)
         );
-        
-        if (tossOrder.length === 0) { // <-- Используем отфильтрованный список
-            // Никто не может подкидывать — завершаем раунд
+        if (tossOrder.length === 0) {
             await finishRound(updatedPlayers, newTable, myId);
         } else {
             await updateRoom({
@@ -1581,7 +1703,7 @@ function applyFanLayout() {
                 table: newTable,
                 phase: 'toss',
                 message: `🎯 Подкидывание — ход ${escapeHtml(gameState.players.find(p => p.id === tossOrder[0])?.name || '?')}`,
-                tossOrder: tossOrder, // <-- Сохраняем отфильтрованный список
+                tossOrder: tossOrder,
                 currentTossIndex: 0,
             });
         }
@@ -1664,6 +1786,10 @@ function applyFanLayout() {
     if (!ranksOnTable.has(rank)) return;
 
     const defender = gameState.players.find(p => p.id === gameState.turnOrder[gameState.currentDefenderIndex]);
+if (!defender || defender.hand.length === 0) {
+    document.getElementById('message-toast').textContent = '⚠️ Защищающийся уже без карт, подкидывание невозможно';
+    return;
+}
     const maxOnTable = Math.min(defender ? defender.hand.length : 6, 6);
     
     // Считаем только атакующие карты (неотбитые)
@@ -1726,40 +1852,61 @@ function applyFanLayout() {
 }
 
         async function finishRound(players, table, defenderId) {
-    // Все карты со стола в сброс
-    const turnOrder = gameState.turnOrder || [];
-    const defIndex = gameState.currentDefenderIndex;
-    // Отбившийся становится атакующим
-    const newAttIndex = defIndex;
-    const newDefIndex = (newAttIndex + 1) % turnOrder.length;
+    const gs = gameState;
+    let turnOrder = gs.turnOrder || [];
+    let attIndex = gs.currentAttackerIndex;
+    let defIndex = gs.currentDefenderIndex;
+
+    if (defenderId !== null) {
+        // Обычный переход: отбившийся становится атакующим
+        const defPos = turnOrder.indexOf(defenderId);
+        if (defPos !== -1) {
+            attIndex = defPos;
+            defIndex = (attIndex + 1) % turnOrder.length;
+        }
+    } else {
+        // Защищающийся уже удалён из turnOrder — ищем следующего активного атакующего
+        const activePlayers = players.filter(p => p.hand.length > 0).map(p => p.id);
+        const activeTurnOrder = turnOrder.filter(id => activePlayers.includes(id));
+        if (activeTurnOrder.length >= 2) {
+            attIndex = 0;
+            defIndex = 1;
+        } else {
+            attIndex = 0;
+            defIndex = 0;
+        }
+        turnOrder = activeTurnOrder;
+    }
 
     const updatedPlayers = players.map(p => ({ ...p }));
 
     await updateRoom({
         players: updatedPlayers,
         table: [],
-        discard: [...(gameState.discard || []), ...table.flatMap(a => [a.card, a.coveredBy].filter(Boolean))],
+        discard: [...(gs.discard || []), ...table.flatMap(a => [a.card, a.coveredBy].filter(Boolean))],
         phase: 'draw',
         message: '📥 Добор карт...',
-        currentAttackerIndex: newAttIndex,
-        currentDefenderIndex: newDefIndex,
+        currentAttackerIndex: attIndex,
+        currentDefenderIndex: defIndex,
         pendingDraw: true,
         tossOrder: [],
         currentTossIndex: 0,
         initialDefenderHandSize: null,
+        turnOrder: turnOrder
     });
 
-    await performDraw(updatedPlayers, newAttIndex);
+    await performDraw(updatedPlayers, attIndex);
 }
 
         async function performDraw(players, startFromIndex) {
-    // Добираем карты до 6 по порядку turnOrder, начиная с startFromIndex
-    const turnOrder = gameState.turnOrder || [];
     const gs = gameState;
     if (!gs) return;
 
     let currentDeck = [...gs.deck];
     const updatedPlayers = players.map(p => ({ ...p, hand: [...p.hand] }));
+    const turnOrder = gs.turnOrder || [];
+
+    // Порядок добора по очереди
     const order = [];
     for (let i = 0; i < turnOrder.length; i++) {
         const idx = (startFromIndex + i) % turnOrder.length;
@@ -1770,12 +1917,11 @@ function applyFanLayout() {
         const player = updatedPlayers.find(p => p.id === pid);
         if (!player) continue;
         while (player.hand.length < 6 && currentDeck.length > 0) {
-            const drawnCard = currentDeck.shift();
-            player.hand.push(drawnCard);
+            player.hand.push(currentDeck.shift());
         }
     }
 
-    // Проверка на победителей
+    // Фиксируем новых победителей
     const winnerIds = [...(gs.winnerIds || [])];
     for (const p of updatedPlayers) {
         if (p.hand.length === 0 && !winnerIds.includes(p.id)) {
@@ -1786,59 +1932,40 @@ function applyFanLayout() {
     const playersWithCards = updatedPlayers.filter(p => p.hand.length > 0);
     let phase = 'attack';
     let message = '';
-    let gameOver = false;
+    let newTurnOrder = turnOrder;
+    let newAttIndex = startFromIndex;
+    let newDefIndex = (startFromIndex + 1) % turnOrder.length;
 
-    if (playersWithCards.length <= 1 && currentDeck.length === 0 && gs.table.length === 0) {
+    if (playersWithCards.length <= 1 && currentDeck.length === 0 && (gs.table || []).length === 0) {
         phase = 'gameOver';
-        gameOver = true;
         const loser = playersWithCards[0];
-        if (loser) {
-            message = `🏁 Игра окончена! ${escapeHtml(loser.name)} — дурак! 🃏`;
-        } else {
-            message = '🏁 Ничья! Все избавились от карт!';
-        }
+        message = loser
+            ? `🏁 Игра окончена! ${escapeHtml(loser.name)} — дурак! 🃏`
+            : '🏁 Ничья! Все избавились от карт!';
     } else {
-        // Сдвигаем очередь, если нужно
-        let attIndex = gs.currentAttackerIndex;
-        let defIndex = gs.currentDefenderIndex;
-        // Пропускаем вышедших
-        const activeIds = updatedPlayers.filter(p => p.hand.length > 0).map(p => p.id);
-        const activeTurnOrder = turnOrder.filter(id => activeIds.includes(id));
+        // Строим новую очередь только из игроков с картами
+        const activeIds = playersWithCards.map(p => p.id);
+        newTurnOrder = turnOrder.filter(id => activeIds.includes(id));
         
-        // Также очищаем tossOrder от неактивных игроков
-        const activeTossOrder = (gs.tossOrder || []).filter(id => activeIds.includes(id));
-        
-        if (activeTurnOrder.length >= 2) {
-            attIndex = activeTurnOrder.indexOf(turnOrder[attIndex]);
-            if (attIndex < 0) attIndex = 0;
-            defIndex = (attIndex + 1) % activeTurnOrder.length;
-            // Обновляем turnOrder
-            const newTurnOrder = activeTurnOrder;
-            const attId = newTurnOrder[attIndex];
-            const defId = newTurnOrder[defIndex];
-            message = `⚔️ Ход ${escapeHtml(updatedPlayers.find(p => p.id === attId)?.name || '?')}`;
-            phase = 'attack';
-
-            await updateRoom({
-                players: updatedPlayers,
-                deck: currentDeck,
-                phase: phase,
-                message: message,
-                currentAttackerIndex: attIndex,
-                currentDefenderIndex: defIndex,
-                turnOrder: newTurnOrder,
-                tossOrder: activeTossOrder,
-                currentTossIndex: 0,
-                winnerIds: winnerIds,
-                pendingDraw: false,
-                table: [],
-            });
-            return;
+        // Если текущий атакующий выбыл, ищем следующего активного
+        const oldAttId = turnOrder[gs.currentAttackerIndex];
+        if (oldAttId && activeIds.includes(oldAttId)) {
+            newAttIndex = newTurnOrder.indexOf(oldAttId);
         } else {
-            phase = 'gameOver';
-            gameOver = true;
-            message = '🏁 Игра окончена!';
+            const oldIdx = turnOrder.indexOf(oldAttId);
+            for (let i = 1; i <= turnOrder.length; i++) {
+                const candidateId = turnOrder[(oldIdx + i) % turnOrder.length];
+                if (activeIds.includes(candidateId)) {
+                    newAttIndex = newTurnOrder.indexOf(candidateId);
+                    break;
+                }
+            }
         }
+        newDefIndex = (newAttIndex + 1) % newTurnOrder.length;
+
+        const attPlayer = updatedPlayers.find(p => p.id === newTurnOrder[newAttIndex]);
+        message = `⚔️ Ход ${escapeHtml(attPlayer?.name || '?')}`;
+        phase = 'attack';
     }
 
     await updateRoom({
@@ -1846,6 +1973,9 @@ function applyFanLayout() {
         deck: currentDeck,
         phase: phase,
         message: message,
+        currentAttackerIndex: newAttIndex,
+        currentDefenderIndex: newDefIndex,
+        turnOrder: newTurnOrder,
         winnerIds: winnerIds,
         pendingDraw: false,
         table: [],
@@ -2028,6 +2158,7 @@ function applyFanLayout() {
             currentUser = null;
             selectedCards.clear();
             defenseMapping = {};
+            shownVictoryModal = false;
             showScreen('screen-login');
             document.getElementById('chat-panel').style.display = 'none';
     document.getElementById('chat-input').value = '';
@@ -2175,7 +2306,11 @@ document.getElementById('btn-back-to-login').addEventListener('click', () => sho
             await startGame();
         });
 
-        document.getElementById('btn-leave-lobby').addEventListener('click', async () => {
+        document.getElementById('btn-leave-lobby').addEventListener('click', () => {
+    showConfirmModal(
+        'Покинуть комнату?',
+        'Вы действительно хотите покинуть лобби?',
+        async () => {
             if (roomCode && currentUser && gameState) {
                 const updatedPlayers = gameState.players.filter(p => p.id !== currentUser.id);
                 if (updatedPlayers.length === 0) {
@@ -2189,7 +2324,9 @@ document.getElementById('btn-back-to-login').addEventListener('click', () => sho
                 }
             }
             resetAll();
-        });
+        }
+    );
+});
 
         // Enter в полях ввода
         document.getElementById('input-name').addEventListener('keydown', (e) => {
