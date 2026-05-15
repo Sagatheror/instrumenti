@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏦 Банкек</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --primary: #4f6ef7;
+            --primary-hover: #3b54d4;
+            --primary-light: #eef1ff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --accent: #8b5cf6;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: 0.2s ease;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font);
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            width: 90%;
+            max-width: 480px;
+        }
+        .toast {
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-align: center;
+            pointer-events: auto;
+            animation: slideDown 0.35s ease, fadeOut 0.4s ease 2.6s forwards;
+            box-shadow: var(--shadow-lg);
+        }
+        .toast.success {
+            background: var(--success);
+            color: #fff;
+        }
+        .toast.error {
+            background: var(--danger);
+            color: #fff;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        #login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            padding: 20px;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+        .login-card .logo {
+            font-size: 3rem;
+            margin-bottom: 6px;
+        }
+        .login-card h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+        .login-card .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+        .login-card label {
+            display: block;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: var(--font);
+            background: #fafbfc;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        .login-card input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 110, 247, 0.1);
+            background: #fff;
+        }
+        .login-card .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: var(--transition);
+        }
+        .login-card .btn-login:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 110, 247, 0.35);
+        }
+        .login-card .hint {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            line-height: 1.4;
+        }
+
+        #game-screen,
+        #admin-screen {
+            display: none;
+            min-height: 100vh;
+            min-width: 90%;
+        }
+        .game-header,
+        .admin-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .game-header .brand,
+        .admin-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+        .player-info,
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+        .player-name,
+        .admin-badge {
+            font-weight: 700;
+            background: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .balance-badge {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--success);
+            background: var(--success-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        .btn-logout {
+            padding: 9px 18px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .btn-logout:hover {
+            background: var(--danger-light);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.6rem;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+        .notification-bell:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .badge:empty {
+            display: none;
+        }
+        .notifications-popup {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: 340px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            padding: 8px 0;
+        }
+        .notifications-popup.open {
+            display: flex;
+        }
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+        }
+        .notif-list {
+            list-style: none;
+        }
+        .notif-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            cursor: pointer;
+        }
+        .notif-item:hover {
+            background: #f8fafc;
+        }
+        .notif-item.unread {
+            background: #eef1ff;
+            font-weight: 600;
+        }
+        .mark-read-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .game-layout,
+        .admin-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 24px auto;
+            padding: 0 20px 40px;
+        }
+        .left-column {
+            flex: 1 1 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 320px;
+        }
+        .right-column {
+            flex: 2 1 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 340px;
+        }
+        .admin-column {
+            flex: 1 1 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.25s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card input[type="text"],
+        .card input[type="number"],
+        .card select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: var(--font);
+            background: #f9fafb;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        .card input:focus,
+        .card select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 110, 247, 0.08);
+            background: #fff;
+        }
+        .quick-amounts {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .quick-amounts button {
+            flex: 1;
+            min-width: 50px;
+            padding: 10px 6px;
+            border: 2px solid var(--border);
+            background: #fafbfc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        .quick-amounts button:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .quick-amounts button.active-amount {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-family: var(--font);
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 14px rgba(79, 110, 247, 0.3);
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        .btn-accent {
+            background: var(--accent);
+            color: #fff;
+            margin-top: 10px;
+        }
+        .btn-accent:hover {
+            background: #7c3aed;
+        }
+        .btn-outline {
+            background: #fff;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .leaderboard-table th {
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            background: #fafbfc;
+        }
+        .leaderboard-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .rank {
+            font-weight: 700;
+            color: var(--text-secondary);
+            width: 40px;
+        }
+        .current-player-row {
+            background: var(--primary-light) !important;
+            font-weight: 700;
+        }
+        .balance-cell {
+            font-weight: 700;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .tx-list {
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .tx-list li {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .tx-icon {
+            font-size: 1.4rem;
+        }
+        .tx-amount.positive {
+            color: var(--success);
+            font-weight: 700;
+        }
+        .tx-amount.negative {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .timer-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+        .modal {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 24px;
+            min-width: 300px;
+            text-align: center;
+        }
+        .modal h3 {
+            margin-bottom: 16px;
+        }
+        .modal .btn {
+            margin: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .game-layout,
+            .admin-layout {
+                flex-direction: column;
+                padding: 0 12px 24px;
+            }
+            .left-column,
+            .right-column,
+            .admin-column {
+                flex: 1 1 auto;
+            }
+            .game-header,
+            .admin-header {
+                padding: 12px 16px;
+            }
+            .notifications-popup {
+                width: 280px;
+                right: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <!-- Экран входа -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="logo"><i class="fa-solid fa-building-columns"></i></div>
+            <h1>Банк</h1>
+            <p class="subtitle">Многопользовательская экономическая игра</p>
+            <label for="nickname-input">Никнейм (ID игрока)</label>
+            <input type="text" id="nickname-input" placeholder="Например: Кек" autocomplete="off" maxlength="30" />
+            <label for="password-input">Пароль</label>
+            <input type="password" id="password-input" placeholder="" autocomplete="off" maxlength="50" />
+            <button class="btn-login" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Войти в игру</button>
+            <p class="hint">💡 Новый никнейм = аккаунт со стартовым балансом <strong>1&nbsp;000</strong>.<br>Если никнейм занят — вы войдёте в существующий аккаунт.</p>
+        </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div id="game-screen">
+        <header class="game-header">
+            <div class="brand"><i class="fa-solid fa-building-columns"></i><span>Банк</span></div>
+            <div class="player-info">
+                <span class="player-name" id="header-player-name">👤 —</span>
+                <span class="balance-badge" id="header-balance">💰 0</span>
+                <button class="notification-bell" id="notification-bell"><i class="fa-solid fa-bell"></i><span class="badge" id="notification-badge"></span></button>
+                <div class="notifications-popup" id="notifications-popup">
+                    <div class="notif-header"><span><i class="fa-solid fa-bell"></i> Уведомления</span><button class="mark-read-btn" id="mark-all-read">Прочитать все</button></div>
+                    <ul class="notif-list" id="notif-list"></ul>
+                </div>
+                <button class="btn-logout" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Выйти</button>
+            </div>
+        </header>
+
+        <main class="game-layout">
+            <div class="left-column">
+                <div class="card" style='display:none'>
+                    <h3>💳 Пополнить / Снять</h3>
+                    <div class="quick-amounts" id="quick-amounts-dw">
+                        <button data-amount="100">100</button><button data-amount="500">500</button>
+                        <button data-amount="1000" class="active-amount">1000</button><button data-amount="5000">5000</button>
+                    </div>
+                    <input type="number" id="dw-amount" value="1000" min="1" step="1" placeholder="Сумма" />
+                    <div class="input-group">
+                        <button class="btn btn-success" id="deposit-btn" style="flex:1;">📥 Пополнить</button>
+                        <button class="btn btn-danger" id="withdraw-btn" style="flex:1;">📤 Снять</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-money-bill-transfer"></i> Перевод денег</h3>
+                    <input type="text" id="transfer-to" placeholder="Никнейм получателя" autocomplete="off" maxlength="30" />
+                    <div class="quick-amounts" id="quick-amounts-tr">
+                        <button data-amount="50">50</button><button data-amount="200">200</button>
+                        <button data-amount="500" class="active-amount">500</button><button data-amount="1000">1000</button>
+                    </div>
+                    <input type="number" id="transfer-amount" value="500" min="1" step="1" placeholder="Сумма перевода" />
+                    <input type="text" id="transfer-message" placeholder="Сообщение (необязательно)" maxlength="200" />
+                    <button class="btn btn-primary" id="transfer-btn" style="width:100%;"><i class="fa-solid fa-right-left"></i> Перевести</button>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-dice"></i> Дуэль на кубиках</h3>
+                    <select id="duel-opponent-select"></select>
+                    <input type="number" id="duel-amount" value="100" min="1" step="1" placeholder="Ставка" />
+                    <button class="btn btn-warning" id="duel-challenge-btn" style="width:100%;"><i class="fa-solid fa-dice"></i> Вызвать на дуэль</button>
+                    <div style="margin-top:12px; font-size:0.85rem;"><strong>Активные дуэли:</strong><div id="active-duels-list">—</div></div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-piggy-bank"></i> Общий банк</h3>
+                    <div id="goal-info">Загрузка...</div>
+                    <div class="progress-bar"><div class="progress-fill" id="goal-progress-fill" style="width:0%;"></div></div>
+                    <input type="number" id="goal-contribution" value="50" min="1" step="1" placeholder="Сумма взноса" />
+                    <button class="btn btn-primary" id="goal-contribute-btn" style="width:100%;"><i class="fa-solid fa-coins"></i> Внести вклад</button>
+                    <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:6px;">🎯 При достижении цели каждый участник получает +50% к вкладу!</p>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-ticket"></i> Джекпот Лотерея</h3>
+                    <div id="jackpot-info">Билетов: 0 / 5 | Джекпот: 0 💰</div>
+                    <button class="btn btn-accent" id="jackpot-buy-btn" style="width:100%;"><i class="fa-solid fa-ticket"></i> Купить билет (50💰)</button>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-briefcase"></i> Заработок</h3>
+                    <button class="btn btn-outline" id="daily-bonus-btn" style="width:100%; margin-bottom:8px;"><i class="fa-solid fa-gift"></i> Ежедневный бонус</button>
+                    <span id="daily-bonus-timer" class="timer-text"></span>
+                    <button class="btn btn-outline" id="work-btn" style="width:100%; margin:8px 0;"><i class="fa-solid fa-hammer"></i> Работать (30 сек)</button>
+                    <span id="work-timer" class="timer-text"></span>
+                    <button class="btn btn-outline" id="lottery-btn" style="width:100%; margin:8px 0;"><i class="fa-solid fa-ticket"></i> Лотерея (50💰)</button>
+                    <span id="lottery-info" class="timer-text"></span>
+                    <button class="btn btn-outline" id="rps-btn" style="width:100%;"><i class="fa-solid fa-hand-scissors"></i> КНБ (ставка 50💰)</button>
+                    <span id="rps-info" class="timer-text"></span>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="card">
+                    <h3><i class="fa-solid fa-trophy"></i> Лидерборд</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="leaderboard-table" id="leaderboard-table">
+                            <thead><tr><th>#</th><th>Игрок</th><th>Баланс</th></tr></thead>
+                            <tbody id="leaderboard-body"><tr><td colspan="3">⏳ Загрузка...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-list"></i> Последние транзакции</h3>
+                    <ul class="tx-list" id="tx-list"><li>📭 Пока нет транзакций</li></ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Админский экран -->
+    <div id="admin-screen">
+        <header class="admin-header">
+            <div class="brand"><i class="fa-solid fa-building-columns"></i><span>Панель администратора</span></div>
+            <div class="admin-info">
+                <span class="admin-badge" id="admin-badge"><i class="fa-solid fa-crown"></i> admin</span>
+                <span class="balance-badge" id="admin-balance">💰 0</span>
+                <button class="btn-logout" id="admin-logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Выйти</button>
+            </div>
+        </header>
+        <main class="admin-layout">
+            <div class="admin-column">
+                <div class="card">
+                    <h3><i class="fa-solid fa-users-gear"></i> Управление игроками</h3>
+                    <select id="admin-player-select"></select>
+                    <input type="number" id="admin-adjust-amount" placeholder="Сумма" value="100" />
+                    <div class="input-group">
+                        <button class="btn btn-success" id="admin-add-funds"><i class="fa-solid fa-circle-plus"></i> Пополнить</button>
+                        <button class="btn btn-danger" id="admin-remove-funds"><i class="fa-solid fa-circle-minus"></i> Списать</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-gift"></i> Раздать всем</h3>
+                    <input type="number" id="admin-distribute-amount" placeholder="Сумма на всех" value="500" />
+                    <button class="btn btn-primary" id="admin-distribute-btn"><i class="fa-solid fa-gift"></i> Раздать поровну</button>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-list"></i> Транзакции</h3>
+                    <ul class="tx-list" id="admin-tx-list"><li>Загрузка...</li></ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно КНБ -->
+    <div id="rps-modal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <h3>✂️ Камень, ножницы, бумага</h3>
+            <p>Ставка: 50 💰</p>
+            <button class="btn btn-outline rps-choice" data-choice="камень"><i class="fa-solid fa-hand-back-fist"></i> Камень</button>
+            <button class="btn btn-outline rps-choice" data-choice="ножницы"><i class="fa-solid fa-hand-scissors"></i> Ножницы</button>
+            <button class="btn btn-outline rps-choice" data-choice="бумага"><i class="fa-solid fa-hand"></i> Бумага</button>
+            <br>
+            <button class="btn btn-sm btn-danger" id="rps-cancel">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDXYBN7Cn08VZ3YJoAcS3IoKbdve4s0Y78",
+                authDomain: "fool-card-game.firebaseapp.com",
+                databaseURL: "https://fool-card-game-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "fool-card-game",
+                storageBucket: "fool-card-game.firebasestorage.app",
+                messagingSenderId: "2930401595",
+                appId: "1:2930401595:web:3191b624e359e4eabd171e"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+
+            // Утилиты
+            const $ = id => document.getElementById(id);
+            function toast(msg, type = 'success') {
+                const t = document.createElement('div');
+                t.className = `toast ${type}`;
+                t.textContent = msg;
+                $('toast-container').appendChild(t);
+                setTimeout(() => t.remove(), 3100);
+            }
+            function esc(s) {
+                const d = document.createElement('div');
+                d.textContent = s || '';
+                return d.innerHTML;
+            }
+            function formatTime(ts) {
+                if (!ts) return 'только что';
+                const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+                const diff = Math.floor((Date.now() - d) / 1000);
+                if (diff < 5) return 'только что';
+                if (diff < 60) return `${diff}с`;
+                const m = Math.floor(diff / 60);
+                if (m < 60) return `${m}м`;
+                return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            // Состояние
+            let currentPlayerId = null;
+            let currentBalance = 0;
+            let isAdmin = false;
+            let allPlayers = [];
+            let unsubPlayers, unsubTxs, unsubNotifs, unsubDuels, unsubGoal, unsubJackpot, unsubAdmin;
+
+            // DOM-элементы
+            const loginScreen = $('login-screen'),
+                gameScreen = $('game-screen'),
+                adminScreen = $('admin-screen');
+            const nicknameInput = $('nickname-input'),
+                passwordInput = $('password-input'),
+                loginBtn = $('login-btn');
+            const headerPlayerName = $('header-player-name'),
+                headerBalance = $('header-balance');
+            const dwAmount = $('dw-amount'),
+                depositBtn = $('deposit-btn'),
+                withdrawBtn = $('withdraw-btn');
+            const transferTo = $('transfer-to'),
+                transferAmount = $('transfer-amount'),
+                transferBtn = $('transfer-btn');
+            const leaderboardBody = $('leaderboard-body'),
+                txList = $('tx-list');
+            const quickDW = $('quick-amounts-dw'),
+                quickTR = $('quick-amounts-tr');
+            const notifBell = $('notification-bell'),
+                notifBadge = $('notification-badge'),
+                notifPopup = $('notifications-popup'),
+                notifList = $('notif-list'),
+                markAllRead = $('mark-all-read');
+            const duelOpponent = $('duel-opponent-select'),
+                duelAmount = $('duel-amount'),
+                duelChallenge = $('duel-challenge-btn'),
+                activeDuels = $('active-duels-list');
+            const goalInfo = $('goal-info'),
+                goalProgress = $('goal-progress-fill'),
+                goalContribution = $('goal-contribution'),
+                goalContributeBtn = $('goal-contribute-btn');
+            const jackpotInfo = $('jackpot-info'),
+                jackpotBuyBtn = $('jackpot-buy-btn');
+            const dailyBonusBtn = $('daily-bonus-btn'),
+                dailyTimer = $('daily-bonus-timer');
+            const workBtn = $('work-btn'),
+                workTimer = $('work-timer');
+            const lotteryBtn = $('lottery-btn'),
+                lotteryInfo = $('lottery-info');
+            const rpsBtn = $('rps-btn'),
+                rpsInfo = $('rps-info');
+            const rpsModal = $('rps-modal');
+            const logoutBtn = $('logout-btn');
+            const adminBadge = $('admin-badge'),
+                adminBalance = $('admin-balance'),
+                adminPlayerSelect = $('admin-player-select'),
+                adminAdjustAmount = $('admin-adjust-amount'),
+                adminAddFunds = $('admin-add-funds'),
+                adminRemoveFunds = $('admin-remove-funds'),
+                adminDistributeAmount = $('admin-distribute-amount'),
+                adminDistributeBtn = $('admin-distribute-btn'),
+                adminTxList = $('admin-tx-list'),
+                adminLogoutBtn = $('admin-logout-btn');
+
+            function showLoginScreen() {
+                gameScreen.style.display = 'none';
+                adminScreen.style.display = 'none';
+                loginScreen.style.display = 'flex';
+                nicknameInput.value = '';
+                passwordInput.value = '';
+                unsubscribeAll();
+            }
+
+            function showGameScreen() {
+                loginScreen.style.display = 'none';
+                adminScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
+            }
+
+            function showAdminScreen() {
+                loginScreen.style.display = 'none';
+                gameScreen.style.display = 'none';
+                adminScreen.style.display = 'block';
+            }
+
+            function updateHeader() {
+    if (isAdmin) {
+        adminBadge.innerHTML = '<i class="fa-solid fa-crown"></i> admin';
+        adminBalance.innerHTML = `<i class="fa-solid fa-coins"></i> ${currentBalance.toLocaleString('ru-RU')}`;
+    } else {
+        headerPlayerName.innerHTML = `<i class="fa-solid fa-user"></i> ${currentPlayerId}`;
+        headerBalance.innerHTML = `<i class="fa-solid fa-coins"></i> ${currentBalance.toLocaleString('ru-RU')}`;
+    }
+}
+
+            function unsubscribeAll() {
+                [unsubPlayers, unsubTxs, unsubNotifs, unsubDuels, unsubGoal, unsubJackpot, unsubAdmin].forEach(fn => {
+                    if (fn) fn();
+                });
+                unsubPlayers = unsubTxs = unsubNotifs = unsubDuels = unsubGoal = unsubJackpot = unsubAdmin = null;
+            }
+
+            // Подписки для игрока
+            function subscribePlayers() {
+                if (unsubPlayers) unsubPlayers();
+                unsubPlayers = db.collection('players').orderBy('balance', 'desc').onSnapshot(snap => {
+                    allPlayers = [];
+                    snap.forEach(d => allPlayers.push({ id: d.id, ...d.data() }));
+                    if (!isAdmin) {
+                        renderLeaderboard(allPlayers);
+                        populateOpponentSelect();
+                        const me = allPlayers.find(p => p.id === currentPlayerId);
+                        if (me) {
+                            currentBalance = me.balance || 0;
+                            updateHeader();
+                            updateTimers(me);
+                        }
+                    } else {
+                        const adminData = allPlayers.find(p => p.id === 'admin');
+                        if (adminData) {
+                            currentBalance = adminData.balance || 0;
+                            updateHeader();
+                        }
+                        renderAdminPlayerList(allPlayers);
+                    }
+                });
+            }
+
+            function subscribeTransactions() {
+                if (unsubTxs) unsubTxs();
+                const ref = db.collection('transactions').orderBy('timestamp', 'desc').limit(30);
+                unsubTxs = ref.onSnapshot(snap => {
+                    const txs = [];
+                    snap.forEach(d => txs.push({ id: d.id, ...d.data() }));
+                    if (isAdmin) {
+                        renderAdminTransactions(txs);
+                    } else {
+                        renderTransactions(txs);
+                    }
+                });
+            }
+
+            function subscribeNotifications() {
+                if (!currentPlayerId || isAdmin) return;
+                if (unsubNotifs) unsubNotifs();
+                unsubNotifs = db.collection('notifications').where('playerId', '==', currentPlayerId)
+                    .onSnapshot(snap => {
+                        const notifs = [];
+                        snap.forEach(d => notifs.push({ id: d.id, ...d.data() }));
+                        notifs.sort((a, b) => (b.timestamp?.toDate?.() || 0) - (a.timestamp?.toDate?.() || 0));
+                        renderNotifBadge(notifs);
+                        renderNotifList(notifs.slice(0, 50));
+                    });
+            }
+
+            function subscribeDuels() {
+                if (!currentPlayerId || isAdmin) return;
+                if (unsubDuels) unsubDuels();
+                unsubDuels = db.collection('duels').where('status', 'in', ['pending', 'active']).onSnapshot(snap => {
+                    const duels = [];
+                    snap.forEach(d => duels.push({ id: d.id, ...d.data() }));
+                    renderActiveDuels(duels);
+                });
+            }
+
+            function subscribeGoal() {
+                if (unsubGoal) unsubGoal();
+                unsubGoal = db.collection('groupGoal').doc('active').onSnapshot(doc => {
+                    if (doc.exists && !isAdmin) renderGoal(doc.data());
+                    else if (!doc.exists) db.collection('groupGoal').doc('active').set({ target: 5000,
+                        current: 0, contributors: {}, status: 'active' });
+                });
+            }
+
+            function subscribeJackpot() {
+                if (unsubJackpot) unsubJackpot();
+                unsubJackpot = db.collection('jackpot').doc('current').onSnapshot(doc => {
+                    if (doc.exists && !isAdmin) {
+                        const d = doc.data();
+                        jackpotInfo.textContent =
+                            `Билетов: ${d.tickets?.length || 0} / 5 | Джекпот: ${(d.prizePool || 0).toLocaleString('ru-RU')} 💰`;
+                        jackpotBuyBtn.disabled = (d.status !== 'open');
+                    } else if (!doc.exists) {
+                        db.collection('jackpot').doc('current').set({ tickets: [], prizePool: 0,
+                            status: 'open' });
+                    }
+                });
+            }
+
+            // Рендеры игрока
+            function renderLeaderboard(players) {
+                if (!players.length) {
+                    leaderboardBody.innerHTML = '<tr><td colspan="3">Нет игроков</td></tr>';
+                    return;
+                }
+                leaderboardBody.innerHTML = players
+                    .filter(p => p.id !== 'admin')
+                    .map((p, i) => {
+                        const rank = i + 1;
+                        let medal = '';
+if (rank === 1) medal = '<i class="fa-solid fa-medal" style="color: gold;"></i>';
+else if (rank === 2) medal = '<i class="fa-solid fa-medal" style="color: silver;"></i>';
+else if (rank === 3) medal = '<i class="fa-solid fa-medal" style="color: #cd7f32;"></i>';
+                        const isMe = p.id === currentPlayerId;
+                        return `<tr class="${isMe ? 'current-player-row' : ''}"><td>${rank} ${medal}</td><td>${esc(p.id)}${isMe ? ' ⭐' : ''}</td><td class="balance-cell">${(p.balance || 0).toLocaleString('ru-RU')} 💰</td></tr>`;
+                    }).join('');
+            }
+
+            function populateOpponentSelect() {
+                const cur = duelOpponent.value;
+                duelOpponent.innerHTML = '<option value="">-- Выберите --</option>';
+                allPlayers.forEach(p => {
+                    if (p.id !== currentPlayerId && p.id !== 'admin') {
+                        const o = document.createElement('option');
+                        o.value = p.id;
+                        o.textContent = p.id;
+                        duelOpponent.appendChild(o);
+                    }
+                });
+                if (cur && [...duelOpponent.options].some(o => o.value === cur)) duelOpponent.value = cur;
+            }
+
+            function renderTransactions(txs) {
+                if (!txs.length) {
+                    txList.innerHTML = '<li>Нет транзакций</li>';
+                    return;
+                }
+                txList.innerHTML = txs.map(tx => {
+                    let icon = '💱',
+                        players = '',
+                        cls = 'neutral',
+                        prefix = '';
+                    if (tx.type === 'deposit') {
+    icon = '<i class="fa-solid fa-arrow-down"></i>';
+    players = `Банк → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+} else if (tx.type === 'withdraw') {
+    icon = '<i class="fa-solid fa-arrow-up"></i>';
+    players = `<b>${esc(tx.from)}</b> → Банк`;
+    cls = 'negative'; prefix = '-';
+} else if (tx.type === 'transfer') {
+    icon = '<i class="fa-solid fa-money-bill-transfer"></i>';
+    players = `<b>${esc(tx.from)}</b> → <b>${esc(tx.to)}</b>`;
+    if (tx.message) players += `<br><small><i class="fa-solid fa-comment"></i> ${esc(tx.message)}</small>`;
+    if (currentPlayerId && tx.to === currentPlayerId) { cls = 'positive'; prefix = '+'; }
+    else if (currentPlayerId && tx.from === currentPlayerId) { cls = 'negative'; prefix = '-'; }
+} else if (tx.type === 'duel') {
+    icon = '<i class="fa-solid fa-dice"></i>';
+    players = `Дуэль: <b>${esc(tx.from)}</b> vs <b>${esc(tx.to)}</b>`;
+    if (tx.winner === currentPlayerId) { cls = 'positive'; prefix = '+'; }
+    else if (tx.loser === currentPlayerId) { cls = 'negative'; prefix = '-'; }
+} else if (tx.type === 'daily_bonus' || tx.type === 'work') {
+    icon = '<i class="fa-solid fa-gift"></i>';
+    players = `Система → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+} else if (tx.type === 'lottery_bet') {
+    icon = '<i class="fa-solid fa-ticket"></i>';
+    players = `<b>${esc(tx.from)}</b> → Лотерея`;
+    cls = 'negative'; prefix = '-';
+} else if (tx.type === 'lottery_win') {
+    icon = '<i class="fa-solid fa-ticket"></i>';
+    players = `Лотерея → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+} else if (tx.type === 'rps_bet') {
+    icon = '<i class="fa-solid fa-hand-scissors"></i>';
+    players = `<b>${esc(tx.from)}</b> → КНБ`;
+    cls = 'negative'; prefix = '-';
+} else if (tx.type === 'rps_win') {
+    icon = '<i class="fa-solid fa-hand-scissors"></i>';
+    players = `КНБ → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+} else if (tx.type === 'jackpot_win') {
+    icon = '<i class="fa-solid fa-ticket"></i>';
+    players = `Джекпот → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+} else if (tx.type === 'goal_reward') {
+    icon = '<i class="fa-solid fa-piggy-bank"></i>';
+    players = `Общий банк → <b>${esc(tx.to)}</b>`;
+    cls = 'positive'; prefix = '+';
+}
+                    const time = formatTime(tx.timestamp);
+                    return `<li><span class="tx-icon">${icon}</span><div style="flex:1">${players}<br><small>${time}</small></div><span class="tx-amount ${cls}">${prefix}${(tx.amount || 0).toLocaleString('ru-RU')} 💰</span></li>`;
+                }).join('');
+            }
+
+            function renderNotifBadge(notifs) {
+                const unread = notifs.filter(n => !n.read).length;
+                notifBadge.textContent = unread || '';
+            }
+
+            function renderNotifList(notifs) {
+                if (!notifs.length) {
+                    notifList.innerHTML = '<li class="notif-empty">Нет уведомлений</li>';
+                    return;
+                }
+                notifList.innerHTML = notifs.map(n => {
+                    let icon = '💬',
+                        msg = '';
+                    if (n.type === 'transfer_in') {
+    icon = '<i class="fa-solid fa-money-bill-transfer"></i>';
+    let msgText = `<b>${esc(n.from)}</b> перевёл вам ${n.amount.toLocaleString()} 💰`;
+    if (n.message) msgText += `<br><small><i class="fa-solid fa-comment"></i> ${esc(n.message)}</small>`;
+    msg = msgText;
+} else if (n.type === 'duel_challenge') {
+    icon = '<i class="fa-solid fa-dice"></i>';
+    msg = `<b>${esc(n.from)}</b> вызывает на дуэль! Ставка ${n.amount.toLocaleString()}`;
+} else if (n.type === 'duel_result') {
+    icon = '<i class="fa-solid fa-dice"></i>';
+    msg = n.message;
+} else if (n.type === 'goal_reward') {
+    icon = '<i class="fa-solid fa-piggy-bank"></i>';
+    msg = `Общий банк достиг цели! Бонус ${n.amount.toLocaleString()} 💰`;
+} else if (n.type === 'jackpot_win') {
+    icon = '<i class="fa-solid fa-ticket"></i>';
+    msg = `Вы выиграли джекпот! ${n.amount.toLocaleString()} 💰`;
+}
+                    return `<li class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}"><span>${icon}</span> ${msg}</li>`;
+                }).join('');
+                notifList.querySelectorAll('.notif-item').forEach(el => el.addEventListener('click', async () => {
+                    await db.collection('notifications').doc(el.dataset.id).update({ read: true });
+                }));
+            }
+
+            notifBell.addEventListener('click', e => { e.stopPropagation();
+                notifPopup.classList.toggle('open'); });
+            document.addEventListener('click', e => {
+                if (!notifPopup.contains(e.target) && e.target !== notifBell) notifPopup.classList.remove(
+                    'open');
+            });
+            markAllRead.addEventListener('click', async () => {
+                if (!currentPlayerId) return;
+                const batch = db.batch();
+                const snap = await db.collection('notifications').where('playerId', '==', currentPlayerId).where(
+                    'read', '==', false).get();
+                snap.forEach(d => batch.update(d.ref, { read: true }));
+                await batch.commit();
+                notifPopup.classList.remove('open');
+            });
+
+            function renderActiveDuels(duels) {
+                const my = duels.filter(d => d.challenger === currentPlayerId || d.opponent === currentPlayerId);
+                if (!my.length) { activeDuels.innerHTML = '<span>Нет активных дуэлей</span>'; return; }
+                activeDuels.innerHTML = my.map(d => {
+                    let btn = '';
+                    if (d.status === 'pending' && d.opponent === currentPlayerId) btn =
+                        `<button class="btn btn-sm btn-success accept-duel" data-id="${d.id}">Принять</button>`;
+                    else if (d.status === 'pending') btn = '<span>Ожидание...</span>';
+                    return `<div style="margin:4px 0;display:flex;justify-content:space-between;">${esc(d.challenger)} vs ${esc(d.opponent)} (${d.amount}💰) ${btn}</div>`;
+                }).join('');
+                document.querySelectorAll('.accept-duel').forEach(b => b.addEventListener('click', async e => {
+                    await acceptDuel(e.target.dataset.id);
+                }));
+            }
+
+            duelChallenge.addEventListener('click', async () => {
+                if (!currentPlayerId) return;
+                const opp = duelOpponent.value,
+                    amt = parseInt(duelAmount.value);
+                if (!opp) return toast('Выберите соперника', 'error');
+                if (!amt || amt <= 0) return toast('Введите ставку', 'error');
+                if (amt > currentBalance) return toast('Недостаточно средств', 'error');
+                duelChallenge.disabled = true;
+                try {
+                    await db.collection('duels').add({
+                        challenger: currentPlayerId,
+                        opponent: opp,
+                        amount: amt,
+                        status: 'pending',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    await db.collection('notifications').add({
+                        playerId: opp,
+                        type: 'duel_challenge',
+                        from: currentPlayerId,
+                        amount: amt,
+                        read: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    toast('Вызов отправлен!');
+                } catch (e) { toast('Ошибка', 'error'); } finally { duelChallenge.disabled = false; }
+            });
+
+            async function acceptDuel(duelId) {
+                const ref = db.collection('duels').doc(duelId);
+                try {
+                    await db.runTransaction(async tx => {
+                        const dd = await tx.get(ref);
+                        if (!dd.exists) throw new Error('Дуэль не найдена');
+                        const d = dd.data();
+                        if (d.status !== 'pending' || d.opponent !== currentPlayerId) throw new Error(
+                            'Неактивна');
+                        const cr = db.collection('players').doc(d.challenger),
+                            or = db.collection('players').doc(currentPlayerId);
+                        const [cd, od] = await Promise.all([tx.get(cr), tx.get(or)]);
+                        const cb = cd.data().balance || 0,
+                            ob = od.data().balance || 0;
+                        if (cb < d.amount || ob < d.amount) throw new Error('Недостаточно средств');
+                        const r1 = Math.floor(Math.random() * 6) + 1,
+                            r2 = Math.floor(Math.random() * 6) + 1;
+                        let winner, loser;
+                        if (r1 > r2) { winner = d.challenger;
+                            loser = d.opponent; } else if (r2 > r1) { winner = d.opponent;
+                            loser = d.challenger; }
+                        if (winner) {
+                            tx.update(cr, { balance: winner === d.challenger ? cb + d.amount : cb - d
+                                    .amount });
+                            tx.update(or, { balance: winner === d.opponent ? ob + d.amount : ob - d
+                                .amount });
+                        }
+                        tx.update(ref, { status: 'completed', winner, loser, roll1: r1, roll2: r2,
+                            completedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        const txRef = db.collection('transactions').doc();
+                        tx.set(txRef, { from: d.challenger, to: d.opponent, amount: d.amount, type: 'duel',
+                            winner, loser, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                        const n1 = db.collection('notifications').doc(),
+                            n2 = db.collection('notifications').doc();
+                        tx.set(n1, { playerId: d.challenger, type: 'duel_result', message: winner === d
+                                .challenger ? `Вы выиграли дуэль (+${d.amount}💰)` : (winner ?
+                                    `Вы проиграли дуэль (-${d.amount}💰)` : 'Ничья'), read: false,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                        tx.set(n2, { playerId: d.opponent, type: 'duel_result', message: winner === d.opponent ?
+                                `Вы выиграли дуэль (+${d.amount}💰)` : (winner ?
+                                    `Вы проиграли дуэль (-${d.amount}💰)` : 'Ничья'), read: false,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    });
+                    toast('Дуэль завершена!');
+                } catch (e) { toast('Ошибка: ' + e.message, 'error'); }
+            }
+
+            goalContributeBtn.addEventListener('click', async () => {
+    if (!currentPlayerId) return;
+    const amt = parseInt(goalContribution.value);
+    if (!amt || amt <= 0) return toast('Введите сумму', 'error');
+    if (amt > currentBalance) return toast('Недостаточно средств', 'error');
+    goalContributeBtn.disabled = true;
+    try {
+        await db.runTransaction(async tx => {
+            const goalRef = db.collection('groupGoal').doc('active');
+            const playerRef = db.collection('players').doc(currentPlayerId);
+
+            // Читаем цель и игрока
+            const [goalDoc, playerDoc] = await Promise.all([tx.get(goalRef), tx.get(playerRef)]);
+            if (!goalDoc.exists) throw new Error('Цель не найдена');
+            const goal = goalDoc.data();
+            const bal = playerDoc.data().balance || 0;
+            if (bal < amt) throw new Error('Недостаточно средств');
+
+            const newCurrent = (goal.current || 0) + amt;
+            const contributors = { ...(goal.contributors || {}) };
+            contributors[currentPlayerId] = (contributors[currentPlayerId] || 0) + amt;
+
+            // Если цель будет достигнута, заранее читаем балансы всех контрибьюторов
+            const contributorBalances = {};
+            if (newCurrent >= goal.target) {
+                for (const pid of Object.keys(contributors)) {
+                    if (pid === currentPlayerId) continue; // свой баланс уже знаем
+                    const ref = db.collection('players').doc(pid);
+                    const doc = await tx.get(ref);
+                    contributorBalances[pid] = doc.data()?.balance || 0;
+                }
+            }
+
+            // Теперь можно выполнять все записи
+            tx.update(playerRef, { balance: bal - amt });
+            const goalUpdate = { current: newCurrent, contributors };
+
+            if (newCurrent >= goal.target) {
+                const bonusMult = 1.5;
+                for (const [pid, contrib] of Object.entries(contributors)) {
+                    if (contrib <= 0) continue;
+                    const bonus = Math.floor(contrib * bonusMult);
+                    const ref = db.collection('players').doc(pid);
+                    let oldBal;
+                    if (pid === currentPlayerId) oldBal = bal - amt; // уже уменьшен
+                    else oldBal = contributorBalances[pid];
+                    tx.update(ref, { balance: oldBal + bonus });
+                    // Уведомление
+                    tx.set(db.collection('notifications').doc(), {
+                        playerId: pid, type: 'goal_reward', amount: bonus,
+                        message: `Общий банк достиг цели! Бонус ${bonus} 💰`,
+                        read: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                goalUpdate.target = Math.floor(goal.target * 1.8);
+                goalUpdate.current = 0;
+                goalUpdate.contributors = {};
+            }
+            tx.update(goalRef, goalUpdate);
+        });
+        toast('Вклад принят!');
+    } catch (e) { toast('Ошибка: ' + e.message, 'error'); } finally { goalContributeBtn.disabled = false; }
+});
+
+            function renderGoal(data) {
+                const t = data.target || 5000,
+                    c = data.current || 0;
+                const pct = Math.min(100, Math.round((c / t) * 100));
+                goalProgress.style.width = pct + '%';
+                goalInfo.innerHTML =
+                    `🎯 Цель: <b>${t.toLocaleString()} 💰</b> | Собрано: <b>${c.toLocaleString()} 💰</b> (${pct}%)`;
+            }
+
+            jackpotBuyBtn.addEventListener('click', async () => {
+    if (!currentPlayerId) return;
+    if (currentBalance < 50) return toast('Недостаточно средств (50💰)', 'error');
+    jackpotBuyBtn.disabled = true;
+    try {
+        await db.runTransaction(async tx => {
+            const jref = db.collection('jackpot').doc('current');
+            const pref = db.collection('players').doc(currentPlayerId);
+            const adminRef = db.collection('players').doc('admin');
+
+            // 1. Читаем всё необходимое
+            const [jdoc, pdoc, adoc] = await Promise.all([tx.get(jref), tx.get(pref), tx.get(adminRef)]);
+            if (!jdoc.exists) throw new Error('Джекпот не найден');
+            const j = jdoc.data();
+            if (j.status !== 'open') throw new Error('Розыгрыш уже идёт');
+            const bal = pdoc.data().balance || 0;
+            if (bal < 50) throw new Error('Недостаточно средств');
+            const adminBal = adoc.data()?.balance || 0;
+
+            // 2. Подготовка данных
+            const newTickets = [...(j.tickets || []), { playerId: currentPlayerId, ticketId: Date.now().toString(36) + Math.random().toString(36).substr(2, 5) }];
+            const newPrize = (j.prizePool || 0) + 50;
+            const updateData = { tickets: newTickets, prizePool: newPrize };
+
+            // Если джекпот разыгран, читаем победителя заранее
+            let winnerId = null, winnerBalance = 0;
+            if (newTickets.length >= 5) {
+                const winnerTicket = newTickets[Math.floor(Math.random() * newTickets.length)];
+                winnerId = winnerTicket.playerId;
+                const wref = db.collection('players').doc(winnerId);
+                const wdoc = await tx.get(wref);
+                winnerBalance = (wdoc.data()?.balance || 0) + newPrize;
+                updateData.tickets = [];
+                updateData.prizePool = 0;
+                updateData.status = 'open';
+            }
+
+            // 3. Все записи
+            tx.update(pref, { balance: bal - 50 });
+            tx.update(adminRef, { balance: adminBal + 50 });
+
+            if (winnerId) {
+                tx.update(db.collection('players').doc(winnerId), { balance: winnerBalance });
+                tx.update(adminRef, { balance: (adminBal + 50) - newPrize }); // вычитаем выигрыш
+                const nref = db.collection('notifications').doc();
+                tx.set(nref, { playerId: winnerId, type: 'jackpot_win', amount: newPrize,
+                    message: `Вы выиграли джекпот ${newPrize} 💰!`, read: false,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                const txRef = db.collection('transactions').doc();
+                tx.set(txRef, { from: 'admin', to: winnerId, amount: newPrize, type: 'jackpot_win',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+
+            tx.update(jref, updateData);
+            // Транзакция покупки билета
+            tx.set(db.collection('transactions').doc(), { from: currentPlayerId, to: 'admin', amount: 50,
+                type: 'lottery_bet', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        });
+        toast('Билет куплен!');
+    } catch (e) { toast('Ошибка: ' + e.message, 'error'); } finally { jackpotBuyBtn.disabled = false; }
+});
+
+            function updateTimers(playerData) {
+                const now = firebase.firestore.Timestamp.now();
+                const lastDaily = playerData.lastDailyBonus?.toDate();
+                if (lastDaily) {
+                    const diff = 24 * 60 * 60 * 1000 - (now.toDate() - lastDaily);
+                    if (diff > 0) { dailyBonusBtn.disabled = true;
+                        dailyTimer.textContent = `Доступен через ${msToTime(diff)}`; } else { dailyBonusBtn
+                            .disabled = false;
+                        dailyTimer.textContent = ''; }
+                } else { dailyBonusBtn.disabled = false;
+                    dailyTimer.textContent = ''; }
+                const lastWork = playerData.lastWorkTime?.toDate();
+                if (lastWork) {
+                    const diff = 30000 - (now.toDate() - lastWork);
+                    if (diff > 0) { workBtn.disabled = true;
+                        workTimer.textContent = `Доступна через ${msToTime(diff)}`; } else { workBtn.disabled =
+                            false;
+                        workTimer.textContent = ''; }
+                } else { workBtn.disabled = false;
+                    workTimer.textContent = ''; }
+            }
+
+            function msToTime(ms) {
+                const s = Math.floor(ms / 1000),
+                    m = Math.floor(s / 60),
+                    sec = s % 60;
+                return `${m}:${sec.toString().padStart(2, '0')}`;
+            }
+
+            dailyBonusBtn.addEventListener('click', async () => {
+                if (!currentPlayerId) return;
+                dailyBonusBtn.disabled = true;
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(currentPlayerId);
+                        const doc = await tx.get(ref);
+                        const data = doc.data();
+                        const now = firebase.firestore.Timestamp.now();
+                        if (data.lastDailyBonus?.toDate() && (now.toDate() - data.lastDailyBonus.toDate()) <
+                            24 * 60 * 60 * 1000) throw new Error('Уже получали');
+                        const bonus = Math.floor(Math.random() * 401) + 100;
+                        tx.update(ref, { balance: (data.balance || 0) + bonus, lastDailyBonus: now });
+                        tx.set(db.collection('transactions').doc(), { from: 'system', to: currentPlayerId,
+                            amount: bonus, type: 'daily_bonus', timestamp: firebase.firestore.FieldValue
+                            .serverTimestamp() });
+                    });
+                    toast('Бонус получен!');
+                } catch (e) { toast(e.message, 'error'); } finally { dailyBonusBtn.disabled = false; }
+            });
+            workBtn.addEventListener('click', async () => {
+                if (!currentPlayerId) return;
+                workBtn.disabled = true;
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(currentPlayerId);
+                        const doc = await tx.get(ref);
+                        const data = doc.data();
+                        const now = firebase.firestore.Timestamp.now();
+                        if (data.lastWorkTime?.toDate() && (now.toDate() - data.lastWorkTime.toDate()) < 30000)
+                            throw new Error('Слишком рано');
+                        const earn = Math.floor(Math.random() * 21) + 10;
+                        tx.update(ref, { balance: (data.balance || 0) + earn, lastWorkTime: now });
+                        tx.set(db.collection('transactions').doc(), { from: 'system', to: currentPlayerId,
+                            amount: earn, type: 'work', timestamp: firebase.firestore.FieldValue
+                            .serverTimestamp() });
+                    });
+                    toast('Заработано!');
+                } catch (e) { toast(e.message, 'error'); } finally { workBtn.disabled = false; }
+            });
+            lotteryBtn.addEventListener('click', async () => {
+    if (currentBalance < 50) return toast('Недостаточно средств', 'error');
+    lotteryBtn.disabled = true;
+    try {
+        await db.runTransaction(async tx => {
+            const playerRef = db.collection('players').doc(currentPlayerId);
+            const adminRef = db.collection('players').doc('admin');
+
+            // 1. ВСЕ чтения
+            const [pdoc, adoc] = await Promise.all([tx.get(playerRef), tx.get(adminRef)]);
+            const bal = pdoc.data().balance || 0;
+            if (bal < 50) throw new Error('Недостаточно средств');
+            const adminBal = adoc.data()?.balance || 0;
+
+            // 2. Вычисления
+            const roll = Math.random();
+            let win = 0;
+            if (roll < 0.4) win = 80;
+            else if (roll < 0.6) win = 200;
+
+            // 3. ВСЕ записи
+            tx.update(playerRef, { balance: bal - 50 + win });
+            tx.update(adminRef, { balance: adminBal + 50 - win });
+
+            const betTx = db.collection('transactions').doc();
+            tx.set(betTx, { from: currentPlayerId, to: 'admin', amount: 50, type: 'lottery_bet',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            if (win > 0) {
+                const winTx = db.collection('transactions').doc();
+                tx.set(winTx, { from: 'admin', to: currentPlayerId, amount: win, type: 'lottery_win',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        });
+        toast('Лотерея сыграна!');
+    } catch (e) { toast(e.message, 'error'); } finally { lotteryBtn.disabled = false; }
+});
+
+            // КНБ модально
+            rpsBtn.addEventListener('click', () => {
+                if (currentBalance < 50) return toast('Недостаточно средств', 'error');
+                rpsModal.style.display = 'flex';
+            });
+            document.querySelectorAll('.rps-choice').forEach(btn => btn.addEventListener('click', async (e) => {
+                const playerChoice = e.target.dataset.choice;
+                rpsModal.style.display = 'none';
+                await playRPS(playerChoice);
+            }));
+            $('rps-cancel').addEventListener('click', () => rpsModal.style.display = 'none');
+
+            async function playRPS(playerChoice) {
+    if (!currentPlayerId) return;
+    const choices = ['камень', 'ножницы', 'бумага'];
+    const bot = choices[Math.floor(Math.random() * 3)];
+    const getResult = (p, b) => {
+        if (p === b) return 'draw';
+        if ((p === 'камень' && b === 'ножницы') || (p === 'ножницы' && b === 'бумага') || (p === 'бумага' && b === 'камень')) return 'win';
+        return 'lose';
+    };
+    const result = getResult(playerChoice, bot);
+    try {
+        await db.runTransaction(async tx => {
+            const playerRef = db.collection('players').doc(currentPlayerId);
+            const adminRef = db.collection('players').doc('admin');
+
+            // Читаем оба документа
+            const [pdoc, adoc] = await Promise.all([tx.get(playerRef), tx.get(adminRef)]);
+            const bal = pdoc.data().balance || 0;
+            if (bal < 50) throw new Error('Недостаточно средств');
+            const adminBal = adoc.data()?.balance || 0;
+
+            let delta = 0;
+            if (result === 'win') delta = 50;
+            else if (result === 'lose') delta = -50;
+            const adminDelta = result === 'win' ? -50 : (result === 'lose' ? 50 : 0);
+
+            // Записи
+            tx.update(playerRef, { balance: bal + delta });
+            tx.update(adminRef, { balance: adminBal + adminDelta });
+
+            const betTx = db.collection('transactions').doc();
+            tx.set(betTx, { from: currentPlayerId, to: 'admin', amount: 50, type: 'rps_bet',
+                playerChoice, botChoice: bot, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            if (result === 'win') {
+                const winTx = db.collection('transactions').doc();
+                tx.set(winTx, { from: 'admin', to: currentPlayerId, amount: 50, type: 'rps_win',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        });
+        toast(`Вы: ${playerChoice}, бот: ${bot}. ${result === 'win' ? 'Выиграли 50💰!' : (result === 'lose' ? 'Проиграли 50💰' : 'Ничья')}`);
+    } catch (e) { toast(e.message, 'error'); }
+}
+
+            // Депозит/снятие/перевод
+            depositBtn.addEventListener('click', async () => {
+                const amt = parseInt(dwAmount.value);
+                if (!amt || amt <= 0) return toast('Введите сумму', 'error');
+                depositBtn.disabled = true;
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(currentPlayerId);
+                        const d = await tx.get(ref);
+                        tx.update(ref, { balance: (d.data().balance || 0) + amt });
+                        tx.set(db.collection('transactions').doc(), { from: 'bank', to: currentPlayerId,
+                            amount: amt, type: 'deposit', timestamp: firebase.firestore.FieldValue
+                            .serverTimestamp() });
+                    });
+                    toast('Пополнено');
+                } catch (e) { toast(e.message, 'error'); } finally { depositBtn.disabled = false; }
+            });
+            withdrawBtn.addEventListener('click', async () => {
+                const amt = parseInt(dwAmount.value);
+                if (!amt || amt <= 0) return toast('Введите сумму', 'error');
+                if (amt > currentBalance) return toast('Недостаточно средств', 'error');
+                withdrawBtn.disabled = true;
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(currentPlayerId);
+                        const d = await tx.get(ref);
+                        const bal = d.data().balance || 0;
+                        if (bal < amt) throw new Error('Недостаточно средств');
+                        tx.update(ref, { balance: bal - amt });
+                        tx.set(db.collection('transactions').doc(), { from: currentPlayerId, to: 'bank',
+                            amount: amt, type: 'withdraw', timestamp: firebase.firestore.FieldValue
+                            .serverTimestamp() });
+                    });
+                    toast('Снято');
+                } catch (e) { toast(e.message, 'error'); } finally { withdrawBtn.disabled = false; }
+            });
+            transferBtn.addEventListener('click', async () => {
+    const to = transferTo.value.trim();
+    const amt = parseInt(transferAmount.value);
+    const msg = document.getElementById('transfer-message').value.trim();
+    if (!to) return toast('Введите получателя', 'error');
+    if (!amt || amt <= 0) return toast('Введите сумму', 'error');
+    if (to === currentPlayerId) return toast('Нельзя себе', 'error');
+    if (amt > currentBalance) return toast('Недостаточно средств', 'error');
+    transferBtn.disabled = true;
+    try {
+        await db.runTransaction(async tx => {
+            const fr = db.collection('players').doc(currentPlayerId);
+            const tr = db.collection('players').doc(to);
+            const [fd, td] = await Promise.all([tx.get(fr), tx.get(tr)]);
+            if (!fd.exists) throw new Error('Ваш аккаунт не найден');
+            if (!td.exists) throw new Error('Получатель не найден');
+            const fb = fd.data().balance || 0;
+            if (fb < amt) throw new Error('Недостаточно средств');
+            tx.update(fr, { balance: fb - amt });
+            tx.update(tr, { balance: (td.data().balance || 0) + amt });
+            tx.set(db.collection('transactions').doc(), {
+                from: currentPlayerId,
+                to,
+                amount: amt,
+                type: 'transfer',
+                message: msg || null,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            tx.set(db.collection('notifications').doc(), {
+                playerId: to,
+                type: 'transfer_in',
+                from: currentPlayerId,
+                amount: amt,
+                message: msg || '',
+                read: false,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+        toast(`Перевод ${amt} игроку ${to}`);
+        transferTo.value = '';
+        document.getElementById('transfer-message').value = '';
+    } catch (e) { toast(e.message, 'error'); } finally { transferBtn.disabled = false; }
+});
+
+            // Админские функции
+            function renderAdminPlayerList(players) {
+                adminPlayerSelect.innerHTML = '<option value="">-- Выберите игрока --</option>';
+                players.filter(p => p.id !== 'admin').forEach(p => {
+                    const o = document.createElement('option');
+                    o.value = p.id;
+                    o.textContent = `${p.id} (${(p.balance||0).toLocaleString('ru-RU')} 💰)`;
+                    adminPlayerSelect.appendChild(o);
+                });
+            }
+            function renderAdminTransactions(txs) {
+                if (!txs.length) { adminTxList.innerHTML = '<li>Нет транзакций</li>'; return; }
+                adminTxList.innerHTML = txs.map(tx => {
+                    let icon = '💱',
+                        players = '',
+                        cls = 'neutral',
+                        prefix = '';
+                    if (tx.type === 'deposit') { icon = '📥';
+                        players = `Банк → <b>${esc(tx.to)}</b>`;
+                        cls = 'positive';
+                        prefix = '+'; } else if (tx.type === 'withdraw') { icon = '📤';
+                        players = `<b>${esc(tx.from)}</b> → Банк`;
+                        cls = 'negative';
+                        prefix = '-'; } else if (tx.type === 'transfer') { icon = '💸';
+                        players = `<b>${esc(tx.from)}</b> → <b>${esc(tx.to)}</b>`; } else if (tx.type ===
+                        'duel') { icon = '🎲';
+                        players = `Дуэль: <b>${esc(tx.from)}</b> vs <b>${esc(tx.to)}</b>`; } else if (tx
+                        .type === 'daily_bonus' || tx.type === 'work') { icon = '🎁';
+                        players = `Система → <b>${esc(tx.to)}</b>`;
+                        cls = 'positive';
+                        prefix = '+'; } else if (tx.type === 'lottery_bet') { icon = '🎟️';
+                        players = `<b>${esc(tx.from)}</b> → Лотерея`;
+                        cls = 'negative';
+                        prefix = '-'; } else if (tx.type === 'lottery_win') { icon = '🎰';
+                        players = `Лотерея → <b>${esc(tx.to)}</b>`;
+                        cls = 'positive';
+                        prefix = '+'; } else if (tx.type === 'rps_bet') { icon = '✂️';
+                        players = `<b>${esc(tx.from)}</b> → КНБ`;
+                        cls = 'negative';
+                        prefix = '-'; } else if (tx.type === 'rps_win') { icon = '✂️';
+                        players = `КНБ → <b>${esc(tx.to)}</b>`;
+                        cls = 'positive';
+                        prefix = '+'; } else if (tx.type === 'jackpot_win') { icon = '🎰';
+                        players = `Джекпот → <b>${esc(tx.to)}</b>`;
+                        cls = 'positive';
+                        prefix = '+'; }
+                    const time = formatTime(tx.timestamp);
+                    return `<li><span class="tx-icon">${icon}</span><div style="flex:1">${players}<br><small>${time}</small></div><span class="tx-amount ${cls}">${prefix}${(tx.amount||0).toLocaleString('ru-RU')} 💰</span></li>`;
+                }).join('');
+            }
+
+            adminAddFunds.addEventListener('click', async () => {
+                const targetId = adminPlayerSelect.value;
+                const amt = parseInt(adminAdjustAmount.value);
+                if (!targetId || !amt || amt <= 0) return toast('Выберите игрока и сумму', 'error');
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(targetId);
+                        const doc = await tx.get(ref);
+                        if (!doc.exists) throw new Error('Игрок не найден');
+                        tx.update(ref, { balance: (doc.data().balance || 0) + amt });
+                        tx.set(db.collection('transactions').doc(), { from: 'admin', to: targetId, amount: amt,
+                            type: 'deposit', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    });
+                    toast(`Игроку ${targetId} начислено ${amt} 💰`);
+                } catch (e) { toast(e.message, 'error'); }
+            });
+            adminRemoveFunds.addEventListener('click', async () => {
+                const targetId = adminPlayerSelect.value;
+                const amt = parseInt(adminAdjustAmount.value);
+                if (!targetId || !amt || amt <= 0) return toast('Выберите игрока и сумму', 'error');
+                try {
+                    await db.runTransaction(async tx => {
+                        const ref = db.collection('players').doc(targetId);
+                        const doc = await tx.get(ref);
+                        if (!doc.exists) throw new Error('Игрок не найден');
+                        const bal = doc.data().balance || 0;
+                        if (bal < amt) throw new Error('Недостаточно средств');
+                        tx.update(ref, { balance: bal - amt });
+                        tx.set(db.collection('transactions').doc(), { from: targetId, to: 'admin', amount: amt,
+                            type: 'withdraw', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    });
+                    toast(`У игрока ${targetId} списано ${amt} 💰`);
+                } catch (e) { toast(e.message, 'error'); }
+            });
+            adminDistributeBtn.addEventListener('click', async () => {
+    const total = parseInt(adminDistributeAmount.value);
+    if (!total || total <= 0) return toast('Введите положительную сумму', 'error');
+    try {
+        // 1. Список игроков получаем ДО транзакции
+        const playersSnap = await db.collection('players').where('id', '!=', 'admin').get();
+        const playerIds = [];
+        playersSnap.forEach(d => playerIds.push(d.id));
+        if (playerIds.length === 0) throw new Error('Нет игроков');
+        const perPlayer = Math.floor(total / playerIds.length);
+        if (perPlayer <= 0) throw new Error('Слишком маленькая сумма');
+
+        // 2. Транзакция: сначала ВСЕ чтения, потом ВСЕ записи
+        await db.runTransaction(async tx => {
+            // === ВСЕ ЧТЕНИЯ ===
+            const adminRef = db.collection('players').doc('admin');
+            const adminDoc = await tx.get(adminRef);
+            const adminBal = adminDoc.data()?.balance || 0;
+
+            // Читаем балансы всех игроков
+            const playerBalances = {};
+            for (const pid of playerIds) {
+                const ref = db.collection('players').doc(pid);
+                const doc = await tx.get(ref);
+                playerBalances[pid] = doc.data()?.balance || 0;
+            }
+
+            // Проверки
+            const totalCost = perPlayer * playerIds.length;
+            if (adminBal < totalCost) throw new Error('Недостаточно средств у админа');
+
+            // === ВСЕ ЗАПИСИ ===
+            tx.update(adminRef, { balance: adminBal - totalCost });
+
+            for (const pid of playerIds) {
+                const ref = db.collection('players').doc(pid);
+                const newBalance = playerBalances[pid] + perPlayer;
+                tx.update(ref, { balance: newBalance });
+
+                tx.set(db.collection('transactions').doc(), {
+                    from: 'admin',
+                    to: pid,
+                    amount: perPlayer,
+                    type: 'deposit',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        });
+
+        toast(`Распределено по ${perPlayer} каждому`);
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+});
+
+            // Логин
+            loginBtn.addEventListener('click', async () => {
+                const nn = nicknameInput.value.trim(),
+                    pw = passwordInput.value.trim();
+                if (!nn) return toast('Введите никнейм', 'error');
+                if (!/^[a-zA-Zа-яА-ЯёЁ0-9\-_]+$/.test(nn)) return toast(
+                    'Только буквы, цифры, дефисы, подчёркивания', 'error');
+                if (nn.length < 2) return toast('Слишком короткий', 'error');
+                if (['bank', 'банк', 'system', 'система'].includes(nn.toLowerCase())) return toast('Зарезервирован',
+                    'error');
+                loginBtn.disabled = true;
+                try {
+                    if (nn === 'admin' && pw === 'admin') {
+                        // Админский вход
+                        const adminRef = db.collection('players').doc('admin');
+                        const adminDoc = await adminRef.get();
+                        if (!adminDoc.exists) {
+                            await adminRef.set({ id: 'admin', balance: 0, password: 'admin',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        }
+                        currentPlayerId = 'admin';
+                        isAdmin = true;
+                        currentBalance = adminDoc.data()?.balance || 0;
+                        showAdminScreen();
+                        subscribePlayers();
+                        subscribeTransactions();
+                        updateHeader();
+                        toast('👑 Добро пожаловать, администратор!');
+                    } else {
+                        const ref = db.collection('players').doc(nn);
+                        const doc = await ref.get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            if (data.password && data.password !== pw) { toast('Неверный пароль', 'error');
+                                loginBtn.disabled = false; return; }
+                            currentPlayerId = nn;
+                            currentBalance = data.balance ?? 1000;
+                            toast(`👋 С возвращением, ${nn}!`);
+                        } else {
+                            await ref.set({ id: nn, balance: 1000,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(), password: pw ||
+                                '' });
+                            currentPlayerId = nn;
+                            currentBalance = 1000;
+                            toast('🎉 Аккаунт создан! Баланс 1 000');
+                        }
+                        isAdmin = false;
+                        showGameScreen();
+                        subscribePlayers();
+                        subscribeTransactions();
+                        subscribeNotifications();
+                        subscribeDuels();
+                        subscribeGoal();
+                        subscribeJackpot();
+                        updateHeader();
+                    }
+                } catch (e) { toast('Ошибка соединения', 'error'); } finally { loginBtn.disabled = false; }
+            });
+
+            nicknameInput.addEventListener('keydown', e => { if (e.key === 'Enter') passwordInput.focus(); });
+            passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
+
+            logoutBtn.addEventListener('click', () => { unsubscribeAll();
+                showLoginScreen();
+                toast('Вы вышли'); });
+            adminLogoutBtn.addEventListener('click', () => { unsubscribeAll();
+                showLoginScreen();
+                toast('Вы вышли'); });
+
+            // Быстрые суммы
+            quickDW.addEventListener('click', e => {
+                if (e.target.dataset.amount) {
+                    const v = parseInt(e.target.dataset.amount);
+                    dwAmount.value = v;
+                    quickDW.querySelectorAll('button').forEach(b => b.classList.remove('active-amount'));
+                    e.target.classList.add('active-amount');
+                }
+            });
+            quickTR.addEventListener('click', e => {
+                if (e.target.dataset.amount) {
+                    const v = parseInt(e.target.dataset.amount);
+                    transferAmount.value = v;
+                    quickTR.querySelectorAll('button').forEach(b => b.classList.remove('active-amount'));
+                    e.target.classList.add('active-amount');
+                }
+            });
+
+            // Старт
+            showLoginScreen();
+            nicknameInput.focus();
+        })();
+    </script>
+</body>
+</html>
