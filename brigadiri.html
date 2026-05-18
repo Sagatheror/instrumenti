@@ -546,7 +546,7 @@
 
         for (let emp of employees) {
             const depositRaw = (dataRows[2] && dataRows[2][emp.amtIdx]) ? dataRows[2][emp.amtIdx] : '0';
-            const balanceRaw = (dataRows[39] && dataRows[39][emp.amtIdx]) ? dataRows[39][emp.amtIdx] : '0';
+            const balanceRaw = (dataRows[40] && dataRows[40][emp.amtIdx]) ? dataRows[40][emp.amtIdx] : '0';
             let depositVal = parseFloat(depositRaw.replace(/[^\d.-]/g, '')) || 0;
             let balanceVal = parseFloat(balanceRaw.replace(/[^\d.-]/g, '')) || 0;
             let invoices = [];
