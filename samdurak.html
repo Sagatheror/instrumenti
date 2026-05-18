@@ -324,7 +324,13 @@ button.danger:hover {
             margin-top: 2px;
             font-weight: 700;
         }
-
+.opp-target {
+    font-size: 0.75em;
+    color: #ccc;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
+}
         .table-zone {
     flex: 1;
     display: flex;
@@ -1171,106 +1177,153 @@ function showVictoryModal() {
 }
 
         function renderGame() {
-            if (!gameState || !currentUser) return;
+    if (!gameState || !currentUser) return;
 
-            const gs = gameState;
-            const myPlayer = gs.players.find(p => p.id === currentUser.id);
-            if (!myPlayer) return;
-if (myPlayer.hand.length === 0 && gs.winnerIds?.includes(myPlayer.id)) {
-    showVictoryModal();
-}
-            // Фаза
-            const phaseMap = {
-                'attack': '⚔️ Атака',
-                'defense': '🛡️ Защита',
-                'toss': '🎯 Подкидывание',
-                'draw': '📥 Добор карт',
-                'gameOver': '🏁 Игра окончена'
-            };
-            document.getElementById('phase-display').textContent = phaseMap[gs.phase] || gs.phase;
+    const gs = gameState;
+    const myPlayer = gs.players.find(p => p.id === currentUser.id);
+    if (!myPlayer) return;
 
-            // Колода и козырь
-            document.getElementById('deck-count').textContent = gs.deck.length;
-            const trumpEl = document.getElementById('trump-suit-display');
-            trumpEl.textContent = gs.trump;
-            trumpEl.className = 'trump-badge ' + (isRedSuit(gs.trump) ? 'trump-red' : 'trump-black');
-            document.getElementById('deck-pile-display').style.display = gs.deck.length > 0 ? 'flex' : 'none';
+    if (myPlayer.hand.length === 0 && gs.winnerIds?.includes(myPlayer.id)) {
+        showVictoryModal();
+    }
 
-            // Мини-козырь
-            const trumpMini = document.getElementById('trump-mini');
-            if (gs.deck.length > 0) {
-                const trumpCard = gs.deck[gs.deck.length - 1];
-                trumpMini.innerHTML =
-                    `<span style="font-size:0.8em;">${trumpCard.rank}</span><span style="font-size:1em;color:${isRedSuit(trumpCard.suit)?'#c0392b':'#1a1a1a'}">${trumpCard.suit}</span>`;
-                trumpMini.style.display = 'flex';
-            } else {
-                trumpMini.style.display = 'none';
-            }
+    // Фаза
+    const phaseMap = {
+        'attack': '⚔️ Атака',
+        'defense': '🛡️ Защита',
+        'toss': '🎯 Подкидывание',
+        'draw': '📥 Добор карт',
+        'gameOver': '🏁 Игра окончена'
+    };
+    document.getElementById('phase-display').textContent = phaseMap[gs.phase] || gs.phase;
 
-            // Противники
-            const oppRow = document.getElementById('opponents-row');
-            oppRow.innerHTML = '';
-            const otherPlayers = gs.players.filter(p => p.id !== currentUser.id);
-            const turnOrder = gs.turnOrder || [];
-            const attId = turnOrder[gs.currentAttackerIndex] || null;
-            const defId = turnOrder[gs.currentDefenderIndex] || null;
+    // Колода и козырь
+    document.getElementById('deck-count').textContent = gs.deck.length;
+    const trumpEl = document.getElementById('trump-suit-display');
+    trumpEl.textContent = gs.trump;
+    trumpEl.className = 'trump-badge ' + (isRedSuit(gs.trump) ? 'trump-red' : 'trump-black');
+    document.getElementById('deck-pile-display').style.display = gs.deck.length > 0 ? 'flex' : 'none';
 
-            otherPlayers.forEach(p => {
-                const div = document.createElement('div');
-                div.classList.add('opponent-widget');
-                if (p.id === attId && gs.phase !== 'gameOver') div.classList.add('active-turn');
-                if (p.id === defId && gs.phase !== 'gameOver') div.classList.add('defender');
-                let roleTag = '';
-                if (p.id === attId && gs.phase === 'attack') roleTag = 'Атакует';
-                if (p.id === defId && (gs.phase === 'defense' || gs.phase === 'toss')) roleTag = 'Защищается';
-                if (p.id === attId && gs.phase === 'toss') roleTag = 'Подкидывает';
-                div.innerHTML = `
-                    <div class="opp-name">${escapeHtml(p.name)}</div>
-                    <div class="opp-cards">🂠 ×${p.hand.length}</div>
-                    ${roleTag ? `<div class="role-tag">${roleTag}</div>` : ''}
-                `;
-                oppRow.appendChild(div);
-            });
+    // Мини-козырь
+    const trumpMini = document.getElementById('trump-mini');
+    if (gs.deck.length > 0) {
+        const trumpCard = gs.deck[gs.deck.length - 1];
+        trumpMini.innerHTML =
+            `<span style="font-size:0.8em;">${trumpCard.rank}</span><span style="font-size:1em;color:${isRedSuit(trumpCard.suit)?'#c0392b':'#1a1a1a'}">${trumpCard.suit}</span>`;
+        trumpMini.style.display = 'flex';
+    } else {
+        trumpMini.style.display = 'none';
+    }
 
-            // Стол
-            const tableZone = document.getElementById('table-zone');
-            tableZone.innerHTML = '';
-            if (gs.table && gs.table.length > 0) {
-                gs.table.forEach((attack, idx) => {
-                    const pair = document.createElement('div');
-                    pair.classList.add('table-pair');
-                    const attCard = createCardElement(attack.card, false, 'attacker-card');
-                    pair.appendChild(attCard);
-                    if (attack.coveredBy) {
-                        const vsSpan = document.createElement('span');
-                        vsSpan.classList.add('vs-arrow');
-                        vsSpan.textContent = '→';
-                        pair.appendChild(vsSpan);
-                        const defCard = createCardElement(attack.coveredBy, false, 'defender-card');
-                        pair.appendChild(defCard);
-                    } else {
-                        const placeholder = document.createElement('div');
-                        placeholder.style.cssText =
-                            'width:48px;height:68px;border:2px dashed rgba(255,255,255,0.25);border-radius:5px;margin:0 4px;';
-                        placeholder.title = 'Ожидает отбития';
-                        pair.appendChild(placeholder);
-                    }
-                    tableZone.appendChild(pair);
-                });
-            } else {
-                tableZone.innerHTML =
-                    '<span style="color:#555;font-style:italic;">Стол пуст — ожидайте хода</span>';
-            }
+    // Противники
+    const oppRow = document.getElementById('opponents-row');
+    oppRow.innerHTML = '';
+    const otherPlayers = gs.players.filter(p => p.id !== currentUser.id);
+    const turnOrder = gs.turnOrder || [];
+    const attId = turnOrder[gs.currentAttackerIndex] || null;
+    const defId = turnOrder[gs.currentDefenderIndex] || null;
 
-            // Сообщение
-            document.getElementById('message-toast').textContent = gs.message || '';
+    // Определяем, кто сейчас подкидывает (только в фазе toss)
+    let currentTosserId = null;
+    if (gs.phase === 'toss' && gs.tossOrder && gs.currentTossIndex !== undefined) {
+        currentTosserId = gs.tossOrder[gs.currentTossIndex] || null;
+    }
 
-            // Рука игрока
-            renderMyHand(myPlayer, gs);
+    // Справочник имён для целей
+    const getName = (id) => {
+        const p = gs.players.find(p => p.id === id);
+        return p ? p.name : '?';
+    };
 
-            // Кнопки действий
-            renderActionButtons(myPlayer, gs);
+    otherPlayers.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('opponent-widget');
+
+        // Подсветка активного игрока
+        if (gs.phase !== 'gameOver') {
+            if (p.id === attId && gs.phase === 'attack') div.classList.add('active-turn');
+            if (p.id === defId && (gs.phase === 'defense' || gs.phase === 'toss')) div.classList.add('defender');
+            if (gs.phase === 'toss' && p.id === currentTosserId) div.classList.add('active-turn');
         }
+
+        let roleTag = '';
+        let targetInfo = '';   // дополнительная строка «кто на кого»
+
+        if (gs.phase === 'attack') {
+            if (p.id === attId) {
+                roleTag = '⚔️ Атакует';
+                targetInfo = `➡️ ${escapeHtml(getName(defId))}`;
+            }
+            if (p.id === defId) {
+                roleTag = '🛡️ Защищается';
+                targetInfo = `от ${escapeHtml(getName(attId))}`;
+            }
+        } else if (gs.phase === 'defense') {
+            if (p.id === defId) {
+                roleTag = '🛡️ Защищается';
+                targetInfo = `от ${escapeHtml(getName(attId))}`;
+            } else if (p.id === attId) {
+                roleTag = '⚔️ Атакует';
+                targetInfo = `➡️ ${escapeHtml(getName(defId))}`;
+            }
+        } else if (gs.phase === 'toss') {
+            if (p.id === defId) {
+                roleTag = '🛡️ Защищается';
+                targetInfo = `от всех`;
+            }
+            if (p.id === currentTosserId) {
+                roleTag = '🎯 Подкидывает';
+                targetInfo = `➡️ ${escapeHtml(getName(defId))}`;
+            } else if (p.id === attId && p.id !== currentTosserId) {
+                // первоначальный атакующий больше не подкидывает
+                roleTag = '';
+            }
+        }
+
+        div.innerHTML = `
+            <div class="opp-name">${escapeHtml(p.name)}</div>
+            <div class="opp-cards">🂠 ×${p.hand.length}</div>
+            ${roleTag ? `<div class="role-tag">${roleTag}</div>` : ''}
+            ${targetInfo ? `<div class="opp-target">${targetInfo}</div>` : ''}
+        `;
+        oppRow.appendChild(div);
+    });
+
+    // Стол (без изменений)
+    const tableZone = document.getElementById('table-zone');
+    tableZone.innerHTML = '';
+    if (gs.table && gs.table.length > 0) {
+        gs.table.forEach((attack, idx) => {
+            const pair = document.createElement('div');
+            pair.classList.add('table-pair');
+            const attCard = createCardElement(attack.card, false, 'attacker-card');
+            pair.appendChild(attCard);
+            if (attack.coveredBy) {
+                const vsSpan = document.createElement('span');
+                vsSpan.classList.add('vs-arrow');
+                vsSpan.textContent = '→';
+                pair.appendChild(vsSpan);
+                const defCard = createCardElement(attack.coveredBy, false, 'defender-card');
+                pair.appendChild(defCard);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.style.cssText =
+                    'width:48px;height:68px;border:2px dashed rgba(255,255,255,0.25);border-radius:5px;margin:0 4px;';
+                placeholder.title = 'Ожидает отбития';
+                pair.appendChild(placeholder);
+            }
+            tableZone.appendChild(pair);
+        });
+    } else {
+        tableZone.innerHTML =
+            '<span style="color:#555;font-style:italic;">Стол пуст — ожидайте хода</span>';
+    }
+
+    document.getElementById('message-toast').textContent = gs.message || '';
+
+    renderMyHand(myPlayer, gs);
+    renderActionButtons(myPlayer, gs);
+}
 
         function createCardElement(card, selectable = true, extraClass = '') {
             const div = document.createElement('div');
