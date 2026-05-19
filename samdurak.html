@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сам дурак 🃏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --bg: #0a0a14;
@@ -113,7 +114,35 @@
         }
         .panel input::placeholder { color: #888; }
 
-        .btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; }
+        .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 60px;
+    padding: 5px 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    margin: 10px 0;
+}
+.input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    color: white;
+    outline: none;
+}
+.input-group i {
+    font-size: 1.2rem;
+    color: var(--gold);
+}
         button {
             padding: 12px 28px;
             font-size: 0.95em;
@@ -580,16 +609,26 @@
         }
         .emoji-cat.active { background: var(--accent); color: #1a1a1a; font-weight: 600; }
         .emoji-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 1.3em;
-            max-height: 160px;
-            overflow-y: auto;
-            justify-content: center;
-        }
-        .emoji-grid span { cursor: pointer; transition: 0.15s; user-select: none; padding: 2px; }
-        .emoji-grid span:hover { transform: scale(1.4); background: rgba(255,255,255,0.15); border-radius: 4px; }
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, auto));
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.6rem;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 8px;
+}
+        .emoji-grid span {
+    text-align: center;
+    cursor: pointer;
+    transition: 0.1s;
+    border-radius: 8px;
+    padding: 4px;
+}
+        .emoji-grid span:hover {
+    transform: scale(1.3);
+    background: rgba(255,215,0,0.3);
+}
 
         .room-item {
             background: rgba(255,255,255,0.06);
@@ -638,47 +677,113 @@
         .card[draggable="true"]:active { cursor: grabbing; }
         .table-zone.drop-allowed { outline: 2px dashed var(--gold); outline-offset: -10px; border-radius: 20px; }
         .table-pair.drop-allowed { outline: 2px dashed #4caf50; outline-offset: 4px; border-radius: 6px; }
+        .room-code-badge {
+    background: rgba(0,0,0,0.5);
+    border-radius: 60px;
+    padding: 8px 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--gold-light);
+    margin: 10px 0;
+}
+.players-list {
+    list-style: none;
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.players-list li {
+    background: rgba(255,255,255,0.05);
+    border-radius: 60px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(5px);
+}
+.players-list li .avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e1e1e;
+    font-weight: bold;
+}
+.players-list li .info {
+    flex: 1;
+    text-align: left;
+    font-weight: 500;
+}
+.players-list li .status {
+    font-size: 1.2rem;
+}
+.players-list li.host .avatar {
+    background: #ffaa33;
+    box-shadow: 0 0 8px gold;
+}
     </style>
 </head>
 <body>
     <div class="game-container" id="app">
         <!-- ЭКРАН ВХОДА -->
         <div class="screen active" id="screen-login">
-            <div class="panel">
-                <h1>🃏 Подкидной дурак</h1>
-                <p class="subtitle">Играй с друзьями в реальном времени</p>
-                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-                    <input type="text" id="input-name" placeholder="Твоё имя" maxlength="20" autocomplete="off" style="flex: 1;">
-                    <button id="btn-emoji-name" style="padding: 10px 14px; font-size: 1.2em; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">😊</button>
-                </div>
-                <p style="margin-top:4px;font-size:0.75em;color:#777;text-align:center;">Можно использовать эмодзи 😊</p>
-                <div class="btn-row" style="margin-top:16px;">
-                    <button class="primary" id="btn-create">✨ Создать комнату</button>
-                    <button id="btn-join-show">🔗 Присоединиться</button>
-                    <button id="btn-show-rooms">🔍 Список комнат</button>
-                </div>
-                <div id="join-area" style="display:none; margin-top:14px; width:100%;">
-                    <input type="text" id="input-room-code" placeholder="Код комнаты" maxlength="6" autocomplete="off" style="margin-bottom:10px;">
-                    <button class="primary" id="btn-join">🚪 Войти в комнату</button>
-                </div>
-                <p style="margin-top:12px;font-size:0.75em;color:#777;">Подкидной дурак · 52 карты · 2–6 игроков</p>
+    <div class="panel">
+        <h1><i class="fas fa-heart" style='margin-right:5px'></i>Подкидной дурак</h1>
+        <p class="subtitle"><i class="fas fa-users"></i> Играй с друзьями в реальном времени</p>
+        
+        <div class="input-group">
+            <i class="fas fa-user-pen"></i>
+            <input type="text" id="input-name" placeholder="Твоё имя" maxlength="20" autocomplete="off">
+            <button id="btn-emoji-name" title="Выбрать эмодзи"><i class="fas fa-smile-wink"></i></button>
+        </div>
+
+        <div class="btn-row" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+            <button class="primary" id="btn-create"><i class="fas fa-plus-circle"></i> Создать комнату</button>
+            <button id="btn-join-show"><i class="fas fa-door-open"></i> Присоединиться</button>
+            <button id="btn-show-rooms"><i class="fas fa-list-ul"></i> Список комнат</button>
+        </div>
+
+        <div id="join-area" style="display:none; margin-top: 20px; width:100%;">
+            <div class="input-group">
+                <i class="fas fa-key"></i>
+                <input type="text" id="input-room-code" placeholder="Код комнаты" maxlength="6" autocomplete="off">
+                <button class="primary" id="btn-join"><i class="fas fa-sign-in-alt"></i> Войти</button>
             </div>
         </div>
 
+        <p style="margin-top: 20px; font-size: 0.75rem; color: #aaa;">
+            <i class="fas fa-layer-group"></i> 52 карты · 2–6 игроков · Козырь
+        </p>
+    </div>
+</div>
+
         <!-- ЭКРАН ЛОББИ -->
         <div class="screen" id="screen-lobby">
-            <div class="panel">
-                <h1>🏠 Комната</h1>
-                <div class="room-code-display" id="lobby-room-code">—</div>
-                <p style="color:#aaa;font-size:0.85em;">Сообщи код друзьям</p>
-                <ul class="lobby-players" id="lobby-player-list"></ul>
-                <div class="btn-row" style="margin-top:14px;">
-                    <button id="btn-ready" class="primary" style="display:none;">✅ Готов</button>
-                    <button class="primary" id="btn-start-game" disabled>🎯 Начать игру (2–6 игроков)</button>
-                    <button id="btn-leave-lobby" class="danger">🚪 Покинуть</button>
-                </div>
-            </div>
+    <div class="panel" style="max-width: 550px;">
+        <h1><i class="fas fa-door-closed"></i> Комната</h1>
+        <div class="room-code-badge">
+            <i class="fas fa-hashtag"></i> <span id="lobby-room-code">—</span>
         </div>
+        <p style="color:#aaa; font-size:0.85rem;"><i class="fas fa-share-alt"></i> Сообщи код друзьям</p>
+
+        <ul class="players-list" id="lobby-player-list"></ul>
+
+        <div class="btn-row" style="margin-top: 20px;">
+            <button id="btn-ready" class="primary" style="display:none;"><i class="fas fa-check-circle"></i> Готов</button>
+            <button class="primary" id="btn-start-game" disabled><i class="fas fa-play"></i> Начать игру</button>
+            <button id="btn-leave-lobby" class="danger"><i class="fas fa-sign-out-alt"></i> Покинуть</button>
+        </div>
+    </div>
+</div>
 
         <!-- ЭКРАН ИГРЫ -->
         <div class="screen" id="screen-game">
@@ -718,24 +823,24 @@
         </div>
 
         <div class="screen" id="screen-rooms">
-            <div class="panel" style="max-width: 600px; width: 100%;">
-                <h1>📋 Доступные комнаты</h1>
-                <div id="rooms-list-container" style="max-height: 400px; overflow-y: auto; margin: 15px 0;">
-                    <p style="color:#aaa; text-align:center;">Загрузка...</p>
-                </div>
-                <button id="btn-refresh-rooms">🔄 Обновить</button>
-                <button id="btn-back-to-login" class="danger" style="margin-top:10px;">🔙 Назад</button>
-            </div>
+    <div class="panel" style="max-width: 600px; width: 100%;">
+        <h1><i class="fas fa-door-open"></i> Доступные комнаты</h1>
+        <div id="rooms-list-container" style="max-height: 400px; overflow-y: auto; margin: 15px 0;">
+            <p style="color:#aaa; text-align:center;"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</p>
         </div>
+        <button id="btn-refresh-rooms"><i class="fas fa-sync-alt"></i> Обновить</button>
+        <button id="btn-back-to-login" class="danger" style="margin-top:10px;"><i class="fas fa-arrow-left"></i> Назад</button>
+    </div>
+</div>
 
         <div id="room-info-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
             <div style="background:#1e1e35; border-radius:14px; padding:25px; max-width:400px; width:90%; color:#e0e0e0; text-align:center;">
-                <h2 id="modal-room-code" style="color:var(--gold);">—</h2>
+                <h2 id="modal-room-code" style="color:var(--gold);"><i class="fas fa-hashtag"></i> —</h2>
                 <ul id="modal-players-list" style="list-style:none; padding:0; margin:15px 0; text-align:left;"></ul>
                 <div class="btn-row" style="justify-content:center;">
-                    <button class="primary" id="btn-modal-join">🚪 Подключиться</button>
-                    <button id="btn-modal-close">Закрыть</button>
-                </div>
+            <button class="primary" id="btn-modal-join"><i class="fas fa-sign-in-alt"></i> Подключиться</button>
+            <button id="btn-modal-close"><i class="fas fa-times"></i> Закрыть</button>
+        </div>
             </div>
         </div>
 
@@ -751,21 +856,21 @@
         </div>
 
         <div id="modal-victory" class="modal-confirm-overlay" style="display: none;">
-            <div class="modal-confirm-box">
-                <h3>🎉 Поздравляем!</h3>
-                <p>У вас закончились карты! Вы больше не участвуете в раунде.</p>
-                <p style="font-size:0.9em; color:#aaa;">Хотите покинуть комнату или остаться наблюдателем?</p>
-                <div class="modal-confirm-buttons">
-                    <button id="victory-leave" class="danger">🚪 Выйти</button>
-                    <button id="victory-stay" class="primary">👁️ Остаться наблюдателем</button>
-                </div>
-            </div>
+    <div class="modal-confirm-box">
+        <h3><i class="fas fa-trophy"></i> Поздравляем!</h3>
+        <p>У вас закончились карты! Вы больше не участвуете в раунде.</p>
+        <p style="font-size:0.9em; color:#aaa;">Хотите покинуть комнату или остаться наблюдателем?</p>
+        <div class="modal-confirm-buttons">
+            <button id="victory-leave" class="danger"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+            <button id="victory-stay" class="primary"><i class="fas fa-eye"></i> Остаться наблюдателем</button>
         </div>
+    </div>
+</div>
 
         <div id="emoji-name-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:300; align-items:center; justify-content:center;">
             <div style="background:#1e1e35; border-radius:14px; padding:20px; max-width:400px; width:90%; color:#e0e0e0; text-align:center;">
                 <h3 style="margin-bottom:15px; color:var(--gold);">Выберите эмодзи для имени</h3>
-                <div class="emoji-grid-name" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-height:300px; overflow-y:auto; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px;"></div>
+                <div class="emoji-grid-name" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-height:300px; overflow-y:auto; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px; font-size:20px;"></div>
                 <div style="margin-top:15px;"><button class="primary" id="btn-emoji-close" style="padding:8px 20px;">Закрыть</button></div>
             </div>
         </div>
@@ -885,38 +990,62 @@
 
         // ========== ЛОББИ ==========
         function renderLobby(players, isHost) {
-            const list = document.getElementById('lobby-player-list');
-            const btnStart = document.getElementById('btn-start-game');
-            const btnReady = document.getElementById('btn-ready');
-            document.getElementById('lobby-room-code').textContent = roomCode;
-            list.innerHTML = '';
-            const allReady = players.every(p => p.ready);
-            btnStart.disabled = !(isHost && players.length >= 2 && players.length <= 6 && allReady);
-            btnReady.style.display = isHost ? 'none' : 'inline-block';
-            if (isHost) {
-                btnStart.textContent = allReady ? `🎯 Начать игру (${players.length} игрока)` : '🎯 Ожидание готовности...';
-            } else {
-                const me = players.find(p => p.id === currentUser.id);
-                if (me) btnReady.textContent = me.ready ? '✅ Готов' : '☑️ Не готов';
-                btnStart.textContent = '🎯 Ожидание начала...';
-                btnStart.disabled = true;
-            }
+    const list = document.getElementById('lobby-player-list');
+    const btnStart = document.getElementById('btn-start-game');
+    const btnReady = document.getElementById('btn-ready');
+    document.getElementById('lobby-room-code').textContent = roomCode;
+    list.innerHTML = '';
 
-            players.forEach(p => {
-                const li = document.createElement('li');
-                if (p.id === players[0].id) li.classList.add('host');
-                li.innerHTML = `<span class="dot"></span> ${escapeHtml(p.name)}${p.id === players[0].id ? ' (создатель)' : ''} <span class="ready-status">${p.ready ? '✅' : '⏳'}</span>`;
-                if (isHost && p.id !== currentUser.id) {
-                    const kickBtn = document.createElement('button');
-                    kickBtn.className = 'kick-btn';
-                    kickBtn.textContent = '❌';
-                    kickBtn.title = 'Выгнать';
-                    kickBtn.onclick = () => kickPlayer(p.id);
-                    li.appendChild(kickBtn);
-                }
-                list.appendChild(li);
-            });
+    const allReady = players.every(p => p.ready);
+    btnStart.disabled = !(isHost && players.length >= 2 && players.length <= 6 && allReady);
+    btnReady.style.display = isHost ? 'none' : 'inline-block';
+
+    if (isHost) {
+        btnStart.innerHTML = allReady ? `<i class="fas fa-rocket"></i> Начать (${players.length})` : `<i class="fas fa-hourglass-half"></i> Ждём готовности...`;
+    } else {
+        const me = players.find(p => p.id === currentUser.id);
+        if (me) {
+            btnReady.innerHTML = me.ready ? '<i class="fas fa-check-circle"></i> Готов' : '<i class="fas fa-circle-notch"></i> Не готов';
         }
+        btnStart.innerHTML = '<i class="fas fa-clock"></i> Ожидание начала...';
+        btnStart.disabled = true;
+    }
+
+    players.forEach(p => {
+        const li = document.createElement('li');
+        if (p.id === players[0].id) li.classList.add('host');
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.innerHTML = '<i class="fas fa-user"></i>';
+        if (p.id === players[0].id) avatar.innerHTML = '<i class="fas fa-crown"></i>';
+        
+        const info = document.createElement('div');
+        info.className = 'info';
+        info.textContent = p.name;
+        
+        const status = document.createElement('div');
+        status.className = 'status';
+        status.innerHTML = p.ready ? '<i class="fas fa-check-circle" style="color:#4caf50;"></i>' : '<i class="fas fa-hourglass-start" style="color:#aaa;"></i>';
+        
+        li.appendChild(avatar);
+        li.appendChild(info);
+        li.appendChild(status);
+        
+        if (isHost && p.id !== currentUser.id) {
+            const kickBtn = document.createElement('button');
+            kickBtn.style.background = 'transparent';
+            kickBtn.style.border = 'none';
+            kickBtn.style.color = '#e74c3c';
+            kickBtn.style.cursor = 'pointer';
+            kickBtn.innerHTML = '<i class="fas fa-user-slash"></i>';
+            kickBtn.title = 'Выгнать';
+            kickBtn.onclick = () => kickPlayer(p.id);
+            li.appendChild(kickBtn);
+        }
+        list.appendChild(li);
+    });
+}
 
         async function kickPlayer(playerId) {
             if (!gameState || !roomCode || !currentUser) return;
@@ -924,7 +1053,7 @@
             if (gs.players[0].id !== currentUser.id) return;
             const updatedPlayers = gs.players.filter(p => p.id !== playerId);
             const updatedTurnOrder = (gs.turnOrder || []).filter(id => id !== playerId);
-            await updateRoom({ players: updatedPlayers, turnOrder: updatedTurnOrder, message: `🚫 Игрок удалён хостом` });
+            await updateRoom({ players: updatedPlayers, turnOrder: updatedTurnOrder, message: `<i class="fas fa-user-slash"></i> Игрок удалён хостом` });
         }
 
         document.getElementById('btn-ready').addEventListener('click', async () => {
@@ -1269,26 +1398,57 @@
             const turnOrder = gs.turnOrder || [];
             const attId = turnOrder[gs.currentAttackerIndex], defId = turnOrder[gs.currentDefenderIndex];
             if (gs.phase === 'gameOver') {
-                const btn = document.createElement('button'); btn.textContent='🏠 Выйти в лобби'; btn.className='danger'; btn.onclick=()=>showConfirmModal('Покинуть игру?','Вы точно хотите выйти?',leaveGame); bar.appendChild(btn);
-                return;
-            }
-            if (gs.phase === 'attack' && myId === attId) {
-                const btn = document.createElement('button'); btn.className='primary'; btn.textContent=`⚔️ Сходить (${selectedCards.size})`; btn.disabled=selectedCards.size===0; btn.onclick=doAttack; bar.appendChild(btn);
-            }
-            if (gs.phase === 'defense' && myId === defId) {
-                const uncov = gs.table.filter(a=>!a.coveredBy).length;
-                const btnDef = document.createElement('button'); btnDef.className='primary'; btnDef.textContent=`🛡️ Отбить (${Object.keys(defenseMapping).length}/${uncov})`; btnDef.disabled=Object.keys(defenseMapping).length < uncov; btnDef.onclick=doDefend; bar.appendChild(btnDef);
-                const btnTake = document.createElement('button'); btnTake.className='danger'; btnTake.textContent='📥 Забрать всё'; btnTake.onclick=()=>showConfirmModal('Забрать карты?','Вы уверены?',doTake); bar.appendChild(btnTake);
-            }
-            if (gs.phase === 'toss') {
-                const tossOrder = gs.tossOrder || [], tossIdx = gs.currentTossIndex||0;
-                const currentTosserId = tossOrder[tossIdx];
-                if (myId === currentTosserId) {
-                    const btnToss = document.createElement('button'); btnToss.className='primary'; btnToss.textContent=`🎯 Подкинуть (${selectedCards.size})`; btnToss.disabled=selectedCards.size===0; btnToss.onclick=doToss; bar.appendChild(btnToss);
-                    const btnPass = document.createElement('button'); btnPass.textContent='⏭️ Пас'; btnPass.onclick=doPassToss; bar.appendChild(btnPass);
-                }
-            }
-            const btnLeave = document.createElement('button'); btnLeave.textContent='🚪 Покинуть'; btnLeave.style.fontSize='0.8em'; btnLeave.style.opacity='0.7'; btnLeave.onclick=()=>showConfirmModal('Покинуть игру?','Вы точно хотите выйти?',leaveGame); bar.appendChild(btnLeave);
+    const btn = document.createElement('button');
+    btn.innerHTML = '<i class="fas fa-home"></i> Выйти в лобби';
+    btn.className = 'danger';
+    btn.onclick = () => showConfirmModal('Покинуть игру?','Вы точно хотите выйти?', leaveGame);
+    bar.appendChild(btn);
+    return;
+}
+if (gs.phase === 'attack' && myId === attId) {
+    const btn = document.createElement('button');
+    btn.className = 'primary';
+    btn.innerHTML = `<i class="fas fa-fist-raised"></i> Сходить (${selectedCards.size})`;
+    btn.disabled = selectedCards.size === 0;
+    btn.onclick = doAttack;
+    bar.appendChild(btn);
+}
+if (gs.phase === 'defense' && myId === defId) {
+    const uncov = gs.table.filter(a => !a.coveredBy).length;
+    const btnDef = document.createElement('button');
+    btnDef.className = 'primary';
+    btnDef.innerHTML = `<i class="fas fa-shield-alt"></i> Отбить (${Object.keys(defenseMapping).length}/${uncov})`;
+    btnDef.disabled = Object.keys(defenseMapping).length < uncov;
+    btnDef.onclick = doDefend;
+    bar.appendChild(btnDef);
+    const btnTake = document.createElement('button');
+    btnTake.className = 'danger';
+    btnTake.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Забрать всё';
+    btnTake.onclick = () => showConfirmModal('Забрать карты?', 'Вы уверены?', doTake);
+    bar.appendChild(btnTake);
+}
+if (gs.phase === 'toss') {
+    const tossOrder = gs.tossOrder || [], tossIdx = gs.currentTossIndex || 0;
+    const currentTosserId = tossOrder[tossIdx];
+    if (myId === currentTosserId) {
+        const btnToss = document.createElement('button');
+        btnToss.className = 'primary';
+        btnToss.innerHTML = `<i class="fas fa-plus-circle"></i> Подкинуть (${selectedCards.size})`;
+        btnToss.disabled = selectedCards.size === 0;
+        btnToss.onclick = doToss;
+        bar.appendChild(btnToss);
+        const btnPass = document.createElement('button');
+        btnPass.innerHTML = '<i class="fas fa-forward"></i> Пас';
+        btnPass.onclick = doPassToss;
+        bar.appendChild(btnPass);
+    }
+}
+const btnLeave = document.createElement('button');
+btnLeave.innerHTML = '<i class="fas fa-sign-out-alt"></i> Покинуть';
+btnLeave.style.fontSize = '0.8em';
+btnLeave.style.opacity = '0.7';
+btnLeave.onclick = () => showConfirmModal('Покинуть игру?', 'Вы точно хотите выйти?', leaveGame);
+bar.appendChild(btnLeave);
         }
 
         // ========== ИГРОВЫЕ ДЕЙСТВИЯ (doAttack, doDefend и т.д.) – оставлены без изменений, но с clearTurnTimer ==========
@@ -1529,7 +1689,14 @@
             const losers = gs.players.filter(p=>p.hand.length>0).map(p=>escapeHtml(p.name)).join(', ');
             const winners = gs.players.filter(p=>p.hand.length===0).map(p=>escapeHtml(p.name)).join(', ');
             const isHost = gs.players.length>0 && gs.players[0].id === currentUser?.id;
-            overlay.innerHTML = `<div class="panel"><h1>🏁 Игра окончена!</h1>${losers?`<p style="font-size:1.3em;color:#e74c3c;"><strong>${losers}</strong> — дурак! 🃏</p>`:'<p>Все вышли!</p>'}${winners?`<p style="color:#4caf50;">Победители: ${winners}</p>`:''}<p style="color:#aaa;">${gs.message||''}</p>${isHost?'<button class="primary" id="btn-rematch" style="margin-top:16px;">🔄 Реванш</button>':''}<button class="primary" id="btn-back-to-lobby" style="margin-top:16px;">🏠 Выйти</button></div>`;
+            overlay.innerHTML = `<div class="panel">
+    <h1><i class="fas fa-flag-checkered"></i> Игра окончена!</h1>
+    ${losers ? `<p style="font-size:1.3em;color:#e74c3c;"><i class="fas fa-skull-crossbones"></i> <strong>${losers}</strong> — дурак!</p>` : '<p>Все вышли!</p>'}
+    ${winners ? `<p style="color:#4caf50;"><i class="fas fa-trophy"></i> Победители: ${winners}</p>` : ''}
+    <p style="color:#aaa;">${gs.message || ''}</p>
+    ${isHost ? '<button class="primary" id="btn-rematch" style="margin-top:16px;"><i class="fas fa-sync-alt"></i> Реванш</button>' : ''}
+    <button class="primary" id="btn-back-to-lobby" style="margin-top:16px;"><i class="fas fa-home"></i> Выйти</button>
+</div>`;
             document.body.appendChild(overlay);
             overlay.querySelector('#btn-back-to-lobby').onclick = () => { overlay.remove(); leaveGame(); };
             if (isHost) overlay.querySelector('#btn-rematch').onclick = () => { overlay.remove(); rematch(); };
