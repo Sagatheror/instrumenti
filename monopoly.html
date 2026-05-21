@@ -474,10 +474,11 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             border: 3px solid #d4af37;
+            background: #1a2f1a;
         }
 
         .board {
-            display: none;
+            display: none !important;
         }
 
         .cell {
@@ -2443,6 +2444,14 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
             localGameState = initialState;
             gameActive = true;
             myTurn = (initialState.currentPlayer === currentPlayerId);
+            
+            // Initialize 3D board after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                if (typeof THREE !== 'undefined') {
+                    initThreeJS();
+                }
+            }, 200);
+            
             renderGameFromState();
         } catch(e) {
             console.error("Ошибка при старте игры:", e);
@@ -2455,6 +2464,11 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
         
         const players = localGameState.players;
         const currentPlayerIdGame = localGameState.currentPlayer;
+        
+        // Update 3D board positions if already initialized
+        if (typeof THREE !== 'undefined' && boardGroup) {
+            updatePlayerPositions3D();
+        }
         
         let boardHtml = `<div class="board" id="board">`;
         for(let i = 0; i < 40; i++) {
@@ -3299,7 +3313,7 @@ window.showUnsoldProperties = function() {
     // Three.js 3D Board Setup
     // ==========================================
     let scene, camera, renderer, controls;
-    let boardGroup, cellMeshes = [], playerMeshes = [];
+    let boardGroup = null, cellMeshes = [], playerMeshes = [];
     
     function initThreeJS() {
         const container = document.getElementById('board3d-container');
@@ -3368,6 +3382,12 @@ window.showUnsoldProperties = function() {
     }
     
     function create3DBoard() {
+        // Проверка инициализации boardGroup
+        if (!boardGroup) {
+            console.warn("boardGroup не инициализирован, пропускаем создание доски");
+            return;
+        }
+        
         // Clear existing
         while(boardGroup.children.length > 0) { 
             boardGroup.remove(boardGroup.children[0]); 
@@ -3708,9 +3728,8 @@ window.showUnsoldProperties = function() {
         const players = localGameState.players;
         const currentPlayerIdGame = localGameState.currentPlayer;
         
-        // Update 3D board - recreate it with ownership info
-        if (typeof THREE !== 'undefined') {
-            create3DBoard();
+        // Update 3D board positions if already initialized (don't recreate the whole board)
+        if (typeof THREE !== 'undefined' && boardGroup) {
             updatePlayerPositions3D();
         }
         
