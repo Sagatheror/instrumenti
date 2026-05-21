@@ -3607,17 +3607,6 @@ window.showUnsoldProperties = function() {
             cell.receiveShadow = true;
             cell.userData = { tileId: i, tile: tile };
             
-            // Add colored border for properties
-            if (tile.color || tile.type === 'railroad' || tile.type === 'utility') {
-                const borderHeight = 0.15;
-                const borderGeometry = new THREE.BoxGeometry(cellSize + 0.05, borderHeight, cellSize + 0.05);
-                const borderMaterial = new THREE.MeshStandardMaterial({ color: barColor });
-                const border = new THREE.Mesh(borderGeometry, borderMaterial);
-                border.position.set(x, 0.5 + borderHeight/2, z);
-                border.castShadow = true;
-                boardGroup.add(border);
-            }
-            
             boardGroup.add(cell);
             cellMeshes.push(cell);
         }
