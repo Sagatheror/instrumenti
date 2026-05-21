@@ -2053,11 +2053,24 @@ closeModal();
         if (window.pendingTradeOffer) {
             await db.ref(`rooms/${currentRoomId}/tradeOffers/${window.pendingTradeOffer.id}`).update({status: 'declined'});
             showNotification("❌ Вы отклонили предложение о торговле", "warning");
-            addLogMessage(`${localGameState?.players.find(p => p.id === offer.from)?.avatar} отклонил предложение о торговле`, "warning");
+            addLogMessage(`${localGameState?.players.find(p => p.id === window.pendingTradeOffer.from)?.avatar} отклонил предложение о торговле`, "warning");
             window.pendingTradeOffer = null;
             closeModal();
         }
     };
+    
+    // Алиасы для совместимости
+    window.acceptTrade = window.acceptTradeOfferWithExchange;
+    window.rejectTrade = window.declineTradeOffer;
+    
+    // Функция получения цвета игрока по ID
+    function getPlayerColor(playerId) {
+        const playerColors = ['#FF0000', '#00AA00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+        const colors = ['#FF0000', '#00AA00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+        if (!localGameState || !localGameState.players) return colors[0];
+        const index = localGameState.players.findIndex(p => p.id === playerId);
+        return colors[index >= 0 ? index % colors.length : 0];
+    }
     
     async function acceptTradeWithExchange(offerId, offer) {
         const state = {...localGameState};
@@ -3174,8 +3187,7 @@ window.sellPropertyForcedWithDebt = async function(propId, debt, creditorName) {
         window.selectMyPropertyForTrade = selectMyPropertyForTrade;
         window.selectTargetPropertyForTrade = selectTargetPropertyForTrade;
         // sendTradeOffer удалена, так как используется sendTradeOfferWithExchange
-        window.acceptTrade = acceptTrade;
-        window.rejectTrade = rejectTrade;
+        // acceptTrade и rejectTrade уже определены выше как window.acceptTrade и window.rejectTrade
         window.rollDice = rollDice;
         window.endTurn = endTurn;
         window.showTradeModal = showTradeModal;
