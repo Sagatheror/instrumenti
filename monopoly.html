@@ -3159,7 +3159,7 @@ window.sellPropertyForcedWithDebt = async function(propId, debt, creditorName) {
         window.selectTradePlayer = selectTradePlayer;
         window.selectMyPropertyForTrade = selectMyPropertyForTrade;
         window.selectTargetPropertyForTrade = selectTargetPropertyForTrade;
-        window.sendTradeOffer = sendTradeOffer;
+        // sendTradeOffer удалена, так как используется sendTradeOfferWithExchange
         window.acceptTrade = acceptTrade;
         window.rejectTrade = rejectTrade;
         window.rollDice = rollDice;
@@ -3168,15 +3168,8 @@ window.sellPropertyForcedWithDebt = async function(propId, debt, creditorName) {
         window.showUpgradeProperties = showUpgradeProperties;
         window.showUnsoldProperties = showUnsoldProperties;
         window.updatePlayerPositions3D = updatePlayerPositions3D;
-        window.sendTradeOfferWithExchange = sendTradeOfferWithExchange;
-        window.acceptTradeOfferWithExchange = acceptTradeOfferWithExchange;
-        window.declineTradeOffer = declineTradeOffer;
-        window.placeGlobalBid = placeGlobalBid;
-        window.sellPropertyForced = sellPropertyForced;
-        window.payJailFee = payJailFee;
-        window.rollJailDice = rollJailDice;
-        window.useJailCard = useJailCard;
-        window.sellPropertyForcedWithDebt = sellPropertyForcedWithDebt;
+        // sendTradeOfferWithExchange, acceptTradeOfferWithExchange, declineTradeOffer уже определены как window функции выше в коде
+        // placeGlobalBid, sellPropertyForced, payJailFee, rollJailDice, useJailCard, sellPropertyForcedWithDebt также уже определены как window функции
     }
     function updateUnsoldPropertiesCount() {
     if (!localGameState || !localGameState.players) return;
@@ -3492,7 +3485,7 @@ window.showUnsoldProperties = function() {
     }
     
     function updatePlayerPositions3D() {
-        if (!localGameState || !localGameState.players) return;
+        if (!boardGroup || !localGameState || !localGameState.players) return;
         
         // Remove old player meshes
         playerMeshes.forEach(mesh => boardGroup.remove(mesh));
