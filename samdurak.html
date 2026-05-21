@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+    }
+}
+</script>
     <style>
         :root {
             --bg: #1a1a2e;
@@ -41,26 +49,6 @@
             background-image: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a18 100%);
         }
         /* LOADER */
-        #loader-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #0a0a14;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.6s, visibility 0.6s;
-        }
-        #loader-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .loader-infinity {
-            width: 280px;
-            height: 140px;
-        }
         .infinity-path-bg {
             fill: none;
             stroke: #2a2a3a;
@@ -99,14 +87,7 @@
         .snake-stop1 { animation: gradientShift 3s ease-in-out infinite; }
         .snake-stop2 { animation: gradientShift 3s ease-in-out 0.75s infinite; }
         .snake-stop3 { animation: gradientShift 3s ease-in-out 1.5s infinite; }
-        .loader-text {
-            color: #c44dff;
-            font-size: 1.1rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            animation: pulseText 1.5s ease-in-out infinite;
-            margin-top: 10px;
-        }
+      
         @keyframes pulseText {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
@@ -730,26 +711,84 @@
                 height: 80px;
             }
         }
+        @keyframes cardAppear {
+    from { transform: scale(0.5) translateY(30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.table-card-attack, .table-card-defend {
+    animation: cardAppear 0.3s ease-out;
+}
+@keyframes defendAppear {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.table-card-defend {
+    animation: defendAppear 0.3s ease-out;
+}
+#name-emoji-btn:hover {
+    background: #c44dff30;
+    border-color: #c44dff;
+}
+#name-emoji-picker .name-emoji-item {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+#name-emoji-picker .name-emoji-item:hover {
+    background: #ffffff20;
+    transform: scale(1.2);
+}
+#loader-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0a0a14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.8s, visibility 0.8s;
+}
+#loader-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+#loader-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.loader-text {
+    position: relative;
+    z-index: 10;
+    color: #c44dff;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: pulseText 1.5s ease-in-out infinite, textGlow 2s infinite alternate;
+    margin-top: 280px;
+}
+@keyframes textGlow {
+    from { text-shadow: 0 0 5px #c44dff; }
+    to { text-shadow: 0 0 15px #ff6b9d, 0 0 30px #c44dff; }
+}
     </style>
 </head>
 <body>
     <!-- LOADER -->
     <div id="loader-screen">
-        <svg class="loader-infinity" viewBox="0 0 280 140">
-            <defs>
-                <linearGradient id="snakeGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="280" y2="0">
-                    <stop offset="0%" class="snake-stop1" stop-color="#ff6b9d"/>
-                    <stop offset="40%" class="snake-stop2" stop-color="#c44dff"/>
-                    <stop offset="80%" class="snake-stop3" stop-color="#4dc9f6"/>
-                    <stop offset="100%" class="snake-stop1" stop-color="#ff6b9d"/>
-                </linearGradient>
-            </defs>
-            <path class="infinity-path-bg" d="M60 70 C60 25 120 10 140 70 C160 130 220 115 220 70 C220 25 160 10 140 70 C120 130 60 115 60 70 Z"/>
-            <path class="infinity-glow" d="M60 70 C60 25 120 10 140 70 C160 130 220 115 220 70 C220 25 160 10 140 70 C120 130 60 115 60 70 Z"/>
-            <path class="infinity-path-snake" d="M60 70 C60 25 120 10 140 70 C160 130 220 115 220 70 C220 25 160 10 140 70 C120 130 60 115 60 70 Z"/>
-        </svg>
-        <div class="loader-text">Загрузка...</div>
-    </div>
+    <canvas id="loader-canvas"></canvas>
+    <div class="loader-text">Загрузка...</div>
+</div>
 
     <!-- MAIN MENU -->
     <div id="main-menu">
@@ -757,9 +796,17 @@
         <div class="game-subtitle">Карточная игра</div>
         <div class="menu-card">
             <div class="input-group">
-                <label>👤 Ваше имя</label>
-                <input type="text" id="player-name" placeholder="Введите имя..." maxlength="20" autocomplete="off">
-            </div>
+    <label>👤 Ваше имя</label>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="player-name" placeholder="Введите имя..." maxlength="20" autocomplete="off" style="flex:1;">
+        <button id="name-emoji-btn" type="button" onclick="toggleNameEmojiPicker()" style="
+            width: 42px; height: 42px; border-radius: 12px; background: #ffffff10;
+            border: 1px solid #ffffff15; color: #fff; font-size: 1.3rem; cursor: pointer;
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+        ">😊</button>
+    </div>
+    <div id="name-emoji-picker" style="display: none; margin-top: 6px; background: #0d1b36; border-radius: 12px; padding: 10px; flex-wrap: wrap; gap: 6px; max-width: 280px;"></div>
+</div>
             <div class="input-group">
                 <label>🃏 Колода</label>
                 <div class="radio-group">
@@ -848,6 +895,14 @@
             <button class="btn btn-primary" onclick="backToLobby()">В лобби</button>
         </div>
     </div>
+    <div class="modal-overlay" id="spectator-modal">
+    <div class="modal">
+        <h2>👀 Вы выбыли из игры!</h2>
+        <p>У вас закончились карты. Вы можете наблюдать за игрой или покинуть комнату.</p>
+        <button class="btn btn-primary" onclick="watchGame()">👀 Смотреть</button>
+        <button class="btn btn-secondary" onclick="leaveRoomFromSpectator()">🚪 Выйти в меню</button>
+    </div>
+</div>
         <script>
         // ==================== FIREBASE INIT ====================
         const firebaseConfig = {
@@ -891,6 +946,17 @@
         let emojiPickerOpen = false;
         let localDeckSize = 36;
         let localGameMode = 'podkidnoy';
+        let nameEmojiPickerOpen = false;
+        let spectatorModalShown = false;
+        let pendingTransferCard = null;
+        const savedPlayerId = sessionStorage.getItem('myPlayerId');
+const savedRoomId = sessionStorage.getItem('currentRoomId');
+if (savedPlayerId && savedRoomId && firestoreReady) {
+    myPlayerId = savedPlayerId;
+    currentRoomId = savedRoomId;
+    subscribeToRoom(savedRoomId);
+    showView('lobby-screen'); // подписка сама переключит на игру, если надо
+}
 
         // ==================== EMOJI DATA ====================
         const emojiCategories = {
@@ -901,7 +967,12 @@
             '🍕 Еда': ['🍕', '🍔', '🌮', '🍩', '🎂', '🍿', '☕', '🍺', '🍷', '🥤', '🍎', '🍇', '🧁', '🍪']
         };
         let activeEmojiCat = '😀 Лица';
-
+        const nameEmojis = [
+    '😀','😂','🤣','😍','🥰','😘','😎','🤩','🥳',
+    '😤','😢','😡','👻','💀','🤖','👑','💪','🤞',
+    '🎮','🃏','🏆','⭐','✨','❤️','🔥','🍀','🌈',
+    '🐱','🦊','🐶','🐼','🦁','🐸','🦄','🍕','☕'
+];
         // ==================== LOADER ====================
         setTimeout(() => {
             document.getElementById('loader-screen').classList.add('hidden');
@@ -960,6 +1031,8 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 currentRoomId = roomCode;
+                sessionStorage.setItem('myPlayerId', myPlayerId);
+sessionStorage.setItem('currentRoomId', roomCode);
                 subscribeToRoom(roomCode);
                 showView('lobby-screen');
                 updateLobbyUI();
@@ -998,6 +1071,8 @@
                 const newPlayer = { id: myPlayerId, name: myPlayerName, cards: [], position: data.players.length };
                 await roomRef.update({ players: firebase.firestore.FieldValue.arrayUnion(newPlayer) });
                 currentRoomId = code;
+                sessionStorage.setItem('myPlayerId', myPlayerId);
+sessionStorage.setItem('currentRoomId', code);
                 localDeckSize = data.settings.deckSize;
                 localGameMode = data.settings.mode;
                 closeJoinModal();
@@ -1011,6 +1086,7 @@
         }
 
         async function leaveRoom() {
+          if (!confirm('Вы уверены, что хотите покинуть комнату?')) return;
             if (!currentRoomId || !myPlayerId) return;
             const roomRef = db.collection('rooms').doc(currentRoomId);
             try {
@@ -1028,6 +1104,8 @@
                     await roomRef.update(updates);
                 }
             } catch (e) { console.error(e); }
+            sessionStorage.removeItem('myPlayerId');
+sessionStorage.removeItem('currentRoomId');
             cleanupRoom();
             showView('main-menu');
         }
@@ -1041,6 +1119,8 @@
             updateChatBadge();
             document.getElementById('chat-panel').classList.remove('open');
             chatOpen = false;
+            sessionStorage.removeItem('myPlayerId');
+sessionStorage.removeItem('currentRoomId');
         }
 
         function subscribeToRoom(roomCode) {
@@ -1156,6 +1236,7 @@
         }
 
         function backToLobby() {
+          if (!confirm('Вернуться в главное меню?')) return;
             document.getElementById('result-modal').classList.remove('active');
             cleanupRoom();
             showView('main-menu');
@@ -1301,11 +1382,15 @@
                 return myCards.filter(c => tableRanks.has(c.rank));
             }
             if (gs.phase === 'podkid') {
-                const tableRanks = getRanksOnTable(table);
-                if (myPlayerId !== gs.currentDefender) {
-                    return myCards.filter(c => tableRanks.has(c.rank));
-                }
-            }
+    const tableRanks = getRanksOnTable(table);
+    if (myPlayerId !== gs.currentDefender) {
+        const defender = gs.players.find(p => p.id === gs.currentDefender);
+        if (!defender) return [];
+        const maxCanAdd = Math.min(defender.cards.length - table.length, 6 - table.length);
+        if (maxCanAdd <= 0) return [];
+        return myCards.filter(c => tableRanks.has(c.rank));
+    }
+}
             return [];
         }
 
@@ -1498,46 +1583,66 @@
         }
 
         async function transferAction() {
-            if (!currentGameState || !currentRoomId) return;
-            const gs = currentGameState;
-            if (gs.mode !== 'perevodnoy' || gs.currentDefender !== myPlayerId) return;
-            const validTransfers = getValidTransferCards(gs);
-            if (validTransfers.length === 0) return;
-            const cardToTransfer = validTransfers[0];
-            const roomRef = db.collection('rooms').doc(currentRoomId);
-            try {
-                const doc = await roomRef.get();
-                if (!doc.exists) return;
-                const data = doc.data();
-                const serverGs = data.gameState;
-                if (!serverGs || serverGs.currentDefender !== myPlayerId) return;
-                const serverMe = serverGs.players.find(p => p.id === myPlayerId);
-                if (!serverMe) return;
-                const updatedMyCards = serverMe.cards.filter(c => c.id !== cardToTransfer.id);
-                const updatedTable = [...serverGs.table, { attack: cardToTransfer, defend: null }];
-                const players = serverGs.players;
-                const currentDefIdx = players.findIndex(p => p.id === myPlayerId);
-                const nextDefIdx = (currentDefIdx + 1) % players.length;
-                const nextDefender = players[nextDefIdx];
-                const updatedPlayers = players.map(p =>
-                    p.id === myPlayerId ? { ...p, cards: updatedMyCards } : p
-                );
-                const newGs = {
-                    ...serverGs,
-                    table: updatedTable,
-                    players: updatedPlayers,
-                    currentDefender: nextDefender.id,
-                    phase: 'defend',
-                    lastAttacker: myPlayerId,
-                    passedPlayers: []
-                };
-                await roomRef.update({ gameState: newGs, players: updatedPlayers });
-                currentGameState = newGs;
-                renderGame({ gameState: newGs, players: updatedPlayers, status: 'playing' });
-            } catch (e) {
-                console.error('Transfer error:', e);
-            }
+    if (!currentGameState || !currentRoomId) return;
+    const gs = currentGameState;
+    if (gs.mode !== 'perevodnoy' || gs.currentDefender !== myPlayerId) return;
+    if (!pendingTransferCard) return; // ждём выбора карты
+
+    const roomRef = db.collection('rooms').doc(currentRoomId);
+    try {
+        const doc = await roomRef.get();
+        if (!doc.exists) return;
+        const data = doc.data();
+        const serverGs = data.gameState;
+        if (!serverGs || serverGs.currentDefender !== myPlayerId) return;
+        const serverMe = serverGs.players.find(p => p.id === myPlayerId);
+        if (!serverMe) return;
+
+        const cardToTransfer = serverMe.cards.find(c => c.id === pendingTransferCard);
+        // проверяем, что карта всё ещё на руке и подходит для перевода
+        const attackRank = serverGs.table[serverGs.table.length - 1]?.attack.rank;
+        if (!cardToTransfer || cardToTransfer.rank !== attackRank) {
+            pendingTransferCard = null;
+            renderMyHand();
+            updateActionButtons();
+            return;
         }
+
+        const updatedMyCards = serverMe.cards.filter(c => c.id !== pendingTransferCard);
+        const updatedTable = [...serverGs.table, { attack: cardToTransfer, defend: null }];
+        const players = serverGs.players;
+        const currentDefIdx = players.findIndex(p => p.id === myPlayerId);
+        const nextDefIdx = (currentDefIdx + 1) % players.length;
+        const nextDefender = players[nextDefIdx];
+        const updatedPlayers = players.map(p =>
+            p.id === myPlayerId ? { ...p, cards: updatedMyCards } : p
+        );
+
+        // пересчитываем turnOrder для стабильности
+        const attackerIdx = updatedPlayers.findIndex(p => p.id === serverGs.currentAttacker);
+        const newTurnOrder = [];
+        for (let i = 0; i < updatedPlayers.length; i++) {
+            newTurnOrder.push((attackerIdx + i) % updatedPlayers.length);
+        }
+
+        const newGs = {
+            ...serverGs,
+            table: updatedTable,
+            players: updatedPlayers,
+            currentDefender: nextDefender.id,
+            phase: 'defend',
+            lastAttacker: myPlayerId,
+            passedPlayers: [],
+            turnOrder: newTurnOrder
+        };
+        await roomRef.update({ gameState: newGs, players: updatedPlayers });
+        pendingTransferCard = null;
+        currentGameState = newGs;
+        renderGame({ gameState: newGs, players: updatedPlayers, status: 'playing' });
+    } catch (e) {
+        console.error('Transfer error:', e);
+    }
+}
 
         async function endTurn(defenderTook) {
             if (!currentRoomId) return;
@@ -1567,11 +1672,19 @@
                 }
                 const turnOrder = serverGs.turnOrder;
                 const drawOrder = [...turnOrder];
-                const defIdx = drawOrder.indexOf(updatedPlayers.findIndex(p => p.id === serverGs.currentDefender));
-                if (defIdx >= 0) {
-                    const defEntry = drawOrder.splice(defIdx, 1)[0];
-                    drawOrder.push(defEntry);
-                }
+                let defIdx = -1;
+for (let i = 0; i < drawOrder.length; i++) {
+    const playerIdx = drawOrder[i];
+    if (updatedPlayers[playerIdx]?.id === serverGs.currentDefender) {
+        defIdx = i;
+        break;
+    }
+}
+
+if (defIdx >= 0) {
+    const defEntry = drawOrder.splice(defIdx, 1)[0];
+    drawOrder.push(defEntry);
+}
                 for (const playerIdx of drawOrder) {
                     const player = updatedPlayers[playerIdx];
                     if (!player) continue;
@@ -1579,48 +1692,87 @@
                         player.cards.push(updatedDeck.pop());
                     }
                 }
-                let winner = null;
-                let durak = null;
-                const playersWithCards = updatedPlayers.filter(p => p.cards.length > 0);
-                if (updatedDeck.length <= 1 && playersWithCards.length <= 1) {
-                    if (playersWithCards.length === 0) {
-                        winner = updatedPlayers[0].id;
-                    } else {
-                        durak = playersWithCards[0].id;
-                        const others = updatedPlayers.filter(p => p.id !== durak);
-                        winner = others.length > 0 ? others[0].id : null;
-                    }
-                }
-                let nextAttacker = serverGs.currentDefender;
-                if (defenderTook) {
-                    // Если защитник забрал карты, он пропускает ход
-                    const defenderIdx = updatedPlayers.findIndex(p => p.id === serverGs.currentDefender);
-                    nextAttacker = updatedPlayers[(defenderIdx + 1) % updatedPlayers.length].id;
-                }
-                let nextDefender = null;
-                if (!winner && !durak) {
-                    const attackerIdx = updatedPlayers.findIndex(p => p.id === nextAttacker);
-                    nextDefender = updatedPlayers[(attackerIdx + 1) % updatedPlayers.length].id;
-                    const newTurnOrder = [];
-                    for (let i = 0; i < updatedPlayers.length; i++) {
-                        newTurnOrder.push((attackerIdx + i) % updatedPlayers.length);
-                    }
-                    serverGs.turnOrder = newTurnOrder;
-                }
+                function findNextPlayerWithCards(players, startIndex, offset = 0) {
+    for (let i = offset; i < players.length + offset; i++) {
+        const idx = (startIndex + i) % players.length;
+        if (players[idx] && players[idx].cards.length > 0) {
+            return { player: players[idx], index: idx };
+        }
+    }
+    return null;
+}
+
+let winner = null;
+let durak = null;
+const playersWithCards = updatedPlayers.filter(p => p.cards.length > 0);
+
+// Проверка завершения игры
+if (updatedDeck.length <= 1 && playersWithCards.length <= 1) {
+    if (playersWithCards.length === 0) {
+        winner = updatedPlayers[0].id;
+    } else {
+        durak = playersWithCards[0].id;
+        const others = updatedPlayers.filter(p => p.id !== durak);
+        winner = others.length > 0 ? others[0].id : null;
+    }
+}
+
+let nextAttackerId = null;
+let nextDefenderId = null;
+
+if (!winner && !durak) {
+    // Определяем стартовую позицию для поиска атакующего
+    let startIdx;
+    if (defenderTook) {
+        // Защитник забрал карты, ход переходит к следующему после защитника
+        const defIdx = updatedPlayers.findIndex(p => p.id === serverGs.currentDefender);
+        startIdx = (defIdx + 1) % updatedPlayers.length;
+    } else {
+        // Защитник отбился, ходит сам
+        const defIdx = updatedPlayers.findIndex(p => p.id === serverGs.currentDefender);
+        startIdx = defIdx;
+    }
+
+    const nextAttacker = findNextPlayerWithCards(updatedPlayers, startIdx);
+    if (nextAttacker) {
+        nextAttackerId = nextAttacker.player.id;
+        const nextDefender = findNextPlayerWithCards(updatedPlayers, nextAttacker.index, 1);
+        if (nextDefender) {
+            nextDefenderId = nextDefender.player.id;
+        } else {
+            // Если нет защитника, то атакующий — победитель
+            winner = nextAttackerId;
+            durak = updatedPlayers.find(p => p.id !== winner)?.id || null;
+        }
+    } else {
+        // Ни у кого нет карт
+        winner = updatedPlayers[0].id;
+    }
+
+    // Обновляем turnOrder, если игра продолжается
+    if (nextAttackerId && nextDefenderId) {
+        const attackerIdx = updatedPlayers.findIndex(p => p.id === nextAttackerId);
+        const newTurnOrder = [];
+        for (let i = 0; i < updatedPlayers.length; i++) {
+            newTurnOrder.push((attackerIdx + i) % updatedPlayers.length);
+        }
+        serverGs.turnOrder = newTurnOrder;
+    }
+}
                 const newGs = {
-                    ...serverGs,
-                    table: [],
-                    deck: updatedDeck,
-                    discardPile: discardPile,
-                    players: updatedPlayers,
-                    phase: winner || durak ? 'end' : 'attack',
-                    currentAttacker: nextAttacker || serverGs.currentAttacker,
-                    currentDefender: nextDefender || serverGs.currentDefender,
-                    winner: winner,
-                    durak: durak,
-                    lastAttacker: null,
-                    passedPlayers: []
-                };
+    ...serverGs,
+    table: [],
+    deck: updatedDeck,
+    discardPile: discardPile,
+    players: updatedPlayers,
+    phase: winner || durak ? 'end' : 'attack',
+    currentAttacker: nextAttackerId || serverGs.currentAttacker,
+    currentDefender: nextDefenderId || serverGs.currentDefender,
+    winner: winner,
+    durak: durak,
+    lastAttacker: null,
+    passedPlayers: []
+};
                 const finalStatus = winner || durak ? 'finished' : 'playing';
                 await roomRef.update({
                     gameState: newGs,
@@ -1659,7 +1811,14 @@
             } else {
                 phaseEl.textContent = '⏳ Ожидание...';
             }
-
+if (me && me.cards.length === 0 && !gs.winner && !gs.durak) {
+    if (!spectatorModalShown) {
+        document.getElementById('spectator-modal').classList.add('active');
+    }
+} else {
+    spectatorModalShown = false;
+    document.getElementById('spectator-modal').classList.remove('active');
+}
             const opponentsRow = document.getElementById('opponents-row');
             opponentsRow.innerHTML = '';
             const opponents = gs.players.filter(p => p.id !== myPlayerId);
@@ -1728,6 +1887,7 @@
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card-in-hand';
                 if (selectedCards.includes(card.id)) cardEl.classList.add('selected');
+                if (pendingTransferCard === card.id) cardEl.classList.add('selected');
 
                 const isAttacker = (gs.currentAttacker === myPlayerId);
                 const canPlayInPodkid = gs.phase === 'podkid' && gs.currentDefender !== myPlayerId;
@@ -1750,6 +1910,15 @@
                         }
                         return;
                     }
+                    if (gs.currentDefender === myPlayerId && gs.mode === 'perevodnoy' && gs.table.length > 0) {
+        const attackRank = gs.table[gs.table.length - 1].attack.rank;
+        if (card.rank === attackRank) {
+            pendingTransferCard = card.id;
+            renderMyHand(); // подсветим выбранную карту (можно через selectedCards)
+            updateActionButtons();
+        }
+        return;
+    }
                     if ((gs.currentAttacker === myPlayerId && (gs.phase === 'attack' || gs.phase === 'podkid')) ||
                         (gs.phase === 'podkid' && gs.currentAttacker !== myPlayerId && gs.currentDefender !== myPlayerId)) {
                         selectCardForAttack(card.id);
@@ -1786,7 +1955,13 @@
             const gs = currentGameState;
             const me = findPlayerInGameState(gs, myPlayerId);
             if (!me) return;
-
+if (me.cards.length === 0 && !gs.winner && !gs.durak) {
+    document.getElementById('btn-attack').style.display = 'none';
+    document.getElementById('btn-done').style.display = 'none';
+    document.getElementById('btn-take').style.display = 'none';
+    document.getElementById('btn-transfer').style.display = 'none';
+    return;
+}
             // Кнопка "Сходить"
             if (selectedCards.length > 0) {
                 const isAttacker = (gs.currentAttacker === myPlayerId);
@@ -1799,17 +1974,18 @@
             }
 
             // Кнопка "Перевод"
-            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.table.length > 0) {
-                btnTransfer.style.display = 'inline-block';
-            }
+            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.table.length > 0 && pendingTransferCard) {
+    btnTransfer.style.display = 'inline-block';
+}
 
             // Кнопки "Бито", "Забрать", "Пас"
             if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
-                btnDone.classList.remove('btn-disabled');
-                btnTake.classList.remove('btn-disabled');
-                btnDone.textContent = '✅ Бито (если все отбиты)';
-                btnTake.textContent = '📥 Забрать все';
-            } else if (gs.phase === 'podkid') {
+    const allDefended = gs.table.every(p => p.defend);
+    btnDone.classList.toggle('btn-disabled', !allDefended);
+    btnTake.classList.remove('btn-disabled');
+    btnDone.textContent = '✅ Бито';
+    btnTake.textContent = '📥 Забрать все';
+} else if (gs.phase === 'podkid') {
                 if (gs.currentDefender === myPlayerId) {
                     btnDone.classList.add('btn-disabled');
                     btnTake.classList.remove('btn-disabled');
@@ -1936,6 +2112,51 @@
             div.textContent = str;
             return div.innerHTML;
         }
+function toggleNameEmojiPicker() {
+    nameEmojiPickerOpen = !nameEmojiPickerOpen;
+    const picker = document.getElementById('name-emoji-picker');
+    if (nameEmojiPickerOpen) {
+        picker.style.display = 'flex';
+        renderNameEmojis();
+    } else {
+        picker.style.display = 'none';
+    }
+}
+
+function renderNameEmojis() {
+    const container = document.getElementById('name-emoji-picker');
+    container.innerHTML = '';
+    nameEmojis.forEach(emoji => {
+        const span = document.createElement('span');
+        span.className = 'name-emoji-item';
+        span.textContent = emoji;
+        span.onclick = () => {
+            const input = document.getElementById('player-name');
+            input.value += emoji;
+            input.focus();
+            toggleNameEmojiPicker();
+        };
+        container.appendChild(span);
+    });
+}
+
+// Закрытие пикера при клике вне его
+document.addEventListener('click', (e) => {
+    const picker = document.getElementById('name-emoji-picker');
+    const btn = document.getElementById('name-emoji-btn');
+    if (nameEmojiPickerOpen && !picker.contains(e.target) && e.target !== btn) {
+        toggleNameEmojiPicker();
+    }
+});
+function watchGame() {
+    document.getElementById('spectator-modal').classList.remove('active');
+    spectatorModalShown = true; // чтобы больше не показывать
+}
+
+function leaveRoomFromSpectator() {
+    document.getElementById('spectator-modal').classList.remove('active');
+    leaveRoom(); // вызов существующей функции выхода из комнаты
+}
 
         // ==================== INIT ====================
         function init() {
@@ -1971,5 +2192,141 @@
         }
         init();
     </script>
+    <script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// --- Сцена, камера, рендерер ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a14);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 2, 8);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ 
+    canvas: document.getElementById('loader-canvas'),
+    antialias: true,
+    alpha: true
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// --- Свет ---
+const ambientLight = new THREE.AmbientLight(0x404066);
+scene.add(ambientLight);
+const pointLight = new THREE.PointLight(0xc44dff, 2, 15);
+pointLight.position.set(2, 3, 5);
+scene.add(pointLight);
+const pointLight2 = new THREE.PointLight(0xff6b9d, 1.5, 10);
+pointLight2.position.set(-3, -1, 3);
+scene.add(pointLight2);
+
+// --- Парящая колода карт ---
+const cardGroup = new THREE.Group();
+scene.add(cardGroup);
+
+// Создаём текстуру карты (Canvas)
+function createCardTexture(suit, rank, color) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    // Фон карты
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(2, 2, canvas.width-4, canvas.height-4);
+    // Ранг и масть
+    ctx.fillStyle = color;
+    ctx.font = 'bold 36px "Segoe UI", system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(rank, canvas.width/2, 70);
+    ctx.font = '48px "Segoe UI", system-ui';
+    ctx.fillText(suit, canvas.width/2, 135);
+    return new THREE.CanvasTexture(canvas);
+}
+
+const suits = [
+    { suit: '♠', color: '#1a1a2e' },
+    { suit: '♥', color: '#d32f2f' },
+    { suit: '♦', color: '#d32f2f' },
+    { suit: '♣', color: '#1a1a2e' }
+];
+
+const cards = [];
+const numCards = 6;
+for (let i = 0; i < numCards; i++) {
+    const { suit, color } = suits[i % suits.length];
+    const texture = createCardTexture(suit, '?', color);
+    const material = new THREE.MeshStandardMaterial({ 
+        map: texture,
+        roughness: 0.4,
+        metalness: 0.1,
+        side: THREE.DoubleSide
+    });
+    const geometry = new THREE.PlaneGeometry(0.8, 1.1);
+    const card = new THREE.Mesh(geometry, material);
+    // Располагаем веером с небольшим смещением
+    card.position.set((i - numCards/2 + 0.5) * 0.2, 0, i * 0.02);
+    card.rotation.y = (i - numCards/2 + 0.5) * 0.15;
+    card.rotation.x = -0.1;
+    cards.push(card);
+    cardGroup.add(card);
+}
+
+// --- Магические частицы ---
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCount = 200;
+const posArray = new Float32Array(particlesCount * 3);
+for (let i = 0; i < particlesCount * 3; i += 3) {
+    posArray[i] = (Math.random() - 0.5) * 6;
+    posArray[i+1] = (Math.random() - 0.5) * 4;
+    posArray[i+2] = (Math.random() - 0.5) * 4;
+}
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+const particlesMaterial = new THREE.PointsMaterial({
+    size: 0.02,
+    color: 0xc44dff,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    opacity: 0.8,
+    sizeAttenuation: true
+});
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particles);
+
+// --- Анимация ---
+const clock = new THREE.Clock();
+
+function animate() {
+    const delta = clock.getDelta();
+    const time = performance.now() * 0.001;
+    
+    // Вращаем колоду
+    cardGroup.rotation.y += 0.005;
+    cardGroup.rotation.x = Math.sin(time * 0.5) * 0.1;
+    cardGroup.position.y = Math.sin(time * 1.2) * 0.1;
+    
+    // Частицы вращаются
+    particles.rotation.y += 0.002;
+    particles.rotation.x += 0.001;
+    
+    // Пульсация света
+    pointLight.intensity = 2 + Math.sin(time * 3) * 0.5;
+    
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+animate();
+
+// --- Адаптация под размер окна ---
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
 </body>
 </html>
