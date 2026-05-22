@@ -1411,13 +1411,14 @@
             pointLight3.position.set(0, 400, -100);
             scene.add(pointLight3);
             
-            // Mouse interaction
-            let mouseX = 0, mouseY = 0;
+            // Mouse interaction (используем существующие mouseX/mouseY из секции курсора)
             let targetRotationX = 0, targetRotationY = 0;
             
             document.addEventListener('mousemove', (e) => {
                 mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
                 mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+                targetRotationX = mouseY;
+                targetRotationY = mouseX;
             });
             
             // Animation loop
