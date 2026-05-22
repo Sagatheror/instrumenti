@@ -735,7 +735,7 @@
     <div id="game-screen">
         <div class="game-top-bar">
             <span class="trump-indicator">
-                <i class="fa-solid fa-joker"></i> Козырь: <span id="trump-display" class="trump-suit-icon">—</span>
+                <i class="fa-solid fa-joker"></i> Козырь: <span id="trump-display" class="trump-suit-icon">—</span> <span id="trump-name" style="margin-left:6px;font-weight:600;"></span>
             </span>
             <span class="deck-info">Колода: <b id="deck-count">0</b></span>
             <span id="game-phase-text" style="font-weight:700;color:#ffd700;"></span>
@@ -1625,19 +1625,22 @@
                 const serverMe = serverGs.players.find(p => p.id === myPlayerId);
                 if (!serverMe) return;
 
+                // Берём ранг последней атакующей карты на столе
                 const attackRank = serverGs.table[serverGs.table.length - 1].attack.rank;
                 const cardToTransfer = serverMe.cards.find(c => c.id === selectedCards[0]);
 
                 if (!cardToTransfer || cardToTransfer.rank !== attackRank) {
                     selectedCards = [];
                     renderMyHand();
+                    console.log('Нельзя перевести эту карту!');
                     return;
                 }
 
                 const updatedMyCards = serverMe.cards.filter(c => c.id !== cardToTransfer.id);
+                // Добавляем карту перевода на стол как новую пару (атака без защиты)
                 const updatedTable = [...serverGs.table, { attack: cardToTransfer, defend: null }];
 
-                // Перевод хода следующему игроку
+                // Перевод хода следующему игроку по кругу
                 const currentDefIdx = serverGs.players.findIndex(p => p.id === myPlayerId);
                 const nextDefIdx = (currentDefIdx + 1) % serverGs.players.length;
                 const nextDefender = serverGs.players[nextDefIdx];
@@ -1651,6 +1654,7 @@
                     table: updatedTable,
                     players: updatedPlayers,
                     currentDefender: nextDefender.id,
+                    currentAttacker: myPlayerId, // Тот кто перевёл становится атакующим
                     phase: 'defend',
                     lastAttacker: myPlayerId,
                     passedPlayers: []
@@ -1916,8 +1920,10 @@
 
             // Trump display
             const trumpDisplay = document.getElementById('trump-display');
+            const trumpName = document.getElementById('trump-name');
             trumpDisplay.textContent = gs.trumpSuit;
             trumpDisplay.style.color = SUIT_COLORS[gs.trumpSuit] === 'red' ? '#d32f2f' : '#fff';
+            trumpName.textContent = SUIT_NAMES[gs.trumpSuit] || '';
 
             document.getElementById('deck-count').textContent = gs.deck.length;
 
@@ -2053,7 +2059,7 @@
                         return;
                     }
 
-                    // Перевод
+                    // Перевод - должен работать в фазе defend когда есть карты на столе
                     if (gs.currentDefender === myPlayerId && gs.mode === 'perevodnoy' && gs.table.length > 0) {
                         const attackRank = gs.table[gs.table.length - 1].attack.rank;
                         if (card.rank === attackRank) {
@@ -2064,8 +2070,8 @@
                             }
                             renderMyHand();
                             updateActionButtons();
+                            return;
                         }
-                        return;
                     }
 
                     // Атака/Подкидывание
@@ -2104,24 +2110,29 @@
             const me = findPlayer(gs, myPlayerId);
             if (!me) return;
 
-            // Кнопка атаки
+            // Кнопка атаки - показываем только когда можем атаковать/подкидывать
             if (selectedCards.length > 0 && canAttack(gs, myPlayerId)) {
                 btnAttack.style.display = 'inline-block';
             }
 
-            // Кнопка перевода
+            // Кнопка перевода - показываем в переводном режиме когда мы защищаемся и есть карты на столе
             if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.table.length > 0 && selectedCards.length > 0) {
                 const attackRank = gs.table[gs.table.length - 1].attack.rank;
                 const selectedCard = getMyCards(gs).find(c => c.id === selectedCards[0]);
                 if (selectedCard && selectedCard.rank === attackRank) {
                     btnTransfer.style.display = 'inline-block';
+                    // Скрываем кнопку Бито когда возможен перевод
+                    btnDone.disabled = true;
                 }
             }
 
             // Кнопки Бито/Забрать
             if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
                 const allDefended = gs.table.every(p => p.defend !== null);
-                btnDone.disabled = !allDefended;
+                // Не блокируем Бито если кнопка перевода не активна
+                if (btnTransfer.style.display === 'none') {
+                    btnDone.disabled = !allDefended;
+                }
                 btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Бито';
                 btnTake.disabled = false;
                 btnTake.innerHTML = '<i class="fa-solid fa-download"></i> Забрать';
