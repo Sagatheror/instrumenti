@@ -434,9 +434,8 @@
             width: 100%;
         }
         table {
-            width: 100%;
+            min-width: 1100px;
             border-collapse: collapse;
-            min-width: 900px;
         }
         th {
             text-align: left;
@@ -806,18 +805,6 @@ tr:hover::before {
 .bills-title i {
     color: var(--success);
 }
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .bills-table-container {
     animation: fadeInUp 0.3s ease-out;
 }
@@ -996,12 +983,6 @@ tr:hover::before {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-}
-@keyframes ripple {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
 }
 .progress-container {
     width: 100%;
@@ -1334,6 +1315,176 @@ th:hover .th-content {
     transition: transform 0.3s ease;
     transform-origin: center;
 }
+/* Модальное окно */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.active {
+    display: flex;
+}
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    width: 90vw;
+    max-width: 1000px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    animation: modalSlide 0.3s ease;
+    position: relative;
+}
+@keyframes modalSlide {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    line-height: 1;
+}
+.modal-close:hover {
+    color: var(--text-main);
+}
+.modal-section {
+    margin-bottom: 30px;
+}
+.modal-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+}
+.modal-section-title svg {
+    flex-shrink: 0;
+}
+.modal-chart-container {
+    height: 250px;
+    margin-bottom: 20px;
+}
+
+/* Чекбоксы в таблице */
+.select-supplier {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    margin: 0;
+}
+.compare-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: none;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    font-weight: 600;
+}
+.compare-bar.active {
+    display: flex;
+}
+.compare-bar .btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+/* Индикатор скорости таяния в таблице */
+.burn-rate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(99,102,241,0.1);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+.burn-rate-badge.warning {
+    background: rgba(245,158,11,0.15);
+    color: #d97706;
+}
+.burn-rate-badge.danger {
+    background: rgba(239,68,68,0.1);
+    color: #ef4444;
+}
+.compare-btn {
+    transition: all 0.2s;
+    opacity: 0.7;
+}
+.compare-btn:hover {
+    opacity: 1;
+    background: rgba(99,102,241,0.1);
+}
+.compare-btn.active-compare {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+    opacity: 1;
+    border-color: var(--primary);
+}
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 15px;
+}
+.heatmap-day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    background: #f1f5f9;
+    position: relative;
+}
+.heatmap-day.has-bills {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.heatmap-tooltip {
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.heatmap-day:hover .heatmap-tooltip {
+    opacity: 1;
+}
     </style>
 </head>
 <body>
@@ -1518,12 +1669,32 @@ th:hover .th-content {
         </svg>
         Фильтры
     </button>
+    <button class="btn btn-ghost" onclick="openTopSpendersModal(30)" title="Топ‑5 по расходу">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+        <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="13" cy="3" r="2" fill="currentColor"/>
+    </svg>
+    Топ расходов
+</button>
+<button class="btn btn-ghost" onclick="openHeatmapModal()" title="Тепловая карта счетов">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+        <rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="3" y="8" width="3" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
+        <rect x="7" y="9" width="3" height="3" rx="1" fill="#f59e0b" opacity="0.8"/>
+        <rect x="11" y="8" width="3" height="4" rx="1" fill="#10b981" opacity="0.8"/>
+    </svg>
+    Тепловая карта
+</button>
 </div>
         </header>
         <div class="filters-bar" id="filtersPanel">
             <div class="flex gap-2 w-full" style="flex-wrap: wrap;">
                 <div class="input-group">
-                    <i class="fas fa-search input-icon"></i>
+                    <svg class="input-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 12l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>
                     <input type="text" id="searchInput" class="form-input" placeholder="Поиск поставщика..." oninput="handleFilter()">
                 </div>
                 <select id="sortSelect" class="form-select" onchange="handleFilter()" style="min-width: 180px;">
@@ -1721,6 +1892,38 @@ th:hover .th-content {
             </tbody>
         </table>
     </div>
+</div>
+<div class="modal-overlay" id="supplierModal">
+    <div class="modal-content" id="supplierModalContent">
+        <button class="modal-close" onclick="closeSupplierModal()">&times;</button>
+        <div id="modalInner"></div>
+    </div>
+</div>
+
+<!-- Модальное окно сравнения -->
+<div class="modal-overlay" id="compareModal">
+    <div class="modal-content" id="compareModalContent">
+        <button class="modal-close" onclick="closeCompareModal()">&times;</button>
+        <div id="compareInner"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="topSpendersModal">
+    <div class="modal-content" id="topSpendersContent">
+        <button class="modal-close" onclick="closeTopSpendersModal()">&times;</button>
+        <div id="topSpendersInner"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="heatmapModal">
+    <div class="modal-content" id="heatmapContent">
+        <button class="modal-close" onclick="closeHeatmapModal()">&times;</button>
+        <div id="heatmapInner"></div>
+    </div>
+</div>
+<!-- Плавающая панель сравнения -->
+<div class="compare-bar" id="compareBar">
+    <span>Выбрано: <strong id="compareCount">0</strong></span>
+    <button class="btn btn-primary" onclick="openCompareModal()" style="font-size:0.85rem;">Сравнить</button>
+    <button class="btn btn-ghost" onclick="clearCompare()" style="font-size:0.85rem;">Очистить</button>
 </div>
         <footer class="app-footer">
             <p>Данные обновлены: <span id="lastUpdate" style="color: var(--text-main); font-weight: 500;">-</span></p>
@@ -2421,7 +2624,6 @@ setupTooltip(depositChartInst, document.getElementById('depositChart'));
         const hasBills = bills.length > 0;
         const hasDeposits = item.deposits.length > 0;
         
-        // SVG для кнопки "Подробнее" (шеврон вниз/вверх)
         const chevronDownSVG = `
             <svg id="icon-${item.id}" width="14" height="14" viewBox="0 0 14 14" fill="none" class="chevron-icon">
                 <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2485,7 +2687,6 @@ setupTooltip(depositChartInst, document.getElementById('depositChart'));
             </tr>`;
         }
         
-        // Обычная запись поставщика
         return `
         <tr data-supplier-id="${item.id}">
             <td>
@@ -2515,6 +2716,12 @@ setupTooltip(depositChartInst, document.getElementById('depositChart'));
                         (${hasDeposits ? item.deposits.length + ' деп.' : 'нет деп.'}${hasBills ? ', ' + bills.length + ' счет.' : ''})
                     </span>
                 </button>
+                <button class="details-toggle" onclick="openSupplierModal('${item.id}')" style="margin-top:4px;">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="chevron-icon">
+        <path d="M1 13l6-8 6 8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    Аналитика
+</button>
                 <div id="details-${item.id}" class="details-content">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
                         <div class="detail-card" style="background: linear-gradient(135deg, ${getSupplierColorRGBA(item.colorIndex, 0.05)} 0%, rgba(255,255,255,0.1) 100%); border: 1px solid ${getSupplierColorRGBA(item.colorIndex, 0.1)}; border-radius: var(--radius-md); padding: 16px;">
@@ -3602,6 +3809,27 @@ function smoothScrollToElement(elementId) {
         });
     }
 }
+function parseDateSafe(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    dateStr = dateStr.trim();
+    const ruMatch = dateStr.match(/^(\d{1,2})[\.\-\/](\d{1,2})[\.\-\/](\d{4})$/);
+    if (ruMatch) {
+        const day = parseInt(ruMatch[1], 10);
+        const month = parseInt(ruMatch[2], 10) - 1;
+        const year = parseInt(ruMatch[3], 10);
+        const d = new Date(year, month, day);
+        if (d.getFullYear() === year && d.getMonth() === month && d.getDate() === day) {
+            return d;
+        }
+    }
+    const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) return d;
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+}
 function setupTooltip(chartInstance, canvasElement) {
   const tooltip = document.getElementById('chartTooltip');
 
@@ -3631,6 +3859,450 @@ function highlightSearchTerm(term) {
     const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     cell.innerHTML = text.replace(regex, `<span class="search-highlight">$1</span>`);
   });
+}
+let selectedSuppliers = new Set();
+
+function toggleSelectSupplier(id) {
+    if (selectedSuppliers.has(id)) {
+        selectedSuppliers.delete(id);
+    } else {
+        selectedSuppliers.add(id);
+    }
+    document.querySelectorAll('.compare-btn').forEach(btn => {
+        const rowId = btn.closest('tr')?.dataset.supplierId;
+        if (rowId && selectedSuppliers.has(rowId)) {
+            btn.classList.add('active-compare');
+        } else {
+            btn.classList.remove('active-compare');
+        }
+    });
+    updateCompareBar();
+}
+
+function updateCompareBar() {
+    const bar = document.getElementById('compareBar');
+    const count = document.getElementById('compareCount');
+    if (selectedSuppliers.size > 0) {
+        bar.classList.add('active');
+        count.textContent = selectedSuppliers.size;
+    } else {
+        bar.classList.remove('active');
+    }
+}
+
+function clearCompare() {
+    selectedSuppliers.clear();
+    document.querySelectorAll('.compare-btn').forEach(btn => btn.classList.remove('active-compare'));
+    updateCompareBar();
+}
+
+function openCompareModal() {
+    const ids = Array.from(selectedSuppliers);
+    if (ids.length < 2) return showToast('Выберите хотя бы 2 поставщика', 'warning');
+    
+    const suppliers = ids.map(id => displayData.find(d => d.id === id)).filter(Boolean);
+    const modal = document.getElementById('compareModal');
+    const inner = document.getElementById('compareInner');
+    
+    inner.innerHTML = `
+        <div class="modal-section">
+            <div class="modal-section-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+                </svg>
+                Сравнение поставщиков (${suppliers.length})
+            </div>
+            <div class="modal-chart-container">
+                <canvas id="compareChart" height="250"></canvas>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    
+    setTimeout(() => {
+        const ctx = document.getElementById('compareChart').getContext('2d');
+        const labels = suppliers[0].deposits.map((_, i) => `Депозит ${i+1}`);
+        const datasets = suppliers.map((supplier, idx) => ({
+            label: supplier.name,
+            data: supplier.deposits.map(d => d.amount),
+            borderColor: getSupplierColor(supplier.colorIndex),
+            backgroundColor: getSupplierColorRGBA(supplier.colorIndex, 0.2),
+            tension: 0.3,
+            fill: false
+        }));
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtNoCurrency(ctx.raw)} ₽` } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: v => fmtNoCurrency(v) + ' ₽' } }
+                }
+            }
+        });
+    }, 100);
+}
+
+function closeCompareModal() {
+    document.getElementById('compareModal').classList.remove('active');
+}
+
+function openSupplierModal(supplierId) {
+    const supplier = displayData.find(d => d.id === supplierId);
+    if (!supplier) return;
+
+    const modal = document.getElementById('supplierModal');
+    const inner = document.getElementById('modalInner');
+
+    const bills = billsData[supplier.name] || [];
+    const hasDeposits = supplier.deposits.length > 0;
+    const hasBills = bills.length > 0;
+
+    let burnRate = 0;
+    let monthsToZero = null;
+    let depletionDate = null;
+
+    if (hasBills && supplier.rest > 0) {
+        const datedBills = bills.filter(b => b.date);
+        if (datedBills.length > 0) {
+            const parsed = datedBills
+                .map(b => ({ ...b, parsedDate: parseDateSafe(b.date) }))
+                .filter(b => b.parsedDate);
+
+            if (parsed.length > 0) {
+                parsed.sort((a, b) => a.parsedDate - b.parsedDate);
+                const firstDate = parsed[0].parsedDate;
+                const lastDate = parsed[parsed.length - 1].parsedDate;
+                const totalAmount = parsed.reduce((sum, b) => sum + (b.amount || 0), 0);
+                const months = Math.max(1, (lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30.44));
+                burnRate = totalAmount / months;
+
+                if (burnRate > 0) {
+                    monthsToZero = supplier.rest / burnRate;
+                    depletionDate = new Date();
+                    depletionDate.setMonth(depletionDate.getMonth() + Math.round(monthsToZero));
+                }
+            }
+        }
+    }
+
+    const timelineEvents = [];
+
+    supplier.deposits.forEach(d => {
+        const year = d.year || new Date().getFullYear();
+        timelineEvents.push({ date: new Date(year, 0, 1), amount: d.amount, type: 'deposit' });
+    });
+
+    bills.forEach(b => {
+        const d = parseDateSafe(b.date);
+        if (d && b.amount) {
+            timelineEvents.push({ date: d, amount: -b.amount, type: 'bill' });
+        }
+    });
+
+    timelineEvents.sort((a, b) => a.date - b.date);
+    let balance = 0;
+    const chartLabels = [];
+    const chartData = [];
+    timelineEvents.forEach(event => {
+        balance += event.amount;
+        chartLabels.push(event.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
+        chartData.push(balance);
+    });
+
+    inner.innerHTML = `
+        <div class="modal-section">
+            <div class="modal-section-title" style="font-size:24px;">
+                <span class="color-dot" style="background-color: ${getSupplierColor(supplier.colorIndex)}; width:16px; height:16px;"></span>
+                ${supplier.name}
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M3 3v18h18"/><path d="M3 12h4l3-8 4 16 3-8h4"/>
+                </svg>
+                Динамика остатка депозита
+            </div>
+            <div class="modal-chart-container">
+                <canvas id="timelineChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <div class="modal-section" style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+                <div style="font-weight:600; margin-bottom:10px;">Депозиты</div>
+                ${hasDeposits ? supplier.deposits.map(d => `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+                        <span>${d.year ? `Депозит за ${d.year}` : 'Депозит'}</span>
+                        <strong>${fmt(d.amount)}</strong>
+                    </div>
+                `).join('') : '<div style="color:var(--text-muted);">Нет депозитов</div>'}
+                <div style="margin-top:12px; padding-top:8px; border-top:2px solid var(--primary);">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>Итого:</strong>
+                        <strong>${fmt(supplier.total)}</strong>
+                    </div>
+                </div>
+            </div>
+            <div style="flex:1; min-width:200px;">
+                <div style="font-weight:600; margin-bottom:10px;">Счета (${bills.length})</div>
+                ${hasBills ? bills.slice(0, 10).map(b => `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+                        <span>${b.number} <small style="color:var(--text-muted);">${formatDate(b.date)}</small></span>
+                        <strong>${fmt(b.amount || 0)}</strong>
+                    </div>
+                `).join('') : '<div style="color:var(--text-muted);">Нет счетов</div>'}
+                ${bills.length > 10 ? `<div style="color:var(--text-muted);">и ещё ${bills.length - 10}...</div>` : ''}
+            </div>
+        </div>
+
+        <div class="modal-section" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:15px;">
+            <!-- Текущий остаток -->
+            <div style="background: var(--primary-light); border-radius:12px; padding:15px;">
+                <div style="font-size:0.9rem; color:var(--text-secondary);">Текущий остаток</div>
+                <div style="font-size:1.5rem; font-weight:700; color:${supplier.rest >= 0 ? 'var(--success)' : '#ef4444'};">${fmt(supplier.rest)}</div>
+            </div>
+
+            <!-- Скорость таяния (всегда показываем, без display:none) -->
+            <div style="background: var(--warning-light); border-radius:12px; padding:15px;">
+                <div style="font-size:0.9rem; color:var(--text-secondary);">Скорость таяния</div>
+                <div style="font-size:1.3rem; font-weight:700; color:${burnRate > 0 ? '#d97706' : 'var(--text-muted)'};">
+                    ${burnRate > 0 ? fmt(Math.round(burnRate)) + ' ₽/мес' : 'Нет данных'}
+                </div>
+            </div>
+
+            <!-- Прогноз исчерпания (всегда показываем) -->
+            <div style="background: #fee2e2; border-radius:12px; padding:15px;">
+                <div style="font-size:0.9rem; color:var(--text-secondary);">Прогноз исчерпания</div>
+                <div style="font-size:1.1rem; font-weight:700; color:${monthsToZero ? (monthsToZero < 2 ? '#ef4444' : '#d97706') : 'var(--text-muted)'};">
+                    ${monthsToZero
+                        ? `${depletionDate.toLocaleDateString('ru-RU', {month:'short', year:'numeric'})} (${monthsToZero.toFixed(1)} мес.)`
+                        : (supplier.rest <= 0 ? 'Исчерпан' : 'Невозможно оценить')
+                    }
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    if (timelineEvents.length > 0) {
+        setTimeout(() => {
+            const canvas = document.getElementById('timelineChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Остаток',
+                        data: chartData,
+                        borderColor: getSupplierColor(supplier.colorIndex),
+                        backgroundColor: getSupplierColorRGBA(supplier.colorIndex, 0.1),
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `${fmt(ctx.raw)}` } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: v => fmt(v) } }
+                    }
+                }
+            });
+        }, 100);
+    }
+}
+
+function closeSupplierModal() {
+    document.getElementById('supplierModal').classList.remove('active');
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+    }
+});
+function openTopSpendersModal(periodDays) {
+    const now = new Date();
+    const cutoffDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+
+    const spendMap = {};
+    for (const [supplierName, bills] of Object.entries(billsData)) {
+        let total = 0;
+        bills.forEach(bill => {
+            if (bill.amount) {
+                const billDate = parseDateSafe(bill.date);
+                if (billDate && billDate >= cutoffDate && billDate <= now) {
+                    total += bill.amount;
+                }
+            }
+        });
+        if (total > 0) spendMap[supplierName] = total;
+    }
+
+    const sorted = Object.entries(spendMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+    const modal = document.getElementById('topSpendersModal');
+    const inner = document.getElementById('topSpendersInner');
+
+    inner.innerHTML = `
+        <div class="modal-section">
+            <div class="modal-section-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+                </svg>
+                Топ‑5 по расходу за последние ${periodDays} дней
+            </div>
+            <div style="margin-bottom:15px; display:flex; gap:10px;">
+                <button class="btn btn-ghost" onclick="openTopSpendersModal(30)" 
+                    style="${periodDays === 30 ? 'background:var(--primary-light);color:var(--primary);' : ''}">30 дней</button>
+                <button class="btn btn-ghost" onclick="openTopSpendersModal(90)" 
+                    style="${periodDays === 90 ? 'background:var(--primary-light);color:var(--primary);' : ''}">90 дней</button>
+            </div>
+            ${sorted.length === 0 ? '<div style="color:var(--text-muted);">Нет счетов за выбранный период</div>' : `
+                <table class="bills-table" style="width:100%;">
+                    <thead><tr><th>Поставщик</th><th style="text-align:right;">Сумма счетов</th></tr></thead>
+                    <tbody>
+                        ${sorted.map(([name, total], idx) => `
+                            <tr>
+                                <td><span class="color-dot" style="background-color:${getSupplierColor(idx)};"></span>${name}</td>
+                                <td class="amount-cell" style="text-align:right;">${fmt(total)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `}
+        </div>
+    `;
+
+    modal.classList.add('active');
+}
+
+function closeTopSpendersModal() {
+    document.getElementById('topSpendersModal').classList.remove('active');
+}
+function openHeatmapModal(year, month) {
+    if (!year) year = new Date().getFullYear();
+    if (month === undefined) month = new Date().getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
+
+    const dailyData = {};
+
+    for (const [supplierName, bills] of Object.entries(billsData)) {
+        bills.forEach(bill => {
+            if (bill.amount) {
+                const d = parseDateSafe(bill.date);
+                if (d && d.getFullYear() === year && d.getMonth() === month) {
+                    const day = d.getDate();
+                    if (!dailyData[day]) {
+                        dailyData[day] = { total: 0, suppliers: [] };
+                    }
+                    dailyData[day].total += bill.amount;
+                    dailyData[day].suppliers.push({ name: supplierName, amount: bill.amount });
+                }
+            }
+        });
+    }
+
+    const maxAmount = Math.max(...Object.values(dailyData).map(d => d.total), 1);
+
+    const modal = document.getElementById('heatmapModal');
+    const inner = document.getElementById('heatmapInner');
+    const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+    let gridHTML = '<div class="heatmap-grid">';
+    for (let i = 0; i < 7; i++) {
+        gridHTML += `<div style="text-align:center; font-size:0.75rem; color:var(--text-muted); padding:5px 0;">${dayNames[i]}</div>`;
+    }
+    for (let i = 0; i < startDayOfWeek; i++) {
+        gridHTML += '<div class="heatmap-day" style="background:transparent;"></div>';
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const data = dailyData[day];
+        const amount = data ? data.total : 0;
+        const intensity = amount / maxAmount;
+        const hue = 120 - intensity * 120;
+        const saturation = 70;
+        const lightness = 50 - intensity * 20;
+        const bgColor = amount > 0 ? `hsl(${hue}, ${saturation}%, ${lightness}%)` : '#f1f5f9';
+
+        let tooltipContent = '';
+        if (data && data.suppliers.length > 0) {
+            const sortedSuppliers = [...data.suppliers].sort((a, b) => b.amount - a.amount);
+            const supplierLines = sortedSuppliers.map(s => 
+                `<div style="display:flex; justify-content:space-between; gap:8px; font-size:0.7rem;">
+                    <span>${s.name}</span>
+                    <span style="font-weight:600;">${fmt(s.amount)}</span>
+                </div>`
+            ).join('');
+            tooltipContent = `
+                <div style="margin-bottom:4px; font-weight:600; font-size:0.75rem;">${day}.${month+1}.${year} — ${fmt(amount)}</div>
+                ${supplierLines}
+            `;
+        }
+
+        gridHTML += `
+            <div class="heatmap-day ${amount > 0 ? 'has-bills' : ''}" style="background:${bgColor};">
+                ${day}
+                ${amount > 0 ? `<span class="heatmap-tooltip">${tooltipContent}</span>` : ''}
+            </div>
+        `;
+    }
+    gridHTML += '</div>';
+
+    const prevMonth = month === 0 ? 11 : month - 1;
+    const prevYear = month === 0 ? year - 1 : year;
+    const nextMonth = month === 11 ? 0 : month + 1;
+    const nextYear = month === 11 ? year + 1 : year;
+
+    inner.innerHTML = `
+        <div class="modal-section">
+            <div class="modal-section-title" style="justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M16 2v4"/>
+                    </svg>
+                    ${firstDay.toLocaleDateString('ru-RU', {month:'long', year:'numeric'})}
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-ghost" onclick="openHeatmapModal(${prevYear}, ${prevMonth})" style="padding:5px 10px;">←</button>
+                    <button class="btn btn-ghost" onclick="openHeatmapModal(${nextYear}, ${nextMonth})" style="padding:5px 10px;">→</button>
+                </div>
+            </div>
+            ${gridHTML}
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px; font-size:0.8rem;">
+                <span><span style="display:inline-block; width:12px;height:12px;background:#10b981;border-radius:3px;"></span> Мало</span>
+                <span><span style="display:inline-block; width:12px;height:12px;background:#f59e0b;border-radius:3px;"></span> Средне</span>
+                <span><span style="display:inline-block; width:12px;height:12px;background:#ef4444;border-radius:3px;"></span> Много</span>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+}
+function closeHeatmapModal() {
+    document.getElementById('heatmapModal').classList.remove('active');
 }
     </script>
 </body>
