@@ -1470,6 +1470,7 @@ tr:hover::before {
         let rawData = [];
         let displayData = [];
         let billsData = {};
+        let preplataData = {}; // Данные о переплатах/счетах для специфичных поставщиков
         let chartMode = 'bar';
         let depositChartInst = null;
         let balanceChartInst = null;
@@ -1494,7 +1495,7 @@ tr:hover::before {
                 const preplataResponse = await fetch(PREPLATA_SHEET_URL);
                 if (!preplataResponse.ok) throw new Error('Ошибка сети при загрузке переплат');
                 const preplataCsvText = await preplataResponse.text();
-                parsePreplataCSV(preplataCsvText);
+                preplataData = parsePreplataCSV(preplataCsvText);
                 
                 displayData = [...rawData];
                 sortData('name');
@@ -1704,6 +1705,104 @@ tr:hover::before {
     return isNaN(num) ? null : num;
 }
 
+        function parsePreplataCSV(text) {
+    // Функция для парсинга CSV с переплатами для специфичных поставщиков
+    // Для "Играград | Igragrad": AA3:AA23 - счета, AB3:AB23 - суммы, AB24 - итого, AB25 - остаток
+    // В CSV: столбец 27 (AA) - метки, столбец 28 (AB) - значения
+    const lines = text.trim().split('\n');
+    const result = {};
+    
+    function columnLetterToIndex(letter) {
+        let index = 0;
+        for (let i = 0; i < letter.length; i++) {
+            index = index * 26 + (letter.charCodeAt(i) - 65 + 1);
+        }
+        return index - 1;
+    }
+    
+    function parseCSVLine(line) {
+        const res = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                res.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        res.push(current);
+        
+        return res.map(cell => {
+            if (cell.startsWith('"') && cell.endsWith('"')) {
+                return cell.slice(1, -1);
+            }
+            return cell;
+        });
+    }
+    
+    // Обработка данных для "Играград | Igragrad"
+    const supplierName = 'Играград | Igragrad';
+    const labelsCol = 26; // Столбец AA (индекс 26) для меток/счетов
+    const valuesCol = 27; // Столбец AB (индекс 27) для значений/сумм
+    const startRow = 2; // Row 3 (индексация с 0) - первая строка с данными
+    const endRow = 22; // Row 23 - последняя строка со счетами
+    const totalRow = 23; // Row 24 - ИТОГО
+    const restRow = 24; // Row 25 - ОСТАТОК
+    
+    const bills = [];
+    
+    for (let i = startRow; i <= endRow && i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        
+        let billNumber = cols[labelsCol] ? cols[labelsCol].trim() : '';
+        let amount = parseNum(cols[valuesCol]);
+        
+        // Пропускаем строки с ИТОГО и ОСТАТОК если они попали в диапазон
+        if (billNumber && billNumber.includes('ИТОГО') || billNumber.includes('ОСТАТОК')) {
+            continue;
+        }
+        
+        if (billNumber && amount !== null) {
+            bills.push({
+                number: billNumber,
+                date: '',
+                amount: amount
+            });
+        }
+    }
+    
+    // Получаем итог и остаток
+    let total = 0;
+    let rest = 0;
+    
+    if (totalRow < lines.length) {
+        const totalCols = parseCSVLine(lines[totalRow]);
+        total = parseNum(totalCols[valuesCol]) || 0;
+    }
+    
+    if (restRow < lines.length) {
+        const restCols = parseCSVLine(lines[restRow]);
+        rest = parseNum(restCols[valuesCol]) || 0;
+    }
+    
+    if (bills.length > 0 || total !== 0 || rest !== 0) {
+        result[supplierName] = {
+            bills: bills,
+            total: total,
+            rest: rest
+        };
+    }
+    
+    return result;
+}
+
         function updateDashboard() {
             renderStats(displayData);
             renderCharts(displayData);
@@ -1900,9 +1999,14 @@ setupTooltip(depositChartInst, document.getElementById('depositChart'));
 
         function renderTable(data) {
     const html = data.map(item => {
-        const bills = billsData[item.name] || [];
+        // Проверяем, есть ли данные в preplataData для этого поставщика
+        const preplataInfo = preplataData[item.name];
+        const hasPreplata = preplataInfo && preplataInfo.bills && preplataInfo.bills.length > 0;
+        
+        // Для поставщиков с preplata используем их данные о счетах
+        const bills = hasPreplata ? preplataInfo.bills : (billsData[item.name] || []);
         const hasBills = bills.length > 0;
-        const hasDeposits = item.deposits.length > 0;
+        const hasDeposits = item.deposits && item.deposits.length > 0;
         
         return `
         <tr data-supplier-id="${item.id}">
@@ -2041,6 +2145,68 @@ function formatDate(dateString) {
     }
 }
         function getBillsForSupplier(supplierName) {
+    // Проверяем, есть ли данные в preplataData для этого поставщика
+    const preplataInfo = preplataData[supplierName];
+    
+    if (preplataInfo && preplataInfo.bills && preplataInfo.bills.length > 0) {
+        // Для поставщиков с данными из preplataCSV (например, Играград)
+        let html = `
+            <div class="bills-table-container">
+                <table class="bills-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Номер счета</th>
+                            <th style="width: 50%; text-align: right;">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        let total = 0;
+        
+        preplataInfo.bills.forEach((bill, index) => {
+            if (bill.number && bill.amount) {
+                html += `
+                    <tr>
+                        <td class="bill-number-cell" style="font-size: 12px">
+                            ${bill.number}
+                        </td>
+                        <td class="bill-amount-cell" style="font-size: 12px; text-align: right;">${fmt(bill.amount)}</td>
+                    </tr>
+                `;
+                total += bill.amount;
+            }
+        });
+        
+        html += `
+                    </tbody>
+                    <tfoot>
+                        <tr class="bills-total-row">
+                            <td>
+                                <strong>Итого по счетам:</strong>
+                                <span style="font-size: 1em; color: var(--text-muted); margin-left: 8px;">
+                                    ${preplataInfo.bills.length} ${getRussianWordForm(preplataInfo.bills.length, ['счет', 'счета', 'счетов'])}
+                                </span>
+                            </td>
+                            <td class="bill-amount-cell" style="font-size: 1.1em; text-align: right;">${fmt(total)}</td>
+                        </tr>
+                        <tr class="bills-total-row" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));">
+                            <td><strong>Общий итог:</strong></td>
+                            <td class="bill-amount-cell" style="font-size: 1.2em; font-weight: 700; text-align: right;">${fmt(preplataInfo.total)}</td>
+                        </tr>
+                        <tr class="bills-total-row" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));">
+                            <td><strong>Остаток:</strong></td>
+                            <td class="bill-amount-cell" style="font-size: 1.2em; font-weight: 700; text-align: right; color: ${preplataInfo.rest > 0 ? 'var(--success)' : preplataInfo.rest < 0 ? '#ef4444' : 'var(--text-main)'};">${fmt(preplataInfo.rest)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+        
+        return html;
+    }
+    
+    // Стандартная логика для остальных поставщиков
     const bills = billsData[supplierName];
     
     if (!bills || bills.length === 0) {
