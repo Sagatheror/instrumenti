@@ -1350,6 +1350,7 @@ tr:hover::before {
 }
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
         const BILLS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1458472669&single=true&output=csv';
+        const PREPLATA_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1075325035&single=true&output=csv';
         
         const BILLS_RANGES = {
     'Парк Развлечений': { 
@@ -1411,7 +1412,12 @@ tr:hover::before {
     numbers: 'AK35:AK70', 
     dates: 'AL35:AL70',
     amounts: 'AM35:AM70' 
-}
+},
+    'Играград | Igragrad': {
+        numbers: 'AA3:AA23',
+        dates: '',
+        amounts: 'AB3:AB23'
+    }
 };
 
         const RANGES = [
@@ -1484,6 +1490,11 @@ tr:hover::before {
                 if (!billsResponse.ok) throw new Error('Ошибка сети при загрузке счетов');
                 const billsCsvText = await billsResponse.text();
                 billsData = parseBillsCSV(billsCsvText);
+                
+                const preplataResponse = await fetch(PREPLATA_SHEET_URL);
+                if (!preplataResponse.ok) throw new Error('Ошибка сети при загрузке переплат');
+                const preplataCsvText = await preplataResponse.text();
+                parsePreplataCSV(preplataCsvText);
                 
                 displayData = [...rawData];
                 sortData('name');
