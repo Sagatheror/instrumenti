@@ -358,6 +358,34 @@
             font-size: 1.4rem;
             animation: pulseText 2s ease-in-out infinite;
         }
+        .fa-spin-slow {
+            animation: fa-spin 3s linear infinite;
+        }
+        @keyframes fa-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .fa-beat-slow {
+            animation: fa-beat 2s ease-in-out infinite;
+        }
+        @keyframes fa-beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .fa-fade {
+            animation: fa-fade 2s ease-in-out infinite;
+        }
+        @keyframes fa-fade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .fa-bounce {
+            animation: fa-bounce 1.5s ease-in-out infinite;
+        }
+        @keyframes fa-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
         .deck-info { font-weight: 700; color: var(--text2); }
         .game-area {
             flex: 1;
@@ -827,24 +855,24 @@
 
     <!-- MAIN MENU -->
     <div id="main-menu">
-        <div class="game-title">♠ ДУРАК ♠</div>
+        <div class="game-title"><i class="fa-solid fa-spade"></i> ДУРАК <i class="fa-solid fa-spade"></i></div>
         <div class="game-subtitle">Карточная игра</div>
         
         <!-- Available Rooms Section -->
         <div class="menu-card" style="margin-bottom: 20px;">
             <h3 style="margin-bottom: 15px; color: var(--gold); display: flex; align-items: center; justify-content: space-between;">
-                <span>🏠 Доступные комнаты</span>
+                <span><i class="fa-solid fa-house"></i> Доступные комнаты</span>
                 <button onclick="openRoomBrowser()" style="background: transparent; border: none; color: #4dc9f6; cursor: pointer; font-size: 0.85rem; padding: 4px 8px;">Все комнаты →</button>
             </h3>
             <div id="rooms-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
                 <div style="color: var(--text2); font-size: 0.9rem;">Загрузка списка комнат...</div>
             </div>
-            <button class="btn btn-secondary" onclick="refreshRoomsList()" style="margin-bottom: 10px;">🔄 Обновить список</button>
+            <button class="btn btn-secondary" onclick="refreshRoomsList()" style="margin-bottom: 10px;"><i class="fa-solid fa-rotate"></i> Обновить список</button>
         </div>
         
         <div class="menu-card">
             <div class="input-group">
-    <label>👤 Ваше имя</label>
+    <label><i class="fa-solid fa-user"></i> Ваше имя</label>
     <div style="display: flex; gap: 8px; align-items: center;">
         <input type="text" id="player-name" placeholder="Введите имя..." maxlength="20" autocomplete="off" style="flex:1;">
         <button id="name-emoji-btn" type="button" onclick="toggleNameEmojiPicker()" style="
@@ -856,40 +884,40 @@
     <div id="name-emoji-picker" style="display: none; margin-top: 6px; background: #0d1b36; border-radius: 12px; padding: 10px; flex-wrap: wrap; gap: 6px; max-width: 280px;"></div>
 </div>
             <div class="input-group">
-                <label>🃏 Колода</label>
+                <label><i class="fa-solid fa-layer-group"></i> Колода</label>
                 <div class="radio-group">
                     <div class="radio-option"><input type="radio" name="deckSize" value="36" id="deck36" checked><label for="deck36">36 карт</label></div>
                     <div class="radio-option"><input type="radio" name="deckSize" value="52" id="deck52"><label for="deck52">52 карты</label></div>
                 </div>
             </div>
             <div class="input-group">
-                <label>🎯 Режим</label>
+                <label><i class="fa-solid fa-bullseye"></i> Режим</label>
                 <div class="radio-group">
                     <div class="radio-option"><input type="radio" name="gameMode" value="podkidnoy" id="modePod" checked><label for="modePod">Подкидной</label></div>
                     <div class="radio-option" style="display:none"><input type="radio" name="gameMode" value="perevodnoy" id="modePer"><label for="modePer">Переводной</label></div>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="createRoom()">🎮 Создать комнату</button>
-            <button class="btn btn-secondary" onclick="showJoinModal()">🔗 Войти по коду</button>
+            <button class="btn btn-primary" onclick="createRoom()"><i class="fa-solid fa-gamepad"></i> Создать комнату</button>
+            <button class="btn btn-secondary" onclick="showJoinModal()"><i class="fa-solid fa-link"></i> Войти по коду</button>
         </div>
     </div>
 
     <!-- LOBBY -->
     <div id="lobby-screen">
         <div class="lobby-header">
-            <span style="font-weight:700;">🏠 Лобби</span>
+            <span style="font-weight:700;"><i class="fa-solid fa-house"></i> Лобби</span>
             <span class="room-code" id="lobby-room-code">...</span>
             <span style="color:var(--text2);font-size:0.85rem;" id="lobby-settings"></span>
         </div>
         <div class="players-grid" id="lobby-players"></div>
-        <button class="btn btn-primary" id="btn-start-game" onclick="startGame()" disabled>🚀 Начать игру (нужно 2-4 игрока)</button>
-        <button class="btn btn-secondary" onclick="leaveRoom()" style="margin-top:8px;">🚪 Выйти</button>
+        <button class="btn btn-primary" id="btn-start-game" onclick="startGame()" disabled><i class="fa-solid fa-rocket"></i> Начать игру (нужно 2-4 игрока)</button>
+        <button class="btn btn-secondary" onclick="leaveRoom()" style="margin-top:8px;"><i class="fa-solid fa-door-open"></i> Выйти</button>
     </div>
 
     <!-- GAME SCREEN -->
     <div id="game-screen">
         <div class="game-top-bar">
-            <span class="trump-indicator">🃏 Козырь: <span id="trump-display" class="trump-suit-icon">—</span></span>
+            <span class="trump-indicator"><i class="fa-solid fa-joker"></i> Козырь: <span id="trump-display" class="trump-suit-icon">—</span></span>
             <span class="deck-info">Колода: <b id="deck-count">0</b></span>
             <span id="game-phase-text" style="font-weight:700;color:#ffd700;"></span>
         </div>
@@ -901,19 +929,19 @@
         </div>
         <div class="my-hand-area" id="my-hand"></div>
         <div class="action-buttons" id="action-buttons">
-            <button class="action-btn btn-attack" id="btn-attack" onclick="playAttackCards()" style="display:none;">🎯 Сходить</button>
-            <button class="action-btn btn-done" id="btn-done" onclick="doneAction()">✅ Бито</button>
-            <button class="action-btn btn-take" id="btn-take" onclick="takeCards()">📥 Забрать</button>
-            <button class="action-btn btn-transfer" id="btn-transfer" onclick="transferAction()" style="display:none;">🔄 Перевод</button>
+            <button class="action-btn btn-attack" id="btn-attack" onclick="playAttackCards()" style="display:none;"><i class="fa-solid fa-bullseye"></i> Сходить</button>
+            <button class="action-btn btn-done" id="btn-done" onclick="doneAction()"><i class="fa-solid fa-check"></i> Бито</button>
+            <button class="action-btn btn-take" id="btn-take" onclick="takeCards()"><i class="fa-solid fa-download"></i> Забрать</button>
+            <button class="action-btn btn-transfer" id="btn-transfer" onclick="transferAction()" style="display:none;"><i class="fa-solid fa-repeat"></i> Перевод</button>
         </div>
     </div>
 
     <!-- CHAT -->
     <button class="chat-toggle" id="chat-toggle" onclick="toggleChat()">
-        💬<span class="chat-badge" id="chat-badge" style="display:none;">0</span>
+        <i class="fa-solid fa-comments"></i><span class="chat-badge" id="chat-badge" style="display:none;">0</span>
     </button>
     <div id="chat-panel">
-        <div class="chat-header">💬 Чат <span style="font-size:0.7rem;color:#888;">(нажмите 💬 чтобы закрыть)</span></div>
+        <div class="chat-header"><i class="fa-solid fa-comments"></i> Чат <span style="font-size:0.7rem;color:#888;">(нажмите <i class="fa-solid fa-comments"></i> чтобы закрыть)</span></div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="emoji-categories" id="emoji-cats"></div>
         <div class="emoji-picker" id="emoji-picker"></div>
@@ -927,7 +955,7 @@
     <!-- JOIN MODAL -->
     <div class="modal-overlay" id="join-modal">
         <div class="modal">
-            <h2>🔗 Присоединиться</h2>
+            <h2><i class="fa-solid fa-link"></i> Присоединиться</h2>
             <div class="input-group">
                 <label>Код комнаты</label>
                 <input type="text" id="join-room-code" placeholder="Введите код..." maxlength="10" autocomplete="off">
@@ -940,11 +968,11 @@
     <!-- Room Browser Modal -->
     <div class="modal-overlay" id="room-browser-modal">
         <div class="modal" style="max-width: 500px;">
-            <h2>🏠 Доступные комнаты</h2>
+            <h2><i class="fa-solid fa-house"></i> Доступные комнаты</h2>
             <div id="browser-rooms-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
                 <div style="color: var(--text2); font-size: 0.9rem;">Загрузка...</div>
             </div>
-            <button class="btn btn-secondary" onclick="refreshBrowserRooms()" style="margin-bottom: 10px;">🔄 Обновить</button>
+            <button class="btn btn-secondary" onclick="refreshBrowserRooms()" style="margin-bottom: 10px;"><i class="fa-solid fa-rotate"></i> Обновить</button>
             <button class="btn btn-primary" onclick="closeRoomBrowser()">Закрыть</button>
         </div>
     </div>
@@ -952,13 +980,13 @@
     <!-- Room Details Modal -->
     <div class="modal-overlay" id="room-details-modal">
         <div class="modal" style="max-width: 400px;">
-            <h2 id="room-details-title">🏠 Комната</h2>
+            <h2 id="room-details-title"><i class="fa-solid fa-house"></i> Комната</h2>
             <div id="room-details-content" style="margin-bottom: 20px;">
                 <p id="room-details-code" style="font-size: 1.5rem; color: #4dc9f6; font-weight: bold; margin-bottom: 10px;"></p>
                 <p id="room-details-players" style="margin-bottom: 10px;"></p>
                 <p id="room-details-settings" style="color: var(--text2);"></p>
             </div>
-            <button class="btn btn-primary" id="room-details-join-btn" style="margin-bottom: 10px;">🚪 Войти в комнату</button>
+            <button class="btn btn-primary" id="room-details-join-btn" style="margin-bottom: 10px;"><i class="fa-solid fa-door-open"></i> Войти в комнату</button>
             <button class="btn btn-secondary" onclick="closeRoomDetails()">Закрыть</button>
         </div>
     </div>
@@ -966,9 +994,9 @@
     <!-- Revanche Modal -->
     <div class="modal-overlay" id="revanche-modal">
         <div class="modal">
-            <h2 id="revanche-title">🎮 Игра окончена!</h2>
+            <h2 id="revanche-title"><i class="fa-solid fa-gamepad"></i> Игра окончена!</h2>
             <p id="revanche-text"></p>
-            <button class="btn btn-primary" onclick="requestRevanche()">🔄 Реванш</button>
+            <button class="btn btn-primary" onclick="requestRevanche()"><i class="fa-solid fa-rotate"></i> Реванш</button>
             <button class="btn btn-secondary" onclick="backToLobby()">В лобби</button>
         </div>
     </div>
@@ -1053,10 +1081,10 @@ if (savedPlayerId && savedRoomId && firestoreReady) {
         };
         let activeEmojiCat = '😀 Лица';
         const nameEmojis = [
-    '😀','😂','🤣','😍','🥰','😘','😎','🤩','🥳',
-    '😤','😢','😡','👻','💀','🤖','👑','💪','🤞',
-    '🎮','🃏','🏆','⭐','✨','❤️','🔥','🍀','🌈',
-    '🐱','🦊','🐶','🐼','🦁','🐸','🦄','🍕','☕'
+    '<i class="fa-solid fa-face-smile"></i>','<i class="fa-solid fa-face-laugh"></i>','<i class="fa-solid fa-face-joy"></i>','<i class="fa-solid fa-heart-eyes"></i>','<i class="fa-solid fa-face-smile-hearts"></i>','<i class="fa-solid fa-kiss-wink-heart"></i>','<i class="fa-solid fa-sunglasses"></i>','<i class="fa-solid fa-star-struck"></i>','<i class="fa-solid fa-party-horn"></i>',
+    '<i class="fa-solid fa-face-angry"></i>','<i class="fa-solid fa-face-sad-tear"></i>','<i class="fa-solid fa-face-rage"></i>','<i class="fa-solid fa-ghost"></i>','<i class="fa-solid fa-skull"></i>','<i class="fa-solid fa-robot"></i>','<i class="fa-solid fa-crown"></i>','<i class="fa-solid fa-arm-up"></i>','<i class="fa-solid fa-hand-sparkles"></i>',
+    '<i class="fa-solid fa-gamepad"></i>','<i class="fa-solid fa-joker"></i>','<i class="fa-solid fa-trophy"></i>','<i class="fa-solid fa-star"></i>','<i class="fa-solid fa-sparkles"></i>','<i class="fa-solid fa-heart"></i>','<i class="fa-solid fa-fire"></i>','<i class="fa-solid fa-clover"></i>','<i class="fa-solid fa-rainbow"></i>',
+    '<i class="fa-solid fa-cat"></i>','<i class="fa-solid fa-fox"></i>','<i class="fa-solid fa-dog"></i>','<i class="fa-solid fa-panda"></i>','<i class="fa-solid fa-lion"></i>','<i class="fa-solid fa-frog"></i>','<i class="fa-solid fa-horse-head"></i>','<i class="fa-solid fa-pizza-slice"></i>','<i class="fa-solid fa-mug-hot"></i>'
 ];
         // ==================== LOADER ====================
         setTimeout(() => {
@@ -1464,7 +1492,7 @@ sessionStorage.removeItem('currentRoomId');
                         <div class="avatar">${initial}</div>
                         <div class="player-name">${escapeHTML(player.name)}</div>
                         ${player.id === myPlayerId ? '<span class="you-badge">ВЫ</span>' : ''}
-                        ${player.id === roomData.host ? '<span style="font-size:0.65rem;color:#ffd700;">👑 Хост</span>' : ''}
+                        ${player.id === roomData.host ? '<span style="font-size:0.65rem;color:#ffd700;"><i class="fa-solid fa-crown"></i> Хост</span>' : ''}
                     `;
                 } else {
                     slot.innerHTML = '<div style="color:#ffffff30;font-size:2rem;">+</div><div style="color:#ffffff30;font-size:0.8rem;">Ожидание</div>';
@@ -1474,13 +1502,13 @@ sessionStorage.removeItem('currentRoomId');
             const btnStart = document.getElementById('btn-start-game');
             if (roomData.host === myPlayerId && roomData.players.length >= 2 && roomData.players.length <= 4) {
                 btnStart.disabled = false;
-                btnStart.textContent = '🚀 Начать игру';
+                btnStart.innerHTML = '<i class="fa-solid fa-rocket"></i> Начать игру';
             } else if (roomData.host !== myPlayerId) {
                 btnStart.disabled = true;
-                btnStart.textContent = '⏳ Ожидание хоста...';
+                btnStart.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Ожидание хоста...';
             } else {
                 btnStart.disabled = true;
-                btnStart.textContent = '⏳ Нужно 2-4 игрока';
+                btnStart.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Нужно 2-4 игрока';
             }
         }
 
@@ -1545,11 +1573,11 @@ sessionStorage.removeItem('currentRoomId');
             const gs = data.gameState;
             if (gs.winner) {
                 const winner = data.players.find(p => p.id === gs.winner);
-                title.textContent = '🏆 Игра окончена!';
+                title.textContent = '<i class="fa-solid fa-trophy"></i> Игра окончена!';
                 text.textContent = `Победитель: ${winner ? winner.name : 'Неизвестно'}!${gs.durak ? '\nДурак: ' + (data.players.find(p => p.id === gs.durak)?.name || 'Неизвестно') : ''}`;
             } else if (gs.durak) {
                 const durak = data.players.find(p => p.id === gs.durak);
-                title.textContent = '🎭 Игра окончена!';
+                title.textContent = '<i class="fa-solid fa-masks-theater"></i> Игра окончена!';
                 text.textContent = `Дурак: ${durak ? durak.name : 'Неизвестно'}!`;
             }
             
@@ -2144,13 +2172,13 @@ if (!winner && !durak) {
             if (gs.winner || gs.durak) {
                 phaseEl.textContent = 'Игра окончена!';
             } else if ((gs.phase === 'attack' || gs.phase === 'podkid') && gs.currentAttacker === myPlayerId) {
-                phaseEl.textContent = '🎯 Ваша атака!';
+                phaseEl.innerHTML = '<i class="fa-solid fa-bullseye"></i> Ваша атака!';
             } else if (gs.currentDefender === myPlayerId) {
-                phaseEl.textContent = gs.phase === 'defend' ? '🛡️ Защищайтесь!' : '🃏 Подкидывают!';
+                phaseEl.innerHTML = gs.phase === 'defend' ? '<i class="fa-solid fa-shield-halved"></i> Защищайтесь!' : '<i class="fa-solid fa-joker"></i> Подкидывают!';
             } else if (gs.phase === 'podkid') {
-                phaseEl.textContent = '🃏 Подкидывайте!';
+                phaseEl.innerHTML = '<i class="fa-solid fa-joker"></i> Подкидывайте!';
             } else {
-                phaseEl.textContent = '⏳ Ожидание...';
+                phaseEl.innerHTML = '<i class="fa-solid fa-hourglass"></i> Ожидание...';
             }
 if (me && me.cards.length === 0 && !gs.winner && !gs.durak) {
     if (!spectatorModalShown) {
@@ -2171,10 +2199,10 @@ if (me && me.cards.length === 0 && !gs.winner && !gs.durak) {
                     cardBacks.push('<div class="opponent-card-back"></div>');
                 }
                 let statusText = '';
-                if (gs.currentAttacker === opp.id) statusText = '🎯 Атакует';
-                if (gs.currentDefender === opp.id) statusText = '🛡️ Защищается';
-                if (gs.winner === opp.id) statusText = '🏆 Победитель!';
-                if (gs.durak === opp.id) statusText = '🤡 Дурак!';
+                if (gs.currentAttacker === opp.id) statusText = '<i class="fa-solid fa-bullseye"></i> Атакует';
+                if (gs.currentDefender === opp.id) statusText = '<i class="fa-solid fa-shield-halved"></i> Защищается';
+                if (gs.winner === opp.id) statusText = '<i class="fa-solid fa-trophy"></i> Победитель!';
+                if (gs.durak === opp.id) statusText = '<i class="fa-solid fa-face-grin-squinting-tears"></i> Дурак!';
                 div.innerHTML = `
                     <div class="opponent-cards">${cardBacks.join('')}</div>
                     <div class="opponent-name">${escapeHTML(opp.name)} (${opp.cards.length})</div>
@@ -2269,10 +2297,10 @@ if (me && me.cards.length === 0 && !gs.winner && !gs.durak) {
             }
 
             if (myCards.length === 0 && !gs.winner && !gs.durak) {
-                handDiv.innerHTML = '<div style="color:#2ecc71;font-weight:700;font-size:1.2rem;padding:20px;">🎉 У вас не осталось карт!</div>';
+                handDiv.innerHTML = '<div style="color:#2ecc71;font-weight:700;font-size:1.2rem;padding:20px;"><i class="fa-solid fa-party-horn"></i> У вас не осталось карт!</div>';
             }
             if (myCards.length === 0 && gs.durak === myPlayerId) {
-                handDiv.innerHTML = '<div style="color:#e74c3c;font-weight:700;font-size:1.2rem;padding:20px;">🤡 Вы дурак!</div>';
+                handDiv.innerHTML = '<div style="color:#e74c3c;font-weight:700;font-size:1.2rem;padding:20px;"><i class="fa-solid fa-face-grin-squinting-tears"></i> Вы дурак!</div>';
             }
         }
 
@@ -2324,22 +2352,22 @@ if (me.cards.length === 0 && !gs.winner && !gs.durak) {
     const allDefended = gs.table.every(p => p.defend);
     btnDone.classList.toggle('btn-disabled', !allDefended);
     btnTake.classList.remove('btn-disabled');
-    btnDone.textContent = '✅ Бито';
-    btnTake.textContent = '📥 Забрать все';
+    btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Бито';
+    btnTake.innerHTML = '<i class="fa-solid fa-download"></i> Забрать все';
 } else if (gs.phase === 'podkid') {
                 if (gs.currentDefender === myPlayerId) {
                     btnDone.classList.add('btn-disabled');
                     btnTake.classList.remove('btn-disabled');
-                    btnTake.textContent = '📥 Забрать все';
+                    btnTake.innerHTML = '<i class="fa-solid fa-download"></i> Забрать все';
                 } else {
                     const hasPassed = (gs.passedPlayers || []).includes(myPlayerId);
                     btnDone.classList.toggle('btn-disabled', hasPassed);
-                    btnDone.textContent = '✅ Пас';
+                    btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Пас';
                     btnTake.classList.add('btn-disabled');
                 }
             } else if (gs.phase === 'end_turn' && gs.currentDefender === myPlayerId) {
                 btnDone.classList.remove('btn-disabled');
-                btnDone.textContent = '✅ Завершить (всё отбито)';
+                btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Завершить (всё отбито)';
                 btnTake.classList.add('btn-disabled');
             }
 
@@ -2470,10 +2498,12 @@ function renderNameEmojis() {
     nameEmojis.forEach(emoji => {
         const span = document.createElement('span');
         span.className = 'name-emoji-item';
-        span.textContent = emoji;
+        span.innerHTML = emoji;
         span.onclick = () => {
             const input = document.getElementById('player-name');
-            input.value += emoji;
+            // Извлекаем класс иконки из HTML
+            const iconClass = emoji.match(/class="([^"]+)"/)[1];
+            input.value += '<i class="' + iconClass + '"></i>';
             input.focus();
             toggleNameEmojiPicker();
         };
