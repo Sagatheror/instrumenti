@@ -387,6 +387,10 @@
             0%, 100% { box-shadow: 0 4px 12px #00000040; }
             50% { box-shadow: 0 4px 24px #4dc9f660; }
         }
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
         .card-suit { font-size: 1.6rem; line-height: 1; }
         .card-rank { font-size: 1.3rem; line-height: 1; }
         .card-red { color: #d32f2f; }
@@ -1508,7 +1512,7 @@
                 const maxAttack = getMaxAttackCards(serverGs);
                 const newTotalCards = serverGs.table.length + cardsToPlay.length;
                 if (newTotalCards > maxAttack) {
-                    alert('Нельзя подкинуть больше карт, чем у защищающегося!');
+                    showNotification('Нельзя подкинуть больше карт, чем у защищающегося!', 'error');
                     return;
                 }
 
@@ -1613,9 +1617,21 @@
             const gs = currentGameState;
             if (gs.mode !== 'perevodnoy') return;
             if (gs.currentDefender !== myPlayerId) return;
-            if (gs.phase !== 'defend') return;
-            if (gs.table.length === 0) return;
-            if (selectedCards.length === 0) return;
+            
+            // Проверка фазы - перевод возможен только в фазе defend или transfer
+            if (gs.phase !== 'defend' && gs.phase !== 'transfer') {
+                showNotification('Перевод возможен только до начала отбивания!', 'error');
+                return;
+            }
+            
+            if (gs.table.length === 0) {
+                showNotification('Нет карт на столе для перевода', 'error');
+                return;
+            }
+            if (selectedCards.length === 0) {
+                showNotification('Выберите карту того же достоинства для перевода', 'error');
+                return;
+            }
 
             const roomRef = db.collection('rooms').doc(currentRoomId);
 
@@ -1626,7 +1642,16 @@
                 const data = doc.data();
                 const serverGs = data.gameState;
 
-                if (!serverGs || serverGs.currentDefender !== myPlayerId || serverGs.phase !== 'defend') return;
+                if (!serverGs || serverGs.currentDefender !== myPlayerId) return;
+                
+                // Проверка что ещё не начали отбиваться (нет отбитых карт)
+                const hasDefended = serverGs.table.some(p => p.defend !== null);
+                if (hasDefended) {
+                    showNotification('Нельзя перевести после начала отбивания!', 'error');
+                    selectedCards = [];
+                    renderMyHand();
+                    return;
+                }
 
                 const serverMe = serverGs.players.find(p => p.id === myPlayerId);
                 if (!serverMe) return;
@@ -1636,20 +1661,37 @@
                 const cardToTransfer = serverMe.cards.find(c => c.id === selectedCards[0]);
 
                 if (!cardToTransfer || cardToTransfer.rank !== attackRank) {
+                    showNotification('Карта должна быть того же достоинства что и атака!', 'error');
                     selectedCards = [];
                     renderMyHand();
-                    console.log('Нельзя перевести эту карту!');
+                    return;
+                }
+
+                // Проверка количества карт у следующего игрока
+                const currentDefIdx = serverGs.players.findIndex(p => p.id === myPlayerId);
+                const nextDefIdx = (currentDefIdx + 1) % serverGs.players.length;
+                const nextDefender = serverGs.players[nextDefIdx];
+                
+                // Нельзя переводить если у следующего игрока меньше карт чем на столе
+                const cardsOnTable = serverGs.table.length + 1; // +1 карта которую хотим перевести
+                if (nextDefender.cards.length < cardsOnTable) {
+                    showNotification(`Нельзя перевести: у следующего игрока только ${nextDefender.cards.length} карт(ы), а на столе будет ${cardsOnTable}`, 'error');
+                    selectedCards = [];
+                    renderMyHand();
+                    return;
+                }
+                
+                // Проверка лимита 6 карт - нельзя переводить если у следующего игрока после перевода будет больше 6 карт
+                if (nextDefender.cards.length + cardsOnTable > 6) {
+                    showNotification(`Нельзя перевести: у следующего игрока будет больше 6 карт!`, 'error');
+                    selectedCards = [];
+                    renderMyHand();
                     return;
                 }
 
                 const updatedMyCards = serverMe.cards.filter(c => c.id !== cardToTransfer.id);
                 // Добавляем карту перевода на стол как новую пару (атака без защиты)
                 const updatedTable = [...serverGs.table, { attack: cardToTransfer, defend: null }];
-
-                // Перевод хода следующему игроку по кругу
-                const currentDefIdx = serverGs.players.findIndex(p => p.id === myPlayerId);
-                const nextDefIdx = (currentDefIdx + 1) % serverGs.players.length;
-                const nextDefender = serverGs.players[nextDefIdx];
 
                 // Тот кто перевёл становится атакующим, следующий игрок - защитником
                 const updatedPlayers = serverGs.players.map(p =>
@@ -1662,7 +1704,7 @@
                     players: updatedPlayers,
                     currentDefender: nextDefender.id,
                     currentAttacker: myPlayerId, // Переведший игрок теперь атакует
-                    phase: 'attack', // Новая атака, а не продолжение защиты
+                    phase: 'transfer', // Новая фаза перевода
                     lastAttacker: myPlayerId,
                     passedPlayers: []
                 };
@@ -1674,6 +1716,7 @@
                 renderGame({ gameState: newGs, players: updatedPlayers, status: 'playing' });
             } catch (e) {
                 console.error('Transfer error:', e);
+                showNotification('Ошибка при переводе', 'error');
             }
         }
 
@@ -1682,10 +1725,13 @@
 
             const gs = currentGameState;
 
-            // Если защитник отбился - нажимаем Бито
-            if (gs.phase === 'defend' && gs.currentDefender === myPlayerId) {
+            // Если защитник отбился - нажимаем Бито (или Отбиться в переводном режиме)
+            if ((gs.phase === 'defend' || gs.phase === 'transfer') && gs.currentDefender === myPlayerId) {
                 const allDefended = gs.table.every(p => p.defend !== null);
-                if (!allDefended) return;
+                if (!allDefended) {
+                    showNotification('Сначала отбейтесь от всех карт!', 'error');
+                    return;
+                }
 
                 // Переход в фазу подкидывания
                 const roomRef = db.collection('rooms').doc(currentRoomId);
@@ -1817,13 +1863,22 @@
                 // Проверка окончания игры
                 let winner = null;
                 let durak = null;
+                let isDraw = false;
 
                 const playersWithCards = updatedPlayers.filter(p => p.cards.length > 0);
 
                 if (updatedDeck.length <= 1 && playersWithCards.length <= 1) {
                     if (playersWithCards.length === 0) {
-                        // Все без карт - ничья или первый игрок победил
-                        winner = updatedPlayers[0].id;
+                        // Все без карт - проверяем кто последний ходил для определения ничьей или победы
+                        // Если все игроки сбросили карты одновременно в одном ходе - ничья
+                        // Иначе победитель тот кто был не на ходу (отбился последним)
+                        const allEmpty = updatedPlayers.every(p => p.cards.length === 0);
+                        if (allEmpty) {
+                            // Ничья - все игроки закончили карты одновременно
+                            isDraw = true;
+                        } else {
+                            winner = updatedPlayers[0].id;
+                        }
                     } else {
                         // Один игрок с картами - он дурак
                         durak = playersWithCards[0].id;
@@ -1882,11 +1937,12 @@
                     deck: updatedDeck,
                     discardPile: discardPile,
                     players: updatedPlayers,
-                    phase: winner || durak ? 'end' : 'attack',
+                    phase: winner || durak || isDraw ? 'end' : 'attack',
                     currentAttacker: nextAttackerId || serverGs.currentAttacker,
                     currentDefender: nextDefenderId || serverGs.currentDefender,
                     winner: winner,
                     durak: durak,
+                    isDraw: isDraw,
                     lastAttacker: null,
                     passedPlayers: []
                 };
@@ -2136,8 +2192,8 @@
                 }
             }
 
-            // Кнопки Бито/Забрать
-            if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
+            // Кнопки Бито/Забрать (или Отбиться в переводном режиме)
+            if (gs.currentDefender === myPlayerId && (gs.phase === 'defend' || gs.phase === 'transfer')) {
                 const allDefended = gs.table.every(p => p.defend !== null);
                 // Блокируем Бито если возможен перевод или не все карты отбиты
                 if (canTransfer || !allDefended) {
@@ -2145,7 +2201,12 @@
                 } else {
                     btnDone.disabled = false;
                 }
-                btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Бито';
+                // В переводном режиме показываем "Отбиться" вместо "Бито"
+                if (gs.mode === 'perevodnoy') {
+                    btnDone.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Отбиться';
+                } else {
+                    btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Бито';
+                }
                 btnTake.disabled = false;
                 btnTake.innerHTML = '<i class="fa-solid fa-download"></i> Забрать';
             } else if (gs.phase === 'podkid') {
@@ -2170,7 +2231,11 @@
             const title = document.getElementById('result-title');
             const text = document.getElementById('result-text');
 
-            if (gs.winner) {
+            if (gs.isDraw) {
+                // Ничья - все игроки закончили карты одновременно
+                title.textContent = '🤝 Игра окончена!';
+                text.textContent = 'Ничья! Все игроки избавились от карт одновременно!';
+            } else if (gs.winner) {
                 const winner = data.players.find(p => p.id === gs.winner);
                 title.textContent = '🏆 Игра окончена!';
                 text.textContent = `Победитель: ${winner ? winner.name : 'Неизвестно'}!`;
@@ -2343,6 +2408,56 @@
             document.getElementById('result-modal').addEventListener('click', function(e) {
                 if (e.target === this) backToLobby();
             });
+        }
+
+        // Функция для показа уведомлений (toast messages)
+        function showNotification(message, type = 'info') {
+            // Создаём элемент уведомления если его нет
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    z-index: 10000;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? '#e74c3c' : (type === 'success' ? '#2ecc71' : '#3498db');
+            toast.style.cssText = `
+                background: ${bgColor};
+                color: #fff;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                pointer-events: auto;
+                max-width: 400px;
+                text-align: center;
+            `;
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+
+            // Удаляем через 3 секунды
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 3000);
         }
 
         init();
