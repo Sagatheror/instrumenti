@@ -1672,18 +1672,18 @@
                 const nextDefIdx = (currentDefIdx + 1) % serverGs.players.length;
                 const nextDefender = serverGs.players[nextDefIdx];
                 
-                // Нельзя переводить если у следующего игрока меньше карт чем на столе
-                const cardsOnTable = serverGs.table.length + 1; // +1 карта которую хотим перевести
-                if (nextDefender.cards.length < cardsOnTable) {
-                    showNotification(`Нельзя перевести: у следующего игрока только ${nextDefender.cards.length} карт(ы), а на столе будет ${cardsOnTable}`, 'error');
+                // Нельзя переводить если у следующего игрока меньше карт чем на столе будет
+                const cardsOnTableAfterTransfer = serverGs.table.length + 1; // +1 карта которую хотим перевести
+                if (nextDefender.cards.length < cardsOnTableAfterTransfer) {
+                    showNotification(`Нельзя перевести: у следующего игрока только ${nextDefender.cards.length} карт(ы), а на столе будет ${cardsOnTableAfterTransfer}`, 'error');
                     selectedCards = [];
                     renderMyHand();
                     return;
                 }
                 
-                // Проверка лимита 6 карт - нельзя переводить если у следующего игрока после перевода будет больше 6 карт
-                if (nextDefender.cards.length + cardsOnTable > 6) {
-                    showNotification(`Нельзя перевести: у следующего игрока будет больше 6 карт!`, 'error');
+                // Проверка лимита 6 карт на столе - нельзя переводить если на столе будет больше 6 карт
+                if (cardsOnTableAfterTransfer > 6) {
+                    showNotification(`Нельзя перевести: на столе будет больше 6 карт!`, 'error');
                     selectedCards = [];
                     renderMyHand();
                     return;
@@ -2112,20 +2112,25 @@
                 `;
 
                 cardEl.onclick = () => {
-                    // Перевод - должен работать в фазе defend когда есть карты на столе
-                    // Проверяем ПЕРЕВЫЕ для переводного режима
-                    if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.phase === 'defend' && gs.table.length > 0) {
-                        const attackRank = gs.table[gs.table.length - 1].attack.rank;
-                        if (card.rank === attackRank) {
-                            // Выбираем карту для перевода
-                            if (selectedCards.includes(card.id)) {
-                                selectedCards = [];
-                            } else {
-                                selectedCards = [card.id];
+                    // Перевод - должен работать в фазе defend или transfer когда есть карты на столе
+                    // Проверяем ПЕРВЫМ для переводного режима
+                    if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && 
+                        (gs.phase === 'defend' || gs.phase === 'transfer') && gs.table.length > 0) {
+                        // Перевод возможен только если ещё не начали отбиваться
+                        const hasDefended = gs.table.some(p => p.defend !== null);
+                        if (!hasDefended) {
+                            const attackRank = gs.table[gs.table.length - 1].attack.rank;
+                            if (card.rank === attackRank) {
+                                // Выбираем карту для перевода
+                                if (selectedCards.includes(card.id)) {
+                                    selectedCards = [];
+                                } else {
+                                    selectedCards = [card.id];
+                                }
+                                renderMyHand();
+                                updateActionButtons();
+                                return;
                             }
-                            renderMyHand();
-                            updateActionButtons();
-                            return;
                         }
                     }
 
@@ -2182,13 +2187,20 @@
             }
 
             // Кнопка перевода - показываем в переводном режиме когда мы защищаемся и есть карты на столе
+            // Перевод возможен ТОЛЬКО если ещё не начали отбиваться (нет карт с defend !== null)
             let canTransfer = false;
-            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.phase === 'defend' && gs.table.length > 0 && selectedCards.length > 0) {
-                const attackRank = gs.table[gs.table.length - 1].attack.rank;
-                const selectedCard = getMyCards(gs).find(c => c.id === selectedCards[0]);
-                if (selectedCard && selectedCard.rank === attackRank) {
-                    btnTransfer.style.display = 'inline-block';
-                    canTransfer = true;
+            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && 
+                (gs.phase === 'defend' || gs.phase === 'transfer') && 
+                gs.table.length > 0 && selectedCards.length > 0) {
+                // Проверяем что ещё не начали отбиваться
+                const hasDefended = gs.table.some(p => p.defend !== null);
+                if (!hasDefended) {
+                    const attackRank = gs.table[gs.table.length - 1].attack.rank;
+                    const selectedCard = getMyCards(gs).find(c => c.id === selectedCards[0]);
+                    if (selectedCard && selectedCard.rank === attackRank) {
+                        btnTransfer.style.display = 'inline-block';
+                        canTransfer = true;
+                    }
                 }
             }
 

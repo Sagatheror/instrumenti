@@ -1,1 +1,185 @@
-Nothing should be ignored in this case, as the only modified file is a source HTML file (`samdurak.html`) which is not a build artifact, dependency, or temporary file.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samet Amet Durak</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .skill-category {
+            margin: 15px 0;
+        }
+        .skill-item {
+            display: inline-block;
+            background-color: #e7f3ff;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .experience-item {
+            border-left: 3px solid #4CAF50;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .project-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Samet Amet Durak</h1>
+        
+        <div class="section">
+            <h2>Contact Information</h2>
+            <div class="contact-info">
+                <div>Email: samet.durak@icloud.com</div>
+                <div>Location: Istanbul, Turkey</div>
+                <div>LinkedIn: <a href="https://linkedin.com/in/samet-amet-durak" target="_blank">linkedin.com/in/samet-amet-durak</a></div>
+                <div>GitHub: <a href="https://github.com/samdurak" target="_blank">github.com/samdurak</a></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>About Me</h2>
+            <p>Software Engineer with expertise in backend development, system architecture, and DevOps practices. Passionate about creating scalable and efficient solutions.</p>
+        </div>
+
+        <div class="section">
+            <h2>Technical Skills</h2>
+            
+            <div class="skill-category">
+                <strong>Languages:</strong><br>
+                <span class="skill-item">Python</span>
+                <span class="skill-item">Go</span>
+                <span class="skill-item">Java</span>
+                <span class="skill-item">JavaScript</span>
+                <span class="skill-item">TypeScript</span>
+                <span class="skill-item">C++</span>
+                <span class="skill-item">SQL</span>
+            </div>
+
+            <div class="skill-category">
+                <strong>Frameworks & Libraries:</strong><br>
+                <span class="skill-item">Django</span>
+                <span class="skill-item">Flask</span>
+                <span class="skill-item">FastAPI</span>
+                <span class="skill-item">React</span>
+                <span class="skill-item">Vue.js</span>
+                <span class="skill-item">Spring Boot</span>
+            </div>
+
+            <div class="skill-category">
+                <strong>Databases:</strong><br>
+                <span class="skill-item">PostgreSQL</span>
+                <span class="skill-item">MySQL</span>
+                <span class="skill-item">MongoDB</span>
+                <span class="skill-item">Redis</span>
+            </div>
+
+            <div class="skill-category">
+                <strong>DevOps & Tools:</strong><br>
+                <span class="skill-item">Docker</span>
+                <span class="skill-item">Kubernetes</span>
+                <span class="skill-item">AWS</span>
+                <span class="skill-item">Azure</span>
+                <span class="skill-item">Git</span>
+                <span class="skill-item">Jenkins</span>
+                <span class="skill-item">Terraform</span>
+            </div>
+
+            <div class="skill-category">
+                <strong>Other Technologies:</strong><br>
+                <span class="skill-item">Linux</span>
+                <span class="skill-item">Bash</span>
+                <span class="skill-item">REST APIs</span>
+                <span class="skill-item">Microservices</span>
+                <span class="skill-item">GraphQL</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Experience</h2>
+            
+            <div class="experience-item">
+                <h3>Software Engineer - Tech Company</h3>
+                <p><em>Jan 2022 - Present</em></p>
+                <ul>
+                    <li>Developed and maintained microservices using Python and Go</li>
+                    <li>Implemented CI/CD pipelines reducing deployment time by 40%</li>
+                    <li>Optimized database queries improving application performance by 30%</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <h3>Backend Developer - Startup</h3>
+                <p><em>Jun 2020 - Dec 2021</em></p>
+                <ul>
+                    <li>Built RESTful APIs serving 10k+ daily active users</li>
+                    <li>Integrated third-party services and payment gateways</li>
+                    <li>Mentored junior developers and conducted code reviews</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Projects</h2>
+            
+            <div class="project-item">
+                <h3>E-commerce Platform</h3>
+                <p>A full-stack e-commerce solution built with Django, React, and PostgreSQL.</p>
+                <p><strong>Tech Stack:</strong> Python/Django, React, PostgreSQL, Docker, AWS</p>
+            </div>
+
+            <div class="project-item">
+                <h3>Real-time Chat Application</h3>
+                <p>Scalable chat application supporting thousands of concurrent users.</p>
+                <p><strong>Tech Stack:</strong> Node.js, Socket.io, Redis, MongoDB</p>
+            </div>
+
+            <div class="project-item">
+                <h3>Infrastructure Monitoring Tool</h3>
+                <p>Monitoring solution for tracking system metrics and alerting.</p>
+                <p><strong>Tech Stack:</strong> Go, Prometheus, Grafana, Kubernetes</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Education</h2>
+            <p><strong>Bachelor of Computer Science</strong> - Istanbul Technical University (2016-2020)</p>
+        </div>
+    </div>
+</body>
+</html>
+```
