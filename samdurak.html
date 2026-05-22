@@ -1357,6 +1357,11 @@
                 passedPlayers: []
             };
         }
+        
+        // Функция для получения названия масти козыря
+        function getTrumpSuitName(trumpSuit) {
+            return SUIT_NAMES[trumpSuit] || '';
+        }
 
         function buildTurnOrder(startIndex, playerCount) {
             const order = [];
@@ -1646,6 +1651,7 @@
                 const nextDefIdx = (currentDefIdx + 1) % serverGs.players.length;
                 const nextDefender = serverGs.players[nextDefIdx];
 
+                // Тот кто перевёл становится атакующим, следующий игрок - защитником
                 const updatedPlayers = serverGs.players.map(p =>
                     p.id === myPlayerId ? { ...p, cards: updatedMyCards } : p
                 );
@@ -1655,8 +1661,8 @@
                     table: updatedTable,
                     players: updatedPlayers,
                     currentDefender: nextDefender.id,
-                    currentAttacker: myPlayerId, // Тот кто перевёл становится атакующим
-                    phase: 'defend',
+                    currentAttacker: myPlayerId, // Переведший игрок теперь атакует
+                    phase: 'attack', // Новая атака, а не продолжение защиты
                     lastAttacker: myPlayerId,
                     passedPlayers: []
                 };
