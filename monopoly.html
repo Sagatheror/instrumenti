@@ -7,9 +7,6 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         * {
             margin: 0;
@@ -465,22 +462,33 @@
             padding: 20px;
         }
 
-        #board3d-container {
+        .board {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            background: linear-gradient(145deg, #2c5a2a, #1a3a18);
+            border-radius: 5px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
             width: min(95vw, 95vh);
             height: min(75vw, 75vh);
             margin: 0 auto;
             position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             border: 3px solid #d4af37;
-            background: #1a2f1a;
+            transition: transform 0.2s ease;
         }
-
-        .board {
-            display: none !important;
+.board::before {
+            content: "🏆 Монополия";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: rgba(255,215,0,0.3);
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            white-space: nowrap;
         }
-
         .cell {
             background: radial-gradient(ellipse at 30% 35%, #fff5e6, #ffefd3);
             border: 1px solid #cfb27c;
@@ -999,102 +1007,102 @@ function addLogMessage(message, type = "info") {
         logContainer.removeChild(logContainer.firstChild);
     }
 }
-
-// Функция принудительной продажи имущества при банкротстве
-async function checkAndHandleBankruptcy(player) {
-if (player.money < 0) {
-    player.money = 0;
-    await db.ref(`rooms/${currentRoomId}/gameState/players`).set(localGameState.players);
-}
-
-if (player.money === 0 && player.properties && player.properties.length > 0) {
-    forcedSellMode = true;
-    showForcedSaleModal();
-    return true;
-} else if (player.money === 0 && (!player.properties || player.properties.length === 0)) {
-    showNotification("💀 Вы банкрот! Игра для вас окончена!", "warning");
-    return true;
-}
-return false;
-}
+    
+    // Функция принудительной продажи имущества при банкротстве
+    async function checkAndHandleBankruptcy(player) {
+        if (player.money < 0) {
+            player.money = 0;
+            await db.ref(`rooms/${currentRoomId}/gameState/players`).set(localGameState.players);
+        }
+        
+        if (player.money === 0 && player.properties && player.properties.length > 0) {
+            forcedSellMode = true;
+            showForcedSaleModal();
+            return true;
+        } else if (player.money === 0 && (!player.properties || player.properties.length === 0)) {
+            showNotification("💀 Вы банкрот! Игра для вас окончена!", "warning");
+            return true;
+        }
+        return false;
+    }
     
     function showForcedSaleModal() {
-const player = localGameState?.players.find(p => p.id === currentPlayerId);
-if (!player || player.money > 0 || (player.properties && player.properties.length === 0)) {
-    forcedSellMode = false;
-    return;
-}
-
-let content = `
-    <div class="modal-info">
-        <div class="modal-info-row">
-            <span>⚠️ ВНИМАНИЕ!</span>
-            <span style="color:#e63946;">Ваш баланс: $${player.money}</span>
-        </div>
-        <div class="modal-info-row">
-            <span>💰 Вам нужно срочно продать имущество!</span>
-        </div>
-    </div>
-    <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость для продажи:</h3>
-    <div class="property-list">
-        ${(player.properties || []).map(propId => {
-            const tile = TILES_FULL[propId];
-            const houses = player.houses?.[propId] || 0;
-            let sellPrice = Math.floor(tile.price * 0.5);
-            for (let i = 0; i < houses; i++) {
-                sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
-            }
-            return `
-                <div class="property-item" onclick="sellPropertyForced(${propId})">
-                    <div class="property-name">${tile.icon} ${tile.name}</div>
-                <div class="property-details">
-                    🏠 Уровень: ${houses === 0 ? '0' : houses === 5 ? 'Отель' : houses} | 
-                    💰 Продажа за: $${sellPrice}
+        const player = localGameState?.players.find(p => p.id === currentPlayerId);
+        if (!player || player.money > 0 || (player.properties && player.properties.length === 0)) {
+            forcedSellMode = false;
+            return;
+        }
+        
+        let content = `
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>⚠️ ВНИМАНИЕ!</span>
+                    <span style="color:#e63946;">Ваш баланс: $${player.money}</span>
+                </div>
+                <div class="modal-info-row">
+                    <span>💰 Вам нужно срочно продать имущество!</span>
+                </div>
+            </div>
+            <h3 style="color:#ffcd7e; margin:10px 0;">Ваша недвижимость для продажи:</h3>
+            <div class="property-list">
+                ${(player.properties || []).map(propId => {
+                    const tile = TILES_FULL[propId];
+                    const houses = player.houses?.[propId] || 0;
+                    let sellPrice = Math.floor(tile.price * 0.5);
+                    for (let i = 0; i < houses; i++) {
+                        sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
+                    }
+                    return `
+                        <div class="property-item" onclick="sellPropertyForced(${propId})">
+                            <div class="property-name">${tile.icon} ${tile.name}</div>
+                            <div class="property-details">
+                                🏠 Уровень: ${houses === 0 ? '0' : houses === 5 ? 'Отель' : houses} | 
+                                💰 Продажа за: $${sellPrice}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span>💡 Подсказка:</span>
+                    <span>Продавайте имущество пока баланс не станет положительным</span>
                 </div>
             </div>
         `;
-    }).join('')}
-    </div>
-    <div class="modal-info">
-        <div class="modal-info-row">
-            <span>💡 Подсказка:</span>
-            <span>Продавайте имущество пока баланс не станет положительным</span>
-        </div>
-    </div>
-`;
-
-const modal = showModal("⚠️ БАНКРОТСТВО - СРОЧНАЯ ПРОДАЖА", content, [
-    { text: 'Продать имущество', class: 'modal-btn-primary', onClick: 'closeModal' }
-]);
-if (modal) modal.querySelector('.modal-content').classList.add('forced');
+        
+        const modal = showModal("⚠️ БАНКРОТСТВО - СРОЧНАЯ ПРОДАЖА", content, [
+            { text: 'Продать имущество', class: 'modal-btn-primary', onClick: 'closeModal' }
+        ]);
+        if (modal) modal.querySelector('.modal-content').classList.add('forced');
     }
     
     window.sellPropertyForced = async function(propId) {
-const state = {...localGameState};
-const player = state.players.find(p => p.id === currentPlayerId);
-const tile = TILES_FULL[propId];
-const houses = player.houses?.[propId] || 0;
-let sellPrice = Math.floor(tile.price * 0.5);
-for (let i = 0; i < houses; i++) {
-    sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
-}
-
-const propIndex = player.properties.indexOf(propId);
-if (propIndex !== -1) {
-    player.properties.splice(propIndex, 1);
-    if (player.houses) delete player.houses[propId];
-    player.money += sellPrice;
-    
+        const state = {...localGameState};
+        const player = state.players.find(p => p.id === currentPlayerId);
+        const tile = TILES_FULL[propId];
+        const houses = player.houses?.[propId] || 0;
+        let sellPrice = Math.floor(tile.price * 0.5);
+        for (let i = 0; i < houses; i++) {
+            sellPrice += Math.floor(getUpgradeCost(tile, i) * 0.5);
+        }
+        
+        const propIndex = player.properties.indexOf(propId);
+        if (propIndex !== -1) {
+            player.properties.splice(propIndex, 1);
+            if (player.houses) delete player.houses[propId];
+            player.money += sellPrice;
+            
             await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
             showNotification(`💰 Вы продали ${tile.icon} ${tile.name} за $${sellPrice}!`, "success");
             
             if (player.money > 0) {
-forcedSellMode = false;
-closeModal();
+                forcedSellMode = false;
+                closeModal();
             } else if (player.properties.length === 0) {
-showNotification("💀 У вас больше нет имущества! Вы банкрот!", "warning");
-forcedSellMode = false;
-closeModal();
+                showNotification("💀 У вас больше нет имущества! Вы банкрот!", "warning");
+                forcedSellMode = false;
+                closeModal();
             } else {
                 showForcedSaleModal();
             }
@@ -2053,24 +2061,11 @@ closeModal();
         if (window.pendingTradeOffer) {
             await db.ref(`rooms/${currentRoomId}/tradeOffers/${window.pendingTradeOffer.id}`).update({status: 'declined'});
             showNotification("❌ Вы отклонили предложение о торговле", "warning");
-            addLogMessage(`${localGameState?.players.find(p => p.id === window.pendingTradeOffer.from)?.avatar} отклонил предложение о торговле`, "warning");
+            addLogMessage(`${localGameState?.players.find(p => p.id === offer.from)?.avatar} отклонил предложение о торговле`, "warning");
             window.pendingTradeOffer = null;
             closeModal();
         }
     };
-    
-    // Алиасы для совместимости
-    window.acceptTrade = window.acceptTradeOfferWithExchange;
-    window.rejectTrade = window.declineTradeOffer;
-    
-    // Функция получения цвета игрока по ID
-    function getPlayerColor(playerId) {
-        const playerColors = ['#FF0000', '#00AA00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
-        const colors = ['#FF0000', '#00AA00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
-        if (!localGameState || !localGameState.players) return colors[0];
-        const index = localGameState.players.findIndex(p => p.id === playerId);
-        return colors[index >= 0 ? index % colors.length : 0];
-    }
     
     async function acceptTradeWithExchange(offerId, offer) {
         const state = {...localGameState};
@@ -2313,11 +2308,6 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
                 myTurn = (state.currentPlayer === currentPlayerId);
                 renderGameFromState();
                 
-                // Update 3D player positions after state change
-                if (typeof THREE !== 'undefined' && updatePlayerPositions3D) {
-                    setTimeout(() => updatePlayerPositions3D(), 200);
-                }
-                
                 const currentPlayer = localGameState?.players.find(p => p.id === currentPlayerId);
                 if (currentPlayer && currentPlayer.money === 0 && currentPlayer.properties && currentPlayer.properties.length > 0 && !forcedSellMode) {
                     forcedSellMode = true;
@@ -2457,14 +2447,6 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
             localGameState = initialState;
             gameActive = true;
             myTurn = (initialState.currentPlayer === currentPlayerId);
-            
-            // Initialize 3D board after a short delay to ensure DOM is ready
-            setTimeout(() => {
-                if (typeof THREE !== 'undefined') {
-                    initThreeJS();
-                }
-            }, 200);
-            
             renderGameFromState();
         } catch(e) {
             console.error("Ошибка при старте игры:", e);
@@ -2477,11 +2459,6 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
         
         const players = localGameState.players;
         const currentPlayerIdGame = localGameState.currentPlayer;
-        
-        // Update 3D board positions if already initialized
-        if (typeof THREE !== 'undefined' && boardGroup) {
-            updatePlayerPositions3D();
-        }
         
         let boardHtml = `<div class="board" id="board">`;
         for(let i = 0; i < 40; i++) {
@@ -2692,11 +2669,6 @@ addLogMessage(`${fromPlayer.avatar} и ${toPlayer.avatar} совершили о�
         
         await db.ref(`rooms/${currentRoomId}/gameState`).update({players: state.players});
         showNotification(`${player.avatar} переместился на клетку ${TILES_FULL[newPos].icon} ${TILES_FULL[newPos].name}`, "info");
-        
-        // Update 3D player position
-        if (typeof THREE !== 'undefined' && updatePlayerPositions3D) {
-            updatePlayerPositions3D();
-        }
         
         setTimeout(() => handleTileEffect(newPos, isDouble), 300);
     }
@@ -3186,16 +3158,15 @@ window.sellPropertyForcedWithDebt = async function(propId, debt, creditorName) {
         window.selectTradePlayer = selectTradePlayer;
         window.selectMyPropertyForTrade = selectMyPropertyForTrade;
         window.selectTargetPropertyForTrade = selectTargetPropertyForTrade;
-        // sendTradeOffer удалена, так как используется sendTradeOfferWithExchange
-        // acceptTrade и rejectTrade уже определены выше как window.acceptTrade и window.rejectTrade
-        window.rollDice = rollDice;
-        window.endTurn = endTurn;
-        window.showTradeModal = showTradeModal;
+        window.sendTradeOfferWithExchange = sendTradeOfferWithExchange;
+        window.acceptTradeOfferWithExchange = acceptTradeOfferWithExchange;
+        window.declineTradeOffer = declineTradeOffer;
+        window.placeGlobalBid = placeGlobalBid;
         window.showUpgradeProperties = showUpgradeProperties;
-        window.showUnsoldProperties = showUnsoldProperties;
-        window.updatePlayerPositions3D = updatePlayerPositions3D;
-        // sendTradeOfferWithExchange, acceptTradeOfferWithExchange, declineTradeOffer уже определены как window функции выше в коде
-        // placeGlobalBid, sellPropertyForced, payJailFee, rollJailDice, useJailCard, sellPropertyForcedWithDebt также уже определены как window функции
+        window.sellPropertyForced = sellPropertyForced;
+        window.payJailFee = payJailFee;
+        window.rollJailDice = rollJailDice;
+        window.useJailCard = useJailCard;
     }
     function updateUnsoldPropertiesCount() {
     if (!localGameState || !localGameState.players) return;
@@ -3321,583 +3292,6 @@ window.showUnsoldProperties = function() {
         return true;
     }
     
-    // ==========================================
-    // Three.js 3D Board Setup
-    // ==========================================
-    let scene, camera, renderer, controls;
-    let boardGroup = null, cellMeshes = [], playerMeshes = [];
-    
-    function initThreeJS() {
-        const container = document.getElementById('board3d-container');
-        if (!container) return;
-        
-        // Scene
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a2f1a);
-        
-        // Camera
-        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 25, 20);
-        
-        // Renderer
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        container.innerHTML = '';
-        container.appendChild(renderer.domElement);
-        
-        // Controls
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.minDistance = 15;
-        controls.maxDistance = 40;
-        controls.maxPolarAngle = Math.PI / 2.2;
-        
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffdf90, 0.8);
-        directionalLight.position.set(10, 20, 10);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        scene.add(directionalLight);
-        
-        // Board Group
-        boardGroup = new THREE.Group();
-        scene.add(boardGroup);
-        
-        create3DBoard();
-        
-        // Handle resize
-        window.addEventListener('resize', onWindowResize, false);
-        
-        animate();
-    }
-    
-    function onWindowResize() {
-        const container = document.getElementById('board3d-container');
-        if (!container || !camera || !renderer) return;
-        
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    }
-    
-    function animate() {
-        requestAnimationFrame(animate);
-        if (controls) controls.update();
-        if (renderer && scene && camera) renderer.render(scene, camera);
-    }
-    
-    function create3DBoard() {
-        // Проверка инициализации boardGroup
-        if (!boardGroup) {
-            console.warn("boardGroup не инициализирован, пропускаем создание доски");
-            return;
-        }
-        
-        // Clear existing
-        while(boardGroup.children.length > 0) { 
-            boardGroup.remove(boardGroup.children[0]); 
-        }
-        cellMeshes = [];
-        
-        const cellSize = 1.2;
-        const gap = 0.05;
-        const totalSize = (cellSize + gap) * 11;
-        const offset = totalSize / 2;
-        
-        // Base platform
-        const baseGeometry = new THREE.BoxGeometry(totalSize + 1, 0.3, totalSize + 1);
-        const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x2a4a28, roughness: 0.8 });
-        const base = new THREE.Mesh(baseGeometry, baseMaterial);
-        base.position.y = -0.4;
-        base.receiveShadow = true;
-        boardGroup.add(base);
-        
-        // Create cells
-        for(let i = 0; i < 40; i++) {
-            const tile = TILES_FULL[i];
-            const [row, col] = positionsMap[i];
-            
-            const x = (col - 5) * (cellSize + gap);
-            const z = (row - 5) * (cellSize + gap);
-            
-            // Create texture for cell
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            
-            // Background
-            ctx.fillStyle = '#fff8dc'; // Cornsilk - теплый светлый фон
-            ctx.fillRect(0, 0, 512, 512);
-            
-            // Color bar at top for properties
-            let barColor = null;
-            if (tile.color) {
-                const colorMap = {
-                    'brown': '#8B4513',
-                    'lightblue': '#87CEEB',
-                    'pink': '#FF69B4',
-                    'orange': '#FF8C00',
-                    'red': '#DC143C',
-                    'yellow': '#FFD700',
-                    'green': '#228B22',
-                    'blue': '#1E90FF'
-                };
-                barColor = colorMap[tile.color] || null;
-            } else if (tile.type === 'railroad') {
-                barColor = '#2F4F4F';
-            } else if (tile.type === 'utility') {
-                barColor = '#20B2AA';
-            }
-            
-            if (barColor) {
-                ctx.fillStyle = barColor;
-                ctx.fillRect(0, 0, 512, 90); // Полоса занимает ~18% высоты
-                
-                // Градиент для объема полосы
-                const gradient = ctx.createLinearGradient(0, 0, 0, 90);
-                gradient.addColorStop(0, 'rgba(255,255,255,0.3)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0.1)');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, 512, 90);
-                
-                // Тень под полосой
-                ctx.fillStyle = 'rgba(0,0,0,0.2)';
-                ctx.fillRect(0, 90, 512, 8);
-            }
-            
-            // Cell name text - КРУПНЫЙ и ЧИТАЕМЫЙ
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            let displayName = tile.name || '';
-            // Разбиваем длинное название на строки
-            const maxCharsPerLine = 18;
-            let lines = [];
-            if (displayName.length > maxCharsPerLine) {
-                const words = displayName.split(' ');
-                let currentLine = '';
-                words.forEach(word => {
-                    if ((currentLine + word).length <= maxCharsPerLine) {
-                        currentLine += (currentLine ? ' ' : '') + word;
-                    } else {
-                        if (currentLine) lines.push(currentLine);
-                        currentLine = word;
-                    }
-                });
-                if (currentLine) lines.push(currentLine);
-            } else {
-                lines = [displayName];
-            }
-            
-            // Рисуем название с белой подложкой для контраста
-            const nameStartY = barColor ? 150 : 120;
-            const lineSpacing = 45;
-            
-            ctx.font = 'bold 36px "Arial Black", Arial, sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            
-            lines.forEach((line, idx) => {
-                const y = nameStartY + (idx * lineSpacing);
-                // Измеряем ширину текста для подложки
-                const metrics = ctx.measureText(line);
-                const textWidth = metrics.width;
-                const padding = 20;
-                
-                // Белая подложка с закругленными углами
-                ctx.save();
-                ctx.beginPath();
-                ctx.roundRect(256 - textWidth/2 - padding, y - 25, textWidth + padding*2, 50, 8);
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'; // Темная подложка для контраста
-                ctx.fill();
-                ctx.restore();
-                
-                // Сам текст белым цветом
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(line, 256, y);
-            });
-            
-            // Price text - КРУПНАЯ ЦЕНА
-            if (tile.price && tile.type !== 'start' && tile.type !== 'jail' && tile.type !== 'goToJail' && tile.type !== 'parking') {
-                const priceY = barColor ? 280 : 240;
-                ctx.font = 'bold 32px Arial, sans-serif';
-                ctx.fillStyle = '#1a1a1a';
-                
-                // Подложка для цены
-                const priceText = `$${tile.price}`;
-                const metrics = ctx.measureText(priceText);
-                ctx.save();
-                ctx.beginPath();
-                ctx.roundRect(256 - metrics.width/2 - 15, priceY - 22, metrics.width + 30, 44, 6);
-                ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'; // Золотистая подложка
-                ctx.fill();
-                ctx.restore();
-                
-                ctx.fillStyle = '#000000';
-                ctx.fillText(priceText, 256, priceY);
-            }
-            
-            // Special icons - БОЛЬШИЕ ИКОНКИ
-            let iconY = barColor ? 360 : 320;
-            let subtextY = iconY + 50;
-            
-            ctx.font = '72px Arial, sans-serif';
-            
-            if (tile.type === 'start') {
-                ctx.fillText('🏁', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('СТАРТ', 256, subtextY);
-                ctx.font = 'bold 24px Arial';
-                ctx.fillStyle = '#228B22';
-                ctx.fillText('+ $200', 256, subtextY + 35);
-            } else if (tile.type === 'jail') {
-                ctx.fillText('👮', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('ТЮРЬМА', 256, subtextY);
-            } else if (tile.type === 'goToJail') {
-                ctx.fillText('➡️', 256, iconY - 20);
-                ctx.fillText('👮', 256, iconY + 40);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('В ТЮРЬМУ', 256, subtextY + 80);
-            } else if (tile.type === 'parking') {
-                ctx.fillText('🅿️', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('ПАРКОВКА', 256, subtextY);
-            } else if (tile.type === 'chest') {
-                ctx.fillText('📦', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('КАЗНА', 256, subtextY);
-            } else if (tile.type === 'chance') {
-                ctx.fillText('❓', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('ШАНС', 256, subtextY);
-            } else if (tile.type === 'tax') {
-                ctx.fillText('💰', 256, iconY);
-                ctx.font = 'bold 28px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText('НАЛОГ', 256, subtextY);
-                if (tile.price) {
-                    ctx.font = 'bold 24px Arial';
-                    ctx.fillStyle = '#DC143C';
-                    ctx.fillText(`- $${tile.price}`, 256, subtextY + 35);
-                }
-            } else if (tile.type === 'railroad') {
-                ctx.font = '80px Arial, sans-serif';
-                ctx.fillText('🚂', 256, iconY);
-                ctx.font = 'bold 22px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText(tile.name, 256, subtextY);
-                if (tile.price) {
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillStyle = '#1a1a1a';
-                    ctx.fillText(`$${tile.price}`, 256, subtextY + 30);
-                }
-            } else if (tile.type === 'utility') {
-                ctx.font = '72px Arial, sans-serif';
-                if (tile.name.includes('Electric') || tile.name.includes('Электр') || tile.name.toLowerCase().includes('electric')) {
-                    ctx.fillText('⚡', 256, iconY);
-                } else {
-                    ctx.fillText('💧', 256, iconY);
-                }
-                ctx.font = 'bold 22px "Arial Black", Arial';
-                ctx.fillStyle = '#000000';
-                ctx.fillText(tile.name, 256, subtextY);
-                if (tile.price) {
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillStyle = '#1a1a1a';
-                    ctx.fillText(`$${tile.price}`, 256, subtextY + 30);
-                }
-            }
-            
-            // Ownership indicator for properties, railroads, and utilities
-            const isOwnable = tile.color || tile.type === 'railroad' || tile.type === 'utility';
-            if (isOwnable && localGameState && localGameState.players) {
-                const owner = localGameState.players.find(p => p.properties && p.properties.includes(i));
-                if (owner) {
-                    const housesCount = owner.houses?.[i] || 0;
-                    
-                    // Цветная полоса владельца внизу
-                    const ownerColor = getPlayerColor(owner.id);
-                    ctx.fillStyle = ownerColor;
-                    ctx.fillRect(0, 470, 512, 42);
-                    
-                    // Владелец - аватар с короной
-                    ctx.font = 'bold 28px Arial, sans-serif';
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillText(`👑 ${owner.avatar || '👤'} ${owner.name || ''}`, 256, 492);
-                    
-                    // Дома/Отели
-                    if (housesCount > 0) {
-                        ctx.font = 'bold 22px Arial, sans-serif';
-                        if (housesCount === 5) {
-                            ctx.fillText('🏨 ОТЕЛЬ', 256, 455);
-                        } else {
-                            let housesStr = '';
-                            for (let h = 0; h < housesCount; h++) {
-                                housesStr += '🏠 ';
-                            }
-                            ctx.fillText(housesStr.trim(), 256, 455);
-                        }
-                    }
-                    
-                    // Золотая рамка вокруг клетки
-                    ctx.strokeStyle = '#FFD700';
-                    ctx.lineWidth = 6;
-                    ctx.strokeRect(3, 3, 506, 506);
-                }
-            }
-            
-            // Create texture from canvas
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 16;
-            texture.minFilter = THREE.LinearMipMapLinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.needsUpdate = true;
-            
-            // Cell geometry with multiple materials for different faces
-            const cellGeometry = new THREE.BoxGeometry(cellSize, 0.5, cellSize);
-            
-            // Materials: right, left, top, bottom, front, back
-            const sideMaterial = new THREE.MeshStandardMaterial({ color: 0x8b7355, roughness: 0.7 });
-            const topMaterial = new THREE.MeshStandardMaterial({ 
-                map: texture,
-                roughness: 0.6,
-                metalness: 0.1
-            });
-            const bottomMaterial = new THREE.MeshStandardMaterial({ color: 0x6b5345, roughness: 0.7 });
-            
-            const materials = [
-                sideMaterial, // right
-                sideMaterial, // left
-                topMaterial,  // top
-                bottomMaterial, // bottom
-                sideMaterial, // front
-                sideMaterial  // back
-            ];
-            
-            const cell = new THREE.Mesh(cellGeometry, materials);
-            cell.position.set(x, 0.25, z);
-            cell.castShadow = true;
-            cell.receiveShadow = true;
-            cell.userData = { tileId: i, tile: tile };
-            
-            boardGroup.add(cell);
-            cellMeshes.push(cell);
-        }
-        
-        // Center decoration
-        const centerGeometry = new THREE.CylinderGeometry(3, 3, 0.2, 32);
-        const centerMaterial = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.4, metalness: 0.3 });
-        const center = new THREE.Mesh(centerGeometry, centerMaterial);
-        center.position.y = -0.1;
-        center.receiveShadow = true;
-        boardGroup.add(center);
-        
-        // Logo text placeholder (using a simple plane)
-        const logoGeometry = new THREE.PlaneGeometry(4, 1);
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 32px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('🏆 Монополия', 128, 45);
-        const logoTexture = new THREE.CanvasTexture(canvas);
-        const logoMaterial = new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true });
-        const logo = new THREE.Mesh(logoGeometry, logoMaterial);
-        logo.rotation.x = -Math.PI / 2;
-        logo.position.y = 0.15;
-        boardGroup.add(logo);
-    }
-    
-    function updatePlayerPositions3D() {
-        if (!boardGroup || !localGameState || !localGameState.players) return;
-        
-        // Remove old player meshes
-        playerMeshes.forEach(mesh => boardGroup.remove(mesh));
-        playerMeshes = [];
-        
-        const players = localGameState.players;
-        const cellSize = 1.2;
-        const gap = 0.05;
-        
-        players.forEach((player, index) => {
-            if (!player || player.position === undefined) return;
-            
-            const [row, col] = positionsMap[player.position];
-            const x = (col - 5) * (cellSize + gap);
-            const z = (row - 5) * (cellSize + gap);
-            
-            // Player sphere with avatar label
-            const playerGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-            const playerColors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-            const playerColor = playerColors[index % playerColors.length];
-            const playerMaterial = new THREE.MeshStandardMaterial({ 
-                color: playerColor,
-                roughness: 0.3,
-                metalness: 0.5,
-                emissive: playerColor,
-                emissiveIntensity: 0.3
-            });
-            
-            const playerMesh = new THREE.Mesh(playerGeometry, playerMaterial);
-            
-            // Offset for multiple players on same cell
-            const playerCountOnCell = players.filter(p => p.position === player.position).length;
-            const offsetAngle = (index % playerCountOnCell) * (Math.PI * 2 / playerCountOnCell);
-            const offsetRadius = 0.3;
-            
-            playerMesh.position.set(
-                x + Math.cos(offsetAngle) * offsetRadius,
-                0.8,
-                z + Math.sin(offsetAngle) * offsetRadius
-            );
-            playerMesh.castShadow = true;
-            playerMesh.userData = { playerId: player.id, player: player };
-            
-            // Create avatar label canvas
-            const labelCanvas = document.createElement('canvas');
-            labelCanvas.width = 128;
-            labelCanvas.height = 64;
-            const labelCtx = labelCanvas.getContext('2d');
-            labelCtx.fillStyle = player.avatar ? '#ffffff' : '#cccccc';
-            labelCtx.font = 'bold 40px Arial';
-            labelCtx.textAlign = 'center';
-            labelCtx.textBaseline = 'middle';
-            labelCtx.fillText(player.avatar || '?', 64, 32);
-            
-            const labelTexture = new THREE.CanvasTexture(labelCanvas);
-            labelTexture.needsUpdate = true;
-            const labelMaterial = new THREE.SpriteMaterial({ map: labelTexture });
-            const labelSprite = new THREE.Sprite(labelMaterial);
-            labelSprite.position.set(
-                x + Math.cos(offsetAngle) * offsetRadius,
-                1.4,
-                z + Math.sin(offsetAngle) * offsetRadius
-            );
-            labelSprite.scale.set(0.5, 0.25, 1);
-            
-            boardGroup.add(playerMesh);
-            boardGroup.add(labelSprite);
-            playerMeshes.push(playerMesh);
-            playerMeshes.push(labelSprite);
-        });
-    }
-    
-    function renderGameFromState() {
-        if (!localGameState || !localGameState.players || !Array.isArray(localGameState.players) || localGameState.players.length === 0) return;
-        
-        const players = localGameState.players;
-        const currentPlayerIdGame = localGameState.currentPlayer;
-        
-        // Update 3D board positions if already initialized (don't recreate the whole board)
-        if (typeof THREE !== 'undefined' && boardGroup) {
-            updatePlayerPositions3D();
-        }
-        
-        let boardHtml = `<div class="board" id="board">`;
-        for(let i = 0; i < 40; i++) {
-            const tile = TILES_FULL[i];
-            const [row, col] = positionsMap[i];
-            let colorClass = "";
-            if (tile.color) colorClass = `color-${tile.color}`;
-            if (tile.type === "railroad") colorClass = "railroad";
-            if (tile.type === "utility") colorClass = "utility";
-            
-            const playersOnCell = players.filter(p => p && p.position === i);
-            const playersAvatars = playersOnCell.map(p => p.avatar || "?").join('');
-            
-            const owner = players.find(p => p.properties && p.properties.includes(i));
-            const housesCount = owner?.houses?.[i] || 0;
-            let housesDisplay = '';
-            if (housesCount > 0) {
-                if (housesCount === 5) housesDisplay = '🏨';
-                else if (housesCount === 4) housesDisplay = '🏠🏠🏠🏠';
-                else if (housesCount === 3) housesDisplay = '🏠🏠🏠';
-                else if (housesCount === 2) housesDisplay = '🏠🏠';
-                else if (housesCount === 1) housesDisplay = '🏠';
-            }
-            
-            boardHtml += `<div class="cell ${colorClass}" onclick="showPropertyInfo(${i})" style="grid-row:${row+1};grid-column:${col+1}">
-                <div class="cell-name">${tile.icon || ''} ${tile.name.length > 10 ? tile.name.substring(0,8)+".." : tile.name}</div>
-                ${tile.price ? `<div class="cell-price" style="font-size:0.4rem;">$${tile.price}</div>` : ''}
-                ${owner ? `<div class="owner-token">👑 ${owner.avatar} ${housesDisplay}</div>` : ''}
-                <div class="players-on-cell">${playersAvatars}</div>
-            </div>`;
-        }
-        boardHtml += `</div>`;
-        
-        const playersHtml = players.map(p => {
-            if (!p) return '';
-            const canBuild = p.properties ? p.properties.some(pid => canBuildHouses(p, pid)) : false;
-            return `
-                <div class="player-card ${currentPlayerIdGame === p.id ? 'active' : ''}" onclick="showPlayerActions('${p.id}')">
-                    <div class="player-name">${p.avatar || '?'} ${p.name || '???'}</div>
-                    <div class="player-money">💰 $${p.money || 0}</div>
-                    <div>🏠 ${(p.properties && p.properties.length) || 0}</div>
-                    ${p.inJail ? '<span style="font-size:0.6rem;">🔒 В тюрьме</span>' : ''}
-                    ${p.id === currentPlayerId && myTurn ? '<span style="font-size:0.6rem;">🎲 ВАШ ХОД</span>' : ''}
-                    ${canBuild && p.id === currentPlayerId && myTurn && !localGameState.diceRolled ? '<span style="font-size:0.6rem; color:#4caf50;">🏗️</span>' : ''}
-                </div>
-            `;
-        }).join('');
-        
-        const chatPanel = document.getElementById("chatPanel");
-        if (chatPanel && chatPanel.style.display === "none") chatPanel.style.display = "flex";
-        
-        document.getElementById("gameArea").innerHTML = `
-            <div class="game-wrapper">
-                <div id="board3d-container"></div>
-                ${boardHtml}
-                <div class="game-panel">
-                    <div class="players-info">${playersHtml}</div>
-                    <div class="unsold-properties-info" style="margin: 15px 0; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 20px; cursor: pointer;" onclick="showUnsoldProperties()">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span>🏠 Непродано клеток:</span>
-        <span id="unsoldCount" style="color: #ffcd7e; font-weight: bold; font-size: 1.2rem;">0</span>
-    </div>
-    <div style="font-size: 0.7rem; color: #c9b896;">Нажмите для списка</div>
-</div>
-                    <div class="controls">
-                        <button id="rollBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🎲 Бросить кубики</button>
-                        <button id="endTurnBtn" ${!myTurn || !localGameState.diceRolled ? 'disabled' : ''}>➡️ Закончить ход</button>
-                        <button id="tradeBtn" ${!myTurn ? 'disabled' : ''}>🤝 Торговля</button>
-                        <button id="upgradeBtn" ${!myTurn || localGameState.diceRolled ? 'disabled' : ''}>🏗️ Улучшить</button>
-                        <div class="dice-area"><span>🎲 Кубики:</span><span class="dice">${localGameState.currentDiceSum || '⚀⚀'}</span></div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Initialize Three.js after DOM is ready
-        setTimeout(() => {
-            if (typeof THREE !== 'undefined') {
-                initThreeJS();
-            }
-        }, 100);
-        
-        document.getElementById("rollBtn")?.addEventListener("click", () => rollDice());
-        document.getElementById("endTurnBtn")?.addEventListener("click", () => endTurn());
-        document.getElementById("tradeBtn")?.addEventListener("click", () => showTradeModal());
-        document.getElementById("upgradeBtn")?.addEventListener("click", () => showUpgradeProperties());
-        updateUnsoldPropertiesCount();
-    }
-
     initUI();
 </script>
 </body>
