@@ -66,7 +66,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.3);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             animation: fadeIn 0.5s ease-out;
         }
         
@@ -1519,6 +1519,112 @@ th:hover .th-content {
     color: white;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
+#sankeyCanvas {
+    max-width: 100%;
+}
+.timeline {
+    position: relative;
+    padding: 10px 0;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+}
+.timeline-event {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    position: relative;
+    animation: fadeInLeft 0.4s ease forwards;
+    opacity: 0;
+}
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.timeline-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    margin-left: 22px;
+    z-index: 1;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+}
+.timeline-dot.bill {
+    background: var(--success);
+    box-shadow: 0 0 0 4px rgba(16,185,129,0.2);
+}
+.timeline-content {
+    margin-left: 15px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px 15px;
+    flex: 1;
+    box-shadow: var(--shadow-sm);
+}
+.timeline-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-toggle {
+    gap: 6px;
+    white-space: nowrap;
+}
+.dropdown-arrow {
+    transition: transform 0.2s ease;
+}
+.dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 100%;          /* вместо top: 100% */
+    margin-bottom: 4px;    /* вместо margin-top */
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    padding: 6px 0;
+    z-index: 1001;
+    min-width: 200px;
+    animation: slideDown 0.2s ease;
+}
+.dropdown.open .dropdown-menu {
+    display: block;
+}
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+.dropdown-item:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
     </style>
 </head>
 <body>
@@ -1603,7 +1709,6 @@ th:hover .th-content {
             <stop offset="100%" stop-color="rgba(99,102,241,0.08)" />
         </linearGradient>
     </defs>
-    <!-- Верхний слой (быстрая маленькая волна) -->
     <path fill="url(#waveGrad1)" d="M0,40 C360,90 720,10 1440,50 L1440,200 L0,200 Z">
         <animate attributeName="d" dur="12s" repeatCount="indefinite" values="
             M0,40 C360,90 720,10 1440,50 L1440,200 L0,200 Z;
@@ -1611,7 +1716,6 @@ th:hover .th-content {
             M0,40 C360,90 720,10 1440,50 L1440,200 L0,200 Z
         " />
     </path>
-    <!-- Нижний слой (медленная большая волна) -->
     <path fill="url(#waveGrad2)" d="M0,80 C480,30 960,140 1440,70 L1440,200 L0,200 Z">
         <animate attributeName="d" dur="18s" repeatCount="indefinite" values="
             M0,80 C480,30 960,140 1440,70 L1440,200 L0,200 Z;
@@ -1623,7 +1727,6 @@ th:hover .th-content {
             <div class="brand">
                 <div class="brand-icon">
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Оси -->
         <line x1="4" y1="24" x2="24" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/>
         <line x1="4" y1="24" x2="4" y2="4" stroke="white" stroke-width="2" stroke-linecap="round"/>
         <path d="M4 24 L10 18 L15 20 L22 8" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round">
@@ -1638,7 +1741,7 @@ th:hover .th-content {
                     <h1>Аналитика поставщиков</h1>
                 </div>
             </div>
-           <div class="toolbar">
+          <div class="toolbar">
     <button class="btn btn-primary" id="refreshBtn" onclick="loadData()" title="Обновить данные">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M2 8a6 6 0 0 1 10.47-4M14 8a6 6 0 0 1-10.47 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -1665,28 +1768,68 @@ th:hover .th-content {
         </svg>
         <span id="chartTypeLabel">Столбцы</span>
     </button>
-
-    <button class="btn btn-secondary" style="display:none" onclick="exportToCSV()" title="Экспорт в CSV">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-            <path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="1.5s" repeatCount="indefinite"/>
-        </svg>
-        Экспорт
-    </button>
-
-    <button class="btn btn-primary" onclick="exportToPDF()" title="Скачать PDF-отчёт">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" onclick="toggleDropdown('exportDropdown')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                <path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Экспорт
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="dropdown-arrow">
+                <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <div class="dropdown-menu" id="exportDropdown">
+    <button class="dropdown-item" onclick="exportToPDF()">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M4 1h6l4 4v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
             <path d="M10 1v4h4" stroke="currentColor" stroke-width="1.5" fill="none"/>
             <text x="5" y="11" font-size="5" fill="currentColor" font-weight="bold" font-family="Arial">PDF</text>
-            <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6">
-                <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite" />
-            </circle>
+            <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
         </svg>
         Экспорт в PDF
     </button>
+        </div>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-ghost dropdown-toggle" onclick="toggleDropdown('analyticsDropdown')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Аналитика
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="dropdown-arrow">
+                <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+       <div class="dropdown-menu" id="analyticsDropdown">
+    <button class="dropdown-item" onclick="openTopSpendersModal(30)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+            <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="13" cy="3" r="2" fill="currentColor"/>
+        </svg>
+        Топ расходов
+    </button>
+    <button class="dropdown-item" onclick="openHeatmapModal()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+            <rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="8" width="3" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
+            <rect x="7" y="9" width="3" height="3" rx="1" fill="#f59e0b" opacity="0.8"/>
+            <rect x="11" y="8" width="3" height="4" rx="1" fill="#10b981" opacity="0.8"/>
+        </svg>
+        Тепловая карта
+    </button>
+    <button class="dropdown-item" onclick="openTimelineModal()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+            <path d="M1 4h14M1 10h10M1 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="4" r="2" fill="currentColor"/>
+            <circle cx="10" cy="10" r="2" fill="currentColor"/>
+            <circle cx="6" cy="16" r="2" fill="currentColor"/>
+        </svg>
+        Таймлайн
+    </button>
+</div>
+    </div>
 
     <button class="btn btn-ghost" onclick="toggleFilters()" title="Показать/скрыть фильтры">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
@@ -1703,23 +1846,6 @@ th:hover .th-content {
         </svg>
         Фильтры
     </button>
-    <button class="btn btn-ghost" onclick="openTopSpendersModal(30)" title="Топ‑5 по расходу">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-        <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="13" cy="3" r="2" fill="currentColor"/>
-    </svg>
-    Топ расходов
-</button>
-<button class="btn btn-ghost" onclick="openHeatmapModal()" title="Тепловая карта счетов">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-        <rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
-        <rect x="3" y="8" width="3" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
-        <rect x="7" y="9" width="3" height="3" rx="1" fill="#f59e0b" opacity="0.8"/>
-        <rect x="11" y="8" width="3" height="4" rx="1" fill="#10b981" opacity="0.8"/>
-    </svg>
-    Тепловая карта
-</button>
 </div>
         </header>
         <div class="filters-bar" id="filtersPanel">
@@ -1749,15 +1875,12 @@ th:hover .th-content {
                 <div class="card-header">
     <div class="card-title">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" class="card-title-icon">
-            <!-- Кошелёк с монетой -->
             <rect x="2" y="5" width="18" height="13" rx="3" stroke="var(--primary)" stroke-width="1.8" fill="none"/>
             <path d="M18 8h3v6h-3a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z" stroke="var(--primary)" stroke-width="1.8" fill="none"/>
-            <!-- Монета падает -->
             <circle cx="11" cy="2" r="3" fill="var(--primary)" opacity="0.9">
                 <animate attributeName="cy" values="2;8;2" dur="2.5s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/>
             </circle>
-            <!-- Искры от монеты -->
             <circle cx="8" cy="5" r="1" fill="var(--primary)" opacity="0">
                 <animate attributeName="opacity" values="0;0.8;0" dur="2.5s" repeatCount="indefinite"/>
                 <animate attributeName="cx" values="8;5;8" dur="2.5s" repeatCount="indefinite"/>
@@ -1790,18 +1913,15 @@ th:hover .th-content {
                 <div class="card-header">
     <div class="card-title">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" class="card-title-icon">
-            <!-- Копилка с монетами -->
             <path d="M4 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" stroke="var(--success)" stroke-width="1.8" fill="none"/>
             <path d="M2 10v4" stroke="var(--success)" stroke-width="1.8" stroke-linecap="round"/>
             <path d="M20 10v4" stroke="var(--success)" stroke-width="1.8" stroke-linecap="round"/>
-            <!-- Монеты внутри -->
             <circle cx="8" cy="15" r="2.5" fill="var(--success)" opacity="0.9">
                 <animate attributeName="cy" values="15;13;15" dur="2s" repeatCount="indefinite"/>
             </circle>
             <circle cx="14" cy="16" r="2" fill="var(--success)" opacity="0.7">
                 <animate attributeName="cy" values="16;13;16" dur="2s" repeatCount="indefinite" begin="0.5s"/>
             </circle>
-            <!-- Знак $ -->
             <text x="11" y="14" text-anchor="middle" font-size="7" font-weight="bold" fill="var(--success)" font-family="Arial">$</text>
         </svg>
         Текущие остатки
@@ -1825,12 +1945,10 @@ th:hover .th-content {
     <div class="table-header">
         <div class="card-title" style="font-size: 1rem;">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="table-header-icon">
-                <!-- Таблица с данными -->
                 <rect x="1" y="3" width="18" height="14" rx="2" stroke="var(--primary)" stroke-width="1.8" fill="none"/>
                 <line x1="1" y1="8" x2="19" y2="8" stroke="var(--primary)" stroke-width="1.8"/>
                 <line x1="7" y1="3" x2="7" y2="17" stroke="var(--primary)" stroke-width="1.8" opacity="0.5"/>
                 <line x1="13" y1="8" x2="13" y2="17" stroke="var(--primary)" stroke-width="1.8" opacity="0.5"/>
-                <!-- Строки данных анимируются -->
                 <rect x="2" y="9" width="4" height="1.5" rx="0.5" fill="var(--primary)" opacity="0.6">
                     <animate attributeName="opacity" values="0.6;0.3;0.6" dur="2s" repeatCount="indefinite"/>
                 </rect>
@@ -1853,7 +1971,6 @@ th:hover .th-content {
             Детализация
         </div>
         <div style="display: flex; align-items: center; gap: 16px;">
-            <!-- Индикатор количества записей -->
             <div class="records-indicator">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="8" r="7" stroke="var(--primary)" stroke-width="1.5" fill="none"/>
@@ -1934,7 +2051,6 @@ th:hover .th-content {
     </div>
 </div>
 
-<!-- Модальное окно сравнения -->
 <div class="modal-overlay" id="compareModal">
     <div class="modal-content" id="compareModalContent">
         <button class="modal-close" onclick="closeCompareModal()">&times;</button>
@@ -1953,7 +2069,42 @@ th:hover .th-content {
         <div id="heatmapInner"></div>
     </div>
 </div>
-<!-- Плавающая панель сравнения -->
+<div class="modal-overlay" id="sankeyModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeSankeyModal()">&times;</button>
+        <div class="modal-section">
+            <div class="modal-section-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M3 3v18h18"/>
+                    <path d="M3 12h4l3-8 4 16 3-8h4"/>
+                </svg>
+                Санкей-диаграмма движения средств
+            </div>
+            <div style="width:100%; height:400px; position:relative;">
+                <canvas id="sankeyCanvas" style="width:100%; height:100%;"></canvas>
+            </div>
+            <div style="display:flex; justify-content:center; gap:20px; margin-top:10px; font-size:0.8rem;">
+                <span><span style="display:inline-block; width:12px;height:12px;background:#6366f1;border-radius:3px;"></span> Депозиты</span>
+                <span><span style="display:inline-block; width:12px;height:12px;background:#10b981;border-radius:3px;"></span> Счета</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="timelineModal">
+    <div class="modal-content" style="max-width:800px;">
+        <button class="modal-close" onclick="closeTimelineModal()">&times;</button>
+        <div class="modal-section">
+            <div class="modal-section-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M3 3v18h18M3 12h4l3-8 4 16 3-8h4"/>
+                </svg>
+                Таймлайн событий (все поставщики)
+            </div>
+            <div id="timelineContainer" style="max-height:70vh; overflow-y:auto; position:relative;">
+            </div>
+        </div>
+    </div>
+</div>
 <div class="compare-bar" id="compareBar">
     <span>Выбрано: <strong id="compareCount">0</strong></span>
     <button class="btn btn-primary" onclick="openCompareModal()" style="font-size:0.85rem;">Сравнить</button>
@@ -2398,13 +2549,11 @@ function parseOverpaymentsCSV(text) {
     const totalSuppliers = data.length;
     
     const html = `
-    <!-- Карточка 1: Поставщиков -->
     <div class="stat-card" style="--primary: #6366f1; animation: fadeInUp 0.3s ease;">
         <div class="stat-icon-wrapper">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
                 <circle cx="12" cy="8" r="4" stroke="var(--primary)" stroke-width="2" fill="none"/>
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Анимированная точка -->
                 <circle cx="18" cy="5" r="2" fill="var(--primary)" opacity="0.6">
                     <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
                 </circle>
@@ -2421,14 +2570,11 @@ function parseOverpaymentsCSV(text) {
         </div>
     </div>
 
-    <!-- Карточка 2: Сумма депозитов -->
     <div class="stat-card" style="--primary: #8b5cf6; animation: fadeInUp 0.3s ease 0.1s both;">
         <div class="stat-icon-wrapper">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <!-- Кошелёк -->
                 <rect x="3" y="6" width="18" height="14" rx="3" stroke="var(--primary)" stroke-width="2" fill="none"/>
                 <path d="M18 9h4v6h-4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z" stroke="var(--primary)" stroke-width="2" fill="none"/>
-                <!-- Монета падает -->
                 <circle cx="12" cy="2" r="3" fill="var(--primary)" opacity="0.9">
                     <animate attributeName="cy" values="2;10;2" dur="2s" repeatCount="indefinite"/>
                     <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite"/>
@@ -2445,15 +2591,12 @@ function parseOverpaymentsCSV(text) {
         </div>
     </div>
 
-    <!-- Карточка 3: Общий остаток -->
     <div class="stat-card" style="--primary: #10b981; animation: fadeInUp 0.3s ease 0.2s both;">
         <div class="stat-icon-wrapper">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <!-- Копилка -->
                 <path d="M5 10h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" stroke="var(--primary)" stroke-width="2" fill="none"/>
                 <path d="M3 12v4" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
                 <path d="M21 12v4" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Монеты внутри -->
                 <circle cx="9" cy="16" r="2.5" fill="var(--primary)" opacity="0.9">
                     <animate attributeName="cy" values="16;13;16" dur="2s" repeatCount="indefinite"/>
                 </circle>
@@ -2473,11 +2616,9 @@ function parseOverpaymentsCSV(text) {
         </div>
     </div>
 
-    <!-- Карточка 4: Использование депозитов -->
     <div class="stat-card progress-stat-card" style="--primary: #f59e0b; animation: fadeInUp 0.3s ease 0.3s both;">
         <div class="stat-icon-wrapper">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <!-- Прогресс-бар -->
                 <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2" fill="none" opacity="0.3"/>
                 <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2" fill="none" stroke-dasharray="63" stroke-dashoffset="63">
                     <animate attributeName="stroke-dashoffset" values="63;0" dur="2s" fill="freeze" begin="indefinite"/>
@@ -3221,7 +3362,6 @@ async function exportToPDF() {
         
         chartsContainer.innerHTML += `
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0 40px 0;">
-                <!-- Общая сумма депозитов -->
                 <div style="
                     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
                     padding: 25px;
@@ -3255,7 +3395,6 @@ async function exportToPDF() {
                     </div>
                 </div>
                 
-                <!-- Общий остаток -->
                 <div style="
                     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
                     padding: 25px;
@@ -4099,13 +4238,11 @@ function openSupplierModal(supplierId) {
         </div>
 
         <div class="modal-section" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:15px;">
-            <!-- Текущий остаток -->
             <div style="background: var(--primary-light); border-radius:12px; padding:15px;">
                 <div style="font-size:0.9rem; color:var(--text-secondary);">Текущий остаток</div>
                 <div style="font-size:1.5rem; font-weight:700; color:${supplier.rest >= 0 ? 'var(--success)' : '#ef4444'};">${fmt(supplier.rest)}</div>
             </div>
 
-            <!-- Скорость таяния (всегда показываем, без display:none) -->
             <div style="background: var(--warning-light); border-radius:12px; padding:15px;">
                 <div style="font-size:0.9rem; color:var(--text-secondary);">Скорость таяния</div>
                 <div style="font-size:1.3rem; font-weight:700; color:${burnRate > 0 ? '#d97706' : 'var(--text-muted)'};">
@@ -4113,7 +4250,6 @@ function openSupplierModal(supplierId) {
                 </div>
             </div>
 
-            <!-- Прогноз исчерпания (всегда показываем) -->
             <div style="background: #fee2e2; border-radius:12px; padding:15px;">
                 <div style="font-size:0.9rem; color:var(--text-secondary);">Прогноз исчерпания</div>
                 <div style="font-size:1.1rem; font-weight:700; color:${monthsToZero ? (monthsToZero < 2 ? '#ef4444' : '#d97706') : 'var(--text-muted)'};">
@@ -4233,7 +4369,7 @@ function closeTopSpendersModal() {
 }
 function openHeatmapModal(year, month, view = 'month') {
     if (!year) year = new Date().getFullYear();
-    if (month === undefined) month = new Date().getMonth(); // 0-11
+    if (month === undefined) month = new Date().getMonth();
 
     const modal = document.getElementById('heatmapModal');
     const inner = document.getElementById('heatmapInner');
@@ -4241,7 +4377,7 @@ function openHeatmapModal(year, month, view = 'month') {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startDayOfWeek = firstDay.getDay(); // 0=Вс
+    const startDayOfWeek = firstDay.getDay();
 
     const dailyData = {};
     const monthlyData = {};
@@ -4401,6 +4537,85 @@ function openHeatmapModal(year, month, view = 'month') {
 function closeHeatmapModal() {
     document.getElementById('heatmapModal').classList.remove('active');
 }
+function openTimelineModal() {
+    const modal = document.getElementById('timelineModal');
+    modal.classList.add('active');
+    buildTimeline();
+}
+
+function closeTimelineModal() {
+    document.getElementById('timelineModal').classList.remove('active');
+}
+
+function buildTimeline() {
+    const container = document.getElementById('timelineContainer');
+    container.innerHTML = '<div class="timeline"></div>';
+    const timeline = container.querySelector('.timeline');
+
+    const events = [];
+    for (const supplier of displayData) {
+        supplier.deposits.forEach(d => {
+            const year = d.year || new Date().getFullYear();
+            events.push({
+                supplier: supplier.name,
+                type: 'deposit',
+                date: new Date(year, 0, 1),
+                amount: d.amount,
+                colorIndex: supplier.colorIndex
+            });
+        });
+        const bills = billsData[supplier.name] || [];
+        bills.forEach(b => {
+            const d = parseDateSafe(b.date);
+            if (d && b.amount) {
+                events.push({
+                    supplier: supplier.name,
+                    type: 'bill',
+                    number: b.number,
+                    date: d,
+                    amount: b.amount,
+                    colorIndex: supplier.colorIndex
+                });
+            }
+        });
+    }
+
+    events.sort((a, b) => b.date - a.date);
+
+    events.forEach((event, index) => {
+        const div = document.createElement('div');
+        div.className = 'timeline-event';
+        div.style.animationDelay = `${index * 0.03}s`;
+
+        const dot = document.createElement('div');
+        dot.className = `timeline-dot ${event.type === 'bill' ? 'bill' : ''}`;
+        dot.style.backgroundColor = getSupplierColor(event.colorIndex);
+
+        const content = document.createElement('div');
+        content.className = 'timeline-content';
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between;">
+                <strong>${event.supplier}</strong>
+                <span class="timeline-date">${event.date.toLocaleDateString('ru-RU')}</span>
+            </div>
+            <div>${event.type === 'deposit' ? '💰 Депозит' : '📄 Счет №' + event.number} — ${fmt(event.amount)}</div>
+        `;
+
+        div.appendChild(dot);
+        div.appendChild(content);
+        timeline.appendChild(div);
+    });
+}
+function toggleDropdown(menuId) {
+    const dropdown = document.getElementById(menuId).parentElement;
+    dropdown.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+});
     </script>
 </body>
 </html>
