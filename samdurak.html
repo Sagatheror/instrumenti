@@ -1608,6 +1608,7 @@
             const gs = currentGameState;
             if (gs.mode !== 'perevodnoy') return;
             if (gs.currentDefender !== myPlayerId) return;
+            if (gs.phase !== 'defend') return;
             if (gs.table.length === 0) return;
             if (selectedCards.length === 0) return;
 
@@ -1620,7 +1621,7 @@
                 const data = doc.data();
                 const serverGs = data.gameState;
 
-                if (!serverGs || serverGs.currentDefender !== myPlayerId) return;
+                if (!serverGs || serverGs.currentDefender !== myPlayerId || serverGs.phase !== 'defend') return;
 
                 const serverMe = serverGs.players.find(p => p.id === myPlayerId);
                 if (!serverMe) return;
@@ -2049,20 +2050,12 @@
                 `;
 
                 cardEl.onclick = () => {
-                    // Защита
-                    if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
-                        const undefended = gs.table.find(p => !p.defend);
-                        if (undefended && canBeatCard(undefended.attack, card, gs.trumpSuit)) {
-                            playDefendCard(undefended.attack.id, card.id);
-                            return;
-                        }
-                        return;
-                    }
-
                     // Перевод - должен работать в фазе defend когда есть карты на столе
-                    if (gs.currentDefender === myPlayerId && gs.mode === 'perevodnoy' && gs.table.length > 0) {
+                    // Проверяем ПЕРЕВЫЕ для переводного режима
+                    if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.phase === 'defend' && gs.table.length > 0) {
                         const attackRank = gs.table[gs.table.length - 1].attack.rank;
                         if (card.rank === attackRank) {
+                            // Выбираем карту для перевода
                             if (selectedCards.includes(card.id)) {
                                 selectedCards = [];
                             } else {
@@ -2072,6 +2065,16 @@
                             updateActionButtons();
                             return;
                         }
+                    }
+
+                    // Защита - обычное отбивание
+                    if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
+                        const undefended = gs.table.find(p => !p.defend);
+                        if (undefended && canBeatCard(undefended.attack, card, gs.trumpSuit)) {
+                            playDefendCard(undefended.attack.id, card.id);
+                            return;
+                        }
+                        return;
                     }
 
                     // Атака/Подкидывание
@@ -2103,6 +2106,7 @@
 
             btnAttack.style.display = 'none';
             btnTransfer.style.display = 'none';
+            btnDone.disabled = false; // Сбрасываем disabled по умолчанию
 
             if (!currentGameState) return;
 
@@ -2116,22 +2120,24 @@
             }
 
             // Кнопка перевода - показываем в переводном режиме когда мы защищаемся и есть карты на столе
-            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.table.length > 0 && selectedCards.length > 0) {
+            let canTransfer = false;
+            if (gs.mode === 'perevodnoy' && gs.currentDefender === myPlayerId && gs.phase === 'defend' && gs.table.length > 0 && selectedCards.length > 0) {
                 const attackRank = gs.table[gs.table.length - 1].attack.rank;
                 const selectedCard = getMyCards(gs).find(c => c.id === selectedCards[0]);
                 if (selectedCard && selectedCard.rank === attackRank) {
                     btnTransfer.style.display = 'inline-block';
-                    // Скрываем кнопку Бито когда возможен перевод
-                    btnDone.disabled = true;
+                    canTransfer = true;
                 }
             }
 
             // Кнопки Бито/Забрать
             if (gs.currentDefender === myPlayerId && gs.phase === 'defend') {
                 const allDefended = gs.table.every(p => p.defend !== null);
-                // Не блокируем Бито если кнопка перевода не активна
-                if (btnTransfer.style.display === 'none') {
-                    btnDone.disabled = !allDefended;
+                // Блокируем Бито если возможен перевод или не все карты отбиты
+                if (canTransfer || !allDefended) {
+                    btnDone.disabled = true;
+                } else {
+                    btnDone.disabled = false;
                 }
                 btnDone.innerHTML = '<i class="fa-solid fa-check"></i> Бито';
                 btnTake.disabled = false;
