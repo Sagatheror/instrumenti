@@ -1350,8 +1350,7 @@ tr:hover::before {
 }
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
         const BILLS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1458472669&single=true&output=csv';
-        const PREPLATA_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1075325035&single=true&output=csv';
-        
+        const OVERPAYMENTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1075325035&single=true&output=csv';
         const BILLS_RANGES = {
     'Парк Развлечений': { 
         numbers: 'AB35:AB70', 
@@ -1412,12 +1411,7 @@ tr:hover::before {
     numbers: 'AK35:AK70', 
     dates: 'AL35:AL70',
     amounts: 'AM35:AM70' 
-},
-    'Играград | Igragrad': {
-        numbers: 'AA3:AA23',
-        dates: '',
-        amounts: 'AB3:AB23'
-    }
+}
 };
 
         const RANGES = [
@@ -1470,7 +1464,6 @@ tr:hover::before {
         let rawData = [];
         let displayData = [];
         let billsData = {};
-        let preplataData = {}; // Данные о переплатах/счетах для специфичных поставщиков
         let chartMode = 'bar';
         let depositChartInst = null;
         let balanceChartInst = null;
@@ -1491,12 +1484,35 @@ tr:hover::before {
                 if (!billsResponse.ok) throw new Error('Ошибка сети при загрузке счетов');
                 const billsCsvText = await billsResponse.text();
                 billsData = parseBillsCSV(billsCsvText);
-                
-                const preplataResponse = await fetch(PREPLATA_SHEET_URL);
-                if (!preplataResponse.ok) throw new Error('Ошибка сети при загрузке переплат');
-                const preplataCsvText = await preplataResponse.text();
-                preplataData = parsePreplataCSV(preplataCsvText);
-                
+                try {
+    const overResponse = await fetch(OVERPAYMENTS_SHEET_URL);
+    if (overResponse.ok) {
+        const overCsv = await overResponse.text();
+        const overData = parseOverpaymentsCSV(overCsv);
+        if (overData && overData.bills.length > 0) {
+            billsData['Играград | Igragrad'] = overData.bills.map(b => ({
+                number: b.number,
+                date: '',
+                amount: b.amount
+            }));
+
+            const overSupplier = {
+                id: 'Играград | Igragrad',
+                name: 'Играград | Igragrad',
+                deposits: [],
+                total: overData.total || 0,
+                avg: 0,
+                count: overData.bills.length,
+                rest: overData.rest || 0,
+                colorIndex: rawData.length % SUPPLIER_COLORS.length,
+                isOverpayment: true
+            };
+            rawData.push(overSupplier);
+        }
+    }
+} catch (e) {
+    console.warn('Не удалось загрузить переплаты:', e);
+}
                 displayData = [...rawData];
                 sortData('name');
                 updateDashboard();
@@ -1681,7 +1697,37 @@ tr:hover::before {
     
     return billsBySupplier;
 }
+function parseOverpaymentsCSV(text) {
+    const lines = text.trim().split('\n');
+    const bills = [];
+    let total = null;
+    let rest = null;
 
+    const numberCol = 26;
+    const amountCol = 27;
+
+    if (lines.length < 25) {
+        console.warn('Недостаточно строк в CSV переплат, lines.length =', lines.length);
+        return null;
+    }
+
+    for (let i = 2; i <= 22; i++) {
+        const cols = lines[i].split(',');
+        const number = cols[numberCol]?.trim();
+        const amount = parseNum(cols[amountCol]);
+        if (number && amount !== null) {
+            bills.push({ number, amount });
+        }
+    }
+
+    const totalCols = lines[23].split(',');
+    total = parseNum(totalCols[amountCol]);
+
+    const restCols = lines[24].split(',');
+    rest = parseNum(restCols[amountCol]);
+
+    return { bills, total, rest };
+}
         function parseNum(str) {
     if (!str || str.trim() === '') return null;
     
@@ -1705,104 +1751,6 @@ tr:hover::before {
     return isNaN(num) ? null : num;
 }
 
-        function parsePreplataCSV(text) {
-    // Функция для парсинга CSV с переплатами для специфичных поставщиков
-    // Для "Играград | Igragrad": AA3:AA23 - счета, AB3:AB23 - суммы, AB24 - итого, AB25 - остаток
-    // В CSV: столбец 27 (AA) - метки, столбец 28 (AB) - значения
-    const lines = text.trim().split('\n');
-    const result = {};
-    
-    function columnLetterToIndex(letter) {
-        let index = 0;
-        for (let i = 0; i < letter.length; i++) {
-            index = index * 26 + (letter.charCodeAt(i) - 65 + 1);
-        }
-        return index - 1;
-    }
-    
-    function parseCSVLine(line) {
-        const res = [];
-        let current = '';
-        let inQuotes = false;
-        
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            
-            if (char === '"') {
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                res.push(current);
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-        res.push(current);
-        
-        return res.map(cell => {
-            if (cell.startsWith('"') && cell.endsWith('"')) {
-                return cell.slice(1, -1);
-            }
-            return cell;
-        });
-    }
-    
-    // Обработка данных для "Играград | Igragrad"
-    const supplierName = 'Играград | Igragrad';
-    const labelsCol = 26; // Столбец AA (индекс 26) для меток/счетов
-    const valuesCol = 27; // Столбец AB (индекс 27) для значений/сумм
-    const startRow = 2; // Row 3 (индексация с 0) - первая строка с данными
-    const endRow = 22; // Row 23 - последняя строка со счетами
-    const totalRow = 23; // Row 24 - ИТОГО
-    const restRow = 24; // Row 25 - ОСТАТОК
-    
-    const bills = [];
-    
-    for (let i = startRow; i <= endRow && i < lines.length; i++) {
-        const cols = parseCSVLine(lines[i]);
-        
-        let billNumber = cols[labelsCol] ? cols[labelsCol].trim() : '';
-        let amount = parseNum(cols[valuesCol]);
-        
-        // Пропускаем строки с ИТОГО и ОСТАТОК если они попали в диапазон
-        if (billNumber && billNumber.includes('ИТОГО') || billNumber.includes('ОСТАТОК')) {
-            continue;
-        }
-        
-        if (billNumber && amount !== null) {
-            bills.push({
-                number: billNumber,
-                date: '',
-                amount: amount
-            });
-        }
-    }
-    
-    // Получаем итог и остаток
-    let total = 0;
-    let rest = 0;
-    
-    if (totalRow < lines.length) {
-        const totalCols = parseCSVLine(lines[totalRow]);
-        total = parseNum(totalCols[valuesCol]) || 0;
-    }
-    
-    if (restRow < lines.length) {
-        const restCols = parseCSVLine(lines[restRow]);
-        rest = parseNum(restCols[valuesCol]) || 0;
-    }
-    
-    if (bills.length > 0 || total !== 0 || rest !== 0) {
-        result[supplierName] = {
-            bills: bills,
-            total: total,
-            rest: rest
-        };
-    }
-    
-    return result;
-}
-
         function updateDashboard() {
             renderStats(displayData);
             renderCharts(displayData);
@@ -1811,10 +1759,12 @@ tr:hover::before {
         }
 
        function renderStats(data) {
-    const totalDep = data.reduce((acc, i) => acc + i.total, 0);
-    const totalRest = data.reduce((acc, i) => acc + (i.rest || 0), 0);
-    const avgDep = data.length ? (totalDep / data.length) : 0;
+    const depositData = data.filter(d => !d.isOverpayment);
+    const totalDep = depositData.reduce((acc, i) => acc + i.total, 0);
+    const totalRest = depositData.reduce((acc, i) => acc + (i.rest || 0), 0);
+    const avgDep = depositData.length ? (totalDep / depositData.length) : 0;
     const usagePercent = totalDep > 0 ? ((totalDep - totalRest) / totalDep) * 100 : 0;
+    const totalSuppliers = data.length;
     
     const html = `
         <div class="stat-card" style="--primary: #6366f1; animation: fadeInUp 0.3s ease;">
@@ -1893,12 +1843,13 @@ function animateCounters() {
         function renderCharts(data) {
             if (depositChartInst) depositChartInst.destroy();
             if (balanceChartInst) balanceChartInst.destroy();
-            
-            const labels = data.map(d => d.name);
-            const totals = data.map(d => d.total);
-            const rests = data.map(d => d.rest);
-            const bgColors = data.map((d, i) => getSupplierColorRGBA(i, 0.8));
-            const borderColors = data.map((d, i) => getSupplierColor(i));
+            const chartData = data.filter(d => !d.isOverpayment);
+
+    const labels = chartData.map(d => d.name);
+    const totals = chartData.map(d => d.total);
+    const rests = chartData.map(d => d.rest);
+    const bgColors = chartData.map((d, i) => getSupplierColorRGBA(i, 0.8));
+    const borderColors = chartData.map((d, i) => getSupplierColor(i));
             
             const commonOptions = {
                 responsive: true,
@@ -1999,15 +1950,60 @@ setupTooltip(depositChartInst, document.getElementById('depositChart'));
 
         function renderTable(data) {
     const html = data.map(item => {
-        // Проверяем, есть ли данные в preplataData для этого поставщика
-        const preplataInfo = preplataData[item.name];
-        const hasPreplata = preplataInfo && preplataInfo.bills && preplataInfo.bills.length > 0;
-        
-        // Для поставщиков с preplata используем их данные о счетах
-        const bills = hasPreplata ? preplataInfo.bills : (billsData[item.name] || []);
+        const bills = billsData[item.name] || [];
         const hasBills = bills.length > 0;
-        const hasDeposits = item.deposits && item.deposits.length > 0;
-        
+        const hasDeposits = item.deposits.length > 0;
+        if (item.isOverpayment) {
+            return `
+            <tr data-supplier-id="${item.id}">
+                <td>
+                    <div class="supplier-cell">
+                        <span class="color-dot" style="background-color: ${getSupplierColor(item.colorIndex)};"></span>
+                        <div>
+                            <div class="supplier-name">${item.name}</div>
+                            <div style="font-size: 0.9em; color: var(--text-muted);">
+                                <i class="fas fa-file-invoice"></i> Переплата
+                            </div>
+                        </div>
+                    </div>
+                    <button class="details-toggle" onclick="toggleDetails('${item.id}')" style="margin-top: 8px;">
+                        <i class="fas fa-chevron-down" id="icon-${item.id}"></i> 
+                        Подробнее (${item.count} счет.)
+                    </button>
+                    <div id="details-${item.id}" class="details-content">
+                        <!-- Депозитов нет, показываем только счета -->
+                        <div style="margin-top: 16px;">
+                            ${getBillsForSupplier(item.name)}
+                        </div>
+                        <div style="background: linear-gradient(135deg, var(--primary-light) 0%, rgba(224,231,255,0.1) 100%); border-radius: var(--radius-md); padding: 16px; border: 1px solid rgba(99,102,241,0.1);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Итого по счетам</span>
+                                <strong>${fmt(item.total)}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                <span>Остаток переплаты</span>
+                                <strong style="color: ${item.rest > 0 ? 'var(--success)' : item.rest < 0 ? '#ef4444' : 'var(--text-main)'}">${fmt(item.rest)}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="background: rgba(245,158,11,0.1); color: #f59e0b; padding: 6px 12px; border-radius: 20px; font-weight: 700;">
+                            ${item.count}
+                        </div>
+                        <div style="font-size: 0.8em; color: var(--text-muted);">счет.</div>
+                    </div>
+                </td>
+                <td class="amount-cell">
+                    <div style="font-weight: 700; color: #000;">${fmt(item.total)}</div>
+                    <div style="font-size: 0.8em; color: var(--text-muted);">сумма счетов</div>
+                </td>
+                <td class="amount-cell">
+                    <div style="font-weight: 700; color: ${item.rest > 0 ? 'var(--success)' : '#ef4444'};">${fmt(item.rest)}</div>
+                </td>
+            </tr>`;
+        }
         return `
         <tr data-supplier-id="${item.id}">
             <td>
@@ -2145,68 +2141,6 @@ function formatDate(dateString) {
     }
 }
         function getBillsForSupplier(supplierName) {
-    // Проверяем, есть ли данные в preplataData для этого поставщика
-    const preplataInfo = preplataData[supplierName];
-    
-    if (preplataInfo && preplataInfo.bills && preplataInfo.bills.length > 0) {
-        // Для поставщиков с данными из preplataCSV (например, Играград)
-        let html = `
-            <div class="bills-table-container">
-                <table class="bills-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50%;">Номер счета</th>
-                            <th style="width: 50%; text-align: right;">Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        let total = 0;
-        
-        preplataInfo.bills.forEach((bill, index) => {
-            if (bill.number && bill.amount) {
-                html += `
-                    <tr>
-                        <td class="bill-number-cell" style="font-size: 12px">
-                            ${bill.number}
-                        </td>
-                        <td class="bill-amount-cell" style="font-size: 12px; text-align: right;">${fmt(bill.amount)}</td>
-                    </tr>
-                `;
-                total += bill.amount;
-            }
-        });
-        
-        html += `
-                    </tbody>
-                    <tfoot>
-                        <tr class="bills-total-row">
-                            <td>
-                                <strong>Итого по счетам:</strong>
-                                <span style="font-size: 1em; color: var(--text-muted); margin-left: 8px;">
-                                    ${preplataInfo.bills.length} ${getRussianWordForm(preplataInfo.bills.length, ['счет', 'счета', 'счетов'])}
-                                </span>
-                            </td>
-                            <td class="bill-amount-cell" style="font-size: 1.1em; text-align: right;">${fmt(total)}</td>
-                        </tr>
-                        <tr class="bills-total-row" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));">
-                            <td><strong>Общий итог:</strong></td>
-                            <td class="bill-amount-cell" style="font-size: 1.2em; font-weight: 700; text-align: right;">${fmt(preplataInfo.total)}</td>
-                        </tr>
-                        <tr class="bills-total-row" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));">
-                            <td><strong>Остаток:</strong></td>
-                            <td class="bill-amount-cell" style="font-size: 1.2em; font-weight: 700; text-align: right; color: ${preplataInfo.rest > 0 ? 'var(--success)' : preplataInfo.rest < 0 ? '#ef4444' : 'var(--text-main)'};">${fmt(preplataInfo.rest)}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        `;
-        
-        return html;
-    }
-    
-    // Стандартная логика для остальных поставщиков
     const bills = billsData[supplierName];
     
     if (!bills || bills.length === 0) {
