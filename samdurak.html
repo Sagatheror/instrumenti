@@ -1195,6 +1195,7 @@ sessionStorage.setItem('currentRoomId', roomCode);
             browserListEl.innerHTML = '<div style="color: var(--text2); font-size: 0.9rem;">Загрузка...</div>';
             
             try {
+                // Query without orderBy to avoid index requirement
                 const snapshot = await db.collection('rooms')
                     .where('status', '==', 'lobby')
                     .get();
@@ -1507,6 +1508,7 @@ sessionStorage.removeItem('currentRoomId');
         function backToLobby() {
           if (!confirm('Вернуться в главное меню?')) return;
             document.getElementById('result-modal').classList.remove('active');
+            document.getElementById('revanche-modal').classList.remove('active');
             cleanupRoom();
             showView('main-menu');
         }
@@ -1700,19 +1702,21 @@ sessionStorage.removeItem('currentRoomId');
                 return myCards.filter(c => tableRanks.has(c.rank));
             }
             if (gs.phase === 'podkid') {
-    const tableRanks = getRanksOnTable(table);
-    if (myPlayerId !== gs.currentDefender) {
-        const defender = gs.players.find(p => p.id === gs.currentDefender);
-        if (!defender) return [];
-        // Исправление: можно подкидывать до тех пор, пока кол-во карт на столе не равно кол-ву карт у защищающегося
-        // или пока общее кол-во атакующих карт не достигнет 6
-        const defenderCardsCount = defender.cards.length;
-        const cardsOnTable = table.length;
-        const maxCanAdd = Math.min(defenderCardsCount - cardsOnTable, 6 - cardsOnTable);
-        if (maxCanAdd <= 0) return [];
-        return myCards.filter(c => tableRanks.has(c.rank));
-    }
-}
+                const tableRanks = getRanksOnTable(table);
+                if (myPlayerId !== gs.currentDefender) {
+                    const defender = gs.players.find(p => p.id === gs.currentDefender);
+                    if (!defender) return [];
+                    // Исправление: можно подкидывать до тех пор, пока кол-во карт на столе не равно кол-ву карт у защищающегося
+                    // или пока общее кол-во атакующих карт не достигнет 6
+                    const defenderCardsCount = defender.cards.length;
+                    const cardsOnTable = table.length;
+                    // Количество атакующих карт = количество пар на столе (каждая пара имеет attack и defend)
+                    const attackingCardsCount = table.filter(p => p.attack).length;
+                    const maxCanAdd = Math.min(defenderCardsCount - attackingCardsCount, 6 - attackingCardsCount);
+                    if (maxCanAdd <= 0) return [];
+                    return myCards.filter(c => tableRanks.has(c.rank));
+                }
+            }
             return [];
         }
 
@@ -1861,6 +1865,7 @@ sessionStorage.removeItem('currentRoomId');
                 const newPassed = [...alreadyPassed, myPlayerId];
                 const totalNonDefenders = serverGs.players.filter(p => p.id !== serverGs.currentDefender).length;
                 if (newPassed.length >= totalNonDefenders) {
+                    // Все атакующие сказали пас - завершаем ход
                     await endTurn(false);
                 } else {
                     const newGs = { ...serverGs, passedPlayers: newPassed };
@@ -1885,7 +1890,21 @@ sessionStorage.removeItem('currentRoomId');
             if (gs.phase === 'defend' && gs.currentDefender === myPlayerId) {
                 const allDefended = gs.table.every(p => p.defend !== null);
                 if (!allDefended) return;
-                await endTurn(false);
+                // При нажатии "Бито" после отбоя - сбрасываем passedPlayers и переходим в podkid
+                const roomRef = db.collection('rooms').doc(currentRoomId);
+                const doc = await roomRef.get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                const serverGs = data.gameState;
+                const newGs = {
+                    ...serverGs,
+                    phase: 'podkid',
+                    passedPlayers: [],
+                    lastAttacker: serverGs.currentAttacker
+                };
+                await roomRef.update({ gameState: newGs });
+                currentGameState = newGs;
+                renderGame({ gameState: newGs, players: serverGs.players, status: 'playing' });
             } else if (gs.phase === 'podkid') {
                 if (gs.currentDefender === myPlayerId) {
                     // защитник не должен иметь кнопку "Бито" в podkid, но если нажал — ничего
@@ -2509,6 +2528,9 @@ function leaveRoomFromSpectator() {
                 if (e.target === this) closeJoinModal();
             });
             document.getElementById('result-modal').addEventListener('click', function(e) {
+                if (e.target === this) backToLobby();
+            });
+            document.getElementById('revanche-modal').addEventListener('click', function(e) {
                 if (e.target === this) backToLobby();
             });
         }
