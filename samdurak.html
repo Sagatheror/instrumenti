@@ -1081,10 +1081,10 @@ if (savedPlayerId && savedRoomId && firestoreReady) {
         };
         let activeEmojiCat = '😀 Лица';
         const nameEmojis = [
-    '<i class="fa-solid fa-face-smile"></i>','<i class="fa-solid fa-face-laugh"></i>','<i class="fa-solid fa-face-joy"></i>','<i class="fa-solid fa-heart-eyes"></i>','<i class="fa-solid fa-face-smile-hearts"></i>','<i class="fa-solid fa-kiss-wink-heart"></i>','<i class="fa-solid fa-sunglasses"></i>','<i class="fa-solid fa-star-struck"></i>','<i class="fa-solid fa-party-horn"></i>',
-    '<i class="fa-solid fa-face-angry"></i>','<i class="fa-solid fa-face-sad-tear"></i>','<i class="fa-solid fa-face-rage"></i>','<i class="fa-solid fa-ghost"></i>','<i class="fa-solid fa-skull"></i>','<i class="fa-solid fa-robot"></i>','<i class="fa-solid fa-crown"></i>','<i class="fa-solid fa-arm-up"></i>','<i class="fa-solid fa-hand-sparkles"></i>',
-    '<i class="fa-solid fa-gamepad"></i>','<i class="fa-solid fa-joker"></i>','<i class="fa-solid fa-trophy"></i>','<i class="fa-solid fa-star"></i>','<i class="fa-solid fa-sparkles"></i>','<i class="fa-solid fa-heart"></i>','<i class="fa-solid fa-fire"></i>','<i class="fa-solid fa-clover"></i>','<i class="fa-solid fa-rainbow"></i>',
-    '<i class="fa-solid fa-cat"></i>','<i class="fa-solid fa-fox"></i>','<i class="fa-solid fa-dog"></i>','<i class="fa-solid fa-panda"></i>','<i class="fa-solid fa-lion"></i>','<i class="fa-solid fa-frog"></i>','<i class="fa-solid fa-horse-head"></i>','<i class="fa-solid fa-pizza-slice"></i>','<i class="fa-solid fa-mug-hot"></i>'
+    '😊','😂','😍','🥰','😎','🤩','🥳','😇','😈',
+    '😡','😢','😭','👻','💀','🤖','👑','👍','✨',
+    '🎮','🃏','🏆','⭐','🔥','🍀','🌈','🐱','🦊',
+    '🐶','🐼','🦁','🐸','🐴','🍕','☕','🎯','🎲'
 ];
         // ==================== LOADER ====================
         setTimeout(() => {
@@ -2498,12 +2498,10 @@ function renderNameEmojis() {
     nameEmojis.forEach(emoji => {
         const span = document.createElement('span');
         span.className = 'name-emoji-item';
-        span.innerHTML = emoji;
+        span.textContent = emoji;
         span.onclick = () => {
             const input = document.getElementById('player-name');
-            // Извлекаем класс иконки из HTML
-            const iconClass = emoji.match(/class="([^"]+)"/)[1];
-            input.value += '<i class="' + iconClass + '"></i>';
+            input.value += emoji;
             input.focus();
             toggleNameEmojiPicker();
         };
