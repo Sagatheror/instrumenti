@@ -131,6 +131,41 @@
             box-shadow: var(--shadow);
             border: 1px solid #ffffff0a;
         }
+        .room-item {
+            background: #0d1b36;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #ffffff10;
+        }
+        .room-item:hover {
+            border-color: #c44dff;
+            background: #c44dff15;
+            transform: translateX(5px);
+        }
+        .room-info { flex: 1; }
+        .room-code-display { font-weight: 700; color: #4dc9f6; font-size: 1rem; }
+        .room-players { font-size: 0.8rem; color: var(--text2); margin-top: 4px; }
+        .room-settings { font-size: 0.75rem; color: var(--text2); }
+        .join-room-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .join-room-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px #2ecc7150;
+        }
         .input-group {
             margin-bottom: 18px;
             text-align: left;
@@ -794,6 +829,16 @@
     <div id="main-menu">
         <div class="game-title">♠ ДУРАК ♠</div>
         <div class="game-subtitle">Карточная игра</div>
+        
+        <!-- Available Rooms Section -->
+        <div class="menu-card" style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px; color: var(--gold);">🏠 Доступные комнаты</h3>
+            <div id="rooms-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                <div style="color: var(--text2); font-size: 0.9rem;">Загрузка списка комнат...</div>
+            </div>
+            <button class="btn btn-secondary" onclick="refreshRoomsList()" style="margin-bottom: 10px;">🔄 Обновить список</button>
+        </div>
+        
         <div class="menu-card">
             <div class="input-group">
     <label>👤 Ваше имя</label>
@@ -822,7 +867,7 @@
                 </div>
             </div>
             <button class="btn btn-primary" onclick="createRoom()">🎮 Создать комнату</button>
-            <button class="btn btn-secondary" onclick="showJoinModal()">🔗 Присоединиться</button>
+            <button class="btn btn-secondary" onclick="showJoinModal()">🔗 Войти по коду</button>
         </div>
     </div>
 
@@ -888,6 +933,29 @@
             <button class="btn btn-secondary" onclick="closeJoinModal()">Отмена</button>
         </div>
     </div>
+    
+    <!-- Room Browser Modal -->
+    <div class="modal-overlay" id="room-browser-modal">
+        <div class="modal" style="max-width: 500px;">
+            <h2>🏠 Доступные комнаты</h2>
+            <div id="browser-rooms-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                <div style="color: var(--text2); font-size: 0.9rem;">Загрузка...</div>
+            </div>
+            <button class="btn btn-secondary" onclick="refreshBrowserRooms()" style="margin-bottom: 10px;">🔄 Обновить</button>
+            <button class="btn btn-primary" onclick="closeRoomBrowser()">Закрыть</button>
+        </div>
+    </div>
+    
+    <!-- Revanche Modal -->
+    <div class="modal-overlay" id="revanche-modal">
+        <div class="modal">
+            <h2 id="revanche-title">🎮 Игра окончена!</h2>
+            <p id="revanche-text"></p>
+            <button class="btn btn-primary" onclick="requestRevanche()">🔄 Реванш</button>
+            <button class="btn btn-secondary" onclick="backToLobby()">В лобби</button>
+        </div>
+    </div>
+    
     <div class="modal-overlay" id="result-modal">
         <div class="modal">
             <h2 id="result-title"></h2>
@@ -1051,14 +1119,109 @@ sessionStorage.setItem('currentRoomId', roomCode);
         function closeJoinModal() {
             document.getElementById('join-modal').classList.remove('active');
         }
-
-        async function joinRoom() {
+        
+        // Room Browser Functions
+        async function refreshRoomsList() {
+            if (!firestoreReady) return;
+            const roomsListEl = document.getElementById('rooms-list');
+            roomsListEl.innerHTML = '<div style="color: var(--text2); font-size: 0.9rem;">Загрузка...</div>';
+            
+            try {
+                const snapshot = await db.collection('rooms')
+                    .where('status', '==', 'lobby')
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+                
+                if (snapshot.empty) {
+                    roomsListEl.innerHTML = '<div style="color: var(--text2); font-size: 0.9rem;">Нет доступных комнат</div>';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const playersCount = data.players ? data.players.length : 0;
+                    const settings = data.settings || {};
+                    html += `
+                        <div class="room-item" onclick="joinRoomByCode('${data.code}')">
+                            <div class="room-info">
+                                <div class="room-code-display">${data.code}</div>
+                                <div class="room-players">👥 ${playersCount}/4 игроков</div>
+                                <div class="room-settings">${settings.deckSize || 36} карт • ${settings.mode === 'perevodnoy' ? 'Переводной' : 'Подкидной'}</div>
+                            </div>
+                            <button class="join-room-btn">Войти</button>
+                        </div>
+                    `;
+                });
+                roomsListEl.innerHTML = html;
+            } catch (e) {
+                console.error('Error loading rooms:', e);
+                roomsListEl.innerHTML = '<div style="color: #e74c3c; font-size: 0.9rem;">Ошибка загрузки</div>';
+            }
+        }
+        
+        async function refreshBrowserRooms() {
+            if (!firestoreReady) return;
+            const browserListEl = document.getElementById('browser-rooms-list');
+            browserListEl.innerHTML = '<div style="color: var(--text2); font-size: 0.9rem;">Загрузка...</div>';
+            
+            try {
+                const snapshot = await db.collection('rooms')
+                    .where('status', '==', 'lobby')
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+                
+                if (snapshot.empty) {
+                    browserListEl.innerHTML = '<div style="color: var(--text2); font-size: 0.9rem;">Нет доступных комнат</div>';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const playersCount = data.players ? data.players.length : 0;
+                    const settings = data.settings || {};
+                    html += `
+                        <div class="room-item" onclick="joinRoomByCode('${data.code}')">
+                            <div class="room-info">
+                                <div class="room-code-display">${data.code}</div>
+                                <div class="room-players">👥 ${playersCount}/4 игроков</div>
+                                <div class="room-players">${data.players.map(p => p.name).join(', ')}</div>
+                                <div class="room-settings">${settings.deckSize || 36} карт • ${settings.mode === 'perevodnoy' ? 'Переводной' : 'Подкидной'}</div>
+                            </div>
+                            <button class="join-room-btn">Войти</button>
+                        </div>
+                    `;
+                });
+                browserListEl.innerHTML = html;
+            } catch (e) {
+                console.error('Error loading rooms:', e);
+                browserListEl.innerHTML = '<div style="color: #e74c3c; font-size: 0.9rem;">Ошибка загрузки</div>';
+            }
+        }
+        
+        function showRoomBrowser() {
+            document.getElementById('room-browser-modal').classList.add('active');
+            refreshBrowserRooms();
+        }
+        
+        function closeRoomBrowser() {
+            document.getElementById('room-browser-modal').classList.remove('active');
+        }
+        
+        async function joinRoomByCode(code) {
             const nameInput = document.getElementById('player-name');
             const name = nameInput.value.trim();
-            if (!name) { nameInput.focus(); return; }
-            const codeInput = document.getElementById('join-room-code');
-            const code = codeInput.value.trim().toUpperCase();
-            if (!code) { codeInput.focus(); return; }
+            if (!name) { 
+                alert('Введите ваше имя!');
+                nameInput.focus();
+                return; 
+            }
+            closeRoomBrowser();
+            closeJoinModal();
+            
             myPlayerName = name;
             myPlayerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             const roomRef = db.collection('rooms').doc(code);
@@ -1072,10 +1235,9 @@ sessionStorage.setItem('currentRoomId', roomCode);
                 await roomRef.update({ players: firebase.firestore.FieldValue.arrayUnion(newPlayer) });
                 currentRoomId = code;
                 sessionStorage.setItem('myPlayerId', myPlayerId);
-sessionStorage.setItem('currentRoomId', code);
+                sessionStorage.setItem('currentRoomId', code);
                 localDeckSize = data.settings.deckSize;
                 localGameMode = data.settings.mode;
-                closeJoinModal();
                 subscribeToRoom(code);
                 showView('lobby-screen');
                 updateLobbyUI();
@@ -1083,6 +1245,17 @@ sessionStorage.setItem('currentRoomId', code);
                 alert('Ошибка: ' + e.message);
                 console.error(e);
             }
+        }
+
+        async function joinRoom() {
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+            const codeInput = document.getElementById('join-room-code');
+            const code = codeInput.value.trim().toUpperCase();
+            if (!code) { codeInput.focus(); return; }
+            closeJoinModal();
+            joinRoomByCode(code);
         }
 
         async function leaveRoom() {
