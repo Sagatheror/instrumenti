@@ -1742,7 +1742,7 @@ th:hover .th-content {
                 </div>
             </div>
           <div class="toolbar">
-    <button class="btn btn-primary" id="refreshBtn" onclick="loadData()" title="Обновить данные">
+    <button class="btn btn-ghost" id="refreshBtn" onclick="loadData()" title="Обновить данные">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M2 8a6 6 0 0 1 10.47-4M14 8a6 6 0 0 1-10.47 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             <path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1751,7 +1751,7 @@ th:hover .th-content {
         Обновить
     </button>
 
-    <button class="btn btn-primary" onclick="toggleChartsType()" id="chartToggleBtn" title="Переключить тип графика">
+    <button class="btn btn-ghost" onclick="toggleChartsType()" id="chartToggleBtn" title="Переключить тип графика">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <rect x="1" y="8" width="3" height="7" rx="1" fill="currentColor">
                 <animate attributeName="height" values="7;4;7" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
@@ -1769,7 +1769,7 @@ th:hover .th-content {
         <span id="chartTypeLabel">Столбцы</span>
     </button>
     <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" onclick="toggleDropdown('exportDropdown')">
+        <button class="btn btn-ghost dropdown-toggle" onclick="toggleDropdown('exportDropdown')">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
                 <path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1849,25 +1849,31 @@ th:hover .th-content {
 </div>
         </header>
         <div class="filters-bar" id="filtersPanel">
-            <div class="flex gap-2 w-full" style="flex-wrap: wrap;">
-                <div class="input-group">
-                    <svg class="input-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="2"/>
-    <path d="M12 12l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg>
-                    <input type="text" id="searchInput" class="form-input" placeholder="Поиск поставщика..." oninput="handleFilter()">
-                </div>
-                <select id="sortSelect" class="form-select" onchange="handleFilter()" style="min-width: 180px;">
-                    <option value="name">Сортировка: А-Я</option>
-                    <option value="deposit_desc">Сумма депозита ↓</option>
-                    <option value="deposit_asc">Сумма депозита ↑</option>
-                    <option value="balance_desc">Остаток ↓</option>
-                </select>
-                <button class="btn btn-ghost" onclick="resetFilters()">
-                    <i class="fas fa-times"></i> Сброс
-                </button>
-            </div>
+    <div class="flex gap-2 w-full" style="flex-wrap: wrap;">
+        <div class="input-group">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 12l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" id="searchInput" class="form-input" placeholder="Поиск поставщика..." oninput="handleFilter()">
         </div>
+        <select id="sortSelect" class="form-select" onchange="handleFilter()" style="min-width: 180px;">
+            <option value="name">Сортировка: А-Я</option>
+            <option value="deposit_desc">Сумма депозита ↓</option>
+            <option value="deposit_asc">Сумма депозита ↑</option>
+            <option value="balance_desc">Остаток ↓</option>
+        </select>
+        <button class="btn btn-ghost" onclick="resetFilters()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+                <path d="M12 4 L4 12 M4 4 L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <animate attributeName="stroke-dasharray" values="0 20;20 0" dur="0.3s" begin="click" fill="freeze" />
+                </path>
+                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.3" />
+            </svg>
+            Сброс
+        </button>
+    </div>
+</div>
         <div class="stats-grid" id="statsGrid">
         </div>
         <div class="charts-wrapper">
