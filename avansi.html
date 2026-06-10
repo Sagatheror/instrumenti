@@ -1625,9 +1625,93 @@ th:hover .th-content {
     background: var(--primary-light);
     color: var(--primary);
 }
+._w4s_w4r_l4y3r {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #0f172a !important;
+    z-index: 9999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(10px);
+}
+._v3r1fy_b0x {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    width: 360px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: _f4d3_1n 0.4s ease-out;
+}
+@keyframes _f4d3_1n {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+._t1tl3_4uth {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 24px;
+}
+._1nput_f13ld {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+._1nput_f13ld:focus {
+    border-color: #6366f1;
+}
+._b7n_4uth {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+._b7n_4uth:active {
+    transform: scale(0.98);
+}
+._3rr0r_txt {
+    color: #ef4444;
+    font-size: 0.9rem;
+    margin-top: 12px;
+    min-height: 20px;
+}
+@keyframes _sh4k3 {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+._sh4k3_4n1m {
+    animation: _sh4k3 0.3s ease-in-out;
+}
     </style>
 </head>
 <body>
+  <div id="_x99_z_0v3rl4y" class="_w4s_w4r_l4y3r">
+    <div class="_v3r1fy_b0x" id="_b0x_t4rg3t">
+        <div class="_t1tl3_4uth">🔒 Доступ ограничен</div>
+        <input type="text" id="_u53r_n4m3" class="_1nput_f13ld" placeholder="Идентификатор" autocomplete="off">
+        <input type="password" id="_p455_k3y" class="_1nput_f13ld" placeholder="Ключ доступа">
+        <button id="_5ubm1t_btn" class="_b7n_4uth">Подтвердить</button>
+        <div id="_3rr_msg" class="_3rr0r_txt"></div>
+    </div>
+</div>
   <svg aria-hidden="true" style="position: absolute; width: 0; height: 0;">
   <defs>
     <filter id="blob-goo">
@@ -2136,9 +2220,9 @@ th:hover .th-content {
         }, 10);
     });
 }
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1956195248&single=true&output=csv';
-        const BILLS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1458472669&single=true&output=csv';
-        const OVERPAYMENTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV2S7Q1yJQKFpyRPQOS5-m0NUEhnR_QGN7acgJuxXLenHcwOyZPe_uzUjhev4VLfZt4jCuaD1-8-Mv/pub?gid=1075325035&single=true&output=csv';
+        const SHEET_URL = atob ('aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlJWMlM3UTF5SlFLRnB5UlBRT1M1LW0wTlVFaG5SX1FHTjdhY2dKdXhYTGVuSGN3T3laUGVfdXpVamhldjRWTGZadDRqQ3VhRDEtOC1Ndi9wdWI/Z2lkPTE5NTYxOTUyNDgmc2luZ2xlPXRydWUmb3V0cHV0PWNzdg==');
+        const BILLS_SHEET_URL = atob ('aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlJWMlM3UTF5SlFLRnB5UlBRT1M1LW0wTlVFaG5SX1FHTjdhY2dKdXhYTGVuSGN3T3laUGVfdXpVamhldjRWTGZadDRqQ3VhRDEtOC1Ndi9wdWI/Z2lkPTE0NTg0NzI2Njkmc2luZ2xlPXRydWUmb3V0cHV0PWNzdg==');
+        const OVERPAYMENTS_SHEET_URL = atob ('aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlJWMlM3UTF5SlFLRnB5UlBRT1M1LW0wTlVFaG5SX1FHTjdhY2dKdXhYTGVuSGN3T3laUGVfdXpVamhldjRWTGZadDRqQ3VhRDEtOC1Ndi9wdWI/Z2lkPTEwNzUzMjUwMzUmc2luZ2xlPXRydWUmb3V0cHV0PWNzdg==');
         const BILLS_RANGES = {
     'Парк Развлечений': { 
         numbers: 'AB35:AB70', 
@@ -2257,7 +2341,7 @@ th:hover .th-content {
         let balanceChartInst = null;
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadData();
+            document.querySelector('.container').style.display = 'none';
         });
 
         async function loadData() {
@@ -4714,6 +4798,55 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.dropdown')) {
         document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
     }
+});
+const _k3y_u = "dG9ydWRh";
+const _k3y_p = "dG9ydWRhMjAyNg==";
+let _1s_4uth3nt1c4t3d = false;
+
+function _w4s_w4r_ch3ck() {
+    const u = document.getElementById('_u53r_n4m3').value;
+    const p = document.getElementById('_p455_k3y').value;
+    const errBox = document.getElementById('_3rr_msg');
+    const box = document.getElementById('_b0x_t4rg3t');
+
+    if (btoa(u) === _k3y_u && btoa(p) === _k3y_p) {
+        _1s_4uth3nt1c4t3d = true;
+        
+        document.getElementById('_x99_z_0v3rl4y').style.setProperty('display', 'none', 'important');
+        
+        document.querySelector('.container').style.display = 'block';
+        
+        if (typeof loadData === 'function') loadData();
+        
+    } else {
+        errBox.innerText = "Неверный идентификатор или ключ";
+        box.classList.add('_sh4k3_4n1m');
+        setTimeout(() => box.classList.remove('_sh4k3_4n1m'), 300);
+    }
+}
+
+document.getElementById('_5ubm1t_btn').addEventListener('click', _w4s_w4r_ch3ck);
+document.getElementById('_p455_k3y').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') _w4s_w4r_ch3ck();
+});
+
+const _0b53rv3r_pr0t3ct = new MutationObserver((mutations) => {
+    if (!_1s_4uth3nt1c4t3d) {
+        const overlay = document.getElementById('_x99_z_0v3rl4y');
+        if (!overlay || 
+            overlay.style.display === 'none' || 
+            overlay.style.visibility === 'hidden' ||
+            overlay.style.opacity === '0') {
+            location.reload(); 
+        }
+    }
+});
+
+_0b53rv3r_pr0t3ct.observe(document.body, { 
+    childList: true, 
+    subtree: true, 
+    attributes: true, 
+    attributeFilter: ['style', 'class'] 
 });
     </script>
 </body>
