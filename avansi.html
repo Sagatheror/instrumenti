@@ -1808,6 +1808,55 @@ th:hover .th-content {
 ._sh4k3_4n1m {
     animation: _sh4k3 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
+.dropdown-submenu {
+    position: relative;
+}
+
+.submenu-menu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 160px;
+    display: none;
+    z-index: 1000;
+}
+
+.submenu-menu.show {
+    display: block;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 6px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background: #f3f4f6;
+}
+.dropdown-item .btn-icon {
+    flex-shrink: 0;
+}
+
+.dropdown-item svg:not(.btn-icon) {
+    flex-shrink: 0;
+}
     </style>
 </head>
 <body>
@@ -1972,103 +2021,89 @@ th:hover .th-content {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M2 8a6 6 0 0 1 10.47-4M14 8a6 6 0 0 1-10.47 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             <path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <animateTransform attributeName="transform" type="rotate" values="0 8 8;360 8 8" dur="2s" repeatCount="indefinite" begin="refreshBtn.mouseover" end="refreshBtn.mouseout"/>
         </svg>
         Обновить
     </button>
-
-    <button class="btn btn-ghost" onclick="toggleChartsType()" id="chartToggleBtn" title="Переключить тип графика">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-            <rect x="1" y="8" width="3" height="7" rx="1" fill="currentColor">
-                <animate attributeName="height" values="7;4;7" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-                <animate attributeName="y" values="8;11;8" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-            </rect>
-            <rect x="6.5" y="4" width="3" height="11" rx="1" fill="currentColor">
-                <animate attributeName="height" values="11;6;11" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-                <animate attributeName="y" values="4;9;4" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-            </rect>
-            <rect x="12" y="1" width="3" height="14" rx="1" fill="currentColor">
-                <animate attributeName="height" values="14;9;14" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-                <animate attributeName="y" values="1;6;1" dur="1.5s" repeatCount="indefinite" begin="chartToggleBtn.mouseover" end="chartToggleBtn.mouseout"/>
-            </rect>
-        </svg>
-        <span id="chartTypeLabel">Столбцы</span>
-    </button>
     <div class="dropdown">
-        <button class="btn btn-ghost dropdown-toggle" onclick="toggleDropdown('exportDropdown')">
+        <button class="btn btn-ghost dropdown-toggle" onclick="toggleDropdown('actionsDropdown')">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-                <path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+                <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
             </svg>
-            Экспорт
+            Действия
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="dropdown-arrow">
                 <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-        <div class="dropdown-menu" id="exportDropdown">
-    <button class="dropdown-item" onclick="exportToPDF()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-            <path d="M4 1h6l4 4v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <path d="M10 1v4h4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="5" y="11" font-size="5" fill="currentColor" font-weight="bold" font-family="Arial">PDF</text>
-            <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-        </svg>
-        Экспорт в PDF
-    </button>
-        </div>
-    </div>
-    <div class="dropdown">
-        <button class="btn btn-ghost dropdown-toggle" onclick="toggleDropdown('analyticsDropdown')">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-                <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Аналитика
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="dropdown-arrow">
-                <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-       <div class="dropdown-menu" id="analyticsDropdown">
-    <button class="dropdown-item" onclick="openTopSpendersModal(30)">
+        <div class="dropdown-menu" id="actionsDropdown">
+            <button class="dropdown-item" onclick="toggleChartsType()">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                    <rect x="1" y="8" width="3" height="7" rx="1" fill="currentColor"/>
+                    <rect x="6.5" y="4" width="3" height="11" rx="1" fill="currentColor"/>
+                    <rect x="12" y="1" width="3" height="14" rx="1" fill="currentColor"/>
+                </svg>
+                <span id="chartTypeLabel">Столбцы</span>
+            </button>
+            
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" onclick="exportToPDF()">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                    <path d="M4 1h6l4 4v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <path d="M10 1v4h4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <text x="5" y="11" font-size="5" fill="currentColor" font-weight="bold" font-family="Arial">PDF</text>
+                </svg>
+                Экспорт в PDF
+            </button>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-submenu">
+    <button class="dropdown-item" onclick="toggleSubmenu('analyticsSubmenu')">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="13" cy="3" r="2" fill="currentColor"/>
         </svg>
-        Топ расходов
-    </button>
-    <button class="dropdown-item" onclick="openHeatmapModal()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-            <rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="3" y="8" width="3" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
-            <rect x="7" y="9" width="3" height="3" rx="1" fill="#f59e0b" opacity="0.8"/>
-            <rect x="11" y="8" width="3" height="4" rx="1" fill="#10b981" opacity="0.8"/>
+        Аналитика
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-left: auto;">
+            <path d="M4 3l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Тепловая карта
     </button>
-    <button class="dropdown-item" onclick="openTimelineModal()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
-            <path d="M1 4h14M1 10h10M1 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="14" cy="4" r="2" fill="currentColor"/>
-            <circle cx="10" cy="10" r="2" fill="currentColor"/>
-            <circle cx="6" cy="16" r="2" fill="currentColor"/>
-        </svg>
-        Таймлайн
-    </button>
+    <div class="submenu-menu" id="analyticsSubmenu">
+        <button class="dropdown-item" onclick="openTopSpendersModal(30)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                <path d="M2 14h12M4 10l2-4 2 2 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="13" cy="3" r="2" fill="currentColor"/>
+            </svg>
+            Топ расходов
+        </button>
+        <button class="dropdown-item" onclick="openHeatmapModal()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                <rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="3" y="8" width="3" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
+                <rect x="7" y="9" width="3" height="3" rx="1" fill="#f59e0b" opacity="0.8"/>
+                <rect x="11" y="8" width="3" height="4" rx="1" fill="#10b981" opacity="0.8"/>
+            </svg>
+            Тепловая карта
+        </button>
+        <button class="dropdown-item" onclick="openTimelineModal()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
+                <path d="M1 4h14M1 10h10M1 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="14" cy="4" r="2" fill="currentColor"/>
+                <circle cx="10" cy="10" r="2" fill="currentColor"/>
+                <circle cx="6" cy="16" r="2" fill="currentColor"/>
+            </svg>
+            Таймлайн
+        </button>
+    </div>
 </div>
+        </div>
     </div>
 
     <button class="btn btn-ghost" onclick="toggleFilters()" title="Показать/скрыть фильтры">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon">
             <path d="M1 3h14M3 8h10M5 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="12" cy="3" r="2" fill="currentColor">
-                <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="10" cy="8" r="2" fill="currentColor">
-                <animate attributeName="cx" values="10;8;10" dur="2s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="6" cy="13" r="2" fill="currentColor">
-                <animate attributeName="cx" values="6;4;6" dur="2s" repeatCount="indefinite" />
-            </circle>
+            <circle cx="12" cy="3" r="2" fill="currentColor"/>
+            <circle cx="10" cy="8" r="2" fill="currentColor"/>
+            <circle cx="6" cy="13" r="2" fill="currentColor"/>
         </svg>
         Фильтры
     </button>
@@ -4993,6 +5028,25 @@ _0b53rv3r_pr0t3ct.observe(document.body, {
     subtree: true, 
     attributes: true, 
     attributeFilter: ['style', 'class'] 
+});
+function toggleSubmenu(submenuId) {
+    event.stopPropagation();
+    const submenu = document.getElementById(submenuId);
+    const isVisible = submenu.classList.contains('show');
+    
+    document.querySelectorAll('.submenu-menu').forEach(menu => {
+        menu.classList.remove('show');
+    });
+    
+    if (!isVisible) {
+        submenu.classList.add('show');
+    }
+}
+
+document.addEventListener('click', function() {
+    document.querySelectorAll('.submenu-menu').forEach(menu => {
+        menu.classList.remove('show');
+    });
 });
     </script>
 </body>
