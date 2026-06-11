@@ -453,9 +453,9 @@
 
     function renderDL(dataRows) {
         let depositCell = (dataRows[0] && dataRows[0][5]) ? dataRows[0][5] : '—';
-        let balanceCell = (dataRows[252] && dataRows[252][2]) ? dataRows[252][2] : '—';
+        let balanceCell = (dataRows[251] && dataRows[251][2]) ? dataRows[251][2] : '—';
         const accountsRaw = [];
-        for (let i = 1; i < Math.min(dataRows.length, 251); i++) {
+        for (let i = 1; i < Math.min(dataRows.length, 250); i++) {
             const row = dataRows[i];
             if (row && row.length >= 3 && (row[0] || row[1] || row[2])) {
                 accountsRaw.push({ account: row[0]||'', date: row[1]||'', amount: row[2]||'' });
