@@ -356,9 +356,249 @@
             font-size: 0.7rem;
             font-weight: 500;
         }
+        ._w4s_w4r_l4y3r {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #0a0f1f !important;
+    z-index: 9999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+._w4s_w4r_l4y3r::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.07) 0%, transparent 45%),
+        radial-gradient(ellipse at 10% 10%, rgba(236, 72, 153, 0.04) 0%, transparent 35%);
+    animation: _aur0r4 12s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+@keyframes _bg_dr1ft {
+    0% { transform: translate(-10%, -10%) rotate(0deg); }
+    100% { transform: translate(10%, 10%) rotate(5deg); }
+}
+
+._v3r1fy_b0x {
+    position: relative;
+    z-index: 1;
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 48px 40px;
+    border-radius: 24px;
+    width: 400px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(99, 102, 241, 0.1);
+    animation: _f4d3_1n 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes _f4d3_1n {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+._sh13ld_svg {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 24px;
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.4));
+    animation: _fl0at 4s ease-in-out infinite;
+}
+
+@keyframes _fl0at {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+._t1tl3_4uth {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+._subt1tl3_4uth {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 32px;
+}
+
+._1nput_wr4pp3r {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+._1nput_1c0n {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    transition: color 0.3s ease;
+    pointer-events: none;
+}
+
+._1nput_f13ld {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #f8fafc;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+._1nput_f13ld::placeholder {
+    color: #64748b;
+}
+
+._1nput_f13ld:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+._1nput_f13ld:focus + ._1nput_1c0n,
+._1nput_wr4pp3r:focus-within ._1nput_1c0n {
+    color: #6366f1;
+}
+
+._b7n_4uth {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    font-family: 'Inter', sans-serif;
+}
+
+._b7n_4uth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+._b7n_4uth:active {
+    transform: translateY(0);
+}
+
+._b7n_4uth::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
+    transform: rotate(45deg) translateY(-100%);
+    transition: transform 0.6s;
+}
+
+._b7n_4uth:hover::after {
+    transform: rotate(45deg) translateY(100%);
+}
+
+._3rr0r_txt {
+    color: #f87171;
+    font-size: 0.9rem;
+    margin-top: 16px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+._3rr0r_txt._v1s1bl3 {
+    opacity: 1;
+}
+
+@keyframes _sh4k3 {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-12px); }
+    40% { transform: translateX(12px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+}
+
+._sh4k3_4n1m {
+    animation: _sh4k3 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
     </style>
 </head>
 <body>
+  <div id="_x99_z_0v3rl4y" class="_w4s_w4r_l4y3r">
+    <div class="_v3r1fy_b0x" id="_b0x_t4rg3t">
+        <svg class="_sh13ld_svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" 
+        stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60">
+    <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1.5s" fill="freeze"/>
+  </path>
+  <path d="M9 12L11 14L15 10" 
+        stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10" stroke-dashoffset="10">
+    <animate attributeName="stroke-dashoffset" from="10" to="0" begin="1s" dur="0.8s" fill="freeze"/>
+  </path>
+</svg>
+        
+        <div class="_t1tl3_4uth">Доступ ограничен</div>
+        <div class="_subt1tl3_4uth">Введите учетные данные для продолжения</div>
+        
+        <div class="_1nput_wr4pp3r">
+            <input type="text" id="_u53r_n4m3" class="_1nput_f13ld" placeholder="Логин" autocomplete="off">
+            <svg class="_1nput_1c0n" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        
+        <div class="_1nput_wr4pp3r">
+            <input type="password" id="_p455_k3y" class="_1nput_f13ld" placeholder="Пароль">
+            <svg class="_1nput_1c0n" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+        </div>
+        
+        <button id="_5ubm1t_btn" class="_b7n_4uth">Подтвердить вход</button>
+        <div id="_3rr_msg" class="_3rr0r_txt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Неверный идентификатор или ключ
+        </div>
+    </div>
+</div>
 <div class="dashboard">
     <div class="top-bar">
         <div class="brand">
@@ -635,7 +875,59 @@
             }
         }, 30);
     }
+const _k3y_u = "dG9ydWRh";
+const _k3y_p = "dG9ydWRhMjAyNg==";
+let _1s_4uth3nt1c4t3d = false;
 
+function _w4s_w4r_ch3ck() {
+    const u = document.getElementById('_u53r_n4m3').value;
+    const p = document.getElementById('_p455_k3y').value;
+    const errBox = document.getElementById('_3rr_msg');
+    const box = document.getElementById('_b0x_t4rg3t');
+
+    if (btoa(u) === _k3y_u && btoa(p) === _k3y_p) {
+        _1s_4uth3nt1c4t3d = true;
+        
+        document.getElementById('_x99_z_0v3rl4y').style.setProperty('display', 'none', 'important');
+        
+        document.querySelector('.container').style.display = 'block';
+        
+        if (typeof loadData === 'function') loadData();
+        
+    } else {
+    const errBox = document.getElementById('_3rr_msg');
+    errBox.classList.add('_v1s1bl3');
+    const box = document.getElementById('_b0x_t4rg3t');
+    box.classList.add('_sh4k3_4n1m');
+    setTimeout(() => {
+        box.classList.remove('_sh4k3_4n1m');
+    }, 500);
+}
+}
+
+document.getElementById('_5ubm1t_btn').addEventListener('click', _w4s_w4r_ch3ck);
+document.getElementById('_p455_k3y').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') _w4s_w4r_ch3ck();
+});
+
+const _0b53rv3r_pr0t3ct = new MutationObserver((mutations) => {
+    if (!_1s_4uth3nt1c4t3d) {
+        const overlay = document.getElementById('_x99_z_0v3rl4y');
+        if (!overlay || 
+            overlay.style.display === 'none' || 
+            overlay.style.visibility === 'hidden' ||
+            overlay.style.opacity === '0') {
+            location.reload(); 
+        }
+    }
+});
+
+_0b53rv3r_pr0t3ct.observe(document.body, { 
+    childList: true, 
+    subtree: true, 
+    attributes: true, 
+    attributeFilter: ['style', 'class'] 
+});
     async function fetchAndRender(sourceKey) {
         const source = SOURCES[sourceKey];
         const contentDiv = document.getElementById('mainContent');
