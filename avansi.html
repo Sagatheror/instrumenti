@@ -4433,111 +4433,264 @@ function openSupplierModal(supplierId) {
             }
         }
     }
-
     const timelineEvents = [];
-
     supplier.deposits.forEach(d => {
         const year = d.year || new Date().getFullYear();
-        timelineEvents.push({ date: new Date(year, 0, 1), amount: d.amount, type: 'deposit' });
+        timelineEvents.push({ 
+            date: new Date(year, 0, 1), 
+            amount: d.amount, 
+            type: 'deposit',
+            year: year
+        });
     });
-
     bills.forEach(b => {
         const d = parseDateSafe(b.date);
         if (d && b.amount) {
-            timelineEvents.push({ date: d, amount: -b.amount, type: 'bill' });
+            timelineEvents.push({ 
+                date: d, 
+                amount: -b.amount, 
+                type: 'bill',
+                billNumber: b.number
+            });
         }
     });
-
     timelineEvents.sort((a, b) => a.date - b.date);
+    const chartPoints = [];
     let balance = 0;
-    const chartLabels = [];
-    const chartData = [];
-    timelineEvents.forEach(event => {
+    
+    if (timelineEvents.length > 0) {
+        const firstDate = timelineEvents[0].date;
+        chartPoints.push({
+            date: firstDate,
+            balance: 0,
+            label: firstDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }),
+            type: 'start'
+        });
+    }
+
+    timelineEvents.forEach((event) => {
         balance += event.amount;
-        chartLabels.push(event.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
-        chartData.push(balance);
+        const dateLabel = event.type === 'deposit' 
+            ? `${event.year}`
+            : event.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        
+        chartPoints.push({
+            date: event.date,
+            balance: balance,
+            label: dateLabel,
+            type: event.type,
+            amount: event.amount,
+            year: event.year,
+            billNumber: event.billNumber
+        });
     });
+    if (chartPoints.length > 0) {
+        const now = new Date();
+        const futureEvents = chartPoints.filter(p => p.date > now);
+        if (futureEvents.length === 0) {
+            chartPoints.push({
+                date: now,
+                balance: supplier.rest,
+                label: 'Сегодня',
+                type: 'current'
+            });
+        }
+    }
+    const chartLabels = chartPoints.map(p => p.label);
+    const chartData = chartPoints.map(p => p.balance);
+    const depositsByYear = {};
+    supplier.deposits.forEach(d => {
+        const year = d.year || new Date().getFullYear();
+        if (!depositsByYear[year]) {
+            depositsByYear[year] = 0;
+        }
+        depositsByYear[year] += d.amount;
+    });
+    const totalBillsAmount = bills.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const billsByYear = {};
+    bills.forEach(b => {
+        const date = parseDateSafe(b.date);
+        if (date) {
+            const year = date.getFullYear();
+            if (!billsByYear[year]) billsByYear[year] = 0;
+            billsByYear[year] += b.amount || 0;
+        }
+    });
+    let status = 'active';
+    let statusText = 'Активный';
+    let statusColor = '#22c55e';
+    if (supplier.rest <= 0) {
+        status = 'depleted';
+        statusText = 'Исчерпан';
+        statusColor = '#ef4444';
+    } else if (monthsToZero && monthsToZero < 3) {
+        status = 'critical';
+        statusText = 'Критический';
+        statusColor = '#f59e0b';
+    }
+
+    const color = getSupplierColor(supplier.colorIndex);
+    const colorRGBA = getSupplierColorRGBA(supplier.colorIndex, 0.1);
 
     inner.innerHTML = `
-        <div class="modal-section">
-            <div class="modal-section-title" style="font-size:24px;">
-                <span class="color-dot" style="background-color: ${getSupplierColor(supplier.colorIndex)}; width:16px; height:16px;"></span>
-                ${supplier.name}
+        <!-- Шапка -->
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:start; padding-bottom:20px; border-bottom:2px solid ${colorRGBA}; margin-bottom:20px;">
+            <div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                    <span class="color-dot" style="background-color: ${color}; width:20px; height:20px; border-radius:50%; display:inline-block;"></span>
+                    <span style="font-size:24px; font-weight:700; color:var(--text-primary);">${supplier.name}</span>
+                    <span style="background:${statusColor}; color:white; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:0.5px;">
+                        ${statusText}
+                    </span>
+                </div>
+                <div style="color:var(--text-secondary); font-size:14px;">
+                    Всего депозитов: ${supplier.deposits.length} • Всего счетов: ${bills.length}
+                </div>
             </div>
         </div>
-
-        <div class="modal-section">
-            <div class="modal-section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
-                    <path d="M3 3v18h18"/><path d="M3 12h4l3-8 4 16 3-8h4"/>
-                </svg>
-                Динамика остатка депозита
+        <div class="modal-section" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:16px; color:var(--text-primary);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2">
+                        <path d="M3 3v18h18"/><path d="M3 12h4l3-8 4 16 3-8h4"/>
+                    </svg>
+                    Динамика остатка
+                </div>
+                <div style="display:flex; gap:16px; font-size:12px; color:var(--text-secondary);">
+                    <span style="display:flex; align-items:center; gap:4px;">
+                        <span style="display:inline-block; width:12px; height:12px; background:#22c55e; border-radius:2px;"></span>
+                        Депозит
+                    </span>
+                    <span style="display:flex; align-items:center; gap:4px;">
+                        <span style="display:inline-block; width:12px; height:12px; background:${color}; border-radius:50%;"></span>
+                        Счет
+                    </span>
+                    <span style="display:flex; align-items:center; gap:4px;">
+                        <span style="display:inline-block; width:12px; height:12px; background:#3b82f6; transform:rotate(45deg);"></span>
+                        Сейчас
+                    </span>
+                </div>
             </div>
-            <div class="modal-chart-container">
+            <div class="modal-chart-container" style="background:var(--bg-secondary); border-radius:12px; padding:16px; min-height:250px;">
                 <canvas id="timelineChart" height="250"></canvas>
             </div>
         </div>
-
-        <div class="modal-section" style="display:flex; gap:20px; flex-wrap:wrap;">
-            <div style="flex:1; min-width:200px;">
-                <div style="font-weight:600; margin-bottom:10px;">Депозиты</div>
-                ${hasDeposits ? supplier.deposits.map(d => `
-                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-                        <span>${d.year ? `Депозит за ${d.year}` : 'Депозит'}</span>
-                        <strong>${fmt(d.amount)}</strong>
-                    </div>
-                `).join('') : '<div style="color:var(--text-muted);">Нет депозитов</div>'}
-                <div style="margin-top:12px; padding-top:8px; border-top:2px solid var(--primary);">
-                    <div style="display:flex; justify-content:space-between;">
-                        <strong>Итого:</strong>
-                        <strong>${fmt(supplier.total)}</strong>
-                    </div>
-                </div>
-            </div>
-            <div style="flex:1; min-width:200px;">
-                <div style="font-weight:600; margin-bottom:10px;">Счета (${bills.length})</div>
-                ${hasBills ? bills.slice(0, 10).map(b => `
-                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-                        <span>${b.number} <small style="color:var(--text-muted);">${formatDate(b.date)}</small></span>
-                        <strong>${fmt(b.amount || 0)}</strong>
-                    </div>
-                `).join('') : '<div style="color:var(--text-muted);">Нет счетов</div>'}
-                ${bills.length > 10 ? `<div style="color:var(--text-muted);">и ещё ${bills.length - 10}...</div>` : ''}
-            </div>
-        </div>
-
-        <div class="modal-section" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:15px;">
-            <div style="background: var(--primary-light); border-radius:12px; padding:15px;">
-                <div style="font-size:0.9rem; color:var(--text-secondary);">Текущий остаток</div>
-                <div style="font-size:1.5rem; font-weight:700; color:${supplier.rest >= 0 ? 'var(--success)' : '#ef4444'};">${fmt(supplier.rest)}</div>
-            </div>
-
-            <div style="background: var(--warning-light); border-radius:12px; padding:15px;">
-                <div style="font-size:0.9rem; color:var(--text-secondary);">Скорость таяния</div>
-                <div style="font-size:1.3rem; font-weight:700; color:${burnRate > 0 ? '#d97706' : 'var(--text-muted)'};">
-                    ${burnRate > 0 ? fmt(Math.round(burnRate)) + ' ₽/мес' : 'Нет данных'}
+        <div class="modal-section" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+            <div style="background: linear-gradient(135deg, ${colorRGBA}, transparent); border-radius:12px; padding:16px; border-left:4px solid ${color};">
+                <div style="font-size:13px; color:var(--text-secondary); font-weight:500; text-transform:uppercase; letter-spacing:0.5px;">Текущий остаток</div>
+                <div style="font-size:28px; font-weight:700; color:${supplier.rest >= 0 ? 'var(--success)' : '#ef4444'}; margin-top:4px;">
+                    ${fmt(supplier.rest)}
                 </div>
             </div>
 
-            <div style="background: #fee2e2; border-radius:12px; padding:15px;">
-                <div style="font-size:0.9rem; color:var(--text-secondary);">Прогноз исчерпания</div>
-                <div style="font-size:1.1rem; font-weight:700; color:${monthsToZero ? (monthsToZero < 2 ? '#ef4444' : '#d97706') : 'var(--text-muted)'};">
-                    ${monthsToZero
-                        ? `${depletionDate.toLocaleDateString('ru-RU', {month:'short', year:'numeric'})} (${monthsToZero.toFixed(1)} мес.)`
-                        : (supplier.rest <= 0 ? 'Исчерпан' : 'Невозможно оценить')
+            <div style="background: linear-gradient(135deg, #fef3c7, transparent); border-radius:12px; padding:16px; border-left:4px solid #f59e0b;">
+                <div style="font-size:13px; color:var(--text-secondary); font-weight:500; text-transform:uppercase; letter-spacing:0.5px;">Средний расход</div>
+                <div style="font-size:28px; font-weight:700; color:#d97706; margin-top:4px;">
+                    ${burnRate > 0 ? fmt(Math.round(burnRate)) + ' ₽' : '—'}
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">в месяц</div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #dbeafe, transparent); border-radius:12px; padding:16px; border-left:4px solid #3b82f6;">
+                <div style="font-size:13px; color:var(--text-secondary); font-weight:500; text-transform:uppercase; letter-spacing:0.5px;">Прогноз исчерпания</div>
+                <div style="font-size:28px; font-weight:700; color:${monthsToZero ? (monthsToZero < 3 ? '#ef4444' : '#2563eb') : 'var(--text-muted)'}; margin-top:4px;">
+                    ${monthsToZero 
+                        ? depletionDate.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'})
+                        : (supplier.rest <= 0 ? 'Исчерпан' : 'Нет данных')
                     }
                 </div>
+                ${monthsToZero ? `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">через ${monthsToZero.toFixed(1)} мес.</div>` : ''}
             </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom:24px;">
+            <!-- Депозиты -->
+            <div style="background:var(--bg-secondary); border-radius:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-weight:600; font-size:16px; color:var(--text-primary);">💰 Депозиты</div>
+                    <span style="font-size:14px; font-weight:600; color:var(--success);">${fmt(supplier.total)}</span>
+                </div>
+                ${hasDeposits ? `
+                    <div style="max-height:200px; overflow-y:auto;">
+                        ${Object.keys(depositsByYear).sort().map(year => `
+                            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
+                                <span style="color:var(--text-secondary);">Депозит ${year}</span>
+                                <span style="font-weight:600; color:var(--text-primary);">${fmt(depositsByYear[year])}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <div style="text-align:center; padding:20px 0; color:var(--text-muted);">
+                        <div style="font-size:32px; margin-bottom:8px;">📭</div>
+                        <div>Нет депозитов</div>
+                    </div>
+                `}
+            </div>
+            <div style="background:var(--bg-secondary); border-radius:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-weight:600; font-size:16px; color:var(--text-primary);">📄 Счета (${bills.length})</div>
+                    <span style="font-size:14px; font-weight:600; color:var(--text-secondary);">${fmt(totalBillsAmount)}</span>
+                </div>
+                ${hasBills ? `
+                    <div style="max-height:200px; overflow-y:auto;">
+                        ${bills.slice(0, 15).map(b => `
+                            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
+                                <div>
+                                    <span style="font-weight:500; color:var(--text-primary);">${b.number}</span>
+                                    <span style="font-size:12px; color:var(--text-muted); margin-left:8px;">${formatDate(b.date)}</span>
+                                </div>
+                                <span style="font-weight:600; color:var(--text-primary);">${fmt(b.amount || 0)}</span>
+                            </div>
+                        `).join('')}
+                        ${bills.length > 15 ? `
+                            <div style="text-align:center; padding:8px 0; color:var(--text-muted); font-size:13px;">
+                                и ещё ${bills.length - 15} счетов
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : `
+                    <div style="text-align:center; padding:20px 0; color:var(--text-muted);">
+                        <div style="font-size:32px; margin-bottom:8px;">📭</div>
+                        <div>Нет счетов</div>
+                    </div>
+                `}
+            </div>
+        </div>
+        <div style="display:flex; gap:24px; padding-top:16px; border-top:1px solid var(--border-color); font-size:13px; color:var(--text-muted); flex-wrap:wrap;">
+            <div>
+                <span style="font-weight:500;">Всего депозитов:</span> 
+                ${fmt(supplier.total)}
+            </div>
+            <div>
+                <span style="font-weight:500;">Всего счетов:</span> 
+                ${fmt(totalBillsAmount)}
+            </div>
+            <div>
+                <span style="font-weight:500;">Кол-во счетов:</span> 
+                ${bills.length}
+            </div>
+            ${Object.keys(billsByYear).length > 0 ? `
+                <div>
+                    <span style="font-weight:500;">Расход по годам:</span>
+                    ${Object.keys(billsByYear).sort().map(year => 
+                        `${year}: ${fmt(billsByYear[year])}`
+                    ).join(' • ')}
+                </div>
+            ` : ''}
         </div>
     `;
 
     modal.classList.add('active');
-
-    if (timelineEvents.length > 0) {
+    if (chartPoints.length > 1) {
         setTimeout(() => {
             const canvas = document.getElementById('timelineChart');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
+            
+            const existingChart = Chart.getChart('timelineChart');
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -4545,24 +4698,125 @@ function openSupplierModal(supplierId) {
                     datasets: [{
                         label: 'Остаток',
                         data: chartData,
-                        borderColor: getSupplierColor(supplier.colorIndex),
-                        backgroundColor: getSupplierColorRGBA(supplier.colorIndex, 0.1),
+                        borderColor: color,
+                        backgroundColor: colorRGBA,
                         fill: true,
-                        tension: 0.3
+                        tension: 0.4,
+                        pointRadius: function(context) {
+                            const point = chartPoints[context.dataIndex];
+                            if (!point) return 4;
+                            if (point.type === 'current') return 8;
+                            if (point.type === 'start') return 3;
+                            if (point.type === 'deposit') return 6;
+                            return 4;
+                        },
+                        pointBackgroundColor: function(context) {
+                            const point = chartPoints[context.dataIndex];
+                            if (!point) return color;
+                            if (point.type === 'deposit') return '#22c55e';
+                            if (point.type === 'current') return '#3b82f6';
+                            if (point.type === 'start') return '#94a3b8';
+                            return color;
+                        },
+                        pointBorderColor: function(context) {
+                            const point = chartPoints[context.dataIndex];
+                            if (!point) return color;
+                            if (point.type === 'deposit') return '#16a34a';
+                            if (point.type === 'current') return '#2563eb';
+                            if (point.type === 'start') return '#64748b';
+                            return color;
+                        },
+                        pointBorderWidth: 2,
+                        pointStyle: function(context) {
+                            const point = chartPoints[context.dataIndex];
+                            if (!point) return 'circle';
+                            if (point.type === 'deposit') return 'rect';
+                            if (point.type === 'current') return 'star';
+                            return 'circle';
+                        },
+                        pointHoverRadius: function(context) {
+                            const point = chartPoints[context.dataIndex];
+                            if (!point) return 6;
+                            if (point.type === 'current') return 12;
+                            return 8;
+                        }
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${fmt(ctx.raw)}` } }
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: color,
+                            borderWidth: 2,
+                            cornerRadius: 8,
+                            padding: 12,
+                            callbacks: {
+                                title: function(items) {
+                                    const point = chartPoints[items[0].dataIndex];
+                                    if (!point) return '';
+                                    if (point.type === 'deposit') return `Депозит ${point.year}`;
+                                    if (point.type === 'bill') return `Счет ${point.billNumber || ''}`;
+                                    if (point.type === 'current') return 'Текущее состояние';
+                                    return point.date.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+                                },
+                                label: function(context) {
+                                    const point = chartPoints[context.dataIndex];
+                                    if (!point) return `Остаток: ${fmt(context.raw)}`;
+                                    if (point.type === 'deposit') {
+                                        return `+${fmt(point.amount)} → ${fmt(point.balance)}`;
+                                    } else if (point.type === 'bill') {
+                                        return `-${fmt(Math.abs(point.amount))} → ${fmt(point.balance)}`;
+                                    } else if (point.type === 'current') {
+                                        return `Остаток: ${fmt(point.balance)}`;
+                                    }
+                                    return `Остаток: ${fmt(context.raw)}`;
+                                },
+                                afterLabel: function(context) {
+                                    const point = chartPoints[context.dataIndex];
+                                    if (point && point.type === 'current') {
+                                        return 'Актуально на сегодня';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
                     },
                     scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => fmt(v) } }
+                        y: { 
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: { 
+                                callback: v => fmt(v),
+                                font: { size: 11 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: { size: 11 }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
                     }
                 }
             });
-        }, 100);
+        }, 150);
     }
 }
 
