@@ -1630,73 +1630,120 @@ th:hover .th-content {
 ._w4s_w4r_l4y3r::before {
     content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
     background: 
-        radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
-        radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.07) 0%, transparent 45%),
-        radial-gradient(ellipse at 10% 10%, rgba(236, 72, 153, 0.04) 0%, transparent 35%);
-    animation: _aur0r4 12s ease-in-out infinite alternate;
+        radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+        radial-gradient(ellipse at 10% 10%, rgba(236, 72, 153, 0.08) 0%, transparent 35%),
+        radial-gradient(ellipse at 90% 90%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+    animation: _aur0r4 15s ease-in-out infinite alternate;
     z-index: 0;
 }
 
-@keyframes _bg_dr1ft {
-    0% { transform: translate(-10%, -10%) rotate(0deg); }
-    100% { transform: translate(10%, 10%) rotate(5deg); }
+@keyframes _aur0r4 {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate(-5%, 5%) rotate(2deg) scale(1.05); }
+    100% { transform: translate(5%, -5%) rotate(-2deg) scale(1.1); }
 }
 
 ._v3r1fy_b0x {
     position: relative;
     z-index: 1;
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    padding: 48px 40px;
-    border-radius: 24px;
-    width: 400px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(32px) saturate(150%);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    padding: 56px 48px;
+    border-radius: 28px;
+    width: 420px;
+    max-width: calc(100vw - 32px);
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
-                0 0 0 1px rgba(99, 102, 241, 0.1);
-    animation: _f4d3_1n 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 30px 60px -15px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(99, 102, 241, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: _f4d3_1n 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes _f4d3_1n {
-    from { opacity: 0; transform: translateY(20px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.92);
+        filter: blur(10px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 ._sh13ld_svg {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 24px;
-    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.4));
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 28px;
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
     animation: _fl0at 4s ease-in-out infinite;
 }
 
 @keyframes _fl0at {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+    }
+    50% { 
+        transform: translateY(-10px) rotate(2deg);
+        filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.7));
+    }
 }
 
 ._t1tl3_4uth {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #f8fafc;
-    margin-bottom: 8px;
-    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: _t1tl3_gl0w 3s ease-in-out infinite alternate;
+}
+
+@keyframes _t1tl3_gl0w {
+    from { filter: drop-shadow(0 0 0 transparent); }
+    to { filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3)); }
 }
 
 ._subt1tl3_4uth {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #94a3b8;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
+    line-height: 1.5;
 }
 
 ._1nput_wr4pp3r {
     position: relative;
     margin-bottom: 20px;
+    animation: _1nput_sl1d3 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+._1nput_wr4pp3r:nth-child(1) { animation-delay: 0.1s; }
+._1nput_wr4pp3r:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes _1nput_sl1d3 {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 ._1nput_1c0n {
@@ -1705,16 +1752,16 @@ th:hover .th-content {
     top: 50%;
     transform: translateY(-50%);
     color: #64748b;
-    transition: color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
 }
 
 ._1nput_f13ld {
     width: 100%;
-    padding: 14px 16px 14px 48px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 12px;
+    padding: 16px 16px 16px 48px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1.5px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
     font-size: 1rem;
     color: #f8fafc;
     outline: none;
@@ -1725,77 +1772,101 @@ th:hover .th-content {
 
 ._1nput_f13ld::placeholder {
     color: #64748b;
+    transition: color 0.3s ease;
 }
 
 ._1nput_f13ld:focus {
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.95);
     border-color: #6366f1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    box-shadow: 
+        0 0 0 4px rgba(99, 102, 241, 0.15),
+        0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+._1nput_f13ld:focus::placeholder {
+    color: #475569;
 }
 
 ._1nput_f13ld:focus + ._1nput_1c0n,
 ._1nput_wr4pp3r:focus-within ._1nput_1c0n {
-    color: #6366f1;
+    color: #818cf8;
+    transform: translateY(-50%) scale(1.1);
 }
 
 ._b7n_4uth {
     width: 100%;
-    padding: 14px;
-    margin-top: 8px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    padding: 16px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 4px 15px rgba(99, 102, 241, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     font-family: 'Inter', sans-serif;
+    animation: _b7n_sl1d3 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+}
+
+@keyframes _b7n_sl1d3 {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 ._b7n_4uth:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 
+        0 8px 25px rgba(99, 102, 241, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 ._b7n_4uth:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
 }
 
-._b7n_4uth::after {
+._b7n_4uth::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
-    transform: rotate(45deg) translateY(-100%);
-    transition: transform 0.6s;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
 }
-
-._b7n_4uth:hover::after {
-    transform: rotate(45deg) translateY(100%);
+._b7n_4uth:hover::before {
+    left: 100%;
 }
 
 ._3rr0r_txt {
     color: #f87171;
     font-size: 0.9rem;
-    margin-top: 16px;
+    margin-top: 20px;
     min-height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
+    transform: translateY(-10px);
 }
 
 ._3rr0r_txt._v1s1bl3 {
     opacity: 1;
+    transform: translateY(0);
 }
 
 @keyframes _sh4k3 {
@@ -2818,94 +2889,160 @@ function parseOverpaymentsCSV(text) {
     const totalSuppliers = data.length;
     
     const html = `
-    <div class="stat-card" style="--primary: #6366f1; animation: fadeInUp 0.3s ease;">
+    <div class="stat-card" style="--primary: #6366f1; --glow: rgba(99, 102, 241, 0.3); animation: cardSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;">
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <circle cx="12" cy="8" r="4" stroke="var(--primary)" stroke-width="2" fill="none"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="18" cy="5" r="2" fill="var(--primary)" opacity="0.6">
-                    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="stat-icon">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="16" cy="10" r="5" stroke="url(#grad1)" stroke-width="2.5" fill="none">
+                    <animate attributeName="r" values="5;5.5;5" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <path d="M6 26c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <circle cx="24" cy="7" r="2.5" fill="url(#grad1)">
+                    <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="7;6;7" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="24" cy="7" r="4" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.3">
+                    <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
                 </circle>
             </svg>
         </div>
         <div class="stat-label">Поставщиков</div>
         <div class="stat-value counter-value">${data.length}</div>
         <div class="stat-trend trend-neutral">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="trend-icon">
-                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="trend-icon">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M8 5v3l2.5 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="8" cy="8" r="1" fill="currentColor">
+                    <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
             </svg>
             Активных партнеров
         </div>
     </div>
 
-    <div class="stat-card" style="--primary: #8b5cf6; animation: fadeInUp 0.3s ease 0.1s both;">
+    <div class="stat-card" style="--primary: #8b5cf6; --glow: rgba(139, 92, 246, 0.3); animation: cardSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;">
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <rect x="3" y="6" width="18" height="14" rx="3" stroke="var(--primary)" stroke-width="2" fill="none"/>
-                <path d="M18 9h4v6h-4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z" stroke="var(--primary)" stroke-width="2" fill="none"/>
-                <circle cx="12" cy="2" r="3" fill="var(--primary)" opacity="0.9">
-                    <animate attributeName="cy" values="2;10;2" dur="2s" repeatCount="indefinite"/>
-                    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite"/>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="stat-icon">
+                <defs>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect x="4" y="8" width="24" height="18" rx="3" stroke="url(#grad2)" stroke-width="2.5" fill="none"/>
+                <path d="M22 12h6v8h-6a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3z" stroke="url(#grad2)" stroke-width="2.5" fill="none"/>
+                <circle cx="16" cy="3" r="3.5" fill="url(#grad2)">
+                    <animate attributeName="cy" values="3;14;3" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="16" cy="3" r="5" stroke="url(#grad2)" stroke-width="1" fill="none" opacity="0.4">
+                    <animate attributeName="cy" values="3;14;3" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="r" values="5;7;5" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite"/>
                 </circle>
             </svg>
         </div>
         <div class="stat-label">Сумма депозитов</div>
         <div class="stat-value counter-value">${fmt(totalDep)}</div>
         <div class="stat-trend trend-up">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="trend-icon">
-                <path d="M2 10l4-6 3 4 3-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="trend-icon">
+                <path d="M2 12l5-7 3.5 4.5L14 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <animate attributeName="stroke-dasharray" values="0 30;30 0" dur="1.5s" fill="freeze"/>
+                </path>
+                <circle cx="14" cy="4" r="1.5" fill="currentColor">
+                    <animate attributeName="opacity" values="0;1" dur="1.5s" fill="freeze"/>
+                </circle>
             </svg>
             Всего вложено
         </div>
     </div>
 
-    <div class="stat-card" style="--primary: #10b981; animation: fadeInUp 0.3s ease 0.2s both;">
+    <div class="stat-card" style="--primary: #10b981; --glow: rgba(16, 185, 129, 0.3); animation: cardSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;">
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <path d="M5 10h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" stroke="var(--primary)" stroke-width="2" fill="none"/>
-                <path d="M3 12v4" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
-                <path d="M21 12v4" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="9" cy="16" r="2.5" fill="var(--primary)" opacity="0.9">
-                    <animate attributeName="cy" values="16;13;16" dur="2s" repeatCount="indefinite"/>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="stat-icon">
+                <defs>
+                    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#34d399;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M6 13h20a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z" stroke="url(#grad3)" stroke-width="2.5" fill="none"/>
+                <path d="M3 16v5" stroke="url(#grad3)" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M29 16v5" stroke="url(#grad3)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="21" r="3" fill="url(#grad3)">
+                    <animate attributeName="cy" values="21;17;21" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"/>
                 </circle>
-                <circle cx="15" cy="17" r="2" fill="var(--primary)" opacity="0.7">
-                    <animate attributeName="cy" values="17;14;17" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                <circle cx="20" cy="22" r="2.5" fill="url(#grad3)">
+                    <animate attributeName="cy" values="22;18;22" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite" begin="0.5s"/>
                 </circle>
+                <path d="M12 21l8 1" stroke="url(#grad3)" stroke-width="1.5" stroke-linecap="round" opacity="0.5">
+                    <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2s" repeatCount="indefinite"/>
+                </path>
             </svg>
         </div>
         <div class="stat-label">Общий остаток</div>
         <div class="stat-value counter-value">${fmt(totalRest)}</div>
         <div class="stat-trend trend-neutral">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="trend-icon">
-                <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <path d="M5 7h4M7 5v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="trend-icon">
+                <rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M6 8h4M8 6v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+                </path>
             </svg>
             К возврату
         </div>
     </div>
 
-    <div class="stat-card progress-stat-card" style="--primary: #f59e0b; animation: fadeInUp 0.3s ease 0.3s both;">
+    <div class="stat-card progress-stat-card" style="--primary: #f59e0b; --glow: rgba(245, 158, 11, 0.3); animation: cardSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;">
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="stat-icon">
-                <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2" fill="none" opacity="0.3"/>
-                <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2" fill="none" stroke-dasharray="63" stroke-dashoffset="63">
-                    <animate attributeName="stroke-dashoffset" values="63;0" dur="2s" fill="freeze" begin="indefinite"/>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="stat-icon">
+                <defs>
+                    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="16" cy="16" r="12" stroke="url(#grad4)" stroke-width="2" fill="none" opacity="0.2"/>
+                <circle cx="16" cy="16" r="12" stroke="url(#grad4)" stroke-width="2.5" fill="none" 
+                        stroke-dasharray="75.4" stroke-dashoffset="75.4" stroke-linecap="round"
+                        transform="rotate(-90 16 16)">
+                    <animate attributeName="stroke-dashoffset" values="75.4;${75.4 - (75.4 * usagePercent / 100)}" 
+                             dur="1.5s" fill="freeze" begin="0.5s"/>
                 </circle>
-                <text x="12" y="13" text-anchor="middle" font-size="8" fill="var(--primary)" font-weight="bold">%</text>
+                <text x="16" y="18" text-anchor="middle" font-size="10" fill="url(#grad4)" font-weight="bold">%</text>
+                <circle cx="16" cy="4" r="2" fill="url(#grad4)">
+                    <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
             </svg>
         </div>
         <div class="stat-label">Использование депозитов</div>
-        <div class="progress-container" style="margin: 12px 0;">
+        <div class="progress-container" style="margin: 16px 0;">
             <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: ${usagePercent}%">
+                <div class="progress-bar-fill" style="width: 0%; transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);">
                     <span class="progress-percent">${usagePercent.toFixed(1)}%</span>
                 </div>
             </div>
         </div>
-        <div class="stat-trend trend-neutral" style="margin-top: 8px;">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="trend-icon">
-                <path d="M1 13l4-6 3 4 4-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="stat-trend trend-neutral" style="margin-top: 10px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="trend-icon">
+                <path d="M1 14l5-7 3.5 4.5L15 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <animate attributeName="stroke-dasharray" values="0 30;30 0" dur="1.5s" fill="freeze" begin="0.5s"/>
+                </path>
+                <circle cx="15" cy="5" r="1.5" fill="currentColor">
+                    <animate attributeName="opacity" values="0;1" dur="1.5s" fill="freeze" begin="0.5s"/>
+                </circle>
             </svg>
             Использовано: ${fmt(totalDep - totalRest)} из ${fmt(totalDep)}
         </div>
@@ -2914,20 +3051,28 @@ function parseOverpaymentsCSV(text) {
     
     const statsGrid = document.getElementById('statsGrid');
     statsGrid.style.opacity = '0';
-    statsGrid.style.transform = 'translateY(10px)';
-    statsGrid.style.transition = 'all 0.3s ease';
+    statsGrid.style.transform = 'translateY(20px)';
+    statsGrid.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
     
     setTimeout(() => {
         statsGrid.innerHTML = html;
         statsGrid.style.opacity = '1';
         statsGrid.style.transform = 'translateY(0)';
         
+        setTimeout(() => {
+            const progressBar = statsGrid.querySelector('.progress-bar-fill');
+            if (progressBar) {
+                progressBar.style.width = `${usagePercent}%`;
+            }
+        }, 100);
+        
         animateCounters();
-    }, 100);
+    }, 150);
 }
+
 function animateCounters() {
     const counters = document.querySelectorAll('.counter-value');
-    counters.forEach(counter => {
+    counters.forEach((counter, index) => {
         const text = counter.innerText;
         const value = parseFloat(text.replace(/[^\d.-]/g, ''));
         
@@ -2935,22 +3080,35 @@ function animateCounters() {
             const start = 0;
             const end = value;
             let current = start;
-            const increment = end / 30;
+            const duration = 1200;
+            const startTime = Date.now();
             
             const parentCard = counter.closest('.stat-card');
             const label = parentCard.querySelector('.stat-label')?.innerText || '';
-
             const shouldAddCurrency = label.includes('Сумма депозитов') || label.includes('Общий остаток');
             
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= end) {
-                    clearInterval(timer);
-                    current = end;
-                }
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                
+                current = start + (end - start) * easeProgress;
+                
                 const formatted = new Intl.NumberFormat('ru-RU').format(Math.floor(current));
                 counter.innerText = shouldAddCurrency ? formatted + ' ₽' : formatted;
-            }, 20);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    const finalFormatted = new Intl.NumberFormat('ru-RU').format(Math.floor(end));
+                    counter.innerText = shouldAddCurrency ? finalFormatted + ' ₽' : finalFormatted;
+                }
+            };
+            
+            setTimeout(() => {
+                requestAnimationFrame(animate);
+            }, index * 100);
         }
     });
 }
@@ -5237,34 +5395,81 @@ const _k3y_p = "dG9ydWRhMjAyNg==";
 let _1s_4uth3nt1c4t3d = false;
 
 function _w4s_w4r_ch3ck() {
-    const u = document.getElementById('_u53r_n4m3').value;
+    const u = document.getElementById('_u53r_n4m3').value.trim();
     const p = document.getElementById('_p455_k3y').value;
     const errBox = document.getElementById('_3rr_msg');
     const box = document.getElementById('_b0x_t4rg3t');
+    const btn = document.getElementById('_5ubm1t_btn');
+    const loginInput = document.getElementById('_u53r_n4m3');
+    const passInput = document.getElementById('_p455_k3y');
 
-    if (btoa(u) === _k3y_u && btoa(p) === _k3y_p) {
-        _1s_4uth3nt1c4t3d = true;
-        
-        document.getElementById('_x99_z_0v3rl4y').style.setProperty('display', 'none', 'important');
-        
-        document.querySelector('.container').style.display = 'block';
-        
-        if (typeof loadData === 'function') loadData();
-        
-    } else {
-    const errBox = document.getElementById('_3rr_msg');
-    errBox.classList.add('_v1s1bl3');
-    const box = document.getElementById('_b0x_t4rg3t');
-    box.classList.add('_sh4k3_4n1m');
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    btn.textContent = 'Проверка...';
+
     setTimeout(() => {
-        box.classList.remove('_sh4k3_4n1m');
-    }, 500);
-}
+        if (btoa(u) === _k3y_u && btoa(p) === _k3y_p) {
+            _1s_4uth3nt1c4t3d = true;
+            
+            errBox.classList.remove('_v1s1bl3');
+            
+            const overlay = document.getElementById('_x99_z_0v3rl4y');
+            overlay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            overlay.style.opacity = '0';
+            overlay.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                overlay.style.setProperty('display', 'none', 'important');
+                document.querySelector('.container').style.display = 'block';
+                
+                document.querySelector('.container').style.animation = '_f4d3_1n 0.6s ease';
+                
+                if (typeof loadData === 'function') loadData();
+            }, 500);
+            
+        } else {
+            errBox.classList.add('_v1s1bl3');
+            box.classList.add('_sh4k3_4n1m');
+            
+            loginInput.style.borderColor = '#f87171';
+            passInput.style.borderColor = '#f87171';
+            
+            setTimeout(() => {
+                box.classList.remove('_sh4k3_4n1m');
+                loginInput.style.borderColor = '';
+                passInput.style.borderColor = '';
+                
+                passInput.value = '';
+                passInput.focus();
+            }, 500);
+            
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.textContent = 'Подтвердить вход';
+        }
+    }, 400);
 }
 
 document.getElementById('_5ubm1t_btn').addEventListener('click', _w4s_w4r_ch3ck);
+
+document.getElementById('_u53r_n4m3').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('_p455_k3y').focus();
+    }
+});
+
 document.getElementById('_p455_k3y').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') _w4s_w4r_ch3ck();
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        _w4s_w4r_ch3ck();
+    }
+});
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('_u53r_n4m3').focus();
+    }, 700);
 });
 
 const _0b53rv3r_pr0t3ct = new MutationObserver((mutations) => {
@@ -5273,7 +5478,8 @@ const _0b53rv3r_pr0t3ct = new MutationObserver((mutations) => {
         if (!overlay || 
             overlay.style.display === 'none' || 
             overlay.style.visibility === 'hidden' ||
-            overlay.style.opacity === '0') {
+            overlay.style.opacity === '0' ||
+            getComputedStyle(overlay).display === 'none') {
             location.reload(); 
         }
     }
@@ -5283,7 +5489,17 @@ _0b53rv3r_pr0t3ct.observe(document.body, {
     childList: true, 
     subtree: true, 
     attributes: true, 
-    attributeFilter: ['style', 'class'] 
+    attributeFilter: ['style', 'class', 'hidden'] 
+});
+
+document.getElementById('_x99_z_0v3rl4y').addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
+document.getElementById('_x99_z_0v3rl4y').addEventListener('selectstart', (e) => {
+    if (e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+    }
 });
 function toggleSubmenu(submenuId) {
     event.stopPropagation();
