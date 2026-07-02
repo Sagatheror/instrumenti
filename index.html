@@ -20,7 +20,6 @@
             color: #EFF6FF;
         }
 
-        /* Кинетический фон с частицами-нейронами - УЛУЧШЕННЫЙ */
         #particle-canvas {
             position: fixed;
             top: 0;
@@ -31,7 +30,6 @@
             pointer-events: none;
         }
 
-        /* Атмосферное свечение */
         .ambient-glow {
             position: fixed;
             top: 0;
@@ -50,7 +48,6 @@
             100% { opacity: 1; }
         }
 
-        /* Основная структура */
         .nexus-container {
             position: relative;
             z-index: 5;
@@ -61,7 +58,6 @@
             overflow: hidden;
         }
 
-        /* Голографический хедер - улучшенный */
         .holo-header {
             padding: 1.2rem 2rem;
             display: flex;
@@ -159,7 +155,6 @@
             100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 0 8px rgba(45,212,191,0);}
         }
 
-        /* ОСНОВНАЯ ОРБИТАЛЬНАЯ ЗОНА */
         .orbit-stage {
             flex: 1;
             position: relative;
@@ -170,7 +165,6 @@
             padding: 1rem;
         }
 
-        /* центральный контент — улучшенное стекло */
         .core-view {
             width: 85%;
             max-width: 1300px;
@@ -223,7 +217,6 @@
             transition: opacity 0.3s ease;
         }
 
-        /* Улучшенный welcome экран */
         .welcome-nebula {
             width: 100%;
             height: 100%;
@@ -272,7 +265,6 @@
             max-width: 800px;
         }
 
-        /* НЕЙРО-КНОПКИ - улучшенные */
         .neuro-card {
             background: rgba(15, 25, 45, 0.7);
             backdrop-filter: blur(12px);
@@ -321,7 +313,6 @@
             transform: scale(1.1);
         }
 
-        /* КОЛЬЦЕВАЯ НАВИГАЦИЯ - ультра-гладкая */
         .ring-nav {
             position: fixed;
             right: 2rem;
@@ -411,7 +402,6 @@
             transform: translateX(-5px);
         }
 
-        /* Кнопка экспансии */
         .expansion-toggle {
             position: fixed;
             bottom: 2rem;
@@ -438,7 +428,6 @@
             box-shadow: 0 0 20px rgba(45,212,191,0.4);
         }
 
-        /* Полноэкранный режим */
         body.fullscreen-active .core-view {
             position: fixed;
             top: 0;
@@ -510,7 +499,6 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Адаптивность */
         @media (max-width: 800px) {
             .ring-nav {
                 flex-direction: row;
@@ -584,12 +572,13 @@
 
     <script>
         const MODULES = {
-            welcome: { title: "ЯДРО", icon: "fas fa-atom", url: null, isWelcome: true },
-            page1: { title: "ГРАФИК", icon: "fas fa-chart-line", url: "https://sagatheror.github.io/instrumenti/new-interface.html" },
-            page2: { title: "ОПИСАНИЕ", icon: "fas fa-file-alt", url: "https://sagatheror.github.io/instrumenti/description-new.html" },
-            page5: { title: "ЗАПЯТЫЕ 1С", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
-            page6: { title: "CSV АНАЛИЗ", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
-        };
+    welcome: { title: "ЯДРО", icon: "fas fa-atom", url: null, isWelcome: true },
+    page1: { title: "ГРАФИК", icon: "fas fa-chart-line", url: "https://sagatheror.github.io/instrumenti/new-interface.html" },
+    page2: { title: "ОПИСАНИЕ", icon: "fas fa-file-alt", url: "https://sagatheror.github.io/instrumenti/description-new.html" },
+    page5: { title: "ЗАПЯТЫЕ 1С", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
+    page6: { title: "CSV АНАЛИЗ", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
+    page7: { title: "ФОРМА ОТКЛЮЧЕНИЯ", icon: "fas fa-file-signature", url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html" },
+};
 
         let activeModule = "welcome";
         let isFullscreen = false;
@@ -604,7 +593,7 @@
 
         function buildRingNavigation() {
             ringNav.innerHTML = "";
-            const order = ["page1", "page2", "page5", "page6", "page3", "page4"];
+            const order = ["page1", "page2", "page5", "page6", "page7", "page3", "page4"];
             
             const homeItem = document.createElement("div");
             homeItem.className = "ring-item";
@@ -627,7 +616,7 @@
 
         function buildQuickAccess() {
             quickGrid.innerHTML = "";
-            const quickModules = ["page1", "page2", "page5", "page6", "page3", "page4"];
+            const quickModules = ["page1", "page2", "page5", "page6", "page7", "page3", "page4"];
             for (let key of quickModules) {
                 const mod = MODULES[key];
                 if (!mod) continue;
@@ -648,7 +637,7 @@
             if (moduleId === "welcome") {
                 rings[0]?.classList.add("active");
             } else {
-                const orderMap = { page1:1, page2:2, page5:3, page6:4, page3:5, page4:6 };
+                const orderMap = { page1:1, page2:2, page5:3, page6:4, page7:5, page3:6, page4:7 };
                 const idx = orderMap[moduleId];
                 if (idx !== undefined && rings[idx]) rings[idx].classList.add("active");
             }
