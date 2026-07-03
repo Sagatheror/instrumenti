@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление текста</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: radial-gradient(circle at 10% 20%, #eef3fa, #d5dee9);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .app {
+            max-width: 1600px;
+            width: 100%;
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 3.6rem;
+            box-shadow: 0 40px 80px -20px rgba(10,30,60,0.3), 0 8px 24px rgba(0,0,0,0.02);
+            padding: 2.2rem 2.8rem 2.8rem;
+            border: 1px solid rgba(255,255,255,0.5);
+            position: relative;
+        }
+        @media (max-width: 760px) {
+            .app { padding: 1.2rem; border-radius: 2rem; }
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+            margin-bottom: 1.6rem;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .header-left h1 {
+            font-size: 2.2rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #0e203d, #2f4b73);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .badge {
+            background: rgba(30,60,110,0.08);
+            backdrop-filter: blur(4px);
+            padding: 0.2rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1d3a5a;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .header-actions {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .help-btn {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid #c8d6e8;
+            border-radius: 60px;
+            padding: 0.3rem 1.2rem;
+            font-size: 0.8rem;
+            color: #1d3455;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+        }
+        .help-btn:hover {
+            background: white;
+            border-color: #7b99c0;
+            transform: translateY(-1px);
+        }
+        .help-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #1d3455;
+            fill: none;
+            stroke-width: 2;
+        }
+        .undo-redo {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+        .undo-redo button {
+            background: rgba(255,255,255,0.6);
+            border: 1px solid #c8d6e8;
+            border-radius: 40px;
+            padding: 0.25rem 0.8rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.1s;
+            font-weight: 600;
+            color: #1d3455;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .undo-redo button:hover:not(:disabled) {
+            background: white;
+            border-color: #7b99c0;
+        }
+        .undo-redo button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .undo-redo span {
+            font-size: 0.7rem;
+            color: #3d5a7a;
+            background: rgba(200,215,235,0.4);
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-top: 0.2rem;
+        }
+        @media (max-width: 1080px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+                gap: 1.8rem;
+            }
+        }
+        .input-panel {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.6rem 1.8rem 2rem;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+        }
+        .input-panel label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #1d3455;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+        .input-panel label svg {
+            width: 18px;
+            height: 18px;
+            stroke: #1d3455;
+            stroke-width: 2;
+            fill: none;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: white;
+            border: 1px solid #d9e2ef;
+            border-radius: 1.4rem;
+            padding: 1rem 1.2rem;
+            font-family: 'Menlo', 'Cascadia Code', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            resize: vertical;
+            transition: 0.15s;
+            color: #0d1c2e;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.01);
+        }
+        textarea:focus {
+            outline: 2px solid #2d4b7a;
+            border-color: transparent;
+            box-shadow: 0 0 0 5px rgba(45,75,122,0.06);
+        }
+        .hint {
+            font-size: 0.78rem;
+            color: #3d5a7a;
+            margin-top: 0.4rem;
+            background: rgba(200,215,235,0.4);
+            padding: 0.15rem 1rem;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(4px);
+        }
+        .style-selector {
+            margin: 1.2rem 0 0.6rem;
+        }
+        .style-selector .section-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1d3455;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .style-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .style-btn {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid #d0dcee;
+            border-radius: 60px;
+            padding: 0.45rem 0.2rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1d2f47;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            position: relative;
+        }
+        .style-btn svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            stroke: #2b456a;
+            stroke-width: 1.8;
+            fill: none;
+            transition: 0.25s;
+        }
+        .style-btn:hover {
+            background: white;
+            border-color: #7b99c0;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(30,60,100,0.1);
+        }
+        .style-btn.active {
+            background: #1a314f;
+            border-color: #1a314f;
+            color: white;
+            box-shadow: 0 8px 20px rgba(19,48,87,0.25);
+            transform: scale(1.03);
+        }
+        .style-btn.active svg {
+            stroke: white;
+        }
+        .style-btn .favorite-star {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: 0.2s;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            cursor: pointer;
+        }
+        .style-btn .favorite-star.show {
+            opacity: 1;
+        }
+        .style-btn .favorite-star.active {
+            color: #f5b342;
+        }
+        .style-btn .tooltip-text {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a2538;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .style-btn .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #1a2538;
+        }
+        .style-btn:hover .tooltip-text {
+            display: block;
+        }
+        .mini-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.3rem;
+            margin-top: 0.6rem;
+            padding: 0.6rem;
+            background: rgba(255,255,255,0.3);
+            border-radius: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        @media (max-width: 700px) {
+            .mini-preview-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .mini-preview-item {
+            padding: 0.3rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+            font-size: 0.5rem;
+            color: #1d2f47;
+            text-align: center;
+            background: rgba(255,255,255,0.4);
+            position: relative;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .mini-preview-item:hover {
+            transform: scale(1.08);
+            border-color: #7b99c0;
+            z-index: 2;
+        }
+        .mini-preview-item.active-mini {
+            border-color: #1a314f;
+            background: rgba(26,49,79,0.08);
+        }
+        .mini-preview-item .mini-fav {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            font-size: 0.5rem;
+            opacity: 0.6;
+        }
+        .mini-preview-tooltip {
+            display: none;
+            position: fixed;
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 1px solid #dce5f0;
+            z-index: 100;
+            max-width: 320px;
+            pointer-events: none;
+            transition: 0.15s;
+        }
+        .mini-preview-tooltip.show {
+            display: block;
+        }
+        .extra-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.8rem 1rem;
+            margin-top: 1rem;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 1.6rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+        @media (max-width: 700px) {
+            .extra-controls { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .extra-controls { grid-template-columns: 1fr; }
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .control-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #1f3a5a;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .control-group label svg {
+            width: 14px;
+            height: 14px;
+            stroke: #1f3a5a;
+            stroke-width: 2;
+            fill: none;
+        }
+        .control-group select, .control-group input {
+            background: white;
+            border: 1px solid #d5dfed;
+            border-radius: 40px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.82rem;
+            color: #1a2d47;
+            outline: none;
+            transition: 0.1s;
+            font-weight: 500;
+            width: 100%;
+        }
+        .control-group select:focus, .control-group input:focus {
+            border-color: #2d4b7a;
+            box-shadow: 0 0 0 3px rgba(45,75,122,0.1);
+        }
+        .advanced-toggle {
+            background: none;
+            border: none;
+            color: #1d3455;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            background: rgba(200,215,235,0.3);
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .advanced-toggle:hover {
+            background: rgba(200,215,235,0.6);
+        }
+        .advanced-panel {
+            margin-top: 0.8rem;
+            padding: 1rem 1.2rem;
+            background: rgba(255,255,255,0.4);
+            border-radius: 1.4rem;
+            border: 1px solid rgba(255,255,255,0.5);
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem 1rem;
+        }
+        .advanced-panel.open {
+            display: grid;
+        }
+        @media (max-width: 550px) {
+            .advanced-panel { grid-template-columns: 1fr; }
+        }
+        .advanced-panel .control-group {
+            flex-direction: column;
+        }
+        .advanced-panel .control-group label {
+            font-size: 0.65rem;
+        }
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.8rem;
+            align-items: center;
+        }
+        .reset-btn {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid #c8d6e8;
+            border-radius: 60px;
+            padding: 0.3rem 1.4rem;
+            font-size: 0.8rem;
+            color: #2d405b;
+            cursor: pointer;
+            transition: 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 500;
+        }
+        .reset-btn:hover {
+            background: white;
+            border-color: #8aa3c7;
+        }
+        .device-btns {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+        .device-btn {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid #c8d6e8;
+            border-radius: 40px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #1d3455;
+            font-weight: 500;
+            position: relative;
+        }
+        .device-btn:hover {
+            background: white;
+            border-color: #7b99c0;
+        }
+        .device-btn.active-device {
+            background: #1a314f;
+            color: white;
+            border-color: #1a314f;
+        }
+        .device-btn .tooltip-text {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a2538;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.55rem;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .device-btn .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid transparent;
+            border-top-color: #1a2538;
+        }
+        .device-btn:hover .tooltip-text {
+            display: block;
+        }
+        .preview-panel {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.4rem 1.8rem 1.8rem;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .preview-header span {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1d2b41;
+            background: rgba(220,235,250,0.6);
+            backdrop-filter: blur(4px);
+            padding: 0.1rem 1.2rem;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .copy-btn {
+            background: #1f3a5f;
+            border: none;
+            color: white;
+            padding: 0.45rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.12s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 16px rgba(26,55,100,0.2);
+        }
+        .copy-btn:hover {
+            background: #15304f;
+            transform: scale(0.97);
+        }
+        .copy-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+        .output-wrapper {
+            background: #ffffff;
+            border-radius: 1.6rem;
+            padding: 0.15rem;
+            border: 1px solid #e2eaf5;
+            min-height: 200px;
+            flex: 1;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        .output-wrapper.device-mobile {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .output-wrapper.device-tablet {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        .output-wrapper.device-desktop {
+            max-width: 100%;
+        }
+        #previewContainer {
+            padding: 1.5rem 1.5rem;
+            border-radius: 1.6rem;
+            transition: all 0.4s ease;
+            background: white;
+            min-height: 180px;
+            position: relative;
+        }
+        #previewContainer.fade-out {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+        #previewContainer.fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .footnote {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1rem;
+            align-items: center;
+        }
+        .footnote span {
+            background: rgba(200,215,235,0.3);
+            backdrop-filter: blur(4px);
+            padding: 0.05rem 1rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: #1d3450;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .code-block {
+            background: #1a2538;
+            color: #d6e2f5;
+            border-radius: 1.4rem;
+            padding: 0.8rem 1.2rem;
+            font-family: 'Menlo', monospace;
+            font-size: 0.72rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 0.8rem;
+            display: none;
+            border: 1px solid #3c4d6b;
+        }
+        .code-block.show {
+            display: block;
+        }
+        hr {
+            border: none;
+            border-top: 1px dashed #d2ddec;
+            margin: 0.6rem 0 0.2rem;
+        }
+        .tutorial-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8,20,40,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1.5rem;
+            animation: fadeIn 0.25s ease;
+        }
+        .tutorial-overlay.open {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .tutorial-card {
+            background: white;
+            border-radius: 2.8rem;
+            max-width: 820px;
+            width: 100%;
+            padding: 2.4rem 2.8rem 2.8rem;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .tutorial-card h2 {
+            font-size: 1.8rem;
+            font-weight: 650;
+            color: #0e203d;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .tutorial-card .subtitle {
+            color: #3d5a7a;
+            font-size: 0.95rem;
+            margin-bottom: 1.4rem;
+            border-bottom: 2px solid #e6edf6;
+            padding-bottom: 0.6rem;
+        }
+        .tutorial-card .step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            align-items: flex-start;
+        }
+        .tutorial-card .step-num {
+            background: #1a314f;
+            color: white;
+            border-radius: 60px;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .tutorial-card .step-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1d2f47;
+        }
+        .tutorial-card .step-text strong {
+            color: #1a314f;
+        }
+        .tutorial-card .step-text code {
+            background: #eef3fa;
+            padding: 0.1rem 0.5rem;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            color: #1d3455;
+        }
+        .tutorial-card .close-tutorial {
+            background: #1f3a5f;
+            border: none;
+            color: white;
+            padding: 0.6rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            transition: 0.1s;
+            box-shadow: 0 4px 16px rgba(26,55,100,0.2);
+        }
+        .tutorial-card .close-tutorial:hover {
+            background: #14304f;
+            transform: scale(0.97);
+        }
+        .tutorial-card .dont-show {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #3d5a7a;
+        }
+        .tutorial-card .dont-show input {
+            width: 18px;
+            height: 18px;
+            accent-color: #1a314f;
+        }
+        @media (max-width: 550px) {
+            .tutorial-card { padding: 1.6rem; }
+            .tutorial-card h2 { font-size: 1.4rem; }
+        }
+        .color-scheme-analysis {
+            margin-top: 0.6rem;
+            padding: 0.6rem 1rem;
+            background: rgba(255,255,255,0.4);
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            color: #1d3455;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: none;
+            grid-column: 1 / -1;
+        }
+        .color-scheme-analysis.show {
+            display: block;
+        }
+        .effect-btn {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid #c8d6e8;
+            border-radius: 40px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #1d3455;
+            font-weight: 500;
+            position: relative;
+        }
+        .effect-btn:hover {
+            background: white;
+            border-color: #7b99c0;
+        }
+        .effect-btn.active {
+            background: #1a314f;
+            color: white;
+            border-color: #1a314f;
+        }
+        .effect-btn .tooltip-text {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a2538;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.55rem;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .effect-btn .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid transparent;
+            border-top-color: #1a2538;
+        }
+        .effect-btn:hover .tooltip-text {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div class="header-left">
+            <h1>Оформление текста</h1>
+            <span class="badge">16 стилей + конструктор</span>
+        </div>
+        <div class="header-actions">
+            <div class="undo-redo">
+                <button id="undoBtn" disabled title="Ctrl+Z (отменить)">↩</button>
+                <button id="redoBtn" disabled title="Ctrl+Y (повторить)">↪</button>
+                <span id="historyCount">0</span>
+            </div>
+            <button class="help-btn" id="openTutorialBtn">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                Обучение
+            </button>
+        </div>
+    </div>
+
+    <div class="grid-2col">
+        <div class="input-panel">
+            <label for="htmlInput">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 4v16"/><path d="M16 4v16"/><path d="M4 8h16"/><path d="M4 16h16"/></svg>
+                Ваш HTML-контент
+            </label>
+            <textarea id="htmlInput" spellcheck="false"></textarea>
+            <div class="hint">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="#3d5a7a" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                любые теги: p, ul, li, h3, div, span…
+            </div>
+
+            <div class="style-selector">
+                <div class="section-title">
+                    <span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#1d3455" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.22 4.22l2.83 2.83"/><path d="M16.95 16.95l2.83 2.83"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.22 19.78l2.83-2.83"/><path d="M16.95 7.05l2.83-2.83"/></svg>
+                        Выберите стиль
+                    </span>
+                    <button class="advanced-toggle" id="advancedToggle">⚙️ Расширенные настройки</button>
+                </div>
+                <div class="style-grid" id="styleGrid"></div>
+                <div class="mini-preview-grid" id="miniPreviewGrid"></div>
+            </div>
+
+            <div class="advanced-panel" id="advancedPanel">
+                <div class="control-group">
+                    <label>🎨 Цвет фона</label>
+                    <input type="color" id="bgColor" value="#ffffff">
+                </div>
+                <div class="control-group">
+                    <label>🌈 Градиент (2-й цвет)</label>
+                    <input type="color" id="bgGradient" value="#eef3fa">
+                </div>
+                <div class="control-group">
+                    <label>📐 Скругление (px)</label>
+                    <input type="number" id="borderRadius" value="20" min="0" max="60">
+                </div>
+                <div class="control-group">
+                    <label>🌓 Тень (px)</label>
+                    <input type="number" id="shadowBlur" value="18" min="0" max="60">
+                </div>
+                <div class="control-group">
+                    <label>📏 Отступы (px)</label>
+                    <input type="number" id="paddingSize" value="24" min="4" max="80">
+                </div>
+                <div class="control-group">
+                    <label>🔲 Тип границ</label>
+                    <select id="borderType">
+                        <option value="solid">Сплошная</option>
+                        <option value="dashed">Пунктир</option>
+                        <option value="dotted">Точки</option>
+                        <option value="double">Двойная</option>
+                        <option value="none">Нет</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>📝 Цвет текста</label>
+                    <input type="color" id="textColor" value="#1f2a3f">
+                </div>
+                <div class="control-group">
+                    <label>🔗 Цвет ссылок</label>
+                    <input type="color" id="linkColor" value="#1f3a5f">
+                </div>
+                <div class="control-group" style="grid-column: 1 / -1;">
+                    <label>✨ Эффекты (наведите для подсказки)</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
+                        <button class="effect-btn" data-effect="glass" title="Стекло - прозрачный эффект с размытием">🥃 Стекло</button>
+                        <button class="effect-btn" data-effect="neo" title="Неоморфизм - мягкие тени и выпуклости">🔲 Нео</button>
+                        <button class="effect-btn" data-effect="skeuo" title="Скевоморфизм - объемные элементы">🕹 Скево</button>
+                        <button class="effect-btn" data-effect="acid" title="Кислотный - неоновые цвета">🌈 Кислота</button>
+                        <button class="effect-btn" data-effect="texture-paper" title="Текстура бумаги">📄 Бумага</button>
+                        <button class="effect-btn" data-effect="texture-fabric" title="Текстура ткани">🧵 Ткань</button>
+                        <button class="effect-btn" data-effect="texture-metal" title="Металлический блеск">⚙️ Металл</button>
+                        <button class="effect-btn" data-effect="parallax" title="Параллакс - 3D эффект при наведении">🌀 Параллакс</button>
+                    </div>
+                </div>
+                <div class="control-group" style="grid-column:1/-1;">
+                    <label>🎭 Анимации (наведите для подсказки)</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
+                        <button class="effect-btn" data-anim="fade" title="Плавное появление">Затухание</button>
+                        <button class="effect-btn" data-anim="slide" title="Слайд слева">Слайд</button>
+                        <button class="effect-btn" data-anim="pulse" title="Пульсирующий эффект">Пульс</button>
+                        <button class="effect-btn" data-anim="bounce" title="Подскок при загрузке">Подскок</button>
+                        <button class="effect-btn" data-anim="gradient" title="Анимированный градиент">Градиент</button>
+                        <button class="effect-btn" data-anim="hover-scale" title="Увеличение при наведении">Hover +</button>
+                        <button class="effect-btn" data-anim="hover-glow" title="Свечение при наведении">Hover ✨</button>
+                    </div>
+                </div>
+                <div class="color-scheme-analysis" id="colorAnalysis">
+                    <div id="colorAnalysisContent"></div>
+                </div>
+                <div style="grid-column:1/-1;display:flex;gap:0.6rem;flex-wrap:wrap;">
+                    <button class="reset-btn" id="applyCustomStyle">✅ Применить кастомный стиль</button>
+                    <button class="reset-btn" id="resetCustomStyle">🔄 Сбросить кастом</button>
+                </div>
+            </div>
+
+            <div class="extra-controls">
+                <div class="control-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                        Маркер <code>li</code>
+                    </label>
+                    <select id="markerSelect"></select>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M4 17v3h16v-3"/><path d="M4 12h16"/></svg>
+                        Тег для стиля
+                    </label>
+                    <select id="tagSelect">
+                        <option value="p">p</option><option value="li">li</option><option value="h1">h1</option><option value="h2">h2</option><option value="h3">h3</option><option value="h4">h4</option><option value="h5">h5</option><option value="h6">h6</option><option value="div">div</option><option value="span">span</option><option value="a">a</option><option value="strong">strong</option><option value="em">em</option><option value="blockquote">blockquote</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M4 17v3h16v-3"/><path d="M4 12h16"/></svg>
+                        Размер (px)
+                    </label>
+                    <input type="number" id="fontSizeInput" value="18" min="8" max="72">
+                </div>
+                <div class="control-group">
+                    <label>🎨 Цвет тега</label>
+                    <input type="color" id="tagColor" value="#1f2a3f">
+                </div>
+                <div class="control-group">
+                    <label>💪 Жирность</label>
+                    <select id="fontWeight">
+                        <option value="300">300 (Light)</option>
+                        <option value="400" selected>400 (Normal)</option>
+                        <option value="500">500 (Medium)</option>
+                        <option value="600">600 (Semi-bold)</option>
+                        <option value="700">700 (Bold)</option>
+                        <option value="800">800 (Extra-bold)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>📏 Межстрочный</label>
+                    <input type="number" id="lineHeight" value="1.6" min="1.0" max="3.0" step="0.1">
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="reset-btn" id="resetPreviewBtn">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9m0 0v6m0-6h-6"/></svg>
+                    Сбросить всё
+                </button>
+                <div class="device-btns">
+                    <button class="device-btn active-device" data-device="desktop">🖥 <span class="tooltip-text">Десктоп</span></button>
+                    <button class="device-btn" data-device="tablet">📱 <span class="tooltip-text">Планшет</span></button>
+                    <button class="device-btn" data-device="mobile">📲 <span class="tooltip-text">Телефон</span></button>
+                </div>
+                <span style="font-size:0.72rem; color:#3d5a7a;">активный стиль выделен</span>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="preview-header">
+                <span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#1d2b41" stroke-width="2" fill="none" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Превью
+                </span>
+                <button class="copy-btn" id="copyHtmlBtn">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Скопировать код
+                </button>
+            </div>
+            <div class="output-wrapper device-desktop" id="outputWrapper">
+                <div id="previewContainer">
+                    <div class="custom-section" id="customSection"></div>
+                </div>
+            </div>
+            <div class="footnote">
+                <span><svg viewBox="0 0 24 24" width="14" height="14" stroke="#1d3450" stroke-width="2" fill="none" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Стили в .custom-section</span>
+                <span><svg viewBox="0 0 24 24" width="14" height="14" stroke="#1d3450" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> 16 тем + конструктор</span>
+                <span><svg viewBox="0 0 24 24" width="14" height="14" stroke="#1d3450" stroke-width="2" fill="none" stroke-linecap="round"><path d="M4 7V4h16v3M4 17v3h16v-3"/><path d="M4 12h16"/></svg> настройка тегов</span>
+                <span><svg viewBox="0 0 24 24" width="14" height="14" stroke="#1d3450" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 12H4"/><path d="M4 6h16"/><path d="M4 18h16"/></svg> без font-family</span>
+            </div>
+            <div id="codeBlock" class="code-block"></div>
+        </div>
+    </div>
+    <hr>
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.3rem;font-size:0.72rem;color:#3d5779;padding-top:0.2rem;">
+        <span>Все стили внутри .custom-section — без пересечений</span>
+        <span>⭐ Избранные стили сохраняются</span>
+    </div>
+</div>
+
+<div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-card">
+        <h2>🚀 Как пользоваться</h2>
+        <div class="subtitle">Полный гид по новым возможностям</div>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Вставьте ваш HTML</strong> — в левой панели в поле <code>Ваш HTML-контент</code>. Поддерживаются любые теги.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Выберите стиль</strong> — нажмите на один из 16 вариантов. Активный стиль подсвечивается. Можно отметить избранные стили ⭐ — они сохранятся.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Мини-превью</strong> — наведите на миниатюру внизу, чтобы увидеть увеличенную версию стиля. Названия стилей видны при наведении на кнопки.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>Расширенные настройки</strong> — нажмите <code>⚙️ Расширенные настройки</code>. Там можно настроить фон (цвет/градиент), скругление, тени, отступы, тип границ, цвета текста и ссылок. Также доступны эффекты: стекло, неоморфизм, скевоморфизм, кислотный режим, текстуры (бумага, ткань, металл) и параллакс. Наведите на кнопки эффектов для подсказки.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-text"><strong>Анимации</strong> — добавьте анимации для элементов: затухание, слайд, пульс, подскок, анимированный градиент, hover-эффекты увеличения и свечения. Наведите для подсказки.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">6</div>
+            <div class="step-text"><strong>Анализ цвета</strong> — система автоматически анализирует эмоциональное воздействие цветовой схемы и предлагает альтернативные палитры. Также есть режим для дальтоников.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">7</div>
+            <div class="step-text"><strong>Настройка тегов</strong> — выберите тег и настройте его размер, цвет, жирность и межстрочный интервал. Настройки сохраняются для каждого тега отдельно.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">8</div>
+            <div class="step-text"><strong>Устройства</strong> — переключайтесь между десктопом, планшетом и мобильным телефоном для проверки адаптивности. Наведите для подсказки.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">9</div>
+            <div class="step-text"><strong>История изменений</strong> — используйте кнопки <code>↩</code> и <code>↪</code> или горячие клавиши <strong>Ctrl+Z</strong> и <strong>Ctrl+Y</strong> для отмены/повтора действий. Индикатор показывает количество шагов.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">10</div>
+            <div class="step-text"><strong>Автосохранение</strong> — все настройки автоматически сохраняются и восстанавливаются при перезагрузке страницы.</div>
+        </div>
+
+        <div class="dont-show">
+            <input type="checkbox" id="dontShowAgain">
+            <label for="dontShowAgain">Больше не показывать при запуске</label>
+        </div>
+
+        <button class="close-tutorial" id="closeTutorialBtn">Понятно, начать работу →</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const styleVariants = [
+            { name: 'Классика', icon: 'M4 4h16v16H4z', css: `.custom-section { background: #ffffff; color: #1f2a3f; padding: 1.2rem; border-radius: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.03); } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { font-weight: 500; letter-spacing: 0.02em; color: #1f344d; } .custom-section strong { color: #1f3a5f; }` },
+            { name: 'Тёплый', icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', css: `.custom-section { background: #fef8f0; color: #3d2e23; padding: 1.8rem; border-radius: 30px 8px 30px 8px; box-shadow: 0 8px 20px rgba(160,100,60,0.06); } .custom-section p { margin: 0.6rem 0; line-height: 1.7; } .custom-section ul { padding-left: 2rem; margin: 0.6rem 0; } .custom-section li { margin: 0.3rem 0; padding-left: 0.5rem; } .custom-section h3 { font-weight: 600; color: #6b3f2a; border-bottom: 2px solid #e8d7c4; padding-bottom: 0.2rem; }` },
+            { name: 'Аква', icon: 'M2 12h20M12 2v20', css: `.custom-section { background: #eef9fc; color: #174351; padding: 1.6rem; border-radius: 40px 12px 40px 12px; border-left: 6px solid #2c8b9e; } .custom-section p { margin: 0.9rem 0; line-height: 1.5; } .custom-section ul { padding-left: 1.5rem; margin: 0.9rem 0; } .custom-section li { margin: 0.45rem 0; } .custom-section h3 { color: #0e4d5e; font-weight: 600; }` },
+            { name: 'Тёмный', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z', css: `.custom-section { background: #1e2635; color: #e6edf5; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 30px rgba(0,0,0,0.25); } .custom-section p { margin: 0.8rem 0; line-height: 1.7; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #d6e2f5; font-weight: 500; letter-spacing: 0.04em; border-bottom: 1px solid #3b4b63; padding-bottom: 0.3rem; } .custom-section strong { color: #b7d0f0; }` },
+            { name: 'Пастель', icon: 'M12 22s8-4 8-10-8-10-8-10-8 4-8 10 8 10 8 10z', css: `.custom-section { background: #fbf3f7; color: #3d2e3b; padding: 1.8rem; border-radius: 60px 16px 60px 16px; box-shadow: 0 4px 14px rgba(200,140,180,0.08); } .custom-section p { margin: 0.9rem 0; line-height: 1.6; } .custom-section ul { padding-left: 2rem; margin: 0.9rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #7a4c6b; font-weight: 500; }` },
+            { name: 'Деловой', icon: 'M3 3h18v18H3zM3 9h18M9 3v18', css: `.custom-section { background: #f4f7fc; color: #1f2a3c; padding: 1.6rem; border-radius: 12px; border: 1px solid #d3deed; } .custom-section p { margin: 0.7rem 0; line-height: 1.5; } .custom-section ul { padding-left: 1.5rem; margin: 0.7rem 0; } .custom-section li { margin: 0.3rem 0; } .custom-section h3 { font-weight: 600; color: #1b2d47; border-bottom: 2px solid #bacbe0; padding-bottom: 0.2rem; }` },
+            { name: 'Ретро', icon: 'M20 12H4M12 4v16', css: `.custom-section { background: #f6efe6; color: #3f352a; padding: 1.8rem; border-radius: 50px 8px 50px 8px; box-shadow: 0 10px 18px rgba(100,70,40,0.06); } .custom-section p { margin: 0.7rem 0; line-height: 1.5; } .custom-section ul { padding-left: 2rem; margin: 0.7rem 0; } .custom-section li { margin: 0.35rem 0; } .custom-section h3 { font-weight: 600; color: #6a4e34; font-style: italic; }` },
+            { name: 'Градиент', icon: 'M2 2h20v20H2zM2 12h20M12 2v20', css: `.custom-section { background: linear-gradient(145deg, #edf2fb, #e1e9f5); color: #1a2a40; padding: 2rem; border-radius: 30px; box-shadow: 0 10px 28px rgba(50,70,120,0.08); } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { font-weight: 600; background: linear-gradient(135deg, #1f3a5f, #456e9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }` },
+            { name: 'Природа', icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', css: `.custom-section { background: #f3f7ed; color: #2b3d27; padding: 1.8rem; border-radius: 30px 0 30px 0; border-right: 6px solid #7b9e6b; } .custom-section p { margin: 0.9rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.9rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #385e2b; font-weight: 500; }` },
+            { name: 'Акцент', icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', css: `.custom-section { background: #fff7f0; color: #35281e; padding: 2rem; border-radius: 20px 40px 20px 40px; box-shadow: 0 0 0 2px #f3d8c5, 0 8px 20px rgba(200,100,50,0.06); } .custom-section p { margin: 0.7rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.7rem 0; } .custom-section li { margin: 0.3rem 0; } .custom-section h3 { color: #a34f2a; font-weight: 700; }` },
+            { name: 'Морской', icon: 'M2 12h20M12 2v20', css: `.custom-section { background: #e3f0f7; color: #123b4a; padding: 1.8rem; border-radius: 20px 20px 40px 40px; border-bottom: 6px solid #2b7a8a; } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #03506f; font-weight: 600; }` },
+            { name: 'Ночной', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z', css: `.custom-section { background: #1b2433; color: #dce5f0; padding: 2rem; border-radius: 40px 12px 40px 12px; border-left: 6px solid #7a8db0; } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #c0d2ec; font-weight: 500; } .custom-section strong { color: #b7cef0; }` },
+            { name: 'Лаванда', icon: 'M12 22s8-4 8-10-8-10-8-10-8 4-8 10 8 10 8 10z', css: `.custom-section { background: #f5f0fa; color: #2e1f3a; padding: 1.8rem; border-radius: 40px 8px 40px 8px; box-shadow: 0 8px 24px rgba(120,80,150,0.05); } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #5b3f6e; font-weight: 500; }` },
+            { name: 'Мятный', icon: 'M2 12h20M12 2v20', css: `.custom-section { background: #ecf7f0; color: #1d3a2c; padding: 1.8rem; border-radius: 30px 30px 12px 12px; border-top: 6px solid #4f8a6a; } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #2b5a41; font-weight: 600; }` },
+            { name: 'Космос', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z', css: `.custom-section { background: #0e1422; color: #dbe2f0; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #b7cae8; font-weight: 500; letter-spacing: 0.04em; } .custom-section strong { color: #c8daf5; }` },
+            { name: 'Солнечный', icon: 'M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83', css: `.custom-section { background: #fff9e6; color: #3d351a; padding: 1.8rem; border-radius: 30px 8px 30px 8px; box-shadow: 0 8px 24px rgba(200,160,60,0.06); } .custom-section p { margin: 0.8rem 0; line-height: 1.6; } .custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } .custom-section li { margin: 0.4rem 0; } .custom-section h3 { color: #8b6f2a; font-weight: 600; border-bottom: 2px solid #ecdba8; padding-bottom: 0.2rem; }` }
+        ];
+
+        const markerOptions = ['•','◦','✓','➤','★','◆','▹','✧','☞','✤','✪','❀','▶','»','✿','⚡','●','◇','♢','♠','♥'];
+        const favKey = 'stylizer_favorites';
+        const stateKey = 'stylizer_state';
+
+        let currentVariantIndex = 0;
+        let favorites = JSON.parse(localStorage.getItem(favKey) || '[]');
+        let fontSizeStore = JSON.parse(localStorage.getItem('stylizer_fonts') || '{"p":18,"li":18,"h3":18}');
+        let tagColorStore = JSON.parse(localStorage.getItem('stylizer_tagcolors') || '{"p":"#1f2a3f"}');
+        let fontWeightStore = JSON.parse(localStorage.getItem('stylizer_fontweights') || '{"p":"400"}');
+        let lineHeightStore = JSON.parse(localStorage.getItem('stylizer_lineheights') || '{"p":1.6}');
+
+        let history = [];
+        let historyIndex = -1;
+        let maxHistory = 20;
+
+        const htmlInput = document.getElementById('htmlInput');
+        const customSection = document.getElementById('customSection');
+        const styleGrid = document.getElementById('styleGrid');
+        const miniPreviewGrid = document.getElementById('miniPreviewGrid');
+        const copyBtn = document.getElementById('copyHtmlBtn');
+        const codeBlock = document.getElementById('codeBlock');
+        const resetBtn = document.getElementById('resetPreviewBtn');
+        const markerSelect = document.getElementById('markerSelect');
+        const tagSelect = document.getElementById('tagSelect');
+        const fontSizeInput = document.getElementById('fontSizeInput');
+        const tagColorInput = document.getElementById('tagColor');
+        const fontWeightSelect = document.getElementById('fontWeight');
+        const lineHeightInput = document.getElementById('lineHeight');
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        const historyCount = document.getElementById('historyCount');
+        const advancedToggle = document.getElementById('advancedToggle');
+        const advancedPanel = document.getElementById('advancedPanel');
+        const outputWrapper = document.getElementById('outputWrapper');
+        const previewContainer = document.getElementById('previewContainer');
+
+        const bgColorInput = document.getElementById('bgColor');
+        const bgGradientInput = document.getElementById('bgGradient');
+        const borderRadiusInput = document.getElementById('borderRadius');
+        const shadowBlurInput = document.getElementById('shadowBlur');
+        const paddingSizeInput = document.getElementById('paddingSize');
+        const borderTypeSelect = document.getElementById('borderType');
+        const textColorInput = document.getElementById('textColor');
+        const linkColorInput = document.getElementById('linkColor');
+        const applyCustomBtn = document.getElementById('applyCustomStyle');
+        const resetCustomBtn = document.getElementById('resetCustomStyle');
+        const colorAnalysis = document.getElementById('colorAnalysis');
+        const colorAnalysisContent = document.getElementById('colorAnalysisContent');
+
+        const tutorialOverlay = document.getElementById('tutorialOverlay');
+        const openTutorialBtn = document.getElementById('openTutorialBtn');
+        const closeTutorialBtn = document.getElementById('closeTutorialBtn');
+        const dontShowAgain = document.getElementById('dontShowAgain');
+
+        let isCustomStyle = false;
+        let customCss = '';
+        let activeEffects = [];
+        let activeAnims = [];
+        let currentDevice = 'desktop';
+
+        function createIcon(d) {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+        }
+
+        function saveState() {
+            const state = {
+                html: htmlInput.value,
+                variant: currentVariantIndex,
+                marker: markerSelect.value,
+                tag: tagSelect.value,
+                fontSize: fontSizeInput.value,
+                tagColor: tagColorInput.value,
+                fontWeight: fontWeightSelect.value,
+                lineHeight: lineHeightInput.value,
+                fontSizeStore: fontSizeStore,
+                tagColorStore: tagColorStore,
+                fontWeightStore: fontWeightStore,
+                lineHeightStore: lineHeightStore,
+                isCustom: isCustomStyle,
+                customCss: customCss,
+                favorites: favorites,
+                bgColor: bgColorInput.value,
+                bgGradient: bgGradientInput.value,
+                borderRadius: borderRadiusInput.value,
+                shadowBlur: shadowBlurInput.value,
+                paddingSize: paddingSizeInput.value,
+                borderType: borderTypeSelect.value,
+                textColor: textColorInput.value,
+                linkColor: linkColorInput.value,
+                activeEffects: activeEffects,
+                activeAnims: activeAnims,
+                device: currentDevice
+            };
+            try {
+                localStorage.setItem(stateKey, JSON.stringify(state));
+            } catch(e) {}
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(stateKey);
+                if (!raw) return false;
+                const state = JSON.parse(raw);
+                if (state.html) htmlInput.value = state.html;
+                if (state.variant !== undefined) currentVariantIndex = state.variant;
+                if (state.marker) markerSelect.value = state.marker;
+                if (state.tag) tagSelect.value = state.tag;
+                if (state.fontSize) fontSizeInput.value = state.fontSize;
+                if (state.tagColor) tagColorInput.value = state.tagColor;
+                if (state.fontWeight) fontWeightSelect.value = state.fontWeight;
+                if (state.lineHeight) lineHeightInput.value = state.lineHeight;
+                if (state.fontSizeStore) fontSizeStore = state.fontSizeStore;
+                if (state.tagColorStore) tagColorStore = state.tagColorStore;
+                if (state.fontWeightStore) fontWeightStore = state.fontWeightStore;
+                if (state.lineHeightStore) lineHeightStore = state.lineHeightStore;
+                if (state.isCustom !== undefined) isCustomStyle = state.isCustom;
+                if (state.customCss) customCss = state.customCss;
+                if (state.favorites) favorites = state.favorites;
+                if (state.bgColor) bgColorInput.value = state.bgColor;
+                if (state.bgGradient) bgGradientInput.value = state.bgGradient;
+                if (state.borderRadius) borderRadiusInput.value = state.borderRadius;
+                if (state.shadowBlur) shadowBlurInput.value = state.shadowBlur;
+                if (state.paddingSize) paddingSizeInput.value = state.paddingSize;
+                if (state.borderType) borderTypeSelect.value = state.borderType;
+                if (state.textColor) textColorInput.value = state.textColor;
+                if (state.linkColor) linkColorInput.value = state.linkColor;
+                if (state.activeEffects) activeEffects = state.activeEffects;
+                if (state.activeAnims) activeAnims = state.activeAnims;
+                if (state.device) currentDevice = state.device;
+                return true;
+            } catch(e) { return false; }
+        }
+
+        function pushHistory() {
+            const entry = {
+                html: htmlInput.value,
+                variant: currentVariantIndex,
+                marker: markerSelect.value,
+                tag: tagSelect.value,
+                fontSize: fontSizeInput.value,
+                tagColor: tagColorInput.value,
+                fontWeight: fontWeightSelect.value,
+                lineHeight: lineHeightInput.value,
+                fontSizeStore: JSON.parse(JSON.stringify(fontSizeStore)),
+                tagColorStore: JSON.parse(JSON.stringify(tagColorStore)),
+                fontWeightStore: JSON.parse(JSON.stringify(fontWeightStore)),
+                lineHeightStore: JSON.parse(JSON.stringify(lineHeightStore)),
+                isCustom: isCustomStyle,
+                customCss: customCss,
+                bgColor: bgColorInput.value,
+                bgGradient: bgGradientInput.value,
+                borderRadius: borderRadiusInput.value,
+                shadowBlur: shadowBlurInput.value,
+                paddingSize: paddingSizeInput.value,
+                borderType: borderTypeSelect.value,
+                textColor: textColorInput.value,
+                linkColor: linkColorInput.value,
+                activeEffects: [...activeEffects],
+                activeAnims: [...activeAnims]
+            };
+            history = history.slice(0, historyIndex + 1);
+            history.push(entry);
+            if (history.length > maxHistory) history.shift();
+            historyIndex = history.length - 1;
+            updateUndoRedo();
+            saveState();
+        }
+
+        function updateUndoRedo() {
+            undoBtn.disabled = historyIndex <= 0;
+            redoBtn.disabled = historyIndex >= history.length - 1;
+            historyCount.textContent = history.length > 0 ? `${historyIndex + 1}/${history.length}` : '0';
+        }
+
+        function restoreEntry(entry) {
+            if (!entry) return;
+            htmlInput.value = entry.html;
+            currentVariantIndex = entry.variant;
+            markerSelect.value = entry.marker;
+            tagSelect.value = entry.tag;
+            fontSizeInput.value = entry.fontSize;
+            tagColorInput.value = entry.tagColor;
+            fontWeightSelect.value = entry.fontWeight;
+            lineHeightInput.value = entry.lineHeight;
+            fontSizeStore = JSON.parse(JSON.stringify(entry.fontSizeStore));
+            tagColorStore = JSON.parse(JSON.stringify(entry.tagColorStore));
+            fontWeightStore = JSON.parse(JSON.stringify(entry.fontWeightStore));
+            lineHeightStore = JSON.parse(JSON.stringify(entry.lineHeightStore));
+            isCustomStyle = entry.isCustom;
+            customCss = entry.customCss;
+            bgColorInput.value = entry.bgColor;
+            bgGradientInput.value = entry.bgGradient;
+            borderRadiusInput.value = entry.borderRadius;
+            shadowBlurInput.value = entry.shadowBlur;
+            paddingSizeInput.value = entry.paddingSize;
+            borderTypeSelect.value = entry.borderType;
+            textColorInput.value = entry.textColor;
+            linkColorInput.value = entry.linkColor;
+            activeEffects = [...entry.activeEffects];
+            activeAnims = [...entry.activeAnims];
+            renderStyleButtons();
+            renderMiniPreviews();
+            refreshPreview();
+            updateUndoRedo();
+            saveState();
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreEntry(history[historyIndex]);
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                restoreEntry(history[historyIndex]);
+            }
+        }
+
+        function buildDynamicCSS(baseCss) {
+            const marker = markerSelect.value;
+            const markerRule = `.custom-section li { list-style-type: "${marker}"; }`;
+            let sizeRules = '';
+            for (const [tag, size] of Object.entries(fontSizeStore)) {
+                if (size && size > 0) {
+                    sizeRules += `.custom-section ${tag} { font-size: ${size}px; } `;
+                }
+            }
+            let colorRules = '';
+            for (const [tag, color] of Object.entries(tagColorStore)) {
+                if (color) {
+                    colorRules += `.custom-section ${tag} { color: ${color}; } `;
+                }
+            }
+            let weightRules = '';
+            for (const [tag, weight] of Object.entries(fontWeightStore)) {
+                if (weight) {
+                    weightRules += `.custom-section ${tag} { font-weight: ${weight}; } `;
+                }
+            }
+            let lhRules = '';
+            for (const [tag, lh] of Object.entries(lineHeightStore)) {
+                if (lh) {
+                    lhRules += `.custom-section ${tag} { line-height: ${lh}; } `;
+                }
+            }
+
+            let animRules = '';
+            if (activeAnims.includes('fade')) animRules += `.custom-section * { animation: fadeIn 0.6s ease; } @keyframes fadeIn { from { opacity:0; } to { opacity:1; } } `;
+            if (activeAnims.includes('slide')) animRules += `.custom-section * { animation: slideIn 0.5s ease; } @keyframes slideIn { from { transform: translateX(-20px); opacity:0; } to { transform: translateX(0); opacity:1; } } `;
+            if (activeAnims.includes('pulse')) animRules += `.custom-section * { animation: pulse 2s infinite; } @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } } `;
+            if (activeAnims.includes('bounce')) animRules += `.custom-section * { animation: bounce 1s ease; } @keyframes bounce { 0% { transform: scale(0.8); } 50% { transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { transform: scale(1); } } `;
+            if (activeAnims.includes('gradient')) animRules += `.custom-section { background-size: 200% 200%; animation: gradientMove 4s ease infinite; } @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } } `;
+            if (activeAnims.includes('hover-scale')) animRules += `.custom-section *:hover { transform: scale(1.05); transition: transform 0.3s; } `;
+            if (activeAnims.includes('hover-glow')) animRules += `.custom-section *:hover { box-shadow: 0 0 20px rgba(255,255,255,0.3); transition: box-shadow 0.3s; } `;
+
+            let effectRules = '';
+            if (activeEffects.includes('glass')) effectRules += `.custom-section { backdrop-filter: blur(10px); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 8px 32px rgba(0,0,0,0.05); } `;
+            if (activeEffects.includes('neo')) effectRules += `.custom-section { background: #e0e5ec; box-shadow: 6px 6px 12px #b8bcc2, -6px -6px 12px #ffffff; border: none; } `;
+            if (activeEffects.includes('skeuo')) effectRules += `.custom-section { background: #f5f0e8; border: 2px solid #d4c9b8; box-shadow: inset 0 -4px 0 #b8a99a, 0 8px 20px rgba(0,0,0,0.1); border-radius: 12px; } `;
+            if (activeEffects.includes('acid')) effectRules += `.custom-section { background: #0a0a0a; color: #00ff41; text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41; border: 1px solid #00ff41; box-shadow: 0 0 30px #00ff41; } .custom-section a { color: #ff00ff; } .custom-section strong { color: #00ff41; } `;
+            if (activeEffects.includes('texture-paper')) effectRules += `.custom-section { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4c9b8' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); background-blend-mode: overlay; } `;
+            if (activeEffects.includes('texture-fabric')) effectRules += `.custom-section { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 12px); } `;
+            if (activeEffects.includes('texture-metal')) effectRules += `.custom-section { background: linear-gradient(135deg, #b8b8b8 0%, #e0e0e0 25%, #b8b8b8 50%, #e0e0e0 75%, #b8b8b8 100%); background-size: 400% 400%; } `;
+            if (activeEffects.includes('parallax')) effectRules += `.custom-section { perspective: 1000px; } .custom-section * { transform: translateZ(0); transition: transform 0.3s; } .custom-section:hover * { transform: translateZ(20px); } `;
+
+            if (isCustomStyle && customCss) {
+                return customCss + '\n' + markerRule + '\n' + sizeRules + '\n' + colorRules + '\n' + weightRules + '\n' + lhRules + '\n' + animRules + '\n' + effectRules;
+            }
+
+            return baseCss + '\n' + markerRule + '\n' + sizeRules + '\n' + colorRules + '\n' + weightRules + '\n' + lhRules + '\n' + animRules + '\n' + effectRules;
+        }
+
+        function applyStylesToPreview(baseCss) {
+            const oldStyle = document.getElementById('customStyle');
+            if (oldStyle) oldStyle.remove();
+
+            const fullCss = buildDynamicCSS(baseCss);
+            const styleTag = document.createElement('style');
+            styleTag.id = 'customStyle';
+            styleTag.textContent = fullCss;
+            document.head.appendChild(styleTag);
+
+            const rawHtml = htmlInput.value.trim() || '<p>Вставьте ваш HTML-контент</p>';
+            customSection.innerHTML = rawHtml;
+            analyzeColors();
+        }
+
+        function refreshPreview() {
+            const baseCss = isCustomStyle ? customCss : styleVariants[currentVariantIndex].css;
+            previewContainer.classList.add('fade-out');
+            setTimeout(() => {
+                applyStylesToPreview(baseCss);
+                previewContainer.classList.remove('fade-out');
+                previewContainer.classList.add('fade-in');
+                setTimeout(() => previewContainer.classList.remove('fade-in'), 400);
+            }, 300);
+            saveState();
+        }
+
+        function setVariant(index) {
+            if (index < 0 || index >= styleVariants.length) return;
+            currentVariantIndex = index;
+            isCustomStyle = false;
+            customCss = '';
+            document.querySelectorAll('.style-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.mini-preview-item').forEach((el, i) => {
+                el.classList.toggle('active-mini', i === index);
+            });
+            refreshPreview();
+            pushHistory();
+        }
+
+        function renderStyleButtons() {
+            styleGrid.innerHTML = '';
+            styleVariants.forEach((v, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `style-btn ${idx === currentVariantIndex && !isCustomStyle ? 'active' : ''}`;
+                const isFav = favorites.includes(idx);
+                btn.innerHTML = `${createIcon(v.icon)} ${v.name} <span class="favorite-star ${isFav ? 'show active' : 'show'}">${isFav ? '⭐' : '☆'}</span><span class="tooltip-text">${v.name}</span>`;
+                btn.dataset.index = idx;
+                btn.addEventListener('click', (e) => {
+                    if (e.target.closest('.favorite-star')) {
+                        toggleFavorite(idx);
+                        return;
+                    }
+                    setVariant(idx);
+                });
+                btn.querySelector('.favorite-star')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(idx);
+                });
+                styleGrid.appendChild(btn);
+            });
+        }
+
+        function renderMiniPreviews() {
+            miniPreviewGrid.innerHTML = '';
+            styleVariants.forEach((v, idx) => {
+                const div = document.createElement('div');
+                div.className = `mini-preview-item ${idx === currentVariantIndex && !isCustomStyle ? 'active-mini' : ''}`;
+                const isFav = favorites.includes(idx);
+                const bgMatch = v.css.match(/background:([^;]+)/);
+                const colorMatch = v.css.match(/color:([^;]+)/);
+                div.style.background = bgMatch ? bgMatch[1].trim() : '#fff';
+                div.style.color = colorMatch ? colorMatch[1].trim() : '#000';
+                div.innerHTML = `${v.name.substring(0, 3)} <span class="mini-fav">${isFav ? '⭐' : ''}</span>`;
+                div.title = v.name;
+                div.addEventListener('click', () => setVariant(idx));
+                div.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.getElementById('miniTooltip');
+                    if (tooltip) tooltip.remove();
+                    const newTooltip = document.createElement('div');
+                    newTooltip.className = 'mini-preview-tooltip show';
+                    newTooltip.id = 'miniTooltip';
+                    const styleContent = v.css.split('{')[1]?.split('}')[0] || '';
+                    newTooltip.innerHTML = `<div style="padding:0.8rem;border-radius:12px;${styleContent};min-width:120px;"><strong>${v.name}</strong><br><span style="font-size:0.65rem;opacity:0.7;">${v.css.substring(0, 80)}...</span></div>`;
+                    document.body.appendChild(newTooltip);
+                    const rect = e.target.getBoundingClientRect();
+                    newTooltip.style.left = Math.min(rect.left + rect.width/2 - 120, window.innerWidth - 260) + 'px';
+                    newTooltip.style.top = Math.min(rect.bottom + 10, window.innerHeight - 180) + 'px';
+                });
+                div.addEventListener('mouseleave', () => {
+                    document.getElementById('miniTooltip')?.remove();
+                });
+                miniPreviewGrid.appendChild(div);
+            });
+        }
+
+        function toggleFavorite(idx) {
+            const pos = favorites.indexOf(idx);
+            if (pos > -1) favorites.splice(pos, 1);
+            else favorites.push(idx);
+            localStorage.setItem(favKey, JSON.stringify(favorites));
+            renderStyleButtons();
+            renderMiniPreviews();
+            saveState();
+        }
+
+        function updateTagSettings() {
+            const tag = tagSelect.value;
+            const size = parseInt(fontSizeInput.value) || 18;
+            const color = tagColorInput.value;
+            const weight = fontWeightSelect.value;
+            const lh = parseFloat(lineHeightInput.value) || 1.6;
+
+            if (size > 0) fontSizeStore[tag] = size;
+            if (color) tagColorStore[tag] = color;
+            if (weight) fontWeightStore[tag] = weight;
+            if (lh) lineHeightStore[tag] = lh;
+
+            localStorage.setItem('stylizer_fonts', JSON.stringify(fontSizeStore));
+            localStorage.setItem('stylizer_tagcolors', JSON.stringify(tagColorStore));
+            localStorage.setItem('stylizer_fontweights', JSON.stringify(fontWeightStore));
+            localStorage.setItem('stylizer_lineheights', JSON.stringify(lineHeightStore));
+            refreshPreview();
+            pushHistory();
+        }
+
+        function loadTagSettings() {
+            const tag = tagSelect.value;
+            fontSizeInput.value = fontSizeStore[tag] || 18;
+            tagColorInput.value = tagColorStore[tag] || '#1f2a3f';
+            fontWeightSelect.value = fontWeightStore[tag] || '400';
+            lineHeightInput.value = lineHeightStore[tag] || 1.6;
+        }
+
+        function analyzeColors() {
+            const bg = bgColorInput.value;
+            const text = textColorInput.value;
+            const link = linkColorInput.value;
+            const hexToRgb = (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? { r: parseInt(result[1],16), g: parseInt(result[2],16), b: parseInt(result[3],16) } : { r:0,g:0,b:0 };
+            };
+            const brightness = (c) => (c.r * 299 + c.g * 587 + c.b * 114) / 1000;
+            const bgBright = brightness(hexToRgb(bg));
+            const textBright = brightness(hexToRgb(text));
+
+            let analysis = '';
+            const contrast = Math.abs(bgBright - textBright);
+            if (contrast < 128) {
+                analysis += '⚠️ Низкая контрастность. Рекомендуется увеличить контраст для читаемости. ';
+            } else {
+                analysis += '✅ Хорошая контрастность. ';
+            }
+
+            const moods = [];
+            if (bgBright > 200) moods.push('💡 Светлый фон — ощущение чистоты и простора');
+            else if (bgBright > 100) moods.push('🌙 Средний фон — спокойствие и уют');
+            else moods.push('🌌 Темный фон — драматичность и элегантность');
+
+            const r = hexToRgb(bg).r;
+            const g = hexToRgb(bg).g;
+            const b = hexToRgb(bg).b;
+            if (r > 200 && g > 200 && b > 200) moods.push('🤍 Белая палитра — минимализм и ясность');
+            if (r > 200 && g < 100 && b < 100) moods.push('❤️ Красный — энергия и страсть');
+            if (r < 100 && g > 200 && b < 100) moods.push('💚 Зеленый — природа и гармония');
+            if (r < 100 && g < 100 && b > 200) moods.push('💙 Синий — доверие и стабильность');
+            if (r > 200 && g > 200 && b < 100) moods.push('💛 Желтый — оптимизм и тепло');
+            if (r > 200 && g < 100 && b > 200) moods.push('💜 Фиолетовый — креативность и роскошь');
+
+            const alternatives = [];
+            if (bgBright < 128) {
+                alternatives.push('☀️ Для улучшения читаемости попробуйте светлый фон (#f5f5f5)');
+            } else {
+                alternatives.push('🌙 Попробуйте темный фон (#1a1a2e) для более драматичного эффекта');
+            }
+            if (textBright > 200) {
+                alternatives.push('🖤 Контрастный текст — попробуйте более темный текст (#1a1a2e)');
+            }
+
+            const daltonismSuggestions = [];
+            if (r > 200 && g < 100) daltonismSuggestions.push('🔴 Проблемы с красным? Используйте синий (#0066ff) для ссылок');
+            if (g > 200 && b < 100) daltonismSuggestions.push('🟢 Проблемы с зеленым? Используйте синий (#0066ff) для акцентов');
+
+            colorAnalysisContent.innerHTML = `
+                <div style="display:flex;flex-direction:column;gap:0.3rem;">
+                    <div><strong>🎨 Анализ цветовой схемы:</strong></div>
+                    <div>${moods.join(' • ')}</div>
+                    <div><strong>📊 Контрастность:</strong> ${contrast.toFixed(0)}% ${contrast > 128 ? '✅' : '⚠️'}</div>
+                    <div><strong>💡 Альтернативы:</strong> ${alternatives.join(' • ')}</div>
+                    ${daltonismSuggestions.length ? `<div><strong>👁 Для дальтоников:</strong> ${daltonismSuggestions.join(' • ')}</div>` : ''}
+                    <div style="font-size:0.65rem;color:#3d5a7a;">${analysis}</div>
+                </div>
+            `;
+            colorAnalysis.classList.add('show');
+        }
+
+        function applyCustomStyleFromPanel() {
+            const bg = bgColorInput.value;
+            const gradient = bgGradientInput.value;
+            const radius = borderRadiusInput.value;
+            const shadow = shadowBlurInput.value;
+            const padding = paddingSizeInput.value;
+            const border = borderTypeSelect.value;
+            const text = textColorInput.value;
+            const link = linkColorInput.value;
+
+            let css = `.custom-section { background: ${gradient && gradient !== '#eef3fa' ? `linear-gradient(135deg, ${bg}, ${gradient})` : bg}; `;
+            css += `color: ${text}; padding: ${padding}px; border-radius: ${radius}px; `;
+            css += `box-shadow: 0 ${shadow}px ${shadow*2}px rgba(0,0,0,0.06); `;
+            if (border !== 'none') css += `border: 2px ${border} ${link}; `;
+            css += `} `;
+            css += `.custom-section a { color: ${link}; } `;
+            css += `.custom-section p { margin: 0.8rem 0; line-height: 1.6; } `;
+            css += `.custom-section ul { padding-left: 1.8rem; margin: 0.8rem 0; } `;
+            css += `.custom-section li { margin: 0.4rem 0; } `;
+            css += `.custom-section h3 { font-weight: 600; color: ${link}; } `;
+            css += `.custom-section strong { color: ${link}; } `;
+
+            customCss = css;
+            isCustomStyle = true;
+            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mini-preview-item').forEach(b => b.classList.remove('active-mini'));
+            refreshPreview();
+            pushHistory();
+            saveState();
+        }
+
+        function resetCustomStyle() {
+            isCustomStyle = false;
+            customCss = '';
+            document.querySelectorAll('.style-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === currentVariantIndex);
+            });
+            document.querySelectorAll('.mini-preview-item').forEach((el, i) => {
+                el.classList.toggle('active-mini', i === currentVariantIndex);
+            });
+            refreshPreview();
+            pushHistory();
+            saveState();
+        }
+
+        function resetAll() {
+            const defaultHtml = `<p>✨ <strong>Добро пожаловать</strong> в стилизатор.</p><ul><li>Гибкое оформление</li><li>16 уникальных стилей</li><li>Выбор маркеров</li><li>Настройка шрифта для любых тегов</li></ul><p>Работает с <code>p, ul, li, h3, div, span</code> и др.</p>`;
+            htmlInput.value = defaultHtml;
+            markerSelect.value = '•';
+            tagSelect.value = 'p';
+            fontSizeInput.value = 18;
+            tagColorInput.value = '#1f2a3f';
+            fontWeightSelect.value = '400';
+            lineHeightInput.value = 1.6;
+            fontSizeStore = { p: 18, li: 18, h3: 18 };
+            tagColorStore = { p: '#1f2a3f' };
+            fontWeightStore = { p: '400' };
+            lineHeightStore = { p: 1.6 };
+            bgColorInput.value = '#ffffff';
+            bgGradientInput.value = '#eef3fa';
+            borderRadiusInput.value = 20;
+            shadowBlurInput.value = 18;
+            paddingSizeInput.value = 24;
+            borderTypeSelect.value = 'solid';
+            textColorInput.value = '#1f2a3f';
+            linkColorInput.value = '#1f3a5f';
+            activeEffects = [];
+            activeAnims = [];
+            isCustomStyle = false;
+            customCss = '';
+            localStorage.setItem('stylizer_fonts', JSON.stringify(fontSizeStore));
+            localStorage.setItem('stylizer_tagcolors', JSON.stringify(tagColorStore));
+            localStorage.setItem('stylizer_fontweights', JSON.stringify(fontWeightStore));
+            localStorage.setItem('stylizer_lineheights', JSON.stringify(lineHeightStore));
+            setVariant(0);
+            pushHistory();
+            saveState();
+        }
+
+        function copyStyledContent() {
+            const variant = isCustomStyle ? { css: customCss } : styleVariants[currentVariantIndex];
+            const rawHtml = htmlInput.value.trim() || '<p>Вставьте ваш HTML-контент</p>';
+            const fullCss = buildDynamicCSS(variant.css);
+            const outputHtml = `<style>\n${fullCss}\n</style>\n<div class="custom-section">\n${rawHtml}\n</div>`;
+            codeBlock.textContent = outputHtml;
+            codeBlock.classList.add('show');
+            navigator.clipboard.writeText(outputHtml).then(() => {
+                const orig = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅ Скопировано!';
+                setTimeout(() => { copyBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Скопировать код`; }, 2000);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = outputHtml;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                copyBtn.innerHTML = '✅ Скопировано!';
+                setTimeout(() => { copyBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Скопировать код`; }, 2000);
+            });
+        }
+
+        function setDevice(device) {
+            currentDevice = device;
+            outputWrapper.className = `output-wrapper device-${device}`;
+            document.querySelectorAll('.device-btn').forEach(b => {
+                b.classList.toggle('active-device', b.dataset.device === device);
+            });
+            saveState();
+        }
+
+        function showTutorial() {
+            tutorialOverlay.classList.add('open');
+        }
+        function hideTutorial() {
+            tutorialOverlay.classList.remove('open');
+        }
+
+        function checkFirstRun() {
+            const dontShow = localStorage.getItem('stylizer_tutorial_done');
+            if (!dontShow) {
+                setTimeout(showTutorial, 400);
+            }
+        }
+
+        function closeTutorialAndRemember() {
+            if (dontShowAgain.checked) {
+                localStorage.setItem('stylizer_tutorial_done', 'true');
+            }
+            hideTutorial();
+        }
+
+        function init() {
+            markerSelect.innerHTML = markerOptions.map(m => `<option value="${m}">${m}</option>`).join('');
+
+            if (!loadState()) {
+                const defaultHtml = `<p>✨ <strong>Добро пожаловать</strong> в стилизатор.</p><ul><li>Гибкое оформление</li><li>16 уникальных стилей</li><li>Выбор маркеров</li><li>Настройка шрифта для любых тегов</li></ul><p>Работает с <code>p, ul, li, h3, div, span</code> и др.</p>`;
+                htmlInput.value = defaultHtml;
+                markerSelect.value = '•';
+                tagSelect.value = 'p';
+                fontSizeInput.value = 18;
+                tagColorInput.value = '#1f2a3f';
+                fontWeightSelect.value = '400';
+                lineHeightInput.value = 1.6;
+                fontSizeStore = { p: 18, li: 18, h3: 18 };
+                tagColorStore = { p: '#1f2a3f' };
+                fontWeightStore = { p: '400' };
+                lineHeightStore = { p: 1.6 };
+                localStorage.setItem('stylizer_fonts', JSON.stringify(fontSizeStore));
+                localStorage.setItem('stylizer_tagcolors', JSON.stringify(tagColorStore));
+                localStorage.setItem('stylizer_fontweights', JSON.stringify(fontWeightStore));
+                localStorage.setItem('stylizer_lineheights', JSON.stringify(lineHeightStore));
+            }
+
+            renderStyleButtons();
+            renderMiniPreviews();
+            loadTagSettings();
+            setVariant(currentVariantIndex);
+            pushHistory();
+
+            htmlInput.addEventListener('input', () => { refreshPreview(); pushHistory(); });
+            markerSelect.addEventListener('change', () => { refreshPreview(); pushHistory(); });
+            tagSelect.addEventListener('change', loadTagSettings);
+            fontSizeInput.addEventListener('input', updateTagSettings);
+            tagColorInput.addEventListener('input', updateTagSettings);
+            fontWeightSelect.addEventListener('change', updateTagSettings);
+            lineHeightInput.addEventListener('input', updateTagSettings);
+
+            copyBtn.addEventListener('click', copyStyledContent);
+            resetBtn.addEventListener('click', resetAll);
+
+            undoBtn.addEventListener('click', undo);
+            redoBtn.addEventListener('click', redo);
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Z') { e.preventDefault(); redo(); }
+            });
+
+            advancedToggle.addEventListener('click', () => {
+                advancedPanel.classList.toggle('open');
+                advancedToggle.textContent = advancedPanel.classList.contains('open') ? '⚙️ Скрыть настройки' : '⚙️ Расширенные настройки';
+            });
+
+            applyCustomBtn.addEventListener('click', applyCustomStyleFromPanel);
+            resetCustomBtn.addEventListener('click', resetCustomStyle);
+
+            document.querySelectorAll('[data-effect]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const effect = btn.dataset.effect;
+                    const idx = activeEffects.indexOf(effect);
+                    if (idx > -1) activeEffects.splice(idx, 1);
+                    else activeEffects.push(effect);
+                    btn.classList.toggle('active');
+                    refreshPreview();
+                    pushHistory();
+                });
+            });
+
+            document.querySelectorAll('[data-anim]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const anim = btn.dataset.anim;
+                    const idx = activeAnims.indexOf(anim);
+                    if (idx > -1) activeAnims.splice(idx, 1);
+                    else activeAnims.push(anim);
+                    btn.classList.toggle('active');
+                    refreshPreview();
+                    pushHistory();
+                });
+            });
+
+            document.querySelectorAll('.device-btn').forEach(btn => {
+                btn.addEventListener('click', () => setDevice(btn.dataset.device));
+            });
+
+            openTutorialBtn.addEventListener('click', showTutorial);
+            closeTutorialBtn.addEventListener('click', closeTutorialAndRemember);
+            tutorialOverlay.addEventListener('click', function(e) {
+                if (e.target === this) hideTutorial();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && tutorialOverlay.classList.contains('open')) {
+                    hideTutorial();
+                }
+            });
+
+            checkFirstRun();
+            setDevice('desktop');
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
