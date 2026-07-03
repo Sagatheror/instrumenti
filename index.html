@@ -1028,7 +1028,7 @@
                         <div class="quantum-title">🚀 Центр инструментов</div>
                         <div class="quantum-desc">
                             Используйте любой инструмент нажав на кнопки ниже или на боковой панели.<br>
-                            <small style="opacity:0.6;">⌨️ Клавиши 1-6 для быстрого переключения</small>
+                            <small style="opacity:0.6;">⌨️ Клавиши 1-7 для быстрого переключения</small>
                         </div>
                         <div class="orbital-grid" id="quickAccessGrid"></div>
                     </div>
@@ -1159,10 +1159,11 @@
     page5: { title: "ЗАПЯТЫЕ 1С", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html", shortcut: 3 },
     page6: { title: "CSV АНАЛИЗ", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html", shortcut: 4 },
     page7: { title: "ФОРМА ОТКЛЮЧЕНИЯ", icon: "fas fa-file-signature", url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html", shortcut: 5 },
-    page8: { title: "ОФОРМЛЕНИЕ ТЕКСТА", icon: "fas fa-pen-fancy", url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html", shortcut: 6 }
+    page8: { title: "ОФОРМЛЕНИЕ ТЕКСТА", icon: "fas fa-pen-fancy", url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html", shortcut: 6 },
+    page9: { title: "КОНСТРУКТОР ПАЛИТР", icon: "fas fa-palette", url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html", shortcut: 7 }
 };
 
-        const MODULE_ORDER = ["page1", "page2", "page5", "page6", "page7", "page8"];
+        const MODULE_ORDER = ["page1", "page2", "page5", "page6", "page7", "page8", "page9"];
 
         let activeModule = "welcome";
         let isFullscreen = false;
@@ -1592,8 +1593,8 @@
                 }
 
                 const num = parseInt(e.key);
-                if (num >= 1 && num <= 8) {
-                    const moduleKeys = ['page1', 'page2', 'page5', 'page6', 'page7', 'page8'];
+                if (num >= 1 && num <= 9) {
+                    const moduleKeys = ['page1', 'page2', 'page5', 'page6', 'page7', 'page8', 'page9'];
                     if (num <= moduleKeys.length) {
                         e.preventDefault();
                         const modId = moduleKeys[num - 1];
@@ -1624,7 +1625,7 @@
 
         function showShortcutsHelp() {
             const shortcuts = [
-                '1-6 - Быстрое переключение модулей',
+                '1-7 - Быстрое переключение модулей',
                 'Ctrl+Enter - Полноэкранный режим',
                 'S - Открыть настройки',
                 'T - Открыть туториал',
