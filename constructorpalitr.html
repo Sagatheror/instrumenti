@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎨 Конструктор палитр Pro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #6C5CE7;
+      --primary-dark: #5A4BD1;
+      --primary-light: #A29BFE;
+      --bg: #F8F9FE;
+      --surface: #FFFFFF;
+      --text: #1A1A2E;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --shadow: 0 10px 40px rgba(108, 92, 231, 0.12);
+      --radius: 20px;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+      color: var(--text);
+      position: relative;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .app-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-header .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .icon-lg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon-sm {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border);
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(108, 92, 231, 0.35);
+    }
+
+    .btn-success {
+      background: #10B981;
+      color: white;
+      border-color: #10B981;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+      border-color: #059669;
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-danger {
+      color: #EF4444;
+      border-color: #FCA5A5;
+    }
+
+    .btn-danger:hover {
+      background: #FEF2F2;
+      border-color: #EF4444;
+    }
+
+    .btn-outline {
+      border: 2px dashed var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      background: #F5F3FF;
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .btn-icon {
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border-radius: 24px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 40px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .modal-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-body {
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .modal-body h3 {
+      color: var(--text);
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-body h3:first-child {
+      margin-top: 0;
+    }
+
+    .modal-body ul {
+      padding-left: 24px;
+      margin: 8px 0 12px 0;
+    }
+
+    .modal-body li {
+      margin-bottom: 6px;
+    }
+
+    .modal-body .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .modal-body .feature-item {
+      background: var(--bg);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border-left: 3px solid var(--primary);
+    }
+
+    .modal-body .feature-item strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .modal-body .feature-item span {
+      font-size: 14px;
+    }
+
+    .modal-body .shortcuts {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+
+    .modal-body .shortcuts kbd {
+      background: var(--surface);
+      padding: 2px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Segoe UI', monospace;
+    }
+
+    .modal-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px solid var(--bg);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 640px) {
+      .modal-content {
+        padding: 24px;
+        margin: 10px;
+      }
+      .modal-body .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      .modal-header h2 {
+        font-size: 20px;
+      }
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 1100px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-panel {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 24px;
+      height: fit-content;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+
+    .control-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .control-panel::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .control-section {
+      margin-bottom: 28px;
+    }
+
+    .control-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-section .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-section .section-title .icon {
+      opacity: 0.7;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .input-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .input-row input[type="color"] {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 2px;
+      flex-shrink: 0;
+      background: white;
+    }
+
+    .input-row input[type="color"]:hover {
+      border-color: var(--primary);
+    }
+
+    .input-row input[type="text"] {
+      flex: 1;
+      padding: 11px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+      background: white;
+      color: var(--text);
+    }
+
+    .input-row input[type="text"]:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+    }
+
+    .input-row input[type="text"]::placeholder {
+      color: #9CA3AF;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .setting-item label {
+      min-width: 80px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .setting-item input[type="range"] {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .setting-item .value-display {
+      min-width: 40px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .grid-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .grid-btn {
+      padding: 6px 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      min-width: 36px;
+    }
+
+    .grid-btn:hover {
+      border-color: var(--primary-light);
+      background: #F5F3FF;
+    }
+
+    .grid-btn.active {
+      border-color: var(--primary);
+      background: #EDE9FE;
+      color: var(--primary);
+    }
+
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .shape-option {
+      padding: 12px 6px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .shape-option:hover {
+      border-color: var(--primary-light);
+      background: #F5F3FF;
+      transform: translateY(-2px);
+    }
+
+    .shape-option.active {
+      border-color: var(--primary);
+      background: #EDE9FE;
+      color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    }
+
+    .shape-option .shape-icon {
+      display: block;
+      margin: 0 auto 4px;
+    }
+
+    .shape-option .shape-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .hover-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .hover-preset {
+      padding: 12px 8px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .hover-preset:hover {
+      border-color: var(--primary-light);
+      background: #F5F3FF;
+      transform: translateY(-2px);
+    }
+
+    .hover-preset.active {
+      border-color: var(--primary);
+      background: #EDE9FE;
+      color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    }
+
+    .hover-preset .preset-preview {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .hover-preset .preset-preview .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      transition: all 0.3s;
+    }
+
+    .color-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .color-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .color-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .color-item-editor {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      border: 2px solid transparent;
+      transition: all 0.25s ease;
+      cursor: grab;
+      animation: slideIn 0.3s ease;
+    }
+
+    .color-item-editor:active {
+      cursor: grabbing;
+    }
+
+    .color-item-editor.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+      border-color: var(--primary);
+    }
+
+    .color-item-editor.drag-over {
+      border-color: var(--primary);
+      background: #EDE9FE;
+      transform: scale(1.02);
+    }
+
+    .color-item-editor .drag-handle {
+      cursor: grab;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .color-item-editor:hover .drag-handle {
+      opacity: 1;
+    }
+
+    .color-item-editor .color-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+
+    .color-item-editor .color-name-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      padding: 4px 0;
+      min-width: 50px;
+    }
+
+    .color-item-editor .color-name-input:focus {
+      outline: none;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .color-item-editor .color-hex {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-family: monospace;
+      min-width: 56px;
+    }
+
+    .color-item-editor .btn {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .color-item-editor.removing {
+      animation: slideOut 0.3s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+    }
+
+    .empty-colors {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-secondary);
+    }
+
+    .empty-colors .icon {
+      display: block;
+      margin: 0 auto 8px;
+      opacity: 0.3;
+      width: 40px;
+      height: 40px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .color-counter {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .color-counter span {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .preview-panel {
+      min-height: 500px;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .device-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 12px;
+    }
+
+    .device-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .device-btn:hover {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .device-btn.active {
+      background: white;
+      color: var(--text);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .device-btn .icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    .preview-container {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 30px;
+      border: 2px solid var(--border);
+      transition: all 0.4s ease;
+      overflow: auto;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-container.mobile {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .preview-container.tablet {
+      max-width: 768px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .preview-container.desktop {
+      max-width: 100%;
+      padding: 30px;
+    }
+
+    .custom-section {
+      all: initial;
+      display: block;
+      width: 100%;
+    }
+
+    .custom-section .palette-wrapper {
+      display: grid;
+      gap: 30px 20px;
+      justify-items: center;
+      align-items: start;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .custom-section .color-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 140px;
+    }
+
+    .custom-section .color-shape {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      background-color: #ccc;
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    .custom-section .color-shape.circle {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.square {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      border-radius: 12px;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.rounded {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      border-radius: 24px;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.hexagon {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      border: none;
+    }
+    .custom-section .color-shape.diamond {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      border: none;
+    }
+    .custom-section .color-shape.pentagon {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
+      border: none;
+    }
+    .custom-section .color-shape.star {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      border: none;
+    }
+    .custom-section .color-shape.heart {
+      width: var(--shape-size, 80px);
+      height: var(--shape-size, 80px);
+      clip-path: path('M40,80 C40,80 0,50 0,30 C0,10 20,0 40,15 C60,0 80,10 80,30 C80,50 40,80 40,80Z');
+      border: none;
+    }
+
+    .custom-section .color-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e293b;
+      text-align: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+      width: 100%;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+      .custom-section .palette-wrapper {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px 12px;
+        padding: 12px;
+      }
+      
+      .custom-section .color-item {
+        max-width: 100%;
+      }
+      
+      .custom-section .color-shape.circle,
+      .custom-section .color-shape.square,
+      .custom-section .color-shape.rounded,
+      .custom-section .color-shape.hexagon,
+      .custom-section .color-shape.diamond,
+      .custom-section .color-shape.pentagon,
+      .custom-section .color-shape.star,
+      .custom-section .color-shape.heart {
+        width: var(--shape-size-mobile, 70px);
+        height: var(--shape-size-mobile, 70px);
+      }
+      
+      .custom-section .color-label {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .custom-section .palette-wrapper {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px 8px;
+        padding: 8px;
+      }
+      
+      .custom-section .color-shape.circle,
+      .custom-section .color-shape.square,
+      .custom-section .color-shape.rounded,
+      .custom-section .color-shape.hexagon,
+      .custom-section .color-shape.diamond,
+      .custom-section .color-shape.pentagon,
+      .custom-section .color-shape.star,
+      .custom-section .color-shape.heart {
+        width: var(--shape-size-mobile-small, 60px);
+        height: var(--shape-size-mobile-small, 60px);
+      }
+      
+      .custom-section .color-label {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+    }
+
+    .custom-section.hover-preset-1 .color-item:hover .color-shape {
+      transform: scale(1.15) translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      filter: brightness(1.08);
+    }
+    .custom-section.hover-preset-1 .color-item:hover .color-label {
+      transform: translateY(-4px);
+      background: white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .custom-section.hover-preset-2 .color-item:hover .color-shape {
+      transform: rotate(12deg) scale(1.08);
+      box-shadow: 0 0 40px rgba(108, 92, 231, 0.3), 0 12px 32px rgba(0,0,0,0.1);
+    }
+    .custom-section.hover-preset-2 .color-item:hover .color-label {
+      color: #6C5CE7;
+      font-weight: 600;
+      background: white;
+    }
+
+    .custom-section.hover-preset-3 .color-item:hover .color-shape {
+      animation: pulse 0.8s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .custom-section.hover-preset-3 .color-item:hover .color-label {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .custom-section.hover-preset-4 .color-item:hover .color-shape {
+      transform: translateY(-14px) scale(1.02);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+      border-color: white;
+    }
+    .custom-section.hover-preset-4 .color-item:hover .color-label {
+      transform: translateY(-6px);
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      color: #6C5CE7;
+    }
+
+    .custom-section.hover-preset-5 .color-item:hover .color-shape {
+      filter: brightness(1.15) saturate(1.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .custom-section.hover-preset-5 .color-item:hover .color-label {
+      background: white;
+      font-weight: 600;
+    }
+
+    .custom-section.hover-preset-6 .color-item:hover .color-shape {
+      transform: scale(0.92) rotate(-4deg);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .custom-section.hover-preset-7 .color-item:hover .color-shape {
+      animation: wobble 0.6s ease;
+    }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+
+    .custom-section.hover-preset-8 .color-item:hover .color-shape {
+      transform: translateY(-6px) scale(1.06);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      filter: brightness(1.1) drop-shadow(0 0 20px rgba(108, 92, 231, 0.2));
+    }
+    .custom-section.hover-preset-8 .color-item:hover .color-label {
+      transform: scale(1.05);
+      background: white;
+      color: #6C5CE7;
+    }
+
+    .custom-section.hover-preset-9 .color-item:hover .color-shape {
+      transform: none;
+    }
+    .custom-section.hover-preset-9 .color-item:hover .color-label {
+      transform: none;
+    }
+
+    .code-output {
+      margin-top: 24px;
+      background: #0F172A;
+      border-radius: 16px;
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-output pre {
+      color: #E2E8F0;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow: auto;
+      margin: 0;
+      padding: 4px 60px 4px 0;
+    }
+
+    .code-output pre::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .code-output pre::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .code-output .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #334155;
+      border: none;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .code-output .copy-btn:hover {
+      background: #475569;
+    }
+
+    .code-output .copy-btn.copied {
+      background: #10B981;
+    }
+
+    .code-output .copy-btn .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .icon {
+      display: block;
+      margin: 0 auto 12px;
+      opacity: 0.2;
+      width: 56px;
+      height: 56px;
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 16px;
+      }
+      .app-header h1 {
+        font-size: 20px;
+      }
+      .shape-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .hover-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .preview-container {
+        padding: 16px;
+      }
+      .preview-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .device-group {
+        justify-content: center;
+      }
+      .setting-item {
+        flex-wrap: wrap;
+      }
+      .setting-item label {
+        min-width: 60px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .shape-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .shape-option {
+        padding: 8px 4px;
+        font-size: 11px;
+      }
+      .shape-option .shape-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+      .hover-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+      .hover-preset {
+        padding: 8px 4px;
+        font-size: 11px;
+      }
+      .grid-selector {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <h1>
+      Конструктор палитр
+    </h1>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" id="helpBtn">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        Помощь
+      </button>
+      <button class="btn btn-outline btn-sm" id="undoBtn" disabled title="Отменить (Ctrl+Z)">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+        Отменить
+      </button>
+      <button class="btn btn-outline btn-sm" id="redoBtn" disabled title="Вернуть (Ctrl+Y)">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" transform="scale(-1, 1) translate(-24, 0)"/></svg>
+        Вернуть
+      </button>
+      <button class="btn btn-success" id="exportAndCopyBtn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        Скопировать
+      </button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <div class="control-panel">
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Добавить цвет
+        </div>
+        <div class="input-group">
+          <label>Название</label>
+          <div class="input-row">
+            <input type="text" id="colorNameInput" placeholder="Например: Лаванда" value="Мятный">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Цвет</label>
+          <div class="input-row">
+            <input type="color" id="colorPicker" value="#34d399">
+            <button class="btn btn-primary" id="addColorBtn" style="flex:1;">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Добавить
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Настройки
+        </div>
+        <div class="settings-group">
+          <div class="setting-item">
+            <label>Размер</label>
+            <input type="range" id="sizeSlider" min="50" max="120" value="80">
+            <span class="value-display" id="sizeValue">80px</span>
+          </div>
+          <div class="setting-item">
+            <label>Отступы</label>
+            <input type="range" id="gapSlider" min="8" max="60" value="30">
+            <span class="value-display" id="gapValue">30px</span>
+          </div>
+          <div class="setting-item">
+            <label>Колонки</label>
+            <div class="grid-selector" id="gridSelector">
+              <button class="grid-btn" data-columns="1">1</button>
+              <button class="grid-btn active" data-columns="2">2</button>
+              <button class="grid-btn" data-columns="3">3</button>
+              <button class="grid-btn" data-columns="4">4</button>
+              <button class="grid-btn" data-columns="auto">Авто</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v10H7V7z"/></svg>
+          Форма элемента
+        </div>
+        <div class="shape-grid" id="shapeSelector">
+          <div class="shape-option active" data-shape="circle">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>
+            </span>
+            Круг
+          </div>
+          <div class="shape-option" data-shape="square">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2" fill="currentColor"/></svg>
+            </span>
+            Квадрат
+          </div>
+          <div class="shape-option" data-shape="rounded">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="currentColor"/></svg>
+            </span>
+            Скругл.
+          </div>
+          <div class="shape-option" data-shape="hexagon">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 22,8 22,16 12,22 2,16 2,8" fill="currentColor"/></svg>
+            </span>
+            Шестиуг.
+          </div>
+          <div class="shape-option" data-shape="diamond">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 22,12 12,22 2,12" fill="currentColor"/></svg>
+            </span>
+            Ромб
+          </div>
+          <div class="shape-option" data-shape="pentagon">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 22,10 18,22 6,22 2,10" fill="currentColor"/></svg>
+            </span>
+            Пентагон
+          </div>
+          <div class="shape-option" data-shape="star">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 23,9 17,14 19,22 12,17 5,22 7,14 1,9 9,9" fill="currentColor"/></svg>
+            </span>
+            Звезда
+          </div>
+          <div class="shape-option" data-shape="heart">
+            <span class="shape-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+            </span>
+            Сердце
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Hover эффект
+        </div>
+        <div class="hover-grid" id="hoverPresets">
+          <div class="hover-preset active" data-preset="1">
+            Увеличение + тень
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="2">
+            Вращение + свечение
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="3">
+            Пульсация
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="4">
+            Поднятие
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="5">
+            Яркость + насыщенность
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="6">
+            Сжатие
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="7">
+            Воблер
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="8">
+            Премиум
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="hover-preset" data-preset="9" style="grid-column: span 2;">
+            Без эффекта
+            <div class="preset-preview">
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/></svg>
+          Цвета в палитре
+          <span style="margin-left:auto;font-weight:400;font-size:12px;text-transform:none;" id="colorCounter">0</span>
+        </div>
+        <div class="color-list" id="colorList">
+        </div>
+        <div class="action-row">
+          <button class="btn btn-danger btn-sm" id="clearAllBtn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Очистить
+          </button>
+          <button class="btn btn-outline btn-sm" id="resetDefaultBtn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+            Пример
+          </button>
+        </div>
+        <div class="color-counter">
+          Всего цветов: <span id="totalColors">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <div class="device-group">
+          <button class="device-btn" data-device="mobile">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z"/></svg>
+            Моб.
+          </button>
+          <button class="device-btn" data-device="tablet">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 1H5c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H5V5h14v14z"/></svg>
+            Планшет
+          </button>
+          <button class="device-btn active" data-device="desktop">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+            Десктоп
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-container desktop" id="previewContainer">
+        <div class="custom-section hover-preset-1" id="paletteRender">
+          <div class="palette-wrapper">
+          </div>
+        </div>
+      </div>
+
+      <div class="code-output">
+        <pre id="exportCode">// Палитра будет сгенерирована</pre>
+        <button class="copy-btn" id="copyCodeBtn">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          Копировать код
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>
+        <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        Как пользоваться
+      </h2>
+      <button class="modal-close-btn" id="closeHelpBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>🎨 Быстрый старт</h3>
+      <ol>
+        <li><strong>Добавьте цвет</strong> — введите название, выберите цвет и нажмите «Добавить» или Enter</li>
+        <li><strong>Настройте внешний вид</strong> — выберите форму элементов и hover-эффект</li>
+        <li><strong>Измените размер</strong> — используйте слайдеры для размера и отступов</li>
+        <li><strong>Скопируйте код</strong> — нажмите «Скопировать» и вставьте на свой сайт</li>
+      </ol>
+
+      <h3>✨ Возможности</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <strong>🎯 Drag-and-drop</strong>
+          <span>Перетаскивайте цвета для изменения порядка</span>
+        </div>
+        <div class="feature-item">
+          <strong>🔄 Undo/Redo</strong>
+          <span>Отменяйте и возвращайте действия (Ctrl+Z / Ctrl+Y)</span>
+        </div>
+        <div class="feature-item">
+          <strong>💾 Автосохранение</strong>
+          <span>Все изменения сохраняются в браузере</span>
+        </div>
+        <div class="feature-item">
+          <strong>📱 Адаптивность</strong>
+          <span>Превью на мобильных, планшетах и десктопе</span>
+        </div>
+        <div class="feature-item">
+          <strong>🔷 8 форм элементов</strong>
+          <span>Круг, квадрат, ромб, звезда, сердце и другие</span>
+        </div>
+        <div class="feature-item">
+          <strong>✨ 9 hover-эффектов</strong>
+          <span>Увеличение, вращение, пульсация и другие</span>
+        </div>
+      </div>
+
+      <h3>⌨️ Горячие клавиши</h3>
+      <div class="shortcuts">
+        <p><kbd>Enter</kbd> — добавить цвет</p>
+        <p><kbd>Ctrl+Z</kbd> — отменить действие</p>
+        <p><kbd>Ctrl+Y</kbd> — вернуть действие</p>
+        <p><kbd>Ctrl+Shift+Z</kbd> — вернуть действие (альтернатива)</p>
+      </div>
+
+      <h3>📦 Экспорт</h3>
+      <p>При копировании вы получаете полностью изолированный HTML-код внутри класса <code>.custom-section</code>. Это гарантирует, что стили палитры не пересекутся с другими стилями на вашем сайте.</p>
+      <p style="margin-top:8px;">Код включает все настройки: размер, отступы, форму элементов и hover-эффекты.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="startBtn">Начать работу 🚀</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let colors = [
+      { name: 'Лаванда', hex: '#8b5cf6' },
+      { name: 'Морская волна', hex: '#0ea5e9' },
+      { name: 'Мятный', hex: '#34d399' },
+      { name: 'Персик', hex: '#fb923c' },
+      { name: 'Розовый', hex: '#f472b6' },
+    ];
+
+    let currentShape = 'circle';
+    let currentHoverPreset = '1';
+    let currentDevice = 'desktop';
+    let shapeSize = 80;
+    let gapSize = 30;
+    let columns = '2';
+
+    let history = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
+
+    const STORAGE_KEY = 'palette_builder_data';
+    const HELP_KEY = 'palette_help_shown';
+
+    const colorListEl = document.getElementById('colorList');
+    const paletteRender = document.getElementById('paletteRender');
+    const exportCodePre = document.getElementById('exportCode');
+    const colorNameInput = document.getElementById('colorNameInput');
+    const colorPicker = document.getElementById('colorPicker');
+    const addBtn = document.getElementById('addColorBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const resetDefaultBtn = document.getElementById('resetDefaultBtn');
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+    const exportAndCopyBtn = document.getElementById('exportAndCopyBtn');
+    const previewContainer = document.getElementById('previewContainer');
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const sizeValue = document.getElementById('sizeValue');
+    const gapSlider = document.getElementById('gapSlider');
+    const gapValue = document.getElementById('gapValue');
+    const totalColors = document.getElementById('totalColors');
+    const colorCounter = document.getElementById('colorCounter');
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelpBtn = document.getElementById('closeHelpBtn');
+    const startBtn = document.getElementById('startBtn');
+
+    function showHelp() {
+      helpModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideHelp() {
+      helpModal.classList.remove('active');
+      document.body.style.overflow = '';
+      localStorage.setItem(HELP_KEY, 'true');
+    }
+
+    function checkFirstLaunch() {
+      const helpShown = localStorage.getItem(HELP_KEY);
+      if (!helpShown) {
+        setTimeout(showHelp, 500);
+      }
+    }
+
+    helpBtn.addEventListener('click', showHelp);
+    closeHelpBtn.addEventListener('click', hideHelp);
+    startBtn.addEventListener('click', hideHelp);
+    
+    helpModal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        hideHelp();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && helpModal.classList.contains('active')) {
+        hideHelp();
+      }
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getShapeClass(shape) {
+      return shape;
+    }
+
+    function saveState() {
+      history = history.slice(0, historyIndex + 1);
+      history.push(JSON.stringify({
+        colors: colors,
+        shape: currentShape,
+        hover: currentHoverPreset,
+        size: shapeSize,
+        gap: gapSize,
+        columns: columns
+      }));
+      
+      if (history.length > MAX_HISTORY) {
+        history.shift();
+      }
+      historyIndex = history.length - 1;
+      updateUndoRedoButtons();
+      saveToLocalStorage();
+    }
+
+    function updateUndoRedoButtons() {
+      undoBtn.disabled = historyIndex <= 0;
+      redoBtn.disabled = historyIndex >= history.length - 1;
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        restoreState(history[historyIndex]);
+        updateUndoRedoButtons();
+      }
+    }
+
+    function redo() {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        restoreState(history[historyIndex]);
+        updateUndoRedoButtons();
+      }
+    }
+
+    function restoreState(stateString) {
+      const state = JSON.parse(stateString);
+      colors = state.colors;
+      currentShape = state.shape || 'circle';
+      currentHoverPreset = state.hover || '1';
+      shapeSize = state.size || 80;
+      gapSize = state.gap || 30;
+      columns = state.columns || '2';
+      
+      sizeSlider.value = shapeSize;
+      sizeValue.textContent = shapeSize + 'px';
+      gapSlider.value = gapSize;
+      gapValue.textContent = gapSize + 'px';
+      
+      document.querySelectorAll('.grid-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.columns === columns);
+      });
+      
+      document.querySelectorAll('.shape-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.shape === currentShape);
+      });
+      
+      document.querySelectorAll('.hover-preset').forEach(el => {
+        el.classList.toggle('active', el.dataset.preset === currentHoverPreset);
+      });
+      
+      renderAll();
+    }
+
+    function saveToLocalStorage() {
+      try {
+        const data = {
+          colors: colors,
+          shape: currentShape,
+          hover: currentHoverPreset,
+          size: shapeSize,
+          gap: gapSize,
+          columns: columns
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+      }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          colors = data.colors || colors;
+          currentShape = data.shape || 'circle';
+          currentHoverPreset = data.hover || '1';
+          shapeSize = data.size || 80;
+          gapSize = data.gap || 30;
+          columns = data.columns || '2';
+          
+          sizeSlider.value = shapeSize;
+          sizeValue.textContent = shapeSize + 'px';
+          gapSlider.value = gapSize;
+          gapValue.textContent = gapSize + 'px';
+          
+          document.querySelectorAll('.grid-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.columns === columns);
+          });
+          
+          document.querySelectorAll('.shape-option').forEach(el => {
+            el.classList.toggle('active', el.dataset.shape === currentShape);
+          });
+          
+          document.querySelectorAll('.hover-preset').forEach(el => {
+            el.classList.toggle('active', el.dataset.preset === currentHoverPreset);
+          });
+          
+          return true;
+        }
+      } catch (e) {
+      }
+      return false;
+    }
+
+    let draggedItem = null;
+    let dragOverItem = null;
+
+    function initDragAndDrop() {
+      const items = document.querySelectorAll('.color-item-editor');
+      
+      items.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+          draggedItem = this;
+          this.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/html', this.innerHTML);
+        });
+
+        item.addEventListener('dragend', function(e) {
+          this.classList.remove('dragging');
+          document.querySelectorAll('.color-item-editor').forEach(el => {
+            el.classList.remove('drag-over');
+          });
+        });
+
+        item.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (this !== draggedItem) {
+            document.querySelectorAll('.color-item-editor').forEach(el => {
+              el.classList.remove('drag-over');
+            });
+            this.classList.add('drag-over');
+            dragOverItem = this;
+          }
+        });
+
+        item.addEventListener('dragleave', function(e) {
+          this.classList.remove('drag-over');
+        });
+
+        item.addEventListener('drop', function(e) {
+          e.preventDefault();
+          this.classList.remove('drag-over');
+          
+          if (draggedItem && draggedItem !== this) {
+            const fromIndex = parseInt(draggedItem.dataset.index);
+            const toIndex = parseInt(this.dataset.index);
+            
+            if (!isNaN(fromIndex) && !isNaN(toIndex) && fromIndex !== toIndex) {
+              const [removed] = colors.splice(fromIndex, 1);
+              colors.splice(toIndex, 0, removed);
+              renderAll();
+              saveState();
+            }
+          }
+          
+          draggedItem = null;
+          dragOverItem = null;
+        });
+      });
+    }
+
+    function renderColorList() {
+      if (!colors.length) {
+        colorListEl.innerHTML = `
+          <div class="empty-colors">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Нет цветов. Добавьте первый!
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      colors.forEach((color, index) => {
+        html += `
+          <div class="color-item-editor" draggable="true" data-index="${index}">
+            <span class="drag-handle">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </span>
+            <div class="color-dot" style="background-color: ${color.hex};"></div>
+            <input class="color-name-input" type="text" value="${escapeHtml(color.name)}" data-index="${index}" placeholder="Название">
+            <span class="color-hex">${color.hex}</span>
+            <button class="btn btn-danger btn-sm remove-color" data-index="${index}">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        `;
+      });
+      colorListEl.innerHTML = html;
+
+      document.querySelectorAll('.color-name-input').forEach(input => {
+        input.addEventListener('change', function(e) {
+          const index = parseInt(this.dataset.index);
+          const newName = this.value.trim() || 'Безымянный';
+          colors[index].name = newName;
+          renderAll();
+          saveState();
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            this.blur();
+          }
+        });
+      });
+
+      document.querySelectorAll('.remove-color').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const index = parseInt(this.dataset.index);
+          const item = this.closest('.color-item-editor');
+          item.classList.add('removing');
+          setTimeout(() => {
+            colors.splice(index, 1);
+            renderAll();
+            saveState();
+          }, 300);
+        });
+      });
+
+      initDragAndDrop();
+      
+      totalColors.textContent = colors.length;
+      colorCounter.textContent = colors.length;
+    }
+
+    function renderPalette() {
+      const paletteWrapper = paletteRender.querySelector('.palette-wrapper') || document.createElement('div');
+      paletteWrapper.className = 'palette-wrapper';
+      
+      if (!colors.length) {
+        paletteWrapper.innerHTML = `
+          <div class="empty-state">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Добавьте цвета для создания палитры
+          </div>
+        `;
+      } else {
+        let html = '';
+        colors.forEach(color => {
+          const shapeClass = getShapeClass(currentShape);
+          html += `
+            <div class="color-item">
+              <div class="color-shape ${shapeClass}" style="background-color: ${color.hex};"></div>
+              <div class="color-label">${escapeHtml(color.name)}</div>
+            </div>
+          `;
+        });
+        paletteWrapper.innerHTML = html;
+      }
+      
+      const columnsValue = columns === 'auto' ? 'repeat(auto-fill, minmax(120px, 1fr))' : `repeat(${columns}, 1fr)`;
+      paletteWrapper.style.gridTemplateColumns = columnsValue;
+      paletteWrapper.style.gap = `${gapSize}px ${gapSize * 0.67}px`;
+      
+      paletteWrapper.style.setProperty('--shape-size', shapeSize + 'px');
+      const mobileSize = Math.min(shapeSize, 70);
+      const mobileSmallSize = Math.min(shapeSize, 60);
+      paletteWrapper.style.setProperty('--shape-size-mobile', mobileSize + 'px');
+      paletteWrapper.style.setProperty('--shape-size-mobile-small', mobileSmallSize + 'px');
+      
+      if (!paletteRender.contains(paletteWrapper)) {
+        paletteRender.innerHTML = '';
+        paletteRender.appendChild(paletteWrapper);
+      }
+      
+      paletteRender.className = `custom-section hover-preset-${currentHoverPreset}`;
+    }
+
+    function updateExportCode() {
+      if (!colors.length) {
+        exportCodePre.textContent = '<!-- Нет цветов в палитре -->';
+        return;
+      }
+
+      let itemsHtml = '';
+      colors.forEach(color => {
+        const shapeClass = getShapeClass(currentShape);
+        itemsHtml += `
+          <div class="color-item">
+            <div class="color-shape ${shapeClass}" style="background-color: ${color.hex};"></div>
+            <div class="color-label">${escapeHtml(color.name)}</div>
+          </div>
+        `;
+      });
+
+      const shapeStyles = `
+    .custom-section .color-shape {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      background-color: #ccc;
+      cursor: default;
+      flex-shrink: 0;
+    }
+    .custom-section .color-shape.circle {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.square {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      border-radius: 12px;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.rounded {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      border-radius: 24px;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .custom-section .color-shape.hexagon {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      border: none;
+    }
+    .custom-section .color-shape.diamond {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      border: none;
+    }
+    .custom-section .color-shape.pentagon {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
+      border: none;
+    }
+    .custom-section .color-shape.star {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      border: none;
+    }
+    .custom-section .color-shape.heart {
+      width: var(--shape-size, ${shapeSize}px);
+      height: var(--shape-size, ${shapeSize}px);
+      clip-path: path('M40,80 C40,80 0,50 0,30 C0,10 20,0 40,15 C60,0 80,10 80,30 C80,50 40,80 40,80Z');
+      border: none;
+    }`;
+
+      const hoverStyles = `
+    .custom-section.hover-preset-1 .color-item:hover .color-shape {
+      transform: scale(1.15) translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      filter: brightness(1.08);
+    }
+    .custom-section.hover-preset-1 .color-item:hover .color-label {
+      transform: translateY(-4px);
+      background: white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .custom-section.hover-preset-2 .color-item:hover .color-shape {
+      transform: rotate(12deg) scale(1.08);
+      box-shadow: 0 0 40px rgba(108, 92, 231, 0.3), 0 12px 32px rgba(0,0,0,0.1);
+    }
+    .custom-section.hover-preset-2 .color-item:hover .color-label {
+      color: #6C5CE7;
+      font-weight: 600;
+      background: white;
+    }
+    .custom-section.hover-preset-3 .color-item:hover .color-shape {
+      animation: pulse 0.8s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .custom-section.hover-preset-3 .color-item:hover .color-label {
+      background: rgba(0,0,0,0.05);
+    }
+    .custom-section.hover-preset-4 .color-item:hover .color-shape {
+      transform: translateY(-14px) scale(1.02);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+      border-color: white;
+    }
+    .custom-section.hover-preset-4 .color-item:hover .color-label {
+      transform: translateY(-6px);
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      color: #6C5CE7;
+    }
+    .custom-section.hover-preset-5 .color-item:hover .color-shape {
+      filter: brightness(1.15) saturate(1.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .custom-section.hover-preset-5 .color-item:hover .color-label {
+      background: white;
+      font-weight: 600;
+    }
+    .custom-section.hover-preset-6 .color-item:hover .color-shape {
+      transform: scale(0.92) rotate(-4deg);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .custom-section.hover-preset-7 .color-item:hover .color-shape {
+      animation: wobble 0.6s ease;
+    }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+    .custom-section.hover-preset-8 .color-item:hover .color-shape {
+      transform: translateY(-6px) scale(1.06);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      filter: brightness(1.1) drop-shadow(0 0 20px rgba(108, 92, 231, 0.2));
+    }
+    .custom-section.hover-preset-8 .color-item:hover .color-label {
+      transform: scale(1.05);
+      background: white;
+      color: #6C5CE7;
+    }
+    .custom-section.hover-preset-9 .color-item:hover .color-shape {
+      transform: none;
+    }
+    .custom-section.hover-preset-9 .color-item:hover .color-label {
+      transform: none;
+    }`;
+
+      const responsiveStyles = `
+    @media (max-width: 480px) {
+      .custom-section .palette-wrapper {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px 12px;
+        padding: 12px;
+      }
+      .custom-section .color-item {
+        max-width: 100%;
+      }
+      .custom-section .color-shape.circle,
+      .custom-section .color-shape.square,
+      .custom-section .color-shape.rounded,
+      .custom-section .color-shape.hexagon,
+      .custom-section .color-shape.diamond,
+      .custom-section .color-shape.pentagon,
+      .custom-section .color-shape.star,
+      .custom-section .color-shape.heart {
+        width: var(--shape-size-mobile, ${Math.min(shapeSize, 70)}px);
+        height: var(--shape-size-mobile, ${Math.min(shapeSize, 70)}px);
+      }
+      .custom-section .color-label {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+    @media (max-width: 380px) {
+      .custom-section .palette-wrapper {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px 8px;
+        padding: 8px;
+      }
+      .custom-section .color-shape.circle,
+      .custom-section .color-shape.square,
+      .custom-section .color-shape.rounded,
+      .custom-section .color-shape.hexagon,
+      .custom-section .color-shape.diamond,
+      .custom-section .color-shape.pentagon,
+      .custom-section .color-shape.star,
+      .custom-section .color-shape.heart {
+        width: var(--shape-size-mobile-small, ${Math.min(shapeSize, 60)}px);
+        height: var(--shape-size-mobile-small, ${Math.min(shapeSize, 60)}px);
+      }
+      .custom-section .color-label {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+    }`;
+
+      const columnsValue = columns === 'auto' ? 'repeat(auto-fill, minmax(120px, 1fr))' : `repeat(${columns}, 1fr)`;
+      
+      const fullCode = `<style>
+  /* === Custom Palette (isolated) === */
+  .custom-section .palette-wrapper {
+    display: grid;
+    grid-template-columns: ${columnsValue};
+    gap: ${gapSize}px ${gapSize * 0.67}px;
+    justify-items: center;
+    align-items: start;
+    padding: 20px;
+    width: 100%;
+    --shape-size: ${shapeSize}px;
+    --shape-size-mobile: ${Math.min(shapeSize, 70)}px;
+    --shape-size-mobile-small: ${Math.min(shapeSize, 60)}px;
+  }
+  .custom-section .color-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 140px;
+  }
+  ${shapeStyles}
+  .custom-section .color-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    text-align: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    width: 100%;
+    word-break: break-word;
+    line-height: 1.4;
+  }
+  ${hoverStyles}
+  ${responsiveStyles}
+</style>
+<div class="custom-section hover-preset-${currentHoverPreset}">
+  <div class="palette-wrapper">
+    ${itemsHtml}
+  </div>
+</div>`;
+
+      exportCodePre.textContent = fullCode;
+    }
+
+    function renderAll() {
+      renderColorList();
+      renderPalette();
+      updateExportCode();
+    }
+
+    function addColor() {
+      const name = colorNameInput.value.trim() || 'Безымянный';
+      const hex = colorPicker.value;
+      colors.push({ name, hex });
+      renderAll();
+      saveState();
+      colorNameInput.value = '';
+      colorNameInput.focus();
+    }
+
+    function clearAll() {
+      if (colors.length && !confirm('Удалить все цвета?')) return;
+      colors = [];
+      renderAll();
+      saveState();
+    }
+    function resetToDefault() {
+      colors = [
+        { name: 'Лаванда', hex: '#8b5cf6' },
+        { name: 'Морская волна', hex: '#0ea5e9' },
+        { name: 'Мятный', hex: '#34d399' },
+        { name: 'Персик', hex: '#fb923c' },
+        { name: 'Розовый', hex: '#f472b6' },
+      ];
+      renderAll();
+      saveState();
+    }
+
+    function copyExportCode() {
+      const code = exportCodePre.textContent;
+      if (!code || code.includes('Нет цветов')) {
+        alert('Сначала добавьте цвета в палитру.');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(() => {
+        copyCodeBtn.textContent = '✅ Скопировано!';
+        copyCodeBtn.classList.add('copied');
+        setTimeout(() => {
+          copyCodeBtn.innerHTML = `
+            <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Копировать код
+          `;
+          copyCodeBtn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        const range = document.createRange();
+        range.selectNode(exportCodePre);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        copyCodeBtn.textContent = '✅ Скопировано!';
+        setTimeout(() => {
+          copyCodeBtn.innerHTML = `
+            <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Копировать код
+          `;
+        }, 2000);
+      });
+    }
+
+    document.querySelectorAll('.shape-option').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.shape-option').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        currentShape = this.dataset.shape;
+        renderAll();
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('.hover-preset').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.hover-preset').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        currentHoverPreset = this.dataset.preset;
+        renderAll();
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('.device-btn').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.device-btn').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        currentDevice = this.dataset.device;
+        previewContainer.className = `preview-container ${currentDevice}`;
+      });
+    });
+
+    sizeSlider.addEventListener('input', function() {
+      shapeSize = parseInt(this.value);
+      sizeValue.textContent = shapeSize + 'px';
+      renderAll();
+      saveState();
+    });
+
+    gapSlider.addEventListener('input', function() {
+      gapSize = parseInt(this.value);
+      gapValue.textContent = gapSize + 'px';
+      renderAll();
+      saveState();
+    });
+
+    document.querySelectorAll('.grid-btn').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.grid-btn').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        columns = this.dataset.columns;
+        renderAll();
+        saveState();
+      });
+    });
+
+    addBtn.addEventListener('click', addColor);
+    clearAllBtn.addEventListener('click', clearAll);
+    resetDefaultBtn.addEventListener('click', resetToDefault);
+    copyCodeBtn.addEventListener('click', copyExportCode);
+    exportAndCopyBtn.addEventListener('click', copyExportCode);
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+      if (e.key === 'Enter' && document.activeElement === colorNameInput) {
+        e.preventDefault();
+        addColor();
+      }
+    });
+
+    colorNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addColor();
+      }
+    });
+
+    const loaded = loadFromLocalStorage();
+    
+    history.push(JSON.stringify({
+      colors: colors,
+      shape: currentShape,
+      hover: currentHoverPreset,
+      size: shapeSize,
+      gap: gapSize,
+      columns: columns
+    }));
+    historyIndex = 0;
+    updateUndoRedoButtons();
+    
+    renderAll();
+    
+    checkFirstLaunch();
+  })();
+</script>
+
+</body>
+</html>
