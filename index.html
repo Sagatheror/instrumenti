@@ -10,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-font-smoothing: antialiased;
         }
 
         :root {
@@ -18,18 +19,22 @@
             --text-secondary: #CBD5E1;
             --accent-1: #2DD4BF;
             --border-color: rgba(45, 212, 191, 0.25);
-            --window-bg: rgba(10, 15, 30, 0.90);
-            --dock-bg: rgba(15, 25, 45, 0.75);
+            --window-bg: rgba(10, 15, 30, 0.75);
+            --dock-bg: rgba(15, 25, 45, 0.65);
             --glow-color: rgba(45, 212, 191, 0.4);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --noise-opacity: 0.03;
         }
 
         [data-theme="light"] {
             --bg-primary: #F0F4FF;
             --text-primary: #0A0A1A;
             --text-secondary: #475569;
-            --window-bg: rgba(255, 255, 255, 0.90);
-            --dock-bg: rgba(255, 255, 255, 0.75);
+            --window-bg: rgba(255, 255, 255, 0.75);
+            --dock-bg: rgba(255, 255, 255, 0.65);
             --border-color: rgba(45, 212, 191, 0.35);
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --noise-opacity: 0.02;
         }
 
         body {
@@ -39,7 +44,28 @@
             height: 100vh;
             width: 100vw;
             color: var(--text-primary);
-            transition: background 0.5s ease;
+            transition: background 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.6s ease;
+            position: relative;
+        }
+
+        /* Background Layer */
+        .background-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.6s ease, filter 0.6s ease;
+        }
+
+        /* Noise Texture Overlay */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
         #particle-canvas {
@@ -55,16 +81,18 @@
             z-index: 0;
             pointer-events: none;
             background: radial-gradient(circle at 50% 50%, rgba(45,212,191,0.08) 0%, transparent 70%);
+            transition: opacity 0.6s ease;
         }
 
+        /* --- Top Bar --- */
         .top-bar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 48px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px) saturate(180%);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -72,38 +100,24 @@
             font-size: 0.95rem;
             color: var(--text-primary);
             z-index: 5000;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
         }
 
-        .top-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .brand-mini {
-            font-weight: 800;
-            color: var(--accent-1);
-            text-shadow: 0 0 15px var(--glow-color);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
-
+        .top-bar-left { display: flex; align-items: center; gap: 1.5rem; }
+        
         .active-app-title {
-            opacity: 0.6;
+            opacity: 0.8;
             font-size: 0.9rem;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            transition: opacity 0.3s;
         }
 
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-        }
+        .top-bar-right { display: flex; align-items: center; gap: 1.2rem; }
 
         .clock-display {
             font-variant-numeric: tabular-nums;
@@ -113,11 +127,12 @@
             padding: 4px 12px;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
         }
 
         .top-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.05);
             color: var(--text-primary);
             cursor: pointer;
             width: 36px;
@@ -126,8 +141,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         .top-btn:hover {
@@ -135,8 +149,12 @@
             color: #000;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px var(--glow-color);
+            border-color: var(--accent-1);
         }
 
+        .top-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* --- Desktop & Windows --- */
         .desktop {
             position: absolute;
             top: 48px;
@@ -161,49 +179,57 @@
 
         .desktop.has-windows .welcome-widget { opacity: 0; }
 
-        .welcome-widget h1 {
-            font-size: 4rem;
-            background: linear-gradient(135deg, var(--accent-1), #fff);
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 1rem;
-        }
-
         .os-window {
             position: absolute;
             background: var(--window-bg);
-            backdrop-filter: blur(24px);
+            backdrop-filter: blur(30px) saturate(150%);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            border-radius: 18px;
+            box-shadow: 
+                0 20px 50px var(--shadow-color),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             min-width: 320px;
             min-height: 240px;
-            transition: opacity 0.2s, transform 0.2s, width 0.1s, height 0.1s;
-            animation: windowPop 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: 
+                opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
+                transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
+                width 0.1s, 
+                height 0.1s,
+                box-shadow 0.3s ease,
+                border-color 0.4s ease;
+            animation: windowPop 0.4s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         @keyframes windowPop {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.92) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .os-window.focused {
+            box-shadow: 
+                0 30px 70px var(--shadow-color),
+                0 0 0 1px var(--accent-1),
+                inset 0 0 20px rgba(45, 212, 191, 0.05);
+            z-index: 9999 !important;
         }
 
         .window-header {
             height: 44px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.02);
             border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 16px;
             cursor: grab;
+            transition: background 0.3s;
         }
 
-        .window-header:active {
-            cursor: grabbing;
-        }
+        .window-header:active { cursor: grabbing; }
+        .window-header:hover { background: rgba(255,255,255,0.04); }
 
         .window-title {
             display: flex;
@@ -214,10 +240,9 @@
             color: var(--text-primary);
         }
 
-        .window-controls {
-            display: flex;
-            gap: 8px;
-        }
+        .window-title svg { width: 16px; height: 16px; fill: var(--accent-1); }
+
+        .window-controls { display: flex; gap: 8px; }
 
         .win-btn {
             width: 14px;
@@ -228,7 +253,7 @@
             transition: transform 0.2s;
         }
 
-        .win-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+        .win-btn:hover { transform: scale(1.15); filter: brightness(1.2); }
         .win-close { background: #FF5F56; }
         .win-min { background: #FFBD2E; }
         .win-max { background: #27C93F; }
@@ -238,6 +263,7 @@
             position: relative;
             background: var(--bg-primary);
             overflow: hidden;
+            border-radius: 0 0 16px 16px;
         }
 
         iframe {
@@ -246,24 +272,18 @@
             border: none;
             display: block;
             pointer-events: auto;
+            background: var(--bg-primary);
         }
 
-        .resize-handle {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
-            cursor: nwse-resize;
-            z-index: 100;
-            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.3) 50%);
-            border-bottom-right-radius: 14px;
-        }
+        /* --- Resizing Handles --- */
+        .resize-handle { position: absolute; z-index: 100; }
+        .rh-r { top: 0; right: 0; bottom: 0; width: 6px; cursor: e-resize; }
+        .rh-b { bottom: 0; left: 0; right: 0; height: 6px; cursor: s-resize; }
+        .rh-br { bottom: 0; right: 0; width: 20px; height: 20px; cursor: nwse-resize; }
+        .rh-l { top: 0; left: 0; bottom: 0; width: 6px; cursor: w-resize; }
+        .rh-t { top: 0; left: 0; right: 0; height: 6px; cursor: n-resize; }
 
-        .resize-handle:hover {
-            background: linear-gradient(135deg, transparent 50%, var(--accent-1) 50%);
-        }
-
+        /* --- Dock --- */
         .dock-container {
             position: fixed;
             bottom: 1.5rem;
@@ -274,12 +294,14 @@
             align-items: flex-end;
             padding: 12px;
             background: var(--dock-bg);
-            backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px) saturate(180%);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            box-shadow: 
+                0 15px 40px var(--shadow-color),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
             gap: 12px;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         .dock-item {
@@ -292,10 +314,16 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
-            transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
             color: var(--text-secondary);
-            font-size: 1.5rem;
             border: 1px solid transparent;
+        }
+
+        .dock-item svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .dock-item:hover {
@@ -304,6 +332,10 @@
             border-color: var(--border-color);
             color: var(--accent-1);
             box-shadow: 0 10px 25px var(--glow-color);
+        }
+
+        .dock-item:hover svg {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .dock-item.active::after {
@@ -315,18 +347,7 @@
             background: var(--accent-1);
             border-radius: 50%;
             box-shadow: 0 0 8px var(--accent-1);
-        }
-
-        .dock-item.minimizing {
-            animation: dockBounce 0.4s ease;
-        }
-
-        @keyframes dockBounce {
-            0% { transform: translateY(0); }
-            30% { transform: translateY(-20px); }
-            50% { transform: translateY(0); }
-            70% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
+            transition: all 0.3s ease;
         }
 
         .dock-tooltip {
@@ -344,10 +365,12 @@
             border: 1px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .dock-item:hover .dock-tooltip { opacity: 1; }
 
+        /* --- Settings & Tutorial --- */
         .settings-panel {
             position: fixed;
             top: 60px;
@@ -355,14 +378,14 @@
             width: 400px;
             height: calc(100vh - 160px);
             background: var(--window-bg);
-            backdrop-filter: blur(40px);
+            backdrop-filter: blur(40px) saturate(200%);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             z-index: 5500;
             transition: right 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             padding: 2rem;
             overflow-y: auto;
-            box-shadow: -20px 0 60px rgba(0,0,0,0.3);
+            box-shadow: -20px 0 60px var(--shadow-color);
         }
 
         .settings-panel.open { right: 2rem; }
@@ -425,6 +448,7 @@
         }
         .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--glow-color); }
 
+        /* --- Quote Card --- */
         .quote-card {
             position: fixed;
             bottom: 120px;
@@ -435,7 +459,7 @@
             gap: 1rem;
             padding: 1rem 2rem;
             background: var(--window-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px) saturate(150%);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             color: var(--text-secondary);
@@ -443,13 +467,12 @@
             font-size: 0.95rem;
             z-index: 5;
             opacity: 0.6;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, transform 0.3s, border-color 0.4s;
             pointer-events: none;
+            box-shadow: 0 10px 30px var(--shadow-color);
         }
 
-        .quote-card:hover {
-            opacity: 1;
-        }
+        .quote-card:hover { opacity: 1; transform: translateX(-50%) translateY(-5px); }
 
         .quote-icon {
             width: 24px;
@@ -457,11 +480,166 @@
             color: var(--accent-1);
             opacity: 0.7;
             flex-shrink: 0;
+            fill: currentColor;
+            transition: color 0.4s ease;
         }
 
         .quote-text {
-            white-space: nowrap;
+            position: relative;
+        }
+
+        .quote-text::after {
+            content: '|';
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* --- Context Menu --- */
+        .context-menu {
+            position: fixed;
+            background: var(--window-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 8000;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            display: none;
+            min-width: 200px;
+        }
+
+        .context-menu.show { display: block; }
+
+        .context-item {
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-item:hover {
+            background: rgba(45, 212, 191, 0.15);
+            color: var(--accent-1);
+        }
+
+        .context-item svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .context-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        /* --- Wallpaper Selector --- */
+        .wallpaper-selector {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--window-bg);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            z-index: 8500;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            display: none;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .wallpaper-selector.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .wallpaper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .wallpaper-option {
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallpaper-option:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-1);
+        }
+
+        .wallpaper-option.active {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+
+        .wallpaper-option.custom {
+            background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(45,212,191,0.05));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .wallpaper-option.custom:hover {
+            border-color: var(--accent-1);
+            background: linear-gradient(135deg, rgba(45,212,191,0.3), rgba(45,212,191,0.1));
+        }
+
+        .custom-upload-input {
+            display: none;
+        }
+
+        .wallpaper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .wallpaper-header h3 {
+            color: var(--text-primary);
             font-size: 1.2rem;
+        }
+
+        .close-wallpaper {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .close-wallpaper:hover {
+            color: var(--text-primary);
         }
 
         ::-webkit-scrollbar { width: 8px; }
@@ -471,62 +649,91 @@
 
         @media (max-width: 768px) {
             .dock-container { bottom: 0; padding: 10px; border-radius: 16px 16px 0 0; border-bottom: none; width: 100%; justify-content: center; }
-            .dock-item { width: 48px; height: 48px; font-size: 1.3rem; }
+            .dock-item { width: 48px; height: 48px; }
+            .dock-item svg { width: 24px; height: 24px; }
             .settings-panel { width: 100%; right: -100%; border-radius: 0; height: 100vh; top: 0; }
             .settings-panel.open { right: 0; }
             .top-bar { padding: 0 1rem; }
-            .brand-mini span { display: none; }
-            .quote-card {
-                bottom: 100px;
-                padding: 0.8rem 1.5rem;
-                font-size: 0.85rem;
-            }
+            .quote-card { bottom: 100px; padding: 0.8rem 1.5rem; font-size: 0.85rem; }
+            .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body data-theme="dark">
 
+    <div class="background-layer" id="backgroundLayer"></div>
+    <div class="noise-overlay"></div>
     <canvas id="particle-canvas"></canvas>
     <div class="ambient-glow"></div>
 
     <div class="top-bar">
         <div class="top-bar-left">
-            <span class="active-app-title" id="activeAppTitle"><i class="fas fa-circle-dot" style="font-size: 8px;"></i> Ready</span>
+            <span class="active-app-title" id="activeAppTitle">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Ready
+            </span>
         </div>
         <div class="top-bar-right">
             <div class="clock-display" id="clock">00:00</div>
-            <button class="top-btn" onclick="toggleTutorial()" title="Обучение"><i class="fas fa-graduation-cap"></i></button>
-            <button class="top-btn" onclick="toggleSettings()" title="Настройки"><i class="fas fa-sliders-h"></i></button>
-            <button class="top-btn" onclick="toggleTheme()" title="Тема"><i class="fas fa-moon" id="themeIcon"></i></button>
+            <button class="top-btn" onclick="toggleTutorial()" title="Обучение">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+            </button>
+            <button class="top-btn" onclick="toggleSettings()" title="Настройки">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+            <button class="top-btn" onclick="toggleTheme()" title="Тема">
+                <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
         </div>
     </div>
 
     <div class="desktop" id="desktop">
         <div class="welcome-widget" id="welcomeWidget">
-            <h1>Центр Инструментов</h1>
+            <h1 style="font-size: 4rem; background: linear-gradient(135deg, var(--accent-1), #fff); -webkit-background-clip: text; color: transparent; margin-bottom: 1rem;">Центр Инструментов</h1>
             <p style="color: var(--text-secondary); font-size: 1.2rem;">Выберите приложение в нижней панели</p>
         </div>
         <div class="quote-card">
-            <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
-            </svg>
-            <span class="quote-text">Ничто не истинно, всё похер</span>
-            <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
-            </svg>
+            <svg class="quote-icon" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+            <span class="quote-text" id="quoteText">Ничто не истинно, всё похер</span>
+            <svg class="quote-icon" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
         </div>
     </div>
 
-    <div class="dock-container" id="dock">
+    <div class="dock-container" id="dock"></div>
+
+    <div class="context-menu" id="contextMenu">
+        <div class="context-item" onclick="createNewWindow()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Новое окно
+        </div>
+        <div class="context-item" onclick="minimizeAllWindows()">
+            <svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
+            Свернуть все
+        </div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="showWallpaperSelector()">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            Сменить фон
+        </div>
+        <div class="context-item" onclick="toggleSettings()">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            Настройки
+        </div>
+    </div>
+
+    <!-- Wallpaper Selector Modal -->
+    <div class="wallpaper-selector" id="wallpaperSelector">
+        <div class="wallpaper-header">
+            <h3>Выберите фон</h3>
+            <button class="close-wallpaper" onclick="hideWallpaperSelector()">×</button>
+        </div>
+        <div class="wallpaper-grid" id="wallpaperGrid">
+            <!-- Wallpapers will be generated by JS -->
+        </div>
+        <input type="file" class="custom-upload-input" id="customWallpaperInput" accept="image/*" onchange="handleCustomWallpaper(event)">
     </div>
 
     <div class="settings-panel" id="settingsPanel">
         <h2 style="margin-bottom: 2rem; color: var(--text-primary);">Настройки системы</h2>
-        
         <div class="settings-group">
             <label>Тема оформления</label>
             <div class="options" id="themeOptions">
@@ -534,7 +741,6 @@
                 <button onclick="applyTheme('light')">☀️ Светлая</button>
             </div>
         </div>
-
         <div class="settings-group">
             <label>Акцентный цвет</label>
             <div class="color-picker-grid">
@@ -545,50 +751,117 @@
                 <div class="color-option" style="background: #F59E0B;" onclick="changeColor('#F59E0B')"></div>
             </div>
         </div>
-
+        <div class="settings-group">
+            <label>Эффекты</label>
+            <div class="options">
+                <button onclick="toggleSound()" id="soundBtn">🔊 Звук: Вкл</button>
+                <button onclick="toggleParticles()" id="particleBtn">✨ Частицы: Вкл</button>
+            </div>
+        </div>
         <button class="btn-primary" style="width: 100%; margin-top: 1rem; background: rgba(255,255,255,0.1); color: var(--text-primary);" onclick="toggleSettings()">Закрыть настройки</button>
     </div>
 
     <div class="tutorial-overlay" id="tutorialOverlay">
         <div class="tutorial-card">
-            <h2>🎓 Добро пожаловать в Центр Инструментов</h2>
+            <h2>🎓 Добро пожаловать</h2>
             <p style="margin: 1.5rem 0; color: var(--text-secondary); line-height: 1.6;">
-                Теперь интерфейс работает как полноценный рабочий стол.<br><br>
-                1. Нажмите на иконку в <b>инструмента</b> внизу, чтобы открыть окно.<br>
-                2. Окна можно <b>перетаскивать</b> за заголовок.<br>
-                3. Потяните за <b>правый нижний угол</b>, чтобы изменить размер.<br>
-                4. Желтая кнопка сворачивает окно обратно в нижнюю панель.
+                Интерфейс работает как полноценный рабочий стол.<br><br>
+                1. Окна можно <b>перетаскивать</b> за заголовок.<br>
+                2. Потяните за <b>любой край</b>, чтобы изменить размер.<br>
+                3. Желтая кнопка сворачивает окно с анимацией в док.<br>
+                4. Правый клик открывает контекстное меню.<br>
             </p>
             <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
         </div>
     </div>
 
     <script>
+        // SVG Icons Map
+        const ICONS = {
+            chart: '<path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-7h-2v7zm4 0h2v-10h-2v10z"/>',
+            file: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>',
+            code: '<path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>',
+            table: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 16H5v-4h7v4zm0-6H5V9h7v4zm0-6H5V5h7v2zm8 12h-7v-4h7v4zm0-6h-7v-4h7v4zm0-6h-7V5h7v2z"/>',
+            pen: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>',
+            palette: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>',
+            moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
+            sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>'
+        };
+
         const MODULES = [
-            { id: "page1", title: "ГРАФИК", icon: "fas fa-chart-line", url: "https://sagatheror.github.io/instrumenti/new-interface.html" },
-            { id: "page2", title: "ОПИСАНИЕ", icon: "fas fa-file-alt", url: "https://sagatheror.github.io/instrumenti/description-new.html" },
-            { id: "page5", title: "1С КОД", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
-            { id: "page6", title: "CSV", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
-            { id: "page7", title: "ФОРМА", icon: "fas fa-file-signature", url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html" },
-            { id: "page8", title: "ТЕКСТ", icon: "fas fa-pen-fancy", url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html" },
-            { id: "page9", title: "ПАЛИТРЫ", icon: "fas fa-palette", url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html" }
+            { id: "page1", title: "ГРАФИК", icon: ICONS.chart, url: "https://sagatheror.github.io/instrumenti/new-interface.html" },
+            { id: "page2", title: "ОПИСАНИЕ", icon: ICONS.file, url: "https://sagatheror.github.io/instrumenti/description-new.html" },
+            { id: "page5", title: "1С КОД", icon: ICONS.code, url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
+            { id: "page6", title: "CSV", icon: ICONS.table, url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
+            { id: "page7", title: "ФОРМА", icon: ICONS.pen, url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html" },
+            { id: "page8", title: "ТЕКСТ", icon: ICONS.pen, url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html" },
+            { id: "page9", title: "ПАЛИТРЫ", icon: ICONS.palette, url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html" }
+        ];
+
+        const QUOTES = [
+            "Ничто не истинно, всё похер",
+            "Код — это поэзия для машин",
+            "Баги — это фичи, которые ещё не поняли",
+            "Работает? Не трогай!",
+            "Лучший код — это тот, который не нужно писать"
+        ];
+
+        // Wallpaper options with gradient backgrounds
+        const WALLPAPERS = [
+            { name: "Default Dark", value: "linear-gradient(135deg, #05050F 0%, #0A0A1A 100%)", type: 'dark' },
+            { name: "Deep Space", value: "linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%)", type: 'dark' },
+            { name: "Ocean Blue", value: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", type: 'dark' },
+            { name: "Sunset Purple", value: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", type: 'dark' },
+            { name: "Forest Green", value: "linear-gradient(135deg, #134e5e 0%, #71b280 100%)", type: 'dark' },
+            { name: "Light Default", value: "linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%)", type: 'light' },
+            { name: "Soft Pink", value: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", type: 'light' },
+            { name: "Mint Fresh", value: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)", type: 'light' }
         ];
 
         let zIndexCounter = 100;
-        let windows = {}; 
+        let windows = {};
+        let soundEnabled = true;
+        let particlesEnabled = true;
+        let quoteIndex = 0;
+        let currentWallpaper = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initParticles();
             buildDock();
             updateClock();
             setInterval(updateClock, 1000);
+            setInterval(rotateQuote, 8000);
             
             if (!localStorage.getItem('os_tutorial_seen')) {
                 setTimeout(() => document.getElementById('tutorialOverlay').classList.add('show'), 500);
             }
             
             loadSettings();
+            loadWindowPositions();
+            loadWallpaper();
+            
+            // Context menu
+            document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showContextMenu(e.clientX, e.clientY);
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.context-menu')) {
+                    hideContextMenu();
+                }
+                if (!e.target.closest('.wallpaper-selector') && !e.target.closest('.context-item')) {
+                    hideWallpaperSelector();
+                }
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
         });
+
+        function getSvg(iconPath) {
+            return `<svg viewBox="0 0 24 24">${iconPath}</svg>`;
+        }
 
         function buildDock() {
             const dock = document.getElementById('dock');
@@ -596,29 +869,21 @@
                 const item = document.createElement('div');
                 item.className = 'dock-item';
                 item.id = `dock-${mod.id}`;
-                item.innerHTML = `
-                    <i class="${mod.icon}"></i>
-                    <div class="dock-tooltip">${mod.title}</div>
-                `;
+                item.innerHTML = `${getSvg(mod.icon)}<div class="dock-tooltip">${mod.title}</div>`;
                 item.onclick = () => toggleWindow(mod.id);
                 dock.appendChild(item);
             });
         }
 
         function toggleWindow(id) {
+            playSound('click');
             const mod = MODULES.find(m => m.id === id);
-            
             if (!windows[id] || windows[id].dataset.state === 'minimized') {
-                if (!windows[id]) {
-                    createWindow(mod);
-                } else {
-                    restoreWindow(id);
-                }
-            } 
-            else if (parseInt(windows[id].style.zIndex) < zIndexCounter) {
+                if (!windows[id]) createWindow(mod);
+                else restoreWindow(id);
+            } else if (parseInt(windows[id].style.zIndex) < zIndexCounter) {
                 focusWindow(windows[id]);
-            }
-            else {
+            } else {
                 minimizeWindow(id);
             }
         }
@@ -628,26 +893,31 @@
             win.className = 'os-window';
             win.id = `win-${mod.id}`;
             
+            // Load saved position or use default
+            const savedPos = getWindowPosition(mod.id);
             const offset = Object.keys(windows).length * 40;
-            win.style.left = (150 + offset) + 'px';
-            win.style.top = (80 + offset) + 'px';
-            win.style.width = '850px';
-            win.style.height = '650px';
+            
+            win.style.left = (savedPos?.x || (150 + offset)) + 'px';
+            win.style.top = (savedPos?.y || (80 + offset)) + 'px';
+            win.style.width = (savedPos?.width || 850) + 'px';
+            win.style.height = (savedPos?.height || 650) + 'px';
             win.style.zIndex = ++zIndexCounter;
 
-           win.innerHTML = `
-    <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
-        <div class="window-title"><i class="${mod.icon}"></i> ${mod.title}</div>
-        <div class="window-controls">
-            <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
-            <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
-            <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
-        </div>
-    </div>
-    <div class="window-content">
-                    <iframe src="${mod.url}" loading="lazy"></iframe>
+            win.innerHTML = `
+                <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
+                    <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
+                    <div class="window-controls">
+                        <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
+                        <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
+                        <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
+                    </div>
                 </div>
-                <div class="resize-handle" onmousedown="initResize(event, '${mod.id}')"></div>
+                <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
+                <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
+                <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
+                <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
+                <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
+                <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
             `;
 
             win.onmousedown = () => focusWindow(win);
@@ -657,53 +927,79 @@
             updateActiveAppTitle(mod.title, mod.icon);
             document.getElementById(`dock-${mod.id}`).classList.add('active');
             document.getElementById('desktop').classList.add('has-windows');
+            
+            playSound('open');
         }
 
         function minimizeWindow(id) {
             const win = windows[id];
-            if (win) {
+            const dockItem = document.getElementById(`dock-${id}`);
+            
+            if (win && dockItem) {
                 win.dataset.state = 'minimized';
+                
+                const winRect = win.getBoundingClientRect();
+                const dockRect = dockItem.getBoundingClientRect();
+                
+                const scaleX = dockRect.width / winRect.width;
+                const scaleY = dockRect.height / winRect.height;
+                const translateX = dockRect.left - winRect.left + (dockRect.width - winRect.width) / 2;
+                const translateY = dockRect.top - winRect.top + (dockRect.height - winRect.height) / 2;
+
+                win.style.transformOrigin = 'top left';
+                win.style.transition = 'all 0.4s cubic-bezier(0.2, 1, 0.3, 1)';
+                win.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
                 win.style.opacity = '0';
-                win.style.transform = 'scale(0.8) translateY(100px)';
                 win.style.pointerEvents = 'none';
                 
-                const dockItem = document.getElementById(`dock-${id}`);
-                dockItem.classList.add('minimizing');
-                setTimeout(() => dockItem.classList.remove('minimizing'), 500);
-                
-                updateActiveAppTitle("Ready", "fas fa-circle-dot");
+                setTimeout(() => {
+                    win.style.display = 'none';
+                    win.style.transform = ''; 
+                }, 400);
+
+                updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
+                playSound('minimize');
             }
         }
 
         function restoreWindow(id) {
             const win = windows[id];
             if (win) {
+                win.style.display = 'flex';
                 win.dataset.state = 'normal';
                 win.style.pointerEvents = 'auto';
-                win.style.opacity = '1';
-                win.style.transform = 'scale(1) translateY(0)';
-                focusWindow(win);
                 
+                requestAnimationFrame(() => {
+                    win.style.transition = 'all 0.4s cubic-bezier(0.2, 1, 0.3, 1)';
+                    win.style.opacity = '1';
+                    win.style.transform = 'scale(1)';
+                });
+                
+                focusWindow(win);
                 const mod = MODULES.find(m => m.id === id);
                 updateActiveAppTitle(mod.title, mod.icon);
+                playSound('restore');
             }
         }
 
         function closeWindow(id) {
             if (windows[id]) {
+                saveWindowPosition(id);
                 windows[id].remove();
                 delete windows[id];
                 document.getElementById(`dock-${id}`).classList.remove('active');
-                
                 if (Object.keys(windows).length === 0) {
                     document.getElementById('desktop').classList.remove('has-windows');
-                    updateActiveAppTitle("Ready", "fas fa-circle-dot");
+                    updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
                 }
+                playSound('close');
             }
         }
 
         function focusWindow(win) {
+            document.querySelectorAll('.os-window').forEach(w => w.classList.remove('focused'));
             win.style.zIndex = ++zIndexCounter;
+            win.classList.add('focused');
             const id = win.id.replace('win-', '');
             const mod = MODULES.find(m => m.id === id);
             if (mod) updateActiveAppTitle(mod.title, mod.icon);
@@ -723,107 +1019,331 @@
                     win.dataset.prevLeft = win.style.left;
                     win.dataset.prevWidth = win.style.width;
                     win.dataset.prevHeight = win.style.height;
-                    
                     win.style.top = '48px';
                     win.style.left = '0';
                     win.style.width = '100%';
                     win.style.height = 'calc(100vh - 148px)';
                     win.dataset.maximized = 'true';
                 }
+                playSound('maximize');
             }
         }
 
-        function updateActiveAppTitle(title, iconClass) {
+        function updateActiveAppTitle(title, iconSvg) {
             const el = document.getElementById('activeAppTitle');
-            el.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+            el.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--accent-1)">${iconSvg}</svg> ${title}`;
         }
 
-        let isDragging = false;
-        let currentWin = null;
-        let dragOffsetX = 0;
-        let dragOffsetY = 0;
-
+        // Dragging with Snap-to-Grid
+        let isDragging = false, currentWin = null, dragOffsetX = 0, dragOffsetY = 0;
         function startDrag(e, id) {
-    if (e.target.closest('.window-controls')) return;
-    
-    const win = windows[id];
-    if (win.dataset.maximized === 'true') return;
-
+            if (e.target.closest('.window-controls')) return;
+            const win = windows[id];
+            if (win.dataset.maximized === 'true') return;
             isDragging = true;
             currentWin = win;
             focusWindow(win);
-
             const rect = win.getBoundingClientRect();
             dragOffsetX = e.clientX - rect.left;
             dragOffsetY = e.clientY - rect.top;
-
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
-
+        
         function onDrag(e) {
             if (!isDragging || !currentWin) return;
             let x = e.clientX - dragOffsetX;
-            let y = e.clientY - dragOffsetY;
-            y = Math.max(48, y);
+            let y = Math.max(48, e.clientY - dragOffsetY);
+            
+            // Snap to edges
+            const snapThreshold = 20;
+            const winWidth = parseInt(currentWin.offsetWidth);
+            const winHeight = parseInt(currentWin.offsetHeight);
+            
+            if (x < snapThreshold) x = 0;
+            if (x > window.innerWidth - winWidth - snapThreshold) x = window.innerWidth - winWidth;
+            if (y < 48 + snapThreshold) y = 48;
+            
             currentWin.style.left = x + 'px';
             currentWin.style.top = y + 'px';
         }
-
+        
         function stopDrag() {
-            isDragging = false;
+            isDragging = false; 
             currentWin = null;
             document.removeEventListener('mousemove', onDrag);
             document.removeEventListener('mouseup', stopDrag);
+            saveWindowPosition(currentWin?.id.replace('win-', ''));
         }
 
-        let isResizing = false;
-        let resizeWin = null;
-        let startX, startY, startWidth, startHeight;
-
-        function initResize(e, id) {
-            e.preventDefault();
-            e.stopPropagation();
-            isResizing = true;
-            resizeWin = windows[id];
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = parseInt(document.defaultView.getComputedStyle(resizeWin).width, 10);
-            startHeight = parseInt(document.defaultView.getComputedStyle(resizeWin).height, 10);
-            
+        // Resizing Logic
+        let isResizing = false, resizeWin = null, resizeDir = '', startX, startY, startW, startH, startL, startT;
+        function initResize(e, id, dir) {
+            e.preventDefault(); e.stopPropagation();
+            isResizing = true; resizeWin = windows[id]; resizeDir = dir;
+            startX = e.clientX; startY = e.clientY;
+            startW = parseInt(resizeWin.offsetWidth);
+            startH = parseInt(resizeWin.offsetHeight);
+            startL = parseInt(resizeWin.offsetLeft);
+            startT = parseInt(resizeWin.offsetTop);
             document.addEventListener('mousemove', doResize);
             document.addEventListener('mouseup', stopResize);
         }
-
+        
         function doResize(e) {
             if (!isResizing || !resizeWin) return;
-            const newWidth = startWidth + (e.clientX - startX);
-            const newHeight = startHeight + (e.clientY - startY);
-            
-            if (newWidth > 320) resizeWin.style.width = newWidth + 'px';
-            if (newHeight > 240) resizeWin.style.height = newHeight + 'px';
-        }
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
 
+            if (resizeDir.includes('r')) resizeWin.style.width = Math.max(320, startW + dx) + 'px';
+            if (resizeDir.includes('b')) resizeWin.style.height = Math.max(240, startH + dy) + 'px';
+            if (resizeDir.includes('l')) {
+                const newW = Math.max(320, startW - dx);
+                resizeWin.style.width = newW + 'px';
+                resizeWin.style.left = (startL + dx) + 'px';
+            }
+            if (resizeDir.includes('t')) {
+                const newH = Math.max(240, startH - dy);
+                resizeWin.style.height = newH + 'px';
+                resizeWin.style.top = Math.max(48, startT + dy) + 'px';
+            }
+        }
+        
         function stopResize() {
-            isResizing = false;
-            resizeWin = null;
+            isResizing = false; resizeWin = null;
             document.removeEventListener('mousemove', doResize);
             document.removeEventListener('mouseup', stopResize);
         }
 
         function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
         }
 
-        function toggleSettings() {
-            document.getElementById('settingsPanel').classList.toggle('open');
+        function rotateQuote() {
+            quoteIndex = (quoteIndex + 1) % QUOTES.length;
+            const quoteEl = document.getElementById('quoteText');
+            quoteEl.style.opacity = '0';
+            setTimeout(() => {
+                quoteEl.textContent = QUOTES[quoteIndex];
+                quoteEl.style.opacity = '1';
+            }, 300);
         }
 
-        function toggleTutorial() {
-            document.getElementById('tutorialOverlay').classList.add('show');
+        // Context Menu
+        function showContextMenu(x, y) {
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('show');
+            playSound('click');
         }
 
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('show');
+        }
+
+        function createNewWindow() {
+            const randomMod = MODULES[Math.floor(Math.random() * MODULES.length)];
+            toggleWindow(randomMod.id);
+        }
+
+        function minimizeAllWindows() {
+            Object.keys(windows).forEach(id => minimizeWindow(id));
+        }
+
+        // Wallpaper Functions
+        function initWallpaperSelector() {
+            const grid = document.getElementById('wallpaperGrid');
+            grid.innerHTML = '';
+            
+            // Filter wallpapers based on current theme
+            const currentTheme = document.body.getAttribute('data-theme');
+            const filteredWallpapers = WALLPAPERS.filter(wp => wp.type === currentTheme);
+            
+            filteredWallpapers.forEach((wp, index) => {
+                const option = document.createElement('div');
+                option.className = 'wallpaper-option';
+                option.style.background = wp.value;
+                option.onclick = () => applyWallpaper(wp.value, wp.type);
+                
+                if (currentWallpaper === wp.value) {
+                    option.classList.add('active');
+                }
+                
+                grid.appendChild(option);
+            });
+            
+            // Add custom upload option
+            const customOption = document.createElement('div');
+            customOption.className = 'wallpaper-option custom';
+            customOption.innerHTML = '<svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: var(--text-secondary);"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
+            customOption.onclick = () => document.getElementById('customWallpaperInput').click();
+            grid.appendChild(customOption);
+        }
+
+        function showWallpaperSelector() {
+            initWallpaperSelector();
+            document.getElementById('wallpaperSelector').classList.add('show');
+            hideContextMenu();
+            playSound('click');
+        }
+
+        function hideWallpaperSelector() {
+            document.getElementById('wallpaperSelector').classList.remove('show');
+        }
+
+        function applyWallpaper(value, type = null) {
+            const bgLayer = document.getElementById('backgroundLayer');
+            bgLayer.style.background = value;
+            bgLayer.style.opacity = '1';
+            
+            // Reset filter for gradients
+            bgLayer.style.filter = 'none';
+            
+            // If it's a custom image (starts with url), add darkening filter in dark mode
+            if (value.startsWith('url(') && document.body.getAttribute('data-theme') === 'dark') {
+                bgLayer.style.filter = 'brightness(0.7)';
+            }
+            
+            currentWallpaper = value;
+            
+            // Save separately for dark and light themes
+            const theme = document.body.getAttribute('data-theme');
+            localStorage.setItem(`os_wallpaper_${theme}`, value);
+            
+            // Update active state in selector
+            document.querySelectorAll('.wallpaper-option').forEach(opt => {
+                opt.classList.remove('active');
+                // Note: simple check, might need refinement for custom uploads
+            });
+            
+            playSound('click');
+        }
+
+        function handleCustomWallpaper(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageUrl = `url(${e.target.result})`;
+                    applyWallpaper(imageUrl);
+                    hideWallpaperSelector();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function loadWallpaper() {
+            const theme = document.body.getAttribute('data-theme');
+            const savedWallpaper = localStorage.getItem(`os_wallpaper_${theme}`);
+            
+            if (savedWallpaper) {
+                applyWallpaper(savedWallpaper);
+            } else {
+                // Set default based on theme
+                const defaultWp = WALLPAPERS.find(wp => wp.type === theme);
+                if (defaultWp) applyWallpaper(defaultWp.value, theme);
+            }
+        }
+
+        // Keyboard Shortcuts
+        function handleKeyboard(e) {
+            if (e.ctrlKey && e.key === 'Tab') {
+                e.preventDefault();
+                const winIds = Object.keys(windows);
+                if (winIds.length > 0) {
+                    const currentIndex = winIds.findIndex(id => windows[id].classList.contains('focused'));
+                    const nextIndex = (currentIndex + 1) % winIds.length;
+                    focusWindow(windows[winIds[nextIndex]]);
+                }
+            }
+            
+            if (e.metaKey && e.key === 'd') {
+                e.preventDefault();
+                minimizeAllWindows();
+            }
+            
+            if (e.key === 'Escape') {
+                hideWallpaperSelector();
+                hideContextMenu();
+            }
+        }
+
+        // Sound Effects
+        function playSound(type) {
+            if (!soundEnabled) return;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            switch(type) {
+                case 'click':
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    break;
+                case 'open':
+                    oscillator.frequency.value = 600;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    break;
+                case 'close':
+                    oscillator.frequency.value = 400;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                    break;
+                case 'minimize':
+                    oscillator.frequency.value = 500;
+                    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    break;
+            }
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+            localStorage.setItem('os_sound', soundEnabled);
+        }
+
+        function toggleParticles() {
+            particlesEnabled = !particlesEnabled;
+            document.getElementById('particleBtn').textContent = particlesEnabled ? '✨ Частицы: Вкл' : '❌ Частицы: Выкл';
+            document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
+            localStorage.setItem('os_particles', particlesEnabled);
+        }
+
+        // Window Position Persistence
+        function saveWindowPosition(id) {
+            if (!id || !windows[id]) return;
+            const win = windows[id];
+            const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
+            positions[id] = {
+                x: parseInt(win.style.left),
+                y: parseInt(win.style.top),
+                width: parseInt(win.style.width),
+                height: parseInt(win.style.height)
+            };
+            localStorage.setItem('os_window_positions', JSON.stringify(positions));
+        }
+
+        function loadWindowPositions() {
+            // Positions will be loaded when windows are created
+        }
+
+        function getWindowPosition(id) {
+            const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
+            return positions[id];
+        }
+
+        function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
+        function toggleTutorial() { document.getElementById('tutorialOverlay').classList.add('show'); }
         function closeTutorial() {
             document.getElementById('tutorialOverlay').classList.remove('show');
             localStorage.setItem('os_tutorial_seen', 'true');
@@ -831,8 +1351,12 @@
 
         function applyTheme(theme) {
             document.body.setAttribute('data-theme', theme);
-            document.getElementById('themeIcon').className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            const icon = document.getElementById('themeIcon');
+            icon.innerHTML = theme === 'light' ? ICONS.sun : ICONS.moon;
             localStorage.setItem('os_theme', theme);
+            
+            // Smart wallpaper switching
+            loadWallpaper();
             
             document.querySelectorAll('#themeOptions button').forEach(b => {
                 b.classList.remove('active');
@@ -847,6 +1371,8 @@
 
         function changeColor(color) {
             document.documentElement.style.setProperty('--accent-1', color);
+            document.documentElement.style.setProperty('--glow-color', color + '66');
+            document.documentElement.style.setProperty('--border-color', color + '40');
             localStorage.setItem('os_color', color);
             document.querySelectorAll('.color-option').forEach(el => {
                 el.classList.remove('active');
@@ -859,19 +1385,32 @@
             if (theme) applyTheme(theme);
             const color = localStorage.getItem('os_color');
             if (color) changeColor(color);
+            const sound = localStorage.getItem('os_sound');
+            if (sound !== null) {
+                soundEnabled = sound === 'true';
+                document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+            }
+            const particles = localStorage.getItem('os_particles');
+            if (particles !== null) {
+                particlesEnabled = particles === 'true';
+                document.getElementById('particleBtn').textContent = particlesEnabled ? '✨ Частицы: Вкл' : '❌ Частицы: Выкл';
+                document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
+            }
         }
 
         function initParticles() {
             const canvas = document.getElementById("particle-canvas");
             const ctx = canvas.getContext("2d");
             let particles = [];
+            let mouse = { x: null, y: null };
             
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize); resize();
+            
+            document.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
 
             class P {
                 constructor() {
@@ -880,25 +1419,46 @@
                     this.vx = (Math.random() - 0.5) * 0.5;
                     this.vy = (Math.random() - 0.5) * 0.5;
                     this.size = Math.random() * 2;
+                    this.baseX = this.x;
+                    this.baseY = this.y;
                 }
                 update() {
+                    if (mouse.x != null) {
+                        const dx = mouse.x - this.x;
+                        const dy = mouse.y - this.y;
+                        const distance = Math.sqrt(dx*dx + dy*dy);
+                        if (distance < 100) {
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const force = (100 - distance) / 100;
+                            this.vx -= forceDirectionX * force * 0.5;
+                            this.vy -= forceDirectionY * force * 0.5;
+                        }
+                    }
+                    
                     this.x += this.vx;
                     this.y += this.vy;
+                    
+                    this.vx += (this.baseX - this.x) * 0.01;
+                    this.vy += (this.baseY - this.y) * 0.01;
+                    
                     if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
                     if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
                 }
                 draw() {
                     ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent-1');
                     ctx.globalAlpha = 0.3;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
                 }
             }
-
+            
             for(let i=0; i<80; i++) particles.push(new P());
-
+            
             function animate() {
+                if (!particlesEnabled) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
                 ctx.clearRect(0,0,canvas.width, canvas.height);
                 particles.forEach(p => { p.update(); p.draw(); });
                 requestAnimationFrame(animate);
