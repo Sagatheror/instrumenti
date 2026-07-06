@@ -987,6 +987,93 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); border-radius: 2px; }
+        .quote-container {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+    opacity: 0.6;
+    transition: all 0.4s ease;
+}
+
+.quote-container:hover {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-3px);
+}
+
+.quote-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(15, 25, 45, 0.6);
+    backdrop-filter: blur(12px);
+    padding: 0.8rem 1.5rem;
+    border-radius: 24px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 450px;
+}
+
+[data-theme="light"] .quote-card {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.quote-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    color: var(--accent-1);
+    filter: drop-shadow(0 0 8px var(--glow-color));
+}
+
+.quote-text {
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+@media (max-width: 800px) {
+    .quote-container {
+        bottom: 5.5rem;
+        left: 1rem;
+        right: 1rem;
+        transform: none;
+    }
+    
+    .quote-container:hover {
+        transform: translateY(-2px);
+    }
+    
+    .quote-card {
+        padding: 0.6rem 1rem;
+        gap: 0.6rem;
+    }
+    
+    .quote-icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .quote-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .quote-container {
+        bottom: 5rem;
+    }
+    
+    .quote-text {
+        font-size: 0.7rem;
+    }
+}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -1030,6 +1117,19 @@
                             Используйте любой инструмент нажав на кнопки ниже или на боковой панели.<br>
                             <small style="opacity:0.6;">⌨️ Клавиши 1-7 для быстрого переключения</small>
                         </div>
+                        <div class="quote-container">
+    <div class="quote-card">
+        <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+        </svg>
+        <span class="quote-text">Ничто не истинно, всё похер</span>
+        <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+        </svg>
+    </div>
+</div>
                         <div class="orbital-grid" id="quickAccessGrid"></div>
                     </div>
                     <iframe id="dynamicFrame" class="content-iframe" style="display: none;"></iframe>
