@@ -9,1822 +9,902 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         :root {
             --bg-primary: #05050F;
-            --bg-secondary: rgba(8, 12, 25, 0.85);
             --text-primary: #EFF6FF;
             --text-secondary: #CBD5E1;
-            --text-muted: #94A3B8;
-            --text-light: #F1F5F9;
             --accent-1: #2DD4BF;
-            --accent-2: #38BDF8;
-            --accent-3: #818CF8;
-            --glow-color: rgba(45, 212, 191, 0.4);
-            --glow-strong: rgba(45, 212, 191, 0.6);
-            --card-bg: rgba(15, 25, 45, 0.8);
             --border-color: rgba(45, 212, 191, 0.25);
-            --border-light: rgba(45, 212, 191, 0.1);
-            --shadow-color: rgba(45, 212, 191, 0.1);
-            --font-size-base: 16px;
-            --transition-speed: 0.3s;
-            --ring-item-bg: rgba(10, 15, 30, 0.7);
-            --ring-item-border: rgba(45, 212, 191, 0.15);
-            --header-btn-bg: rgba(0, 0, 0, 0.3);
-            --status-bg: rgba(0, 0, 0, 0.4);
-            --tooltip-bg: rgba(8, 12, 25, 0.95);
-            --settings-bg: rgba(8, 12, 25, 0.85);
-            --neuro-card-hover: rgba(30, 45, 80, 0.8);
-            --color-option-border: rgba(255, 255, 255, 0.2);
-            --shadow-strong: rgba(0, 0, 0, 0.5);
+            --window-bg: rgba(10, 15, 30, 0.90);
+            --dock-bg: rgba(15, 25, 45, 0.75);
+            --glow-color: rgba(45, 212, 191, 0.4);
         }
 
         [data-theme="light"] {
             --bg-primary: #F0F4FF;
-            --bg-secondary: rgba(255, 255, 255, 0.92);
             --text-primary: #0A0A1A;
             --text-secondary: #475569;
-            --text-muted: #64748B;
-            --text-light: #1E293B;
-            --card-bg: rgba(255, 255, 255, 0.92);
+            --window-bg: rgba(255, 255, 255, 0.90);
+            --dock-bg: rgba(255, 255, 255, 0.75);
             --border-color: rgba(45, 212, 191, 0.35);
-            --border-light: rgba(45, 212, 191, 0.15);
-            --shadow-color: rgba(45, 212, 191, 0.15);
-            --glow-color: rgba(45, 212, 191, 0.25);
-            --glow-strong: rgba(45, 212, 191, 0.4);
-            --ring-item-bg: rgba(240, 244, 255, 0.8);
-            --ring-item-border: rgba(45, 212, 191, 0.25);
-            --header-btn-bg: rgba(255, 255, 255, 0.4);
-            --status-bg: rgba(255, 255, 255, 0.4);
-            --tooltip-bg: rgba(255, 255, 255, 0.95);
-            --settings-bg: rgba(255, 255, 255, 0.95);
-            --neuro-card-hover: rgba(200, 220, 255, 0.9);
-            --color-option-border: rgba(0, 0, 0, 0.15);
-            --shadow-strong: rgba(0, 0, 0, 0.2);
         }
-
-        [data-size="small"] { --font-size-base: 14px; }
-        [data-size="large"] { --font-size-base: 18px; }
 
         body {
             background: var(--bg-primary);
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             color: var(--text-primary);
-            font-size: var(--font-size-base);
-            transition: background 0.5s ease, color 0.3s ease;
+            transition: background 0.5s ease;
         }
 
         #particle-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 0;
             pointer-events: none;
         }
 
         .ambient-glow {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 0;
             pointer-events: none;
-            transition: background 0.8s ease;
+            background: radial-gradient(circle at 50% 50%, rgba(45,212,191,0.08) 0%, transparent 70%);
         }
 
-        .ambient-glow:not([class*="module-"]) {
-            background: radial-gradient(circle at 50% 50%, rgba(45,212,191,0.08) 0%, transparent 70%),
-                        radial-gradient(circle at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 60%);
-        }
-
-        [data-theme="light"] .ambient-glow:not([class*="module-"]) {
-            background: radial-gradient(circle at 50% 50%, rgba(45,212,191,0.05) 0%, transparent 70%),
-                        radial-gradient(circle at 80% 20%, rgba(139,92,246,0.03) 0%, transparent 60%);
-        }
-
-        .nexus-container {
-            position: relative;
-            z-index: 5;
-            width: 100%;
-            height: 100%;
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .holo-header {
-            padding: 1.2rem 2rem;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(20px);
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.05);
-            z-index: 20;
-            position: relative;
-            transition: background 0.3s, border-color 0.3s;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            z-index: 5000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .header-left {
+        .top-bar-left {
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            flex-wrap: wrap;
         }
 
-        .brand-glow {
-            font-size: 1.8rem;
+        .brand-mini {
             font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #FFFFFF, #7DD3FC, #2DD4BF, #38BDF8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 20px var(--glow-color);
-            animation: textPulse 3s ease-in-out infinite;
-        }
-
-        [data-theme="light"] .brand-glow {
-            background: linear-gradient(135deg, #0A0A1A, #1A3A5A, #2DD4BF, #38BDF8);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.9; text-shadow: 0 0 20px var(--glow-color); }
-            50% { opacity: 1; text-shadow: 0 0 35px var(--glow-strong); }
-        }
-
-        .status-pulse {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            background: var(--status-bg);
-            border-radius: 60px;
-            padding: 0.4rem 1.2rem;
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-        }
-
-        .pulse-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--accent-1);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--accent-1);
-            animation: pulse-anim 2s infinite;
-        }
-
-        .pulse-text {
-            font-size: 0.75rem;
-            font-weight: 500;
+            color: var(--accent-1);
+            text-shadow: 0 0 15px var(--glow-color);
+            font-size: 1.1rem;
             letter-spacing: 1px;
-            color: var(--text-secondary);
         }
 
-        @keyframes pulse-anim {
-            0% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 0 0 var(--accent-1);}
-            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 0 8px rgba(45,212,191,0);}
-        }
-
-        .header-controls {
+        .active-app-title {
+            opacity: 0.6;
+            font-size: 0.9rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 8px;
         }
 
-        .header-btn {
-            background: var(--header-btn-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .clock-display {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .top-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.8rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(8px);
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.2s;
         }
 
-        .header-btn:hover {
+        .top-btn:hover {
             background: var(--accent-1);
             color: #000;
-            border-color: var(--accent-1);
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--glow-color);
         }
 
-        .header-btn .badge {
-            background: var(--accent-1);
-            color: #000;
-            border-radius: 20px;
-            padding: 0 0.6rem;
-            font-size: 0.65rem;
-            font-weight: 700;
+        .desktop {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            right: 0;
+            bottom: 100px;
+            z-index: 10;
+            overflow: hidden;
         }
 
-        .orbit-stage {
+        .welcome-widget {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            transition: opacity 0.5s;
+        }
+
+        .desktop.has-windows .welcome-widget { opacity: 0; }
+
+        .welcome-widget h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--accent-1), #fff);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .os-window {
+            position: absolute;
+            background: var(--window-bg);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 320px;
+            min-height: 240px;
+            transition: opacity 0.2s, transform 0.2s, width 0.1s, height 0.1s;
+            animation: windowPop 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        @keyframes windowPop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .window-header {
+            height: 44px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            cursor: grab;
+        }
+
+        .window-header:active {
+            cursor: grabbing;
+        }
+
+        .window-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .win-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .win-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+        .win-close { background: #FF5F56; }
+        .win-min { background: #FFBD2E; }
+        .win-max { background: #27C93F; }
+
+        .window-content {
             flex: 1;
             position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            padding: 1rem;
-        }
-
-        .core-view {
-            width: 85%;
-            max-width: 1300px;
-            height: 85%;
-            background: var(--bg-secondary);
-            backdrop-filter: blur(24px);
-            border-radius: 48px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px -12px var(--shadow-strong), 
-                        0 0 0 1px var(--border-color) inset,
-                        0 0 40px var(--shadow-color);
-            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            position: relative;
-            overflow: hidden;
-            z-index: 15;
-        }
-
-        .core-view::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(135deg, var(--glow-color), transparent, rgba(139,92,246,0.2));
-            border-radius: 50px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.5s;
-            pointer-events: none;
-        }
-
-        .core-view:hover::before {
-            opacity: 1;
-        }
-
-        .core-view.hologram-active {
-            animation: hologramPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes hologramPulse {
-            0%, 100% {
-                box-shadow: 0 0 30px var(--glow-color), 0 0 60px var(--glow-color), 0 0 0 1px var(--border-color) inset;
-            }
-            50% {
-                box-shadow: 0 0 50px var(--glow-strong), 0 0 80px var(--glow-strong), 0 0 0 2px var(--accent-1) inset;
-            }
-        }
-
-        .frame-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            border-radius: 48px;
+            background: var(--bg-primary);
             overflow: hidden;
         }
 
-        .content-iframe {
+        iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: var(--bg-primary);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            display: block;
+            pointer-events: auto;
         }
 
-        .content-iframe.fade-in {
-            animation: moduleFadeIn 0.5s ease forwards;
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            cursor: nwse-resize;
+            z-index: 100;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.3) 50%);
+            border-bottom-right-radius: 14px;
         }
 
-        .content-iframe.fade-out {
-            animation: moduleFadeOut 0.3s ease forwards;
+        .resize-handle:hover {
+            background: linear-gradient(135deg, transparent 50%, var(--accent-1) 50%);
         }
 
-        @keyframes moduleFadeIn {
-            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        @keyframes moduleFadeOut {
-            0% { opacity: 1; transform: scale(1) translateY(0); }
-            100% { opacity: 0; transform: scale(0.95) translateY(-10px); }
-        }
-
-        .welcome-nebula {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at 30% 30%, rgba(45,212,191,0.06), var(--bg-primary));
+        .dock-container {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6000;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem;
-            position: relative;
-            overflow-y: auto;
-        }
-
-        .quantum-title {
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #F0F9FF, #5EEAD4, #38BDF8, #818CF8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-            animation: titleWave 3s ease-in-out infinite;
-        }
-
-        [data-theme="light"] .quantum-title {
-            background: linear-gradient(135deg, #0A0A1A, #1A5A7A, #2DD4BF, #38BDF8);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-
-        @keyframes titleWave {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .quantum-desc {
-            font-size: 1.1rem;
-            max-width: 550px;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            backdrop-filter: blur(4px);
-        }
-
-        .orbital-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.2rem;
-            margin-top: 2rem;
-            max-width: 800px;
-        }
-
-        .neuro-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
+            align-items: flex-end;
+            padding: 12px;
+            background: var(--dock-bg);
+            backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 32px;
-            padding: 0.9rem 1.6rem;
-            display: flex;
-            align-items: center;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-            box-shadow: 0 0 15px rgba(45,212,191,0);
-            position: relative;
-            overflow: hidden;
-            color: var(--text-primary);
+            transition: all 0.3s;
         }
 
-        .neuro-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(45,212,191,0.15), transparent);
-            transition: left 0.5s;
-        }
-
-        .neuro-card:hover::before {
-            left: 100%;
-        }
-
-        .neuro-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: var(--accent-1);
-            box-shadow: 0 0 30px var(--glow-color);
-            background: var(--neuro-card-hover);
-        }
-
-        .neuro-icon {
-            font-size: 1.7rem;
-            filter: drop-shadow(0 0 8px var(--glow-color));
-            transition: 0.3s;
-            color: var(--accent-1);
-        }
-
-        .neuro-card:hover .neuro-icon {
-            transform: scale(1.1);
-        }
-
-        .shortcut-hint {
-            font-size: 0.6rem;
-            opacity: 0.6;
-            background: rgba(0,0,0,0.3);
-            padding: 0.1rem 0.5rem;
-            border-radius: 10px;
-            margin-left: 4px;
-            color: var(--text-muted);
-        }
-
-        .ring-nav {
-            position: fixed;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 30;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            padding: 1rem 0.7rem;
-            border-radius: 100px;
-            border: 1px solid var(--border-color);
-            transition: all 0.4s;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
-
-        [data-theme="light"] .ring-nav {
-            background: rgba(255, 255, 255, 0.6);
-        }
-
-        .ring-nav::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            background: linear-gradient(135deg, rgba(45,212,191,0.2), transparent);
-            border-radius: 100px;
-            z-index: -1;
-            opacity: 0.5;
-        }
-
-        .ring-item {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50px;
-            background: var(--ring-item-bg);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-            border: 1px solid var(--ring-item-border);
-            position: relative;
-            color: var(--text-primary);
-        }
-
-        .ring-item i {
-            font-size: 1.3rem;
-            color: var(--text-muted);
-            transition: 0.2s;
-        }
-
-        .ring-item.active {
-            background: linear-gradient(145deg, var(--accent-1)25, var(--bg-primary));
-            border-color: var(--accent-1);
-            box-shadow: 0 0 25px var(--accent-1), inset 0 0 15px rgba(45,212,191,0.2);
-            transform: scale(1.1);
-        }
-
-        .ring-item.active i {
-            color: var(--accent-1);
-            text-shadow: 0 0 12px rgba(45,212,191,0.6);
-        }
-
-        .ring-item:hover {
-            transform: scale(1.06);
-            border-color: var(--accent-1);
-            background: var(--accent-1)15;
-        }
-
-        [data-theme="light"] .ring-item:hover {
-            background: rgba(45,212,191,0.15);
-        }
-
-        .ring-tooltip {
-            display: none;
-        }
-
-        .expansion-toggle {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 40;
-            width: 55px;
-            height: 55px;
-            border-radius: 30px;
-            background: var(--bg-secondary);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
+        .dock-item {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            color: var(--text-primary);
-        }
-
-        .expansion-toggle:hover {
-            background: var(--accent-1)30;
-            transform: scale(1.1) rotate(5deg);
-            border-color: var(--accent-1);
-            box-shadow: 0 0 20px var(--glow-color);
-        }
-
-        .expansion-toggle i {
-            color: var(--accent-1);
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+            color: var(--text-secondary);
             font-size: 1.5rem;
+            border: 1px solid transparent;
         }
 
-        .exit-fs-btn {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--accent-1);
-            padding: 0.7rem 1.5rem;
-            border-radius: 40px;
-            gap: 8px;
-            z-index: 1100;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            font-weight: 600;
-            transition: 0.2s;
-            font-size: 0.9rem;
-            color: #fff;
+        .dock-item:hover {
+            transform: translateY(-12px) scale(1.15);
+            background: rgba(45,212,191,0.15);
+            border-color: var(--border-color);
+            color: var(--accent-1);
+            box-shadow: 0 10px 25px var(--glow-color);
         }
 
-        .exit-fs-btn:hover {
-            background: var(--accent-1)25;
-            transform: scale(1.02);
+        .dock-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-1);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-1);
         }
 
-        body.fullscreen-active .core-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            border-radius: 0;
-            backdrop-filter: blur(32px);
-            z-index: 1000;
+        .dock-item.minimizing {
+            animation: dockBounce 0.4s ease;
         }
 
-        body.fullscreen-active .ring-nav,
-        body.fullscreen-active .holo-header,
-        body.fullscreen-active .expansion-toggle {
+        @keyframes dockBounce {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(-20px); }
+            50% { transform: translateY(0); }
+            70% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .dock-tooltip {
+            position: absolute;
+            top: -45px;
+            background: var(--window-bg);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-primary);
             opacity: 0;
             pointer-events: none;
-            transition: 0.3s;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: 600;
         }
 
-        body.fullscreen-active .exit-fs-btn {
-            display: flex !important;
-        }
+        .dock-item:hover .dock-tooltip { opacity: 1; }
 
         .settings-panel {
             position: fixed;
-            top: 0;
+            top: 60px;
             right: -420px;
             width: 400px;
-            height: 100vh;
-            background: var(--settings-bg);
+            height: calc(100vh - 160px);
+            background: var(--window-bg);
             backdrop-filter: blur(40px);
-            border-left: 1px solid var(--border-color);
-            z-index: 100;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            z-index: 5500;
             transition: right 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             padding: 2rem;
             overflow-y: auto;
             box-shadow: -20px 0 60px rgba(0,0,0,0.3);
         }
 
-        .settings-panel.open {
-            right: 0;
-        }
+        .settings-panel.open { right: 2rem; }
 
-        .settings-panel h2 {
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-primary);
-        }
-
-        .settings-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .settings-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .settings-group .options {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .settings-group .options button {
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+        .settings-group { margin-bottom: 2rem; }
+        .settings-group label { display: block; margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        
+        .options { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .options button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
             background: transparent;
             color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
+            transition: 0.3s;
+            font-weight: 500;
         }
-
-        .settings-group .options button:hover {
-            border-color: var(--accent-1);
-            background: var(--accent-1)10;
-        }
-
-        .settings-group .options button.active {
-            background: var(--accent-1);
-            border-color: var(--accent-1);
-            color: #000;
-        }
-
-        .color-picker-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
-        }
-
-        .color-picker-grid .color-option {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 12px;
-            border: 2px solid var(--color-option-border);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .color-picker-grid .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        .color-picker-grid .color-option.active {
-            border-color: var(--text-primary);
-            box-shadow: 0 0 20px var(--glow-strong);
-        }
-
-        .settings-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 99;
-            display: none;
-        }
-
-        .settings-overlay.show {
-            display: block;
-        }
+        .options button.active { background: var(--accent-1); color: #000; border-color: var(--accent-1); }
+        
+        .color-picker-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.8rem; }
+        .color-option { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { border-color: #fff; box-shadow: 0 0 15px var(--glow-color); }
 
         .tutorial-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9000;
             display: none;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(8px);
         }
-
-        .tutorial-overlay.show {
-            display: flex;
-        }
-
+        .tutorial-overlay.show { display: flex; }
+        
         .tutorial-card {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(40px);
+            background: var(--window-bg);
             border: 1px solid var(--border-color);
-            border-radius: 32px;
             padding: 2.5rem;
+            border-radius: 24px;
             max-width: 500px;
-            width: 90%;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-            animation: tutorialSlideIn 0.5s ease;
-        }
-
-        [data-theme="light"] .tutorial-card {
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        @keyframes tutorialSlideIn {
-            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .tutorial-card h2 {
-            font-size: 1.6rem;
-            margin-bottom: 0.5rem;
             color: var(--text-primary);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
-
-        .tutorial-card p {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1rem;
+        
+        .btn-primary { 
+            background: var(--accent-1); 
+            color: #000; 
+            padding: 1rem 2.5rem; 
+            border-radius: 14px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: 0.2s;
         }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--glow-color); }
 
-        .tutorial-card .tutorial-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin: 1.5rem 0;
-        }
-
-        .tutorial-card .step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0.8rem;
-            background: rgba(0,0,0,0.15);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        [data-theme="light"] .tutorial-card .step {
-            background: rgba(0,0,0,0.04);
-        }
-
-        .tutorial-card .step .num {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--accent-1);
-            color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-        }
-
-        .tutorial-card .step .text {
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        .tutorial-card .step .text small {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .tutorial-card .tutorial-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .tutorial-card .tutorial-actions button {
-            flex: 1;
-            padding: 0.8rem;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-
-        .tutorial-card .tutorial-actions .btn-primary {
-            background: var(--accent-1);
-            color: #000;
-        }
-
-        .tutorial-card .tutorial-actions .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px var(--glow-strong);
-        }
-
-        .tutorial-card .tutorial-actions .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .tutorial-card .tutorial-actions .btn-secondary:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .tooltip-hint {
+        .quote-card {
             position: fixed;
-            background: var(--tooltip-bg);
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            background: var(--window-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 0.6rem 1.2rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            z-index: 50;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.95rem;
+            z-index: 5;
+            opacity: 0.6;
+            transition: opacity 0.3s;
             pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(8px);
-            max-width: 280px;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            font-weight: 500;
         }
 
-        .tooltip-hint.show {
+        .quote-card:hover {
             opacity: 1;
-            transform: translateY(0);
         }
 
-        .tooltip-hint .arrow {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: var(--tooltip-bg);
-            border-left: 1px solid var(--border-color);
-            border-top: 1px solid var(--border-color);
-            transform: rotate(45deg);
+        .quote-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-1);
+            opacity: 0.7;
+            flex-shrink: 0;
         }
 
-        .tooltip-hint .arrow-top {
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
+        .quote-text {
+            white-space: nowrap;
+            font-size: 1.2rem;
         }
 
-        .tooltip-hint .arrow-bottom {
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-        .tooltip-hint .arrow-left {
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%) rotate(45deg);
-        }
-
-        .tooltip-hint .arrow-right {
-            left: -6px;
-            top: 50%;
-            transform: translateY(-50%) rotate(45deg);
-        }
-
-        .ambient-glow.module-page1 {
-            background: radial-gradient(circle at 30% 40%, rgba(45,212,191,0.15) 0%, transparent 60%),
-                        radial-gradient(circle at 70% 60%, rgba(56,189,248,0.1) 0%, transparent 50%);
-        }
-        .ambient-glow.module-page2 {
-            background: radial-gradient(circle at 60% 30%, rgba(139,92,246,0.15) 0%, transparent 60%),
-                        radial-gradient(circle at 20% 70%, rgba(45,212,191,0.08) 0%, transparent 50%);
-        }
-        .ambient-glow.module-page5 {
-            background: radial-gradient(circle at 40% 50%, rgba(236,72,153,0.12) 0%, transparent 60%),
-                        radial-gradient(circle at 80% 30%, rgba(45,212,191,0.08) 0%, transparent 50%);
-        }
-        .ambient-glow.module-page6 {
-            background: radial-gradient(circle at 50% 30%, rgba(251,146,60,0.12) 0%, transparent 60%),
-                        radial-gradient(circle at 30% 70%, rgba(45,212,191,0.08) 0%, transparent 50%);
-        }
-        .ambient-glow.module-page7 {
-            background: radial-gradient(circle at 70% 50%, rgba(34,211,238,0.12) 0%, transparent 60%),
-                        radial-gradient(circle at 30% 40%, rgba(45,212,191,0.1) 0%, transparent 50%);
-        }
-
-        .loader-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            border: 3px solid rgba(45,212,191,0.15);
-            border-top: 3px solid var(--accent-1);
-            border-right: 3px solid var(--accent-2);
-            border-radius: 50%;
-            animation: spin 0.8s infinite linear;
-            z-index: 50;
-            display: none;
-            box-shadow: 0 0 20px var(--glow-color);
-        }
-
-        @keyframes spin { 
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        @media (max-width: 800px) {
-            .ring-nav {
-                flex-direction: row;
-                bottom: 1.5rem;
-                top: auto;
-                right: auto;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 60px;
-                gap: 0.5rem;
-                padding: 0.5rem 0.8rem;
+        @media (max-width: 768px) {
+            .dock-container { bottom: 0; padding: 10px; border-radius: 16px 16px 0 0; border-bottom: none; width: 100%; justify-content: center; }
+            .dock-item { width: 48px; height: 48px; font-size: 1.3rem; }
+            .settings-panel { width: 100%; right: -100%; border-radius: 0; height: 100vh; top: 0; }
+            .settings-panel.open { right: 0; }
+            .top-bar { padding: 0 1rem; }
+            .brand-mini span { display: none; }
+            .quote-card {
+                bottom: 100px;
+                padding: 0.8rem 1.5rem;
+                font-size: 0.85rem;
             }
-            .ring-item {
-                width: 44px;
-                height: 44px;
-            }
-            .ring-item i {
-                font-size: 1.1rem;
-            }
-            .core-view { width: 95%; height: 80%; }
-            .neuro-card { padding: 0.5rem 1rem; }
-            .neuro-icon { font-size: 1.2rem; }
-            .holo-header { padding: 0.8rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
-            .brand-glow { font-size: 1.2rem; }
-            .header-controls { gap: 0.4rem; }
-            .header-btn span { display: none; }
-            .settings-panel { width: 100%; right: -100%; }
-            .tutorial-card { padding: 1.5rem; }
-            .expansion-toggle { bottom: 5.5rem; right: 1rem; width: 48px; height: 48px; }
         }
-
-        @media (max-width: 480px) {
-            .neuro-card span { font-size: 0.8rem; }
-            .orbit-stage { padding: 0.5rem; }
-            .quantum-title { font-size: 1.6rem; }
-            .ring-item { width: 38px; height: 38px; }
-            .ring-item i { font-size: 0.9rem; }
-            .core-view { border-radius: 32px; }
-            .frame-wrapper { border-radius: 32px; }
-        }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); border-radius: 2px; }
-        .quote-container {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    z-index: 10;
-    opacity: 0.6;
-    transition: all 0.4s ease;
-}
-
-.quote-container:hover {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-3px);
-}
-
-.quote-card {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    background: rgba(15, 25, 45, 0.6);
-    backdrop-filter: blur(12px);
-    padding: 0.8rem 1.5rem;
-    border-radius: 24px;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    max-width: 450px;
-}
-
-[data-theme="light"] .quote-card {
-    background: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.quote-icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    color: var(--accent-1);
-    filter: drop-shadow(0 0 8px var(--glow-color));
-}
-
-.quote-text {
-    font-size: 1rem;
-    font-style: italic;
-    color: var(--text-secondary);
-    letter-spacing: 0.3px;
-    font-weight: 400;
-    line-height: 1.4;
-}
-
-@media (max-width: 800px) {
-    .quote-container {
-        bottom: 5.5rem;
-        left: 1rem;
-        right: 1rem;
-        transform: none;
-    }
-    
-    .quote-container:hover {
-        transform: translateY(-2px);
-    }
-    
-    .quote-card {
-        padding: 0.6rem 1rem;
-        gap: 0.6rem;
-    }
-    
-    .quote-icon {
-        width: 22px;
-        height: 22px;
-    }
-    
-    .quote-text {
-        font-size: 0.75rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .quote-container {
-        bottom: 5rem;
-    }
-    
-    .quote-text {
-        font-size: 0.7rem;
-    }
-}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-theme="dark">
 
     <canvas id="particle-canvas"></canvas>
-    <div class="ambient-glow" id="ambientGlow"></div>
+    <div class="ambient-glow"></div>
 
-    <div class="nexus-container">
-        <div class="holo-header">
-            <div class="header-left">
-                <div class="brand-glow">⚡ ЦЕНТР ИНСТРУМЕНТОВ</div>
-                <div class="status-pulse">
-                    <div class="pulse-dot"></div>
-                    <span class="pulse-text">СИНХРОНИЗАЦИЯ</span>
-                </div>
-            </div>
-            <div class="header-controls">
-                <button class="header-btn" id="tutorialBtn" title="Туториал">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Обучение</span>
-                </button>
-                <button class="header-btn" id="settingsBtn" title="Настройки">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>Настройки</span>
-                    <span class="badge">●</span>
-                </button>
-                <button class="header-btn" id="themeToggle" title="Сменить тему">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-            </div>
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <span class="active-app-title" id="activeAppTitle"><i class="fas fa-circle-dot" style="font-size: 8px;"></i> Ready</span>
         </div>
-
-        <div class="orbit-stage">
-            <div class="core-view" id="coreView">
-                <div class="frame-wrapper" id="frameWrapper">
-                    <div id="welcomeScreen" class="welcome-nebula">
-                        <div class="quantum-title">🚀 Центр инструментов</div>
-                        <div class="quantum-desc">
-                            Используйте любой инструмент нажав на кнопки ниже или на боковой панели.<br>
-                            <small style="opacity:0.6;">⌨️ Клавиши 1-7 для быстрого переключения</small>
-                        </div>
-                        <div class="quote-container">
-    <div class="quote-card">
-        <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
-        </svg>
-        <span class="quote-text">Ничто не истинно, всё похер</span>
-        <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
-        </svg>
-    </div>
-</div>
-                        <div class="orbital-grid" id="quickAccessGrid"></div>
-                    </div>
-                    <iframe id="dynamicFrame" class="content-iframe" style="display: none;"></iframe>
-                    <div id="globalLoader" class="loader-ring"></div>
-                </div>
-            </div>
+        <div class="top-bar-right">
+            <div class="clock-display" id="clock">00:00</div>
+            <button class="top-btn" onclick="toggleTutorial()" title="Обучение"><i class="fas fa-graduation-cap"></i></button>
+            <button class="top-btn" onclick="toggleSettings()" title="Настройки"><i class="fas fa-sliders-h"></i></button>
+            <button class="top-btn" onclick="toggleTheme()" title="Тема"><i class="fas fa-moon" id="themeIcon"></i></button>
         </div>
     </div>
 
-    <div class="ring-nav" id="ringNav"></div>
-
-    <div class="expansion-toggle" id="fullscreenBtn">
-        <i class="fas fa-expand-alt"></i>
+    <div class="desktop" id="desktop">
+        <div class="welcome-widget" id="welcomeWidget">
+            <h1>Центр Инструментов</h1>
+            <p style="color: var(--text-secondary); font-size: 1.2rem;">Выберите приложение в нижней панели</p>
+        </div>
+        <div class="quote-card">
+            <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+            </svg>
+            <span class="quote-text">Ничто не истинно, всё похер</span>
+            <svg class="quote-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+            </svg>
+        </div>
     </div>
-    <div class="exit-fs-btn" id="exitFsBtn">
-        <i class="fas fa-compress"></i> <span>Выйти из полноэкранного режима</span>
+
+    <div class="dock-container" id="dock">
     </div>
 
-    <div class="settings-overlay" id="settingsOverlay"></div>
     <div class="settings-panel" id="settingsPanel">
-        <h2><i class="fas fa-sliders-h" style="color: var(--accent-1);"></i> Настройки</h2>
+        <h2 style="margin-bottom: 2rem; color: var(--text-primary);">Настройки системы</h2>
         
         <div class="settings-group">
-            <label>🎨 Цветовая схема</label>
-            <div class="color-picker-grid" id="colorPickerGrid">
-                <div class="color-option active" style="background: #2DD4BF;" data-color="#2DD4BF"></div>
-                <div class="color-option" style="background: #38BDF8;" data-color="#38BDF8"></div>
-                <div class="color-option" style="background: #818CF8;" data-color="#818CF8"></div>
-                <div class="color-option" style="background: #EC4899;" data-color="#EC4899"></div>
-                <div class="color-option" style="background: #F59E0B;" data-color="#F59E0B"></div>
-                <div class="color-option" style="background: #10B981;" data-color="#10B981"></div>
-            </div>
-        </div>
-
-        <div class="settings-group">
-            <label>🌓 Тема</label>
+            <label>Тема оформления</label>
             <div class="options" id="themeOptions">
-                <button class="active" data-theme="dark">🌙 Тёмная</button>
-                <button data-theme="light">☀️ Светлая</button>
+                <button class="active" onclick="applyTheme('dark')">🌙 Тёмная</button>
+                <button onclick="applyTheme('light')">☀️ Светлая</button>
             </div>
         </div>
 
         <div class="settings-group">
-            <label>📏 Размер интерфейса</label>
-            <div class="options" id="sizeOptions">
-                <button data-size="small">Маленький</button>
-                <button class="active" data-size="medium">Средний</button>
-                <button data-size="large">Большой</button>
+            <label>Акцентный цвет</label>
+            <div class="color-picker-grid">
+                <div class="color-option active" style="background: #2DD4BF;" onclick="changeColor('#2DD4BF')"></div>
+                <div class="color-option" style="background: #38BDF8;" onclick="changeColor('#38BDF8')"></div>
+                <div class="color-option" style="background: #818CF8;" onclick="changeColor('#818CF8')"></div>
+                <div class="color-option" style="background: #EC4899;" onclick="changeColor('#EC4899')"></div>
+                <div class="color-option" style="background: #F59E0B;" onclick="changeColor('#F59E0B')"></div>
             </div>
         </div>
 
-        <div class="settings-group">
-            <label>🖼️ Фон</label>
-            <div class="options" id="bgOptions">
-                <button class="active" data-bg="nebula">🌌 Туманность</button>
-                <button data-bg="dark">🌑 Тёмный</button>
-                <button data-bg="gradient">🌈 Градиент</button>
-            </div>
-        </div>
-
-        <div class="settings-group">
-            <label>🎯 Быстрые клавиши</label>
-            <div class="options">
-                <button id="resetShortcutsBtn">↺ Сбросить</button>
-                <button id="showShortcutsBtn">📋 Показать все</button>
-            </div>
-        </div>
-
-        <button class="header-btn" style="width:100%; margin-top:1rem; justify-content:center;" id="closeSettingsBtn">
-            <i class="fas fa-times"></i> Закрыть настройки
-        </button>
+        <button class="btn-primary" style="width: 100%; margin-top: 1rem; background: rgba(255,255,255,0.1); color: var(--text-primary);" onclick="toggleSettings()">Закрыть настройки</button>
     </div>
 
     <div class="tutorial-overlay" id="tutorialOverlay">
         <div class="tutorial-card">
-            <h2>🎓 Добро пожаловать!</h2>
-            <p>Быстрый тур по интерфейсу Центра инструментов</p>
-            
-            <div class="tutorial-steps">
-                <div class="step">
-                    <div class="num">1</div>
-                    <div class="text">
-                        <strong>Боковая панель</strong>
-                        <small>Нажмите на иконку чтобы переключить модуль</small>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="num">2</div>
-                    <div class="text">
-                        <strong>Горячие клавиши</strong>
-                        <small>Нажмите <kbd>1</kbd>-<kbd>7</kbd> для быстрого переключения</small>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="num">3</div>
-                    <div class="text">
-                        <strong>Настройки</strong>
-                        <small>Измените тему, размер и цветовую схему</small>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="num">4</div>
-                    <div class="text">
-                        <strong>Полноэкранный режим</strong>
-                        <small>Нажмите на иконку <i class="fas fa-expand-alt"></i> в правом нижнем углу</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tutorial-actions">
-                <button class="btn-secondary" id="skipTutorialBtn">Пропустить</button>
-                <button class="btn-primary" id="startTutorialBtn">Начать работу →</button>
-            </div>
+            <h2>🎓 Добро пожаловать в Центр Инструментов</h2>
+            <p style="margin: 1.5rem 0; color: var(--text-secondary); line-height: 1.6;">
+                Теперь интерфейс работает как полноценный рабочий стол.<br><br>
+                1. Нажмите на иконку в <b>инструмента</b> внизу, чтобы открыть окно.<br>
+                2. Окна можно <b>перетаскивать</b> за заголовок.<br>
+                3. Потяните за <b>правый нижний угол</b>, чтобы изменить размер.<br>
+                4. Желтая кнопка сворачивает окно обратно в нижнюю панель.
+            </p>
+            <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
         </div>
     </div>
 
-    <div class="tooltip-hint" id="tooltipHint">
-        <div class="arrow" id="tooltipArrow"></div>
-        <span id="tooltipText">Подсказка</span>
-    </div>
-
     <script>
-        const MODULES = {
-    welcome: { title: "ЯДРО", icon: "fas fa-atom", url: null, isWelcome: true, shortcut: 0 },
-    page1: { title: "ГРАФИК", icon: "fas fa-chart-line", url: "https://sagatheror.github.io/instrumenti/new-interface.html", shortcut: 1 },
-    page2: { title: "ОПИСАНИЕ", icon: "fas fa-file-alt", url: "https://sagatheror.github.io/instrumenti/description-new.html", shortcut: 2 },
-    page5: { title: "ЗАПЯТЫЕ 1С", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html", shortcut: 3 },
-    page6: { title: "CSV АНАЛИЗ", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html", shortcut: 4 },
-    page7: { title: "ФОРМА ОТКЛЮЧЕНИЯ", icon: "fas fa-file-signature", url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html", shortcut: 5 },
-    page8: { title: "ОФОРМЛЕНИЕ ТЕКСТА", icon: "fas fa-pen-fancy", url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html", shortcut: 6 },
-    page9: { title: "КОНСТРУКТОР ПАЛИТР", icon: "fas fa-palette", url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html", shortcut: 7 }
-};
+        const MODULES = [
+            { id: "page1", title: "ГРАФИК", icon: "fas fa-chart-line", url: "https://sagatheror.github.io/instrumenti/new-interface.html" },
+            { id: "page2", title: "ОПИСАНИЕ", icon: "fas fa-file-alt", url: "https://sagatheror.github.io/instrumenti/description-new.html" },
+            { id: "page5", title: "1С КОД", icon: "fas fa-code", url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
+            { id: "page6", title: "CSV", icon: "fas fa-chart-simple", url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
+            { id: "page7", title: "ФОРМА", icon: "fas fa-file-signature", url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html" },
+            { id: "page8", title: "ТЕКСТ", icon: "fas fa-pen-fancy", url: "https://sagatheror.github.io/instrumenti/oformlenietexta.html" },
+            { id: "page9", title: "ПАЛИТРЫ", icon: "fas fa-palette", url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html" }
+        ];
 
-        const MODULE_ORDER = ["page1", "page2", "page5", "page6", "page7", "page8", "page9"];
+        let zIndexCounter = 100;
+        let windows = {}; 
 
-        let activeModule = "welcome";
-        let isFullscreen = false;
-        let settingsOpen = false;
-
-        const ringNav = document.getElementById("ringNav");
-        const quickGrid = document.getElementById("quickAccessGrid");
-        const welcomeDiv = document.getElementById("welcomeScreen");
-        const dynamicFrame = document.getElementById("dynamicFrame");
-        const loader = document.getElementById("globalLoader");
-        const fullscreenBtn = document.getElementById("fullscreenBtn");
-        const exitFsBtn = document.getElementById("exitFsBtn");
-        const coreView = document.getElementById("coreView");
-        const ambientGlow = document.getElementById("ambientGlow");
-        const settingsPanel = document.getElementById("settingsPanel");
-        const settingsOverlay = document.getElementById("settingsOverlay");
-        const settingsBtn = document.getElementById("settingsBtn");
-        const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-        const tutorialOverlay = document.getElementById("tutorialOverlay");
-        const tooltipHint = document.getElementById("tooltipHint");
-        const tooltipText = document.getElementById("tooltipText");
-        const tooltipArrow = document.getElementById("tooltipArrow");
-        const themeToggle = document.getElementById("themeToggle");
-        const themeIcon = document.getElementById("themeIcon");
-        const tutorialBtn = document.getElementById("tutorialBtn");
-
-        function init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            buildDock();
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            if (!localStorage.getItem('os_tutorial_seen')) {
+                setTimeout(() => document.getElementById('tutorialOverlay').classList.add('show'), 500);
+            }
+            
             loadSettings();
-            buildRingNavigation();
-            buildQuickAccess();
-            initParticleField();
-            loadModule("welcome");
-            checkFirstVisit();
-            setupEventListeners();
+        });
+
+        function buildDock() {
+            const dock = document.getElementById('dock');
+            MODULES.forEach(mod => {
+                const item = document.createElement('div');
+                item.className = 'dock-item';
+                item.id = `dock-${mod.id}`;
+                item.innerHTML = `
+                    <i class="${mod.icon}"></i>
+                    <div class="dock-tooltip">${mod.title}</div>
+                `;
+                item.onclick = () => toggleWindow(mod.id);
+                dock.appendChild(item);
+            });
         }
 
-        function loadSettings() {
-            const saved = localStorage.getItem('instrumenti_settings');
-            if (saved) {
-                try {
-                    const settings = JSON.parse(saved);
-                    applyTheme(settings.theme || 'dark');
-                    applySize(settings.size || 'medium');
-                    applyColor(settings.color || '#2DD4BF');
-                    applyBg(settings.bg || 'nebula');
-                } catch (e) {
-                    console.warn('Ошибка загрузки настроек', e);
+        function toggleWindow(id) {
+            const mod = MODULES.find(m => m.id === id);
+            
+            if (!windows[id] || windows[id].dataset.state === 'minimized') {
+                if (!windows[id]) {
+                    createWindow(mod);
+                } else {
+                    restoreWindow(id);
+                }
+            } 
+            else if (parseInt(windows[id].style.zIndex) < zIndexCounter) {
+                focusWindow(windows[id]);
+            }
+            else {
+                minimizeWindow(id);
+            }
+        }
+
+        function createWindow(mod) {
+            const win = document.createElement('div');
+            win.className = 'os-window';
+            win.id = `win-${mod.id}`;
+            
+            const offset = Object.keys(windows).length * 40;
+            win.style.left = (150 + offset) + 'px';
+            win.style.top = (80 + offset) + 'px';
+            win.style.width = '850px';
+            win.style.height = '650px';
+            win.style.zIndex = ++zIndexCounter;
+
+           win.innerHTML = `
+    <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
+        <div class="window-title"><i class="${mod.icon}"></i> ${mod.title}</div>
+        <div class="window-controls">
+            <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
+            <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
+            <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+                    <iframe src="${mod.url}" loading="lazy"></iframe>
+                </div>
+                <div class="resize-handle" onmousedown="initResize(event, '${mod.id}')"></div>
+            `;
+
+            win.onmousedown = () => focusWindow(win);
+            document.getElementById('desktop').appendChild(win);
+            windows[mod.id] = win;
+            
+            updateActiveAppTitle(mod.title, mod.icon);
+            document.getElementById(`dock-${mod.id}`).classList.add('active');
+            document.getElementById('desktop').classList.add('has-windows');
+        }
+
+        function minimizeWindow(id) {
+            const win = windows[id];
+            if (win) {
+                win.dataset.state = 'minimized';
+                win.style.opacity = '0';
+                win.style.transform = 'scale(0.8) translateY(100px)';
+                win.style.pointerEvents = 'none';
+                
+                const dockItem = document.getElementById(`dock-${id}`);
+                dockItem.classList.add('minimizing');
+                setTimeout(() => dockItem.classList.remove('minimizing'), 500);
+                
+                updateActiveAppTitle("Ready", "fas fa-circle-dot");
+            }
+        }
+
+        function restoreWindow(id) {
+            const win = windows[id];
+            if (win) {
+                win.dataset.state = 'normal';
+                win.style.pointerEvents = 'auto';
+                win.style.opacity = '1';
+                win.style.transform = 'scale(1) translateY(0)';
+                focusWindow(win);
+                
+                const mod = MODULES.find(m => m.id === id);
+                updateActiveAppTitle(mod.title, mod.icon);
+            }
+        }
+
+        function closeWindow(id) {
+            if (windows[id]) {
+                windows[id].remove();
+                delete windows[id];
+                document.getElementById(`dock-${id}`).classList.remove('active');
+                
+                if (Object.keys(windows).length === 0) {
+                    document.getElementById('desktop').classList.remove('has-windows');
+                    updateActiveAppTitle("Ready", "fas fa-circle-dot");
                 }
             }
         }
 
-        function saveSettings() {
-            const settings = {
-                theme: document.documentElement.getAttribute('data-theme') || 'dark',
-                size: document.documentElement.getAttribute('data-size') || 'medium',
-                color: document.documentElement.style.getPropertyValue('--accent-1').trim() || '#2DD4BF',
-                bg: document.documentElement.getAttribute('data-bg') || 'nebula'
-            };
-            try {
-                localStorage.setItem('instrumenti_settings', JSON.stringify(settings));
-            } catch (e) {
-                console.warn('Ошибка сохранения настроек', e);
+        function focusWindow(win) {
+            win.style.zIndex = ++zIndexCounter;
+            const id = win.id.replace('win-', '');
+            const mod = MODULES.find(m => m.id === id);
+            if (mod) updateActiveAppTitle(mod.title, mod.icon);
+        }
+
+        function maximizeWindow(id) {
+            const win = windows[id];
+            if (win) {
+                if (win.dataset.maximized === 'true') {
+                    win.style.top = win.dataset.prevTop;
+                    win.style.left = win.dataset.prevLeft;
+                    win.style.width = win.dataset.prevWidth;
+                    win.style.height = win.dataset.prevHeight;
+                    win.dataset.maximized = 'false';
+                } else {
+                    win.dataset.prevTop = win.style.top;
+                    win.dataset.prevLeft = win.style.left;
+                    win.dataset.prevWidth = win.style.width;
+                    win.dataset.prevHeight = win.style.height;
+                    
+                    win.style.top = '48px';
+                    win.style.left = '0';
+                    win.style.width = '100%';
+                    win.style.height = 'calc(100vh - 148px)';
+                    win.dataset.maximized = 'true';
+                }
             }
+        }
+
+        function updateActiveAppTitle(title, iconClass) {
+            const el = document.getElementById('activeAppTitle');
+            el.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+        }
+
+        let isDragging = false;
+        let currentWin = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, id) {
+    if (e.target.closest('.window-controls')) return;
+    
+    const win = windows[id];
+    if (win.dataset.maximized === 'true') return;
+
+            isDragging = true;
+            currentWin = win;
+            focusWindow(win);
+
+            const rect = win.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!isDragging || !currentWin) return;
+            let x = e.clientX - dragOffsetX;
+            let y = e.clientY - dragOffsetY;
+            y = Math.max(48, y);
+            currentWin.style.left = x + 'px';
+            currentWin.style.top = y + 'px';
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            currentWin = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        let isResizing = false;
+        let resizeWin = null;
+        let startX, startY, startWidth, startHeight;
+
+        function initResize(e, id) {
+            e.preventDefault();
+            e.stopPropagation();
+            isResizing = true;
+            resizeWin = windows[id];
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(resizeWin).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(resizeWin).height, 10);
+            
+            document.addEventListener('mousemove', doResize);
+            document.addEventListener('mouseup', stopResize);
+        }
+
+        function doResize(e) {
+            if (!isResizing || !resizeWin) return;
+            const newWidth = startWidth + (e.clientX - startX);
+            const newHeight = startHeight + (e.clientY - startY);
+            
+            if (newWidth > 320) resizeWin.style.width = newWidth + 'px';
+            if (newHeight > 240) resizeWin.style.height = newHeight + 'px';
+        }
+
+        function stopResize() {
+            isResizing = false;
+            resizeWin = null;
+            document.removeEventListener('mousemove', doResize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('open');
+        }
+
+        function toggleTutorial() {
+            document.getElementById('tutorialOverlay').classList.add('show');
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorialOverlay').classList.remove('show');
+            localStorage.setItem('os_tutorial_seen', 'true');
         }
 
         function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            if (themeIcon) {
-                themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
-            }
-            document.querySelectorAll('#themeOptions button').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.theme === theme);
+            document.body.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('os_theme', theme);
+            
+            document.querySelectorAll('#themeOptions button').forEach(b => {
+                b.classList.remove('active');
+                if(b.innerText.toLowerCase().includes(theme === 'light' ? 'светлая' : 'тёмная')) b.classList.add('active');
             });
-            const currentBg = document.documentElement.getAttribute('data-bg') || 'nebula';
-            applyBg(currentBg);
-            saveSettings();
         }
 
-        function applySize(size) {
-            document.documentElement.setAttribute('data-size', size);
-            document.querySelectorAll('#sizeOptions button').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.size === size);
-            });
-            saveSettings();
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
         }
 
-        function applyColor(color) {
-            if (!color) return;
+        function changeColor(color) {
             document.documentElement.style.setProperty('--accent-1', color);
-            document.documentElement.style.setProperty('--glow-color', color + '66');
-            document.documentElement.style.setProperty('--glow-strong', color + '99');
-            document.documentElement.style.setProperty('--shadow-color', color + '33');
-            
-            const fsIcon = document.querySelector('.expansion-toggle i');
-            if (fsIcon) fsIcon.style.color = color;
-            
+            localStorage.setItem('os_color', color);
             document.querySelectorAll('.color-option').forEach(el => {
-                el.classList.toggle('active', el.dataset.color === color);
-            });
-            saveSettings();
-        }
-
-        function applyBg(bg) {
-            document.documentElement.setAttribute('data-bg', bg);
-            const glow = document.getElementById('ambientGlow');
-            if (glow) {
-                const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-                const isLight = theme === 'light';
-                const alpha = isLight ? 0.04 : 0.08;
-                const alpha2 = isLight ? 0.03 : 0.06;
-                
-                if (bg === 'dark') {
-                    glow.style.background = 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, transparent 100%)';
-                } else if (bg === 'gradient') {
-                    glow.style.background = `linear-gradient(135deg, rgba(45,212,191,${alpha}) 0%, rgba(139,92,246,${alpha}) 50%, rgba(236,72,153,${alpha}) 100%)`;
-                } else {
-                    glow.style.background = `radial-gradient(circle at 50% 50%, rgba(45,212,191,${alpha2}) 0%, transparent 70%), radial-gradient(circle at 80% 20%, rgba(139,92,246,${alpha}) 0%, transparent 60%)`;
-                }
-            }
-            document.querySelectorAll('#bgOptions button').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.bg === bg);
-            });
-            saveSettings();
-        }
-
-        function buildRingNavigation() {
-            if (!ringNav) return;
-            ringNav.innerHTML = "";
-            
-            const homeItem = createNavItem('fas fa-dharmachakra', 'ГЛАВНАЯ', 'welcome');
-            ringNav.appendChild(homeItem);
-            
-            MODULE_ORDER.forEach(key => {
-                const mod = MODULES[key];
-                if (mod) {
-                    const item = createNavItem(mod.icon, mod.title, key);
-                    ringNav.appendChild(item);
-                }
+                el.classList.remove('active');
+                if (el.getAttribute('onclick').includes(color)) el.classList.add('active');
             });
         }
 
-        function createNavItem(icon, title, moduleId) {
-            const item = document.createElement('div');
-            item.className = 'ring-item';
-            if (activeModule === moduleId) item.classList.add('active');
-            item.innerHTML = `<i class="${icon}"></i>`;
-            item.onclick = () => loadModule(moduleId);
-            item.dataset.module = moduleId;
-            item.title = title;
-            return item;
+        function loadSettings() {
+            const theme = localStorage.getItem('os_theme');
+            if (theme) applyTheme(theme);
+            const color = localStorage.getItem('os_color');
+            if (color) changeColor(color);
         }
 
-        function buildQuickAccess() {
-            if (!quickGrid) return;
-            quickGrid.innerHTML = "";
-            MODULE_ORDER.forEach(key => {
-                const mod = MODULES[key];
-                if (!mod) return;
-                const card = document.createElement('div');
-                card.className = 'neuro-card';
-                const shortcut = mod.shortcut || '';
-                card.innerHTML = `
-                    <div class="neuro-icon"><i class="${mod.icon}"></i></div>
-                    <span style="font-weight:600;">${mod.title}</span>
-                    ${shortcut ? `<span class="shortcut-hint">${shortcut}</span>` : ''}
-                `;
-                card.onclick = () => loadModule(key);
-                quickGrid.appendChild(card);
-            });
-        }
-
-        function loadModule(moduleId) {
-            if (activeModule === moduleId && moduleId !== 'welcome') return;
-            
-            activeModule = moduleId;
-            
-            document.querySelectorAll('.ring-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.module === moduleId);
-            });
-
-            updateAmbientGlow(moduleId);
-
-            if (coreView) {
-                coreView.classList.add('hologram-active');
-                clearTimeout(coreView._hologramTimeout);
-                coreView._hologramTimeout = setTimeout(() => {
-                    coreView.classList.remove('hologram-active');
-                }, 3000);
-            }
-
-            if (moduleId === 'welcome') {
-                if (dynamicFrame) {
-                    dynamicFrame.style.display = 'none';
-                    dynamicFrame.className = 'content-iframe';
-                }
-                if (welcomeDiv) {
-                    welcomeDiv.style.display = 'flex';
-                    welcomeDiv.style.animation = 'none';
-                    requestAnimationFrame(() => {
-                        welcomeDiv.style.animation = 'moduleFadeIn 0.5s ease forwards';
-                    });
-                }
-                return;
-            }
-
-            const targetModule = MODULES[moduleId];
-            if (!targetModule?.url) {
-                console.warn('Модуль не найден:', moduleId);
-                return;
-            }
-
-            if (welcomeDiv) welcomeDiv.style.display = 'none';
-            if (dynamicFrame) {
-                dynamicFrame.style.display = 'block';
-                dynamicFrame.className = 'content-iframe fade-out';
-                
-                setTimeout(() => {
-                    if (loader) loader.style.display = 'block';
-                    dynamicFrame.src = targetModule.url;
-                    
-                    dynamicFrame.onload = function() {
-                        if (loader) loader.style.display = 'none';
-                        dynamicFrame.className = 'content-iframe fade-in';
-                    };
-                    
-                    dynamicFrame.onerror = function() {
-                        if (loader) loader.style.display = 'none';
-                        console.error('Ошибка загрузки модуля:', targetModule.url);
-                        showTooltip('❌ Ошибка загрузки модуля', document.body, 'top');
-                    };
-                    
-                    setTimeout(() => {
-                        if (loader) loader.style.display = 'none';
-                    }, 10000);
-                }, 300);
-            }
-        }
-
-        function updateAmbientGlow(moduleId) {
-            if (!ambientGlow) return;
-            ambientGlow.className = 'ambient-glow';
-            if (moduleId !== 'welcome') {
-                ambientGlow.classList.add('module-' + moduleId);
-            }
-        }
-
-        let tooltipTimeout = null;
-
-        function showTooltip(text, element, position = 'top') {
-            if (!tooltipHint || !tooltipText) return;
-            
-            const rect = element.getBoundingClientRect();
-            tooltipText.textContent = text;
-            
-            tooltipArrow.className = 'arrow';
-            
-            let x, y;
-            const hintWidth = Math.min(280, window.innerWidth - 40);
-            const hintHeight = tooltipHint.offsetHeight || 50;
-            
-            switch(position) {
-                case 'bottom':
-                    x = rect.left + rect.width/2 - hintWidth/2;
-                    y = rect.bottom + 15;
-                    tooltipArrow.className = 'arrow arrow-bottom';
-                    break;
-                case 'left':
-                    x = rect.left - hintWidth - 15;
-                    y = rect.top + rect.height/2 - hintHeight/2;
-                    tooltipArrow.className = 'arrow arrow-right';
-                    break;
-                default: // top
-                    x = rect.left + rect.width/2 - hintWidth/2;
-                    y = rect.top - hintHeight - 15;
-                    tooltipArrow.className = 'arrow arrow-top';
-                    break;
-            }
-            
-            if (x < 10) x = 10;
-            if (x + hintWidth > window.innerWidth - 10) {
-                x = window.innerWidth - hintWidth - 10;
-            }
-            if (y < 10) {
-                y = 10;
-                tooltipArrow.className = 'arrow arrow-bottom';
-            }
-            if (y + hintHeight > window.innerHeight - 10) {
-                y = window.innerHeight - hintHeight - 10;
-                tooltipArrow.className = 'arrow arrow-top';
-            }
-            
-            tooltipHint.style.width = hintWidth + 'px';
-            tooltipHint.style.left = x + 'px';
-            tooltipHint.style.top = y + 'px';
-            tooltipHint.classList.add('show');
-            
-            clearTimeout(tooltipTimeout);
-            tooltipTimeout = setTimeout(() => {
-                tooltipHint.classList.remove('show');
-            }, 3000);
-        }
-
-        function hideTooltip() {
-            if (tooltipHint) {
-                tooltipHint.classList.remove('show');
-            }
-            clearTimeout(tooltipTimeout);
-        }
-
-        function checkFirstVisit() {
-            const visited = localStorage.getItem('instrumenti_tutorial_shown');
-            if (!visited && tutorialOverlay) {
-                setTimeout(() => {
-                    tutorialOverlay.classList.add('show');
-                }, 800);
-            }
-        }
-
-        function showTutorial() {
-            if (tutorialOverlay) {
-                tutorialOverlay.classList.add('show');
-            }
-        }
-
-        function hideTutorial() {
-            if (tutorialOverlay) {
-                tutorialOverlay.classList.remove('show');
-                localStorage.setItem('instrumenti_tutorial_shown', 'true');
-            }
-        }
-
-        function initParticleField() {
+        function initParticles() {
             const canvas = document.getElementById("particle-canvas");
-            if (!canvas) return;
-            
             const ctx = canvas.getContext("2d");
-            let width = window.innerWidth;
-            let height = window.innerHeight;
             let particles = [];
-            const PARTICLE_COUNT = 150;
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
 
-            class FlowParticle {
+            class P {
                 constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.2;
-                    this.vy = (Math.random() - 0.5) * 0.15;
-                    this.size = Math.random() * 2 + 0.5;
-                    this.alpha = Math.random() * 0.4 + 0.1;
-                    this.color = `hsla(${160 + Math.random() * 40}, 70%, 60%, ${this.alpha})`;
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2;
                 }
                 update() {
                     this.x += this.vx;
                     this.y += this.vy;
-                    if (this.x < 0) this.x = width;
-                    if (this.x > width) this.x = 0;
-                    if (this.y < 0) this.y = height;
-                    if (this.y > height) this.y = 0;
+                    if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
                 }
                 draw() {
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent-1');
+                    ctx.globalAlpha = 0.3;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
                     ctx.fill();
                 }
             }
 
-            for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new FlowParticle());
-
-            function drawConnections() {
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < 80) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(45, 212, 191, ${0.04 * (1 - dist/80)})`;
-                            ctx.lineWidth = 0.5;
-                            ctx.stroke();
-                        }
-                    }
-                }
-            }
+            for(let i=0; i<80; i++) particles.push(new P());
 
             function animate() {
-                ctx.clearRect(0, 0, width, height);
-                for (let p of particles) {
-                    p.update();
-                    p.draw();
-                }
-                drawConnections();
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
                 requestAnimationFrame(animate);
             }
-            
-            function resizeCanvas() {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
-            }
-            
-            window.addEventListener("resize", () => {
-                resizeCanvas();
-                particles = [];
-                for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new FlowParticle());
-            });
-            resizeCanvas();
             animate();
         }
-
-        function setupShortcuts() {
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    toggleFullscreenMode();
-                    return;
-                }
-
-                if (e.key === 'Escape') {
-                    if (settingsOpen) toggleSettings();
-                    if (tutorialOverlay && tutorialOverlay.classList.contains('show')) hideTutorial();
-                    if (isFullscreen) toggleFullscreenMode();
-                    return;
-                }
-
-                const num = parseInt(e.key);
-                if (num >= 1 && num <= 9) {
-                    const moduleKeys = ['page1', 'page2', 'page5', 'page6', 'page7', 'page8', 'page9'];
-                    if (num <= moduleKeys.length) {
-                        e.preventDefault();
-                        const modId = moduleKeys[num - 1];
-                        loadModule(modId);
-                        const mod = MODULES[modId];
-                        if (mod) {
-                            showTooltip(`🔀 ${mod.title}`, document.activeElement || document.body, 'bottom');
-                        }
-                    }
-                }
-
-                if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.metaKey) {
-                    e.preventDefault();
-                    toggleSettings();
-                }
-
-                if ((e.key === 't' || e.key === 'T') && !e.ctrlKey && !e.metaKey) {
-                    e.preventDefault();
-                    showTutorial();
-                }
-
-                if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) {
-                    e.preventDefault();
-                    toggleFullscreenMode();
-                }
-            });
-        }
-
-        function showShortcutsHelp() {
-            const shortcuts = [
-                '1-7 - Быстрое переключение модулей',
-                'Ctrl+Enter - Полноэкранный режим',
-                'S - Открыть настройки',
-                'T - Открыть туториал',
-                'F - Полноэкранный режим',
-                'Escape - Закрыть окна'
-            ];
-            alert('📋 Горячие клавиши:\n\n' + shortcuts.join('\n'));
-        }
-
-        function toggleFullscreenMode() {
-            if (!isFullscreen) {
-                document.body.classList.add("fullscreen-active");
-                isFullscreen = true;
-                if (exitFsBtn) exitFsBtn.style.display = "flex";
-            } else {
-                document.body.classList.remove("fullscreen-active");
-                isFullscreen = false;
-                if (exitFsBtn) exitFsBtn.style.display = "none";
-            }
-        }
-
-        function toggleSettings() {
-            settingsOpen = !settingsOpen;
-            if (settingsPanel) settingsPanel.classList.toggle('open', settingsOpen);
-            if (settingsOverlay) settingsOverlay.classList.toggle('show', settingsOpen);
-        }
-
-        function setupEventListeners() {
-            if (fullscreenBtn) fullscreenBtn.onclick = toggleFullscreenMode;
-            if (exitFsBtn) exitFsBtn.onclick = toggleFullscreenMode;
-
-            if (settingsBtn) settingsBtn.onclick = toggleSettings;
-            if (closeSettingsBtn) closeSettingsBtn.onclick = toggleSettings;
-            if (settingsOverlay) settingsOverlay.onclick = toggleSettings;
-
-            if (themeToggle) {
-                themeToggle.onclick = () => {
-                    const current = document.documentElement.getAttribute('data-theme');
-                    applyTheme(current === 'dark' ? 'light' : 'dark');
-                };
-            }
-
-            if (tutorialBtn) tutorialBtn.onclick = showTutorial;
-            const startBtn = document.getElementById('startTutorialBtn');
-            const skipBtn = document.getElementById('skipTutorialBtn');
-            if (startBtn) startBtn.onclick = hideTutorial;
-            if (skipBtn) skipBtn.onclick = hideTutorial;
-
-            document.querySelectorAll('#themeOptions button').forEach(btn => {
-                btn.onclick = () => applyTheme(btn.dataset.theme);
-            });
-
-            document.querySelectorAll('#sizeOptions button').forEach(btn => {
-                btn.onclick = () => applySize(btn.dataset.size);
-            });
-
-            document.querySelectorAll('.color-option').forEach(el => {
-                el.onclick = () => applyColor(el.dataset.color);
-            });
-
-            document.querySelectorAll('#bgOptions button').forEach(btn => {
-                btn.onclick = () => applyBg(btn.dataset.bg);
-            });
-
-            const resetBtn = document.getElementById('resetShortcutsBtn');
-            if (resetBtn) {
-                resetBtn.onclick = () => {
-                    localStorage.removeItem('instrumenti_shortcuts');
-                    alert('Горячие клавиши сброшены до стандартных');
-                };
-            }
-
-            const showBtn = document.getElementById('showShortcutsBtn');
-            if (showBtn) showBtn.onclick = showShortcutsHelp;
-
-            setupShortcuts();
-
-            document.querySelectorAll('.ring-item').forEach((item) => {
-                item.addEventListener('mouseenter', () => {
-                    const title = item.title || 'Модуль';
-                    if (window.innerWidth > 800) {
-                        showTooltip(title, item, 'left');
-                    }
-                });
-                item.addEventListener('mouseleave', hideTooltip);
-            });
-
-            document.querySelectorAll('.neuro-card').forEach((card) => {
-                card.addEventListener('mouseenter', () => {
-                    const title = card.querySelector('span')?.textContent || 'Модуль';
-                    if (window.innerWidth > 800) {
-                        showTooltip(`🔗 ${title}`, card, 'bottom');
-                    }
-                });
-                card.addEventListener('mouseleave', hideTooltip);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
