@@ -191,8 +191,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            min-width: 320px;
-            min-height: 240px;
+            min-width: 400px;
+            min-height: 300px;
             transition: 
                 opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
                 transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
@@ -274,7 +274,10 @@
             pointer-events: auto;
             background: var(--bg-primary);
         }
-
+.os-window.maximized .window-content,
+.os-window:not(.maximized) .window-content {
+    min-height: 200px;
+}
         /* --- Resizing Handles --- */
         .resize-handle { position: absolute; z-index: 100; }
         .rh-r { top: 0; right: 0; bottom: 0; width: 6px; cursor: e-resize; }
@@ -904,47 +907,74 @@
         }
 
         function createWindow(mod) {
-            const win = document.createElement('div');
-            win.className = 'os-window';
-            win.id = `win-${mod.id}`;
-            
-            // Load saved position or use default
-            const savedPos = getWindowPosition(mod.id);
-            const offset = Object.keys(windows).length * 40;
-            
-            win.style.left = (savedPos?.x || (150 + offset)) + 'px';
-            win.style.top = (savedPos?.y || (80 + offset)) + 'px';
-            win.style.width = (savedPos?.width || 850) + 'px';
-            win.style.height = (savedPos?.height || 650) + 'px';
-            win.style.zIndex = ++zIndexCounter;
+    const win = document.createElement('div');
+    win.className = 'os-window';
+    win.id = `win-${mod.id}`;
+    
+    // Адаптивные размеры относительно экрана
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight - 148; // минус top-bar и dock
+    
+    const savedPos = getWindowPosition(mod.id);
+    const offset = Object.keys(windows).length * 30;
+    
+    // Рассчитываем оптимальные размеры
+    let winWidth, winHeight;
+    
+    if (savedPos) {
+        // Используем сохраненные размеры, но проверяем чтобы они влезали в экран
+        winWidth = Math.min(savedPos.width, screenWidth * 0.95);
+        winHeight = Math.min(savedPos.height, screenHeight * 0.9);
+    } else {
+        // Новые окна: 80% ширины экрана или максимум 1200px, минимум 600px
+        winWidth = Math.max(600, Math.min(screenWidth * 0.8, 1200));
+        // Высота: 75% доступного пространства или максимум 800px, минимум 500px
+        winHeight = Math.max(500, Math.min(screenHeight * 0.75, 800));
+    }
+    
+    // Позиция с учетом границ экрана
+    let posX = savedPos?.x || (50 + offset);
+    let posY = savedPos?.y || (60 + offset);
+    
+    // Проверяем чтобы окно не выходило за пределы экрана
+    if (posX + winWidth > screenWidth) posX = screenWidth - winWidth - 20;
+    if (posY + winHeight > screenHeight + 48) posY = screenHeight + 48 - winHeight - 20;
+    if (posX < 0) posX = 20;
+    if (posY < 48) posY = 60;
+    
+    win.style.left = posX + 'px';
+    win.style.top = posY + 'px';
+    win.style.width = winWidth + 'px';
+    win.style.height = winHeight + 'px';
+    win.style.zIndex = ++zIndexCounter;
 
-            win.innerHTML = `
-                <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
-                    <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
-                    <div class="window-controls">
-                        <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
-                        <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
-                        <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
-                    </div>
-                </div>
-                <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
-                <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
-                <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
-                <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
-                <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
-                <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
-            `;
+    win.innerHTML = `
+        <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
+            <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
+            <div class="window-controls">
+                <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
+                <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
+                <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
+            </div>
+        </div>
+        <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
+        <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
+        <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
+        <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
+        <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
+        <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
+    `;
 
-            win.onmousedown = () => focusWindow(win);
-            document.getElementById('desktop').appendChild(win);
-            windows[mod.id] = win;
-            
-            updateActiveAppTitle(mod.title, mod.icon);
-            document.getElementById(`dock-${mod.id}`).classList.add('active');
-            document.getElementById('desktop').classList.add('has-windows');
-            
-            playSound('open');
-        }
+    win.onmousedown = () => focusWindow(win);
+    document.getElementById('desktop').appendChild(win);
+    windows[mod.id] = win;
+    
+    updateActiveAppTitle(mod.title, mod.icon);
+    document.getElementById(`dock-${mod.id}`).classList.add('active');
+    document.getElementById('desktop').classList.add('has-windows');
+    
+    playSound('open');
+}
 
         function minimizeWindow(id) {
             const win = windows[id];
@@ -1021,28 +1051,34 @@
         }
 
         function maximizeWindow(id) {
-            const win = windows[id];
-            if (win) {
-                if (win.dataset.maximized === 'true') {
-                    win.style.top = win.dataset.prevTop;
-                    win.style.left = win.dataset.prevLeft;
-                    win.style.width = win.dataset.prevWidth;
-                    win.style.height = win.dataset.prevHeight;
-                    win.dataset.maximized = 'false';
-                } else {
-                    win.dataset.prevTop = win.style.top;
-                    win.dataset.prevLeft = win.style.left;
-                    win.dataset.prevWidth = win.style.width;
-                    win.dataset.prevHeight = win.style.height;
-                    win.style.top = '48px';
-                    win.style.left = '0';
-                    win.style.width = '100%';
-                    win.style.height = 'calc(100vh - 148px)';
-                    win.dataset.maximized = 'true';
-                }
-                playSound('maximize');
-            }
+    const win = windows[id];
+    if (win) {
+        if (win.dataset.maximized === 'true') {
+            // Восстанавливаем размеры
+            win.style.top = win.dataset.prevTop || '80px';
+            win.style.left = win.dataset.prevLeft || '150px';
+            win.style.width = win.dataset.prevWidth || '850px';
+            win.style.height = win.dataset.prevHeight || '650px';
+            win.classList.remove('maximized');
+            win.dataset.maximized = 'false';
+        } else {
+            // Сохраняем текущие размеры
+            win.dataset.prevTop = win.style.top;
+            win.dataset.prevLeft = win.style.left;
+            win.dataset.prevWidth = win.style.width;
+            win.dataset.prevHeight = win.style.height;
+            
+            // Разворачиваем на весь экран (учитывая top-bar и dock)
+            win.style.top = '48px';
+            win.style.left = '0';
+            win.style.width = '100%';
+            win.style.height = 'calc(100vh - 148px)';
+            win.classList.add('maximized');
+            win.dataset.maximized = 'true';
         }
+        playSound('maximize');
+    }
+}
 
         function updateActiveAppTitle(title, iconSvg) {
             const el = document.getElementById('activeAppTitle');
@@ -1106,23 +1142,23 @@
         }
         
         function doResize(e) {
-            if (!isResizing || !resizeWin) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
+    if (!isResizing || !resizeWin) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
 
-            if (resizeDir.includes('r')) resizeWin.style.width = Math.max(320, startW + dx) + 'px';
-            if (resizeDir.includes('b')) resizeWin.style.height = Math.max(240, startH + dy) + 'px';
-            if (resizeDir.includes('l')) {
-                const newW = Math.max(320, startW - dx);
-                resizeWin.style.width = newW + 'px';
-                resizeWin.style.left = (startL + dx) + 'px';
-            }
-            if (resizeDir.includes('t')) {
-                const newH = Math.max(240, startH - dy);
-                resizeWin.style.height = newH + 'px';
-                resizeWin.style.top = Math.max(48, startT + dy) + 'px';
-            }
-        }
+    if (resizeDir.includes('r')) resizeWin.style.width = Math.max(400, startW + dx) + 'px';
+    if (resizeDir.includes('b')) resizeWin.style.height = Math.max(300, startH + dy) + 'px';
+    if (resizeDir.includes('l')) {
+        const newW = Math.max(400, startW - dx);
+        resizeWin.style.width = newW + 'px';
+        resizeWin.style.left = (startL + dx) + 'px';
+    }
+    if (resizeDir.includes('t')) {
+        const newH = Math.max(300, startH - dy);
+        resizeWin.style.height = newH + 'px';
+        resizeWin.style.top = Math.max(48, startT + dy) + 'px';
+    }
+}
         
         function stopResize() {
             isResizing = false; resizeWin = null;
