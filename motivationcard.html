@@ -2,1485 +2,1144 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мотивацию надо поднять</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
         }
 
         body {
             min-height: 100vh;
+            background: linear-gradient(135deg, #F5F1E8 0%, #FFE5D9 100%);
+            font-family: 'Georgia', serif;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            transition: background 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            position: relative;
-            overflow-x: hidden;
-            cursor: none !important;
-            background: #0a0e27;
-        }
-
-        body, body * {
-            cursor: none !important;
-        }
-
-        #three-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .kinetic-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            justify-content: center;
             overflow: hidden;
-            transition: all 0.6s ease;
-            opacity: 0.3;
+            position: relative;
+            cursor: none;
+            transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .gradient-sphere {
+        body.dark {
+            background: linear-gradient(135deg, #0C1929 0%, #1A2D3D 100%);
+            color: #E8DCC4;
+        }
+
+        /* Floating blobs with interactive movement */
+        .blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            animation: sphereMove 25s infinite alternate;
-            transition: background 0.5s ease;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: floatBlob 20s infinite ease-in-out;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1), all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            will-change: transform;
         }
 
-        .sphere-1 {
-            width: 600px;
-            height: 600px;
-            top: -200px;
-            left: -200px;
-            background: radial-gradient(circle, rgba(123, 97, 255, 0.5) 0%, rgba(79, 70, 229, 0.3) 50%, transparent 70%);
-        }
-
-        .sphere-2 {
-            width: 500px;
-            height: 500px;
-            bottom: -150px;
-            right: -150px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, rgba(219, 39, 119, 0.25) 50%, transparent 70%);
-        }
-
-        .sphere-3 {
-            width: 450px;
-            height: 450px;
-            top: 50%;
-            left: 50%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.2) 50%, transparent 70%);
-        }
-
-        .sphere-4 {
+        .blob-1 {
             width: 400px;
             height: 400px;
-            bottom: 20%;
-            left: 10%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 70%);
+            background: #FF6F61;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
         }
 
-        @keyframes sphereMove {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.5; }
-            25% { transform: translate(10%, 5%) scale(1.2) rotate(90deg); opacity: 0.7; }
-            50% { transform: translate(5%, 10%) scale(1.3) rotate(180deg); opacity: 0.65; }
-            75% { transform: translate(-5%, 5%) scale(1.15) rotate(270deg); opacity: 0.75; }
-            100% { transform: translate(-3%, -3%) scale(1.1) rotate(360deg); opacity: 0.55; }
-        }
-        .noise-texture {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjkiIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDMiLz48L3N2Zz4=');
-            background-repeat: repeat;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.25;
+        .blob-2 {
+            width: 350px;
+            height: 350px;
+            background: #40E0D0;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -5s;
         }
 
-        .cursor-trail {
-            position: fixed;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.05s, width 0.2s, height 0.2s;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: screen;
-            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(167, 139, 250, 0.6) 40%, rgba(236, 72, 153, 0.3) 70%, transparent 80%);
-            filter: blur(3px);
-            box-shadow: 0 0 30px rgba(167, 139, 250, 0.5), 0 0 60px rgba(236, 72, 153, 0.3);
-        }
-        .particle-universe {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #F4A460;
+            top: 50%;
+            left: 50%;
+            animation-delay: -10s;
         }
 
-        .cosmic-particle {
+        body.dark .blob-1 { background: #40E0D0; }
+        body.dark .blob-2 { background: #FF6F61; }
+        body.dark .blob-3 { background: #9B7EDE; }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-30px, 50px) scale(0.95); }
+            75% { transform: translate(30px, 30px) scale(1.05); }
+        }
+
+        /* Ripple effect */
+        .ripple {
             position: absolute;
             border-radius: 50%;
-            animation: floatCosmic linear infinite;
-            pointer-events: auto;
-            cursor: none !important;
-            transition: transform 0.2s;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+            z-index: 5;
         }
 
-        .cosmic-particle:hover {
-            transform: scale(4);
-            filter: brightness(1.6);
+        body.dark .ripple {
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        @keyframes floatCosmic {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.9; }
-            80% { opacity: 0.9; }
-            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
-        .oracle-container {
+        .organic-container {
             position: relative;
-            z-index: 30;
-            width: 100%;
+            z-index: 10;
             max-width: 900px;
-            animation: containerFloat 1s ease;
+            width: 90%;
         }
 
-        @keyframes containerFloat {
-            from { opacity: 0; transform: translateY(50px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .glass-panel {
-            background: linear-gradient(135deg, rgba(10, 15, 40, 0.65) 0%, rgba(5, 10, 30, 0.7) 100%);
-            backdrop-filter: blur(35px) saturate(220%);
-            border-radius: 80px;
-            padding: 40px 45px 50px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+        .organic-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            padding: 60px 50px;
+            text-align: center;
             box-shadow: 
-                0 60px 120px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 20px 60px rgba(123, 97, 255, 0.15);
-            position: relative;
-            overflow: hidden;
+                0 20px 60px rgba(255, 111, 97, 0.15),
+                inset 0 0 100px rgba(255, 255, 255, 0.3);
+            animation: morphBlob 8s ease-in-out infinite;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        .glass-panel::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-            pointer-events: none;
+        body.dark .organic-card {
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 20px 60px rgba(64, 224, 208, 0.15),
+                inset 0 0 100px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .header-flex {
+        @keyframes morphBlob {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            50% { border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%; }
+            75% { border-radius: 60% 40% 60% 30% / 70% 30% 50% 60%; }
+        }
+
+        /* Tabs with SVG icons */
+        .tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 18px;
-            margin-bottom: 35px;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
-        .date-chip {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 25, 50, 0.5) 100%);
-            padding: 14px 32px;
-            border-radius: 80px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            transition: all 0.3s;
-            cursor: none !important;
-            backdrop-filter: blur(8px);
-            color: #ffffff !important;
-            text-shadow: 0 0 10px rgba(0,0,0,0.6);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .date-chip:hover {
-            transform: translateY(-3px) scale(1.03);
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 35, 60, 0.6) 100%);
-            box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3);
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 14px;
-        }
-
-        .stat-badge {
-            border-radius: 80px;
-            padding: 14px 28px;
+        .tab {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: none;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.4s;
+            color: #2C1810;
+            font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            cursor: none !important;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 25, 50, 0.5) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            color: #FFE484 !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .stat-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        body.dark .tab {
+            color: #E8DCC4;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(255, 111, 97, 0.3);
+            border-color: #FF6F61;
+            transform: scale(1.05);
+        }
+
+        body.dark .tab.active {
+            background: rgba(64, 224, 208, 0.3);
+            border-color: #40E0D0;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Animated SVG Icons in tabs */
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .tab-icon svg {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transition: left 0.6s;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .stat-badge:hover::before {
-            left: 100%;
+        .tab-icon svg path,
+        .tab-icon svg circle,
+        .tab-icon svg polyline {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawIcon 1.5s ease forwards;
         }
 
-        .stat-badge:hover {
-            transform: translateY(-3px) scale(1.06);
-            box-shadow: 0 8px 25px rgba(255, 228, 132, 0.3);
+        @keyframes drawIcon {
+            to {
+                stroke-dashoffset: 0;
+            }
         }
 
-        .progress-wrapper {
-            margin-bottom: 36px;
+        .tab:hover .tab-icon svg path,
+        .tab:hover .tab-icon svg circle,
+        .tab:hover .tab-icon svg polyline {
+            animation: drawIcon 0.8s ease forwards;
         }
 
-        .progress-title {
+        /* Content sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-display {
+            font-size: 2rem;
+            line-height: 1.6;
+            color: #2C1810;
+            margin-bottom: 40px;
+            min-height: 120px;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.95) !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
-        }
-
-        .progress-track {
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(30, 35, 60, 0.4) 100%);
-            height: 12px;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: none !important;
-            transition: all 0.3s;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .progress-track:hover {
-            height: 16px;
-        }
-
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            border-radius: 20px;
-            transition: width 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            transition: all 0.5s ease;
             position: relative;
-            background: linear-gradient(90deg, #7c3aed 0%, #ec4899 50%, #3b82f6 100%);
-            box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
         }
 
-        .progress-fill::after {
-            content: '';
+        body.dark .quote-display {
+            color: #E8DCC4;
+        }
+
+        /* Typewriter cursor */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background: currentColor;
+            margin-left: 4px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Meditation Timer Styles */
+        .meditation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .breathing-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Circular progress */
+        .breathing-progress {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-            animation: shimmer 2s infinite;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
         }
 
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .breathing-progress circle {
+            fill: none;
+            stroke-width: 4;
         }
 
-        .card-perspective {
-            perspective: 2500px;
-            margin-bottom: 40px;
-            cursor: none !important;
+        .progress-bg {
+            stroke: rgba(255, 255, 255, 0.2);
         }
 
-        .card-flipper {
+        .progress-fill {
+            stroke: #FF6F61;
+            stroke-linecap: round;
+            stroke-dasharray: 565; /* 2 * PI * 90 */
+            stroke-dashoffset: 565;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        body.dark .progress-fill {
+            stroke: #40E0D0;
+        }
+
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 111, 97, 0.3), transparent);
+            animation: breathe 4s infinite ease-in-out;
+            display: none;
             position: relative;
-            width: 100%;
-            min-height: 580px;
-            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-            transform-style: preserve-3d;
+            z-index: 2;
         }
 
-        .card-flipper.flipped {
-            transform: rotateY(180deg);
+        body.dark .breathing-circle {
+            background: radial-gradient(circle, rgba(64, 224, 208, 0.3), transparent);
         }
 
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            min-height: 580px;
-            backface-visibility: hidden;
-            border-radius: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 56px 46px;
-            background: linear-gradient(145deg, rgba(15, 20, 45, 0.97) 0%, rgba(8, 12, 30, 0.98) 100%);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.4s;
-            box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        .breathing-circle.active {
+            display: block;
         }
 
-        .card-front {
-            transform: rotateY(0deg);
-            gap: 40px;
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; }
         }
 
-        .card-back {
-            transform: rotateY(180deg);
-            gap: 30px;
-            overflow-y: auto;
-        }
-
-        .front-icon-big {
-            font-size: 9rem;
-            filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 100px rgba(123, 97, 255, 0.5));
-            animation: hyperFloat 3s infinite ease-in-out;
-            transition: all 0.3s;
-        }
-
-        @keyframes hyperFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-            25% { transform: translateY(-15px) rotate(-6deg) scale(1.06); }
-            50% { transform: translateY(-8px) rotate(3deg) scale(1.03); }
-            75% { transform: translateY(-22px) rotate(6deg) scale(1.09); }
-        }
-
-        .motivation-text {
-            font-size: 1.85rem;
-            font-weight: 800;
-            line-height: 1.5;
-            text-shadow: 0 2px 25px rgba(0, 0, 0, 0.9), 0 0 40px rgba(123, 97, 255, 0.3);
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 20px;
-            transition: color 0.3s;
-            color: #ffffff !important;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 25, 50, 0.3) 100%);
-            border-radius: 40px;
-            backdrop-filter: blur(10px);
-        }
-
-        .rarity-tag {
-            position: absolute;
-            top: 28px;
-            right: 36px;
-            font-size: 2.8rem;
-            filter: drop-shadow(0 0 25px gold) drop-shadow(0 0 50px rgba(255, 215, 0, 0.5));
-            animation: rotateGlow 20s infinite linear;
-            cursor: none !important;
-            transition: all 0.2s;
-        }
-
-        .rarity-tag:hover {
-            transform: scale(1.35) rotate(15deg);
-            filter: drop-shadow(0 0 35px gold) drop-shadow(0 0 70px rgba(255, 215, 0, 0.7));
-        }
-
-        @keyframes rotateGlow {
-            0% { transform: rotate(0deg); filter: drop-shadow(0 0 15px gold); }
-            25% { filter: drop-shadow(0 0 30px orange) drop-shadow(0 0 50px rgba(255, 165, 0, 0.5)); }
-            50% { filter: drop-shadow(0 0 35px gold) drop-shadow(0 0 60px rgba(255, 215, 0, 0.6)); }
-            75% { filter: drop-shadow(0 0 25px yellow) drop-shadow(0 0 40px rgba(255, 255, 0, 0.4)); }
-            100% { transform: rotate(360deg); filter: drop-shadow(0 0 15px gold); }
-        }
-
-        .action-button {
-            width: 100%;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 100px;
-            padding: 28px 36px;
-            font-size: 1.55rem;
-            font-weight: 800;
-            letter-spacing: 8px;
-            cursor: none !important;
-            transition: all 0.4s ease;
-            margin-bottom: 35px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-            color: #ffffff !important;
-            text-shadow: 0 0 15px rgba(0,0,0,0.6);
-            background: linear-gradient(135deg, rgba(123, 97, 255, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
-            box-shadow: 
-                0 10px 40px rgba(123, 97, 255, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .action-button::before {
-            content: '';
+        .breathing-text {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 100%);
             transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .action-button:active::before {
-            width: 600px;
-            height: 600px;
-        }
-
-        .action-button:hover:not(:disabled) {
-            transform: scale(1.05);
-            letter-spacing: 12px;
-            box-shadow: 
-                0 15px 60px rgba(123, 97, 255, 0.6),
-                0 0 80px rgba(236, 72, 153, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            background: linear-gradient(135deg, rgba(123, 97, 255, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
-        }
-
-        .action-button:disabled {
-            opacity: 0.5;
-            cursor: none !important;
-            transform: scale(0.98);
-        }
-
-        .mood-panel {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 25, 50, 0.4) 100%);
-            border-radius: 60px;
-            padding: 30px 34px;
-            margin-bottom: 35px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            cursor: none !important;
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .mood-panel::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(123, 97, 255, 0.15) 0%, rgba(236, 72, 153, 0.08) 50%, transparent 70%);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2C1810;
+            z-index: 3;
+            font-family: 'Inter', sans-serif;
             opacity: 0;
-            transition: opacity 0.6s;
+            transition: opacity 0.3s;
         }
 
-        .mood-panel:hover::after {
+        body.dark .breathing-text {
+            color: #E8DCC4;
+        }
+
+        .breathing-text.active {
             opacity: 1;
         }
 
-        .mood-panel:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 60px rgba(123, 97, 255, 0.3);
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #2C1810;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 4px;
         }
 
-        .mood-panel:active {
-            transform: scale(0.98);
+        body.dark .timer-display {
+            color: #E8DCC4;
         }
 
-        .mood-header-line {
+        .breathing-pattern-selector {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-
-        .mood-title {
-            font-weight: 800;
-            display: flex;
-            gap: 14px;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            transition: color 0.3s;
-            color: #ffffff !important;
-            text-shadow: 0 0 10px rgba(0,0,0,0.6);
-        }
-
-        .mood-spinner {
-            font-size: 2.5rem;
-            transition: all 0.3s;
-            animation: moodPulse 2s infinite;
-            filter: drop-shadow(0 0 8px rgba(0,0,0,0.6));
-        }
-
-        @keyframes moodPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; text-shadow: 0 0 0px transparent; }
-            25% { transform: scale(1.25) rotate(5deg); opacity: 1; text-shadow: 0 0 25px rgba(123, 97, 255, 0.8); }
-            50% { transform: scale(1.15) rotate(-5deg); opacity: 0.95; text-shadow: 0 0 15px rgba(236, 72, 153, 0.6); }
-            75% { transform: scale(1.25) rotate(5deg); opacity: 1; text-shadow: 0 0 25px rgba(59, 130, 246, 0.7); }
-        }
-
-        .mood-result {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(20, 25, 50, 0.5) 100%);
-            border-radius: 50px;
-            padding: 26px 24px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.35rem;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
+            gap: 10px;
             flex-wrap: wrap;
-            min-height: 115px;
-            transition: all 0.3s;
-            color: #ffffff !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            justify-content: center;
+            margin-top: 10px;
         }
 
-        .mood-footer-tag {
-            text-align: right;
-            font-size: 0.78rem;
-            opacity: 0.9;
-            letter-spacing: 2px;
-            transition: color 0.3s;
-            color: rgba(255, 255, 255, 0.9) !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
-        }
-
-        .themes-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .theme-card {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 25, 50, 0.4) 100%);
-            border-radius: 60px;
-            padding: 16px 10px;
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.82rem;
-            letter-spacing: 1.5px;
-            cursor: none !important;
-            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+        .pattern-btn {
+            background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            color: #2C1810;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.dark .pattern-btn {
+            color: #E8DCC4;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pattern-btn.active {
+            background: rgba(255, 111, 97, 0.3);
+            border-color: #FF6F61;
+        }
+
+        body.dark .pattern-btn.active {
+            background: rgba(64, 224, 208, 0.3);
+            border-color: #40E0D0;
+        }
+
+        .pattern-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            background: linear-gradient(135deg, #FF6F61, #F4A460);
+            border: none;
+            color: white;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: none;
+            transition: all 0.4s;
+            box-shadow: 0 8px 25px rgba(255, 111, 97, 0.3);
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.dark .timer-btn {
+            background: linear-gradient(135deg, #40E0D0, #20B2AA);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .timer-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 111, 97, 0.4);
+        }
+
+        body.dark .timer-btn:hover {
+            box-shadow: 0 12px 35px rgba(64, 224, 208, 0.4);
+        }
+
+        .timer-presets {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            color: #2C1810;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.dark .preset-btn {
+            color: #E8DCC4;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .preset-btn:hover {
+            background: rgba(255, 111, 97, 0.3);
+            border-color: #FF6F61;
+            transform: scale(1.05);
+        }
+
+        body.dark .preset-btn:hover {
+            background: rgba(64, 224, 208, 0.3);
+            border-color: #40E0D0;
+        }
+
+        .organic-btn {
+            background: linear-gradient(135deg, #FF6F61, #F4A460);
+            border: none;
+            color: white;
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: none;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1);
+            box-shadow: 0 10px 30px rgba(255, 111, 97, 0.3);
+            letter-spacing: 2px;
             position: relative;
             overflow: hidden;
-            color: #ffffff !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-family: 'Inter', sans-serif;
         }
 
-        .theme-card::before {
-            content: '';
-            position: absolute;
+        body.dark .organic-btn {
+            background: linear-gradient(135deg, #40E0D0, #20B2AA);
+            box-shadow: 0 10px 30px rgba(64, 224, 208, 0.3);
+        }
+
+        .organic-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 111, 97, 0.4);
+        }
+
+        body.dark .organic-btn:hover {
+            box-shadow: 0 15px 40px rgba(64, 224, 208, 0.4);
+        }
+
+        .brush-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(255, 111, 97, 0.4), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            filter: blur(8px);
+            mix-blend-mode: multiply;
+            transition: width 0.3s, height 0.3s;
+        }
+
+        body.dark .brush-cursor {
+            background: radial-gradient(circle, rgba(64, 224, 208, 0.4), transparent);
+            mix-blend-mode: screen;
+        }
+
+        .brush-cursor.active {
+            width: 80px;
+            height: 80px;
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: none;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* SVG Particles */
+        .svg-particles {
+            position: fixed;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transition: left 0.6s;
-        }
-
-        .theme-card:hover::before {
-            left: 100%;
-        }
-
-        .theme-card:hover {
-            transform: translateY(-6px) scale(1.05);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 35, 60, 0.6) 100%);
-            border-color: rgba(255, 255, 255, 0.55);
-            box-shadow: 0 10px 30px rgba(123, 97, 255, 0.3);
-        }
-
-        .theme-card.active {
-            transform: scale(1.06);
-            box-shadow: 
-                0 0 40px rgba(123, 97, 255, 0.5),
-                0 0 80px rgba(236, 72, 153, 0.3);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 35, 60, 0.8) 100%);
-            border-color: rgba(255, 255, 255, 0.75);
-        }
-
-        .toast-global {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%) translateY(180px);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 25, 50, 0.9) 100%);
-            backdrop-filter: blur(45px);
-            padding: 20px 50px;
-            border-radius: 80px;
-            font-weight: 700;
-            z-index: 200;
-            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            font-size: 0.98rem;
-            white-space: nowrap;
             pointer-events: none;
-            letter-spacing: 1px;
-            box-shadow: 
-                0 15px 40px rgba(0,0,0,0.5),
-                0 0 30px rgba(123, 97, 255, 0.3);
-            color: #ffffff !important;
-            text-shadow: 0 0 8px rgba(0,0,0,0.6);
+            z-index: 2;
+            overflow: hidden;
         }
 
-        .toast-global.show {
-            transform: translateX(-50%) translateY(0);
+        .svg-particle {
+            position: absolute;
+            top: -50px;
+            animation: floatSVG linear infinite;
+            opacity: 0;
         }
 
-        :-webkit-scrollbar {
-            width: 7px;
-        }
-        :-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.06);
-            border-radius: 10px;
-        }
-        :-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(123, 97, 255, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
-            border-radius: 10px;
-        }
-        :-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, rgba(123, 97, 255, 0.7) 0%, rgba(236, 72, 153, 0.7) 100%);
+        @keyframes floatSVG {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { 
+                opacity: 0.7; 
+            }
+            90% { 
+                opacity: 0.7; 
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
         }
 
-        @media (max-width: 680px) {
-            .glass-panel { padding: 26px 22px; border-radius: 60px; }
-            .motivation-text { font-size: 1.3rem; }
-            .card-front, .card-back { min-height: 460px; padding: 38px 24px; border-radius: 45px; }
-            .themes-grid { gap: 10px; }
-            .theme-card { font-size: 0.68rem; padding: 12px 4px; }
-            .action-button { font-size: 1.15rem; padding: 20px; letter-spacing: 4px; }
-            .toast-global { white-space: normal; max-width: 85%; text-align: center; font-size: 0.85rem; padding: 16px 28px; }
-            .header-flex { gap: 12px; }
-            .stat-badge { padding: 10px 18px; font-size: 0.82rem; }
-            .cursor-trail { width: 24px; height: 24px; }
-            .cursor-trail::before { font-size: 14px; }
-            .front-icon-big { font-size: 7rem; }
+        @media (max-width: 768px) {
+            .organic-card {
+                padding: 40px 25px;
+            }
+            
+            .quote-display {
+                font-size: 1.5rem;
+            }
+            
+            .organic-btn {
+                padding: 16px 36px;
+                font-size: 1rem;
+            }
+
+            .timer-display {
+                font-size: 2.5rem;
+            }
+
+            .tabs {
+                gap: 10px;
+            }
+
+            .tab {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .breathing-wrapper {
+                width: 160px;
+                height: 160px;
+            }
+
+            .breathing-circle {
+                width: 120px;
+                height: 120px;
+            }
         }
     </style>
 </head>
 <body>
-    <canvas id="three-canvas"></canvas>
-    <div class="kinetic-bg" id="kineticBg">
-        <div class="gradient-sphere sphere-1" id="sphere1"></div>
-        <div class="gradient-sphere sphere-2" id="sphere2"></div>
-        <div class="gradient-sphere sphere-3" id="sphere3"></div>
-        <div class="gradient-sphere sphere-4" id="sphere4"></div>
-    </div>
-    <div class="noise-texture"></div>
-    <div class="particle-universe" id="particleUniverse"></div>
-
-    <div id="cursorTrail" class="cursor-trail"></div>
-
-    <div class="oracle-container">
-        <div class="glass-panel" id="mainPanel">
-            <div class="header-flex">
-                <div class="date-chip" id="dateDisplay">—</div>
-                <div class="stats-row" style="display:none">
-                    <div class="stat-badge" id="streakBadge">🔥 <span id="streakCount">0</span> дн.</div>
-                    <div class="stat-badge" id="collectionBadge">📖 <span id="collectedNum">0</span>/<span id="totalNum">300</span></div>
-                </div>
+    <div class="brush-cursor" id="brushCursor"></div>
+    
+    <div class="blob blob-1" id="blob1"></div>
+    <div class="blob blob-2" id="blob2"></div>
+    <div class="blob blob-3" id="blob3"></div>
+    
+    <div class="svg-particles" id="svgParticles"></div>
+    
+    <button class="theme-switch" onclick="toggleTheme()">🌙/☀️</button>
+    
+    <div class="organic-container">
+        <div class="organic-card">
+            <!-- Tabs with SVG icons -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('motivation')">
+                    <span class="tab-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                    </span>
+                    Вдохновение
+                </button>
+                <button class="tab" onclick="switchTab('meditation')">
+                    <span class="tab-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </span>
+                    Медитация
+                </button>
             </div>
 
-            <div class="progress-wrapper" style="display:none">
-                <div class="progress-title">
-                    <span id="progressLabel">🏆 КОЛЛЕКЦИЯ ПРОРОЧЕСТВ</span>
-                    <span id="percentValue">0%</span>
+            <!-- Motivation Section -->
+            <div class="content-section active" id="motivationSection">
+                <div class="quote-display" id="quoteDisplay">
+                    Нажми кнопку, чтобы получить случайную мысль...
                 </div>
-                <div class="progress-track" id="progressTrack">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
+                <button class="organic-btn" id="getQuoteBtn" onmouseenter="brushActive(true)" onmouseleave="brushActive(false)">
+                    Получить вдохновение
+                </button>
             </div>
 
-            <div class="card-perspective" id="cardWrapper">
-                <div class="card-flipper" id="flipper">
-                    <div class="card-front">
-                        <div class="front-icon-big" id="frontIcon">⚡🔥</div>
-                        <div style="font-size:1rem; background:rgba(0,0,0,0.5); padding:14px 32px; border-radius:80px; backdrop-filter:blur(10px); letter-spacing:2px; color:white;">
-                            👆 КОСНИСЬ, ЧТОБЫ ОТКРЫТЬ
-                        </div>
-                        <div style="font-size:0.75rem; opacity:0.8; margin-top:10px; color:rgba(255,255,255,0.7);">интерактивная 3D-карточка</div>
+            <!-- Meditation Section -->
+            <div class="content-section" id="meditationSection">
+                <div class="meditation-container">
+                    <div class="breathing-wrapper">
+                        <svg class="breathing-progress" viewBox="0 0 200 200">
+                            <circle class="progress-bg" cx="100" cy="100" r="90"/>
+                            <circle class="progress-fill" id="progressCircle" cx="100" cy="100" r="90"/>
+                        </svg>
+                        <div class="breathing-circle" id="breathingCircle"></div>
+                        <div class="breathing-text" id="breathingText">Вдох...</div>
                     </div>
-                    <div class="card-back">
-                        <div class="rarity-tag" id="rarityIcon">💎</div>
-                        <div class="motivation-text" id="motivationTextArea">
-                            Нажми на кнопку внизу, чтобы получить силу
-                        </div>
+                    
+                    <div class="breathing-pattern-selector">
+                        <button class="pattern-btn active" onclick="setBreathingPattern('relax')" data-pattern="relax">Расслабление (4-4)</button>
+                        <button class="pattern-btn" onclick="setBreathingPattern('balance')" data-pattern="balance">Баланс (4-7-8)</button>
+                        <button class="pattern-btn" onclick="setBreathingPattern('box')" data-pattern="box">Box Breathing (4-4-4-4)</button>
+                    </div>
+
+                    <div class="timer-display" id="timerDisplay">05:00</div>
+                    
+                    <div class="timer-presets">
+                        <button class="preset-btn" onclick="setTimer(3)">3 мин</button>
+                        <button class="preset-btn" onclick="setTimer(5)">5 мин</button>
+                        <button class="preset-btn" onclick="setTimer(10)">10 мин</button>
+                        <button class="preset-btn" onclick="setTimer(15)">15 мин</button>
+                        <button class="preset-btn" onclick="setTimer(20)">20 мин</button>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        <button class="timer-btn" id="startBtn" onclick="startTimer()">▶ Старт</button>
+                        <button class="timer-btn" id="pauseBtn" onclick="pauseTimer()" style="display:none;">⏸ Пауза</button>
+                        <button class="timer-btn" onclick="resetTimer()">↺ Сброс</button>
                     </div>
                 </div>
-            </div>
-
-            <button class="action-button" id="getMotivationBtn">
-                ⚡ ПОЛУЧИТЬ ⚡
-            </button>
-
-            <div class="mood-panel" id="moodDetector">
-                <div class="mood-header-line">
-                    <div class="mood-title" id="moodTitle">
-                        <span id="moodIconStatic">🧠</span> ДЕТЕКТОР НАСТРОЕНИЯ
-                    </div>
-                    <div class="mood-spinner" id="moodIconAnim">🎯</div>
-                </div>
-                <div class="mood-result" id="moodResultText">
-                    🌊 Нажми, чтобы проанализировать
-                </div>
-                <div class="mood-footer-tag" id="moodTagline">
-                    #проанализируй_свою_силу
-                </div>
-            </div>
-
-            <div class="themes-grid" id="themesContainer">
-                <div class="theme-card" data-theme="neon">🌙 НЕОН</div>
-                <div class="theme-card" data-theme="fire">🔥 ОГОНЬ</div>
-                <div class="theme-card" data-theme="ocean">🌊 ОКЕАН</div>
-                <div class="theme-card" data-theme="forest">🌲 ЛЕС</div>
-                <div class="theme-card" data-theme="royal">👑 РОЯЛ</div>
-                <div class="theme-card" data-theme="sunset">🌅 ЗАКАТ</div>
-                <div class="theme-card" data-theme="midnight">🌙 ПОЛНОЧЬ</div>
-                <div class="theme-card" data-theme="cherry">🌸 ВИШНЯ</div>
-                <div class="theme-card" data-theme="galaxy">🌌 ГАЛАКТИКА</div>
-                <div class="theme-card" data-theme="aurora">🌈 АВРОРА</div>
             </div>
         </div>
     </div>
 
-    <div class="toast-global" id="toastMsg">✨</div>
-
     <script>
-        (function() {
-            const baseMessages = [
-    "🔥 ТЫ СПОСОБЕН НА НЕВОЗМОЖНОЕ! Сегодня твой день!", 
-    "⚡ ВЕРЬ В СЕБЯ! У тебя есть всё для победы!",
-    "💪 ТЫ СИЛЬНЕЕ, ЧЕМ ДУМАЕШЬ! Преодолей себя!", 
-    "🧠 Твой разум — твоя сила. Направь его к цели!",
-    "❤️ Дыши глубже. Ты справишься со всем!", 
-    "🔨 Каждый удар судьбы делает тебя крепче!",
-    "🚫 Препятствия — это возможности в disguise. Действуй!", 
-    "🔇 Заглуши сомнения. Твой потенциал безграничен!",
-    "📅 Лучшее время начать — прямо сейчас!", 
-    "📢 Твой голос важен. Будь услышанным!",
-    "🔋 Твоя энергия неисчерпаема. Включи полный заряд!", 
-    "🗣️ Скажи себе: «Я могу!» И это будет правда!",
-    "👥 Ты не один. Мир поддерживает твои стремления!", 
-    "🎯 Маленький шаг сегодня — огромный результат завтра!",
-    "⛰️ Каждая вершина покоряется тем, кто идёт вперёд!", 
-    "💪 ДЕЛАЙ! Действие рождает уверенность!",
-    "⚡ Твой опыт — твоё преимущество. Используй его!", 
-    "🔄 Ошибки — это уроки. Извлеки пользу и расти!",
-    "👔 Ты — архитектор своей жизни. Строй великое!", 
-    "🔍 Посмотри шире. Возможности повсюду!",
-    "🎯 БУДЬ СОЗИДАТЕЛЕМ, А НЕ НАБЛЮДАТЕЛЕМ!", 
-    "💭 Твои мечты реальнее, чем ты думаешь!",
-    "🛏️ Проснись с целью «Сегодня я стану лучше!»", 
-    "🧠 ТВОЙ РАЗУМ СОЗДАН ДЛЯ ВЕЛИКИХ ОТКРЫТИЙ!",
-    "📅 Не жди идеального момента. Создай его сам!", 
-    "🤔 Ты можешь больше. Докажи это себе!",
-    "🔥 Твой огонь внутри. Позволь ему сиять!", 
-    "💎 ТЫ — ДРАГОЦЕННОСТЬ. Сияй ярко!",
-    "🐎 Вперёд к новым горизонтам! Ты готов!", 
-    "📝 МЕЧТЫ ТРЕБУЮТ ДЕЙСТВИЙ. Начни сегодня!",
-    "😨 Страх исчезает перед действием. Сделай шаг!", 
-    "🚙 Ты преодолевал трудности прежде. Преодолеешь и сейчас!",
-    "🐕 Будь верен своим целям. Защита своих мечтаний — твоя миссия!", 
-    "😠 Преврати вызовы в топливо для успеха!",
-    "🔪 Отсеки всё лишнее. Сфокусируйся на главном!", 
-    "🐘 Большие цели достигаются маленькими шагами!",
-    "😱 ДЕЙСТВИЕ — ЛУЧШЕЕ СРЕДСТВО ОТ СТРАХА!", 
-    "🦸 ТЫ — ГЕРОЙ СВОЕЙ ИСТОРИИ! Пиши её смело!",
-    "🐱 Сохраняй достоинство в любой ситуации!", 
-    "⏰ ВРЕМЯ — ТВОЙ СОЮЗНИК. Используй его мудро!",
-    "💪 Всё временно. Твой успех — навсегда!", 
-    "🛋️ Встань и действуй! Твой потенциал ждёт!",
-    "🥊 Выйди на ринг жизни победителем!", 
-    "🚀 ТОЛЬКО ТЫ МОЖЕШЬ ИЗМЕНИТЬ СВОЮ ЖИЗНЬ!",
-    "👀 Видишь цель? Иди к ней несмотря ни на что!", 
-    "📆 Начни сегодня, чтобы гордиться собой завтра!",
-    "👣 КАЖДЫЙ ШАГ ПРИБЛИЖАЕТ ТЕБЯ К МЕЧТЕ!", 
-    "💧 Настойчивость побеждает всё. Будь как вода!",
-    "🏆 ТВОЁ ВРЕМЯ ПРИШЛО! Забери своё!", 
-    "🔁 ТЫ — СУММА ТВОИХ ЕЖЕДНЕВНЫХ ВЫБОРОВ!",
-    "✨ ДАЖЕ В ТЕМНОТЕ СВЕТЯТ ЗВЁЗДЫ. ТЫ — ОДНА ИЗ НИХ!", 
-    "🌟 ТЫ МОГУЩЕСТВЕННЕЕ, ЧЕМ ПРЕДСТАВЛЯЕШЬ!",
-    "💀 Твой главный соперник — ты вчерашний. Стань лучше!", 
-    "🎪 Жизнь — сцена, а ты — главная звезда!",
-    "🚂 Движение вперёд — ключ к успеху. Полная скорость!", 
-    "📉 Упасть — не стыдно. Стыдно — не подняться!",
-    "🥇 СТРЕМИСЬ К ЛУЧШЕМУ! Ты заслуживаешь победы!", 
-    "🧹 Очисти путь от сомнений. Впереди только успех!",
-    "🎮 Ты проходишь свой уровень. Продолжай игру!", 
-    "🏗️ Строишь будущее? Каждое действие — кирпичик!",
-    "🦅 Взгляд орла, воля победителя. Вперёд!", 
-    "🔥 Гори идеей, освещая путь другим!",
-    "🤝 Поддержка важна, но твоя победа — в твоих руках!", 
-    "🧱 Фундамент успеха закладывается сегодня!",
-    "⛑️ ТЫ — КУЗНЕЦ СВОЕГО СЧАСТЬЯ! Куй смело!", 
-    "🧨 Разорви границы возможного!",
-    "🪄 Волшебство — в твоих руках. Твори!", 
-    "📈 Твой рост неизбежен. Стремись выше!",
-    "🎲 Риск оправдан, когда веришь в себя!", 
-    "🌸 Из трудностей расцветают великие достижения!",
-    "🌪️ Пройди через шторм и выйдешь сильнее!", 
-    "💣 Твой потенциал взрывной. Освободи его!",
-    "🎖️ ПОБЕДА ЖДЁТ ТЕБЯ! Иди до конца!", 
-    "⏳ Каждый момент ценен. Не упусти свой шанс!",
-    "📺 Твоя жизнь — лучший сериал. Создавай сюжет!", 
-    "🔑 Ключ к успеху внутри тебя. Поверни его!",
-    "🚪 Двери открыты. Войди в новую главу!", 
-    "🍗 Действуй с энтузиазмом и стратегией!",
-    "🎸 Играй свою мелодию уверенно и громко!", 
-    "🧩 Каждая деталь важна. Собери свою картину успеха!",
-    "⚙️ Настройся на победу. Механизм запущен!", 
-    "🌈 После тьмы всегда наступает свет!",
-    "🍀 Удача благоволит смелым. Будь смелым!", 
-    "🕯️ Свет твоего успеха уже виден!",
-    "🔔 СЕЙЧАС — МОМЕНТ ТВОЕГО СТАРТА! Действуй!", 
-    "📦 Распакуй свой потенциал полностью!",
-    "🥋 Мастерство в постоянстве. Практикуйся!", 
-    "❄️ Ясный ум и тёплое сердце — твоя сила!",
-    "🍔 Сначала главное дело, потом награда!", 
-    "⛽ Полный бак энергии! Вперёд к целям!",
-    "🚤 Греби к своей мечте независимо от ветра!", 
-    "🪂 Доверься своим крыльям и лети!",
-    "🤖 Включи режим достижений на максимум!", 
-    "🔋 Заряди мир своей энергией действий!",
-    "💊 Принимай решение действовать каждый день!", 
-    "🧨 Сияй результатами ярко и громко!",
-    "🪓 Реши проблему сейчас, пока она мала!", 
-    "🚁 Поднимись над обстоятельствами!",
-    "🎓 Учись, расти, побеждай. Начни урок!", 
-    "💸 Инвестируй время в свои мечты!",
-    "🌟 ТЫ СИЯЕШЬ ЯРЧЕ ВСЕХ! Продолжай светить!", 
-    "🔥 Направь энергию в созидание великого!",
-    "🤘 Скажи сомнениям «Нет!» и действуй!", 
-    "🎯 ФОКУС НА ЦЕЛИ! Только вперёд, только к победе!"
-];
-            let allMessages = [...baseMessages];
-            while(allMessages.length < 300) {
-                allMessages.push(allMessages[allMessages.length % baseMessages.length] + " ⚡");
-            }
-            const MESSAGES = allMessages.slice(0,300);
+        // Quotes database
+        const quotes = [
+            "Ты сильнее, чем думаешь",
+            "Внутри тебя скрыт безграничный потенциал",
+            "Каждое препятствие делает тебя крепче",
+            "Твоя сила растёт с каждым вызовом",
+            "Ты способен преодолеть всё",
+            "Верь в свою внутреннюю мощь",
+            "Ты — воплощение силы духа",
+            "Никакие трудности не сломят тебя",
+            "Твоя решимость непоколебима",
+            "Ты рождён для великих свершений",
+            "Сила течёт через каждую твою клетку",
+            "Ты несокрушим как скала",
+            "Твоя воля крепче стали",
+            "Ты обладаешь внутренней бронёй",
+            "Каждый день ты становишься сильнее",
+            "Твоя энергия неисчерпаема",
+            "Ты — источник бесконечной мощи",
+            "Твоя стойкость восхищает",
+            "Ты преодолеваешь невозможное",
+            "Твоя сила вдохновляет других",
+            "Действуй сейчас, не откладывай",
+            "Каждый шаг приближает к цели",
+            "Начни сегодня, чтобы гордиться завтра",
+            "Движение вперёд — ключ к успеху",
+            "Маленькие шаги ведут к большим победам",
+            "Действие рождает уверенность",
+            "Не жди идеального момента — создай его",
+            "Каждое действие имеет значение",
+            "Прогресс важнее совершенства",
+            "Двигайся вперёд несмотря ни на что",
+            "Мудрость приходит с опытом",
+            "Слушай своё сердце и разум",
+            "Каждая ошибка — урок мудрости",
+            "Осознанность открывает новые пути",
+            "Мудрый учится на чужих ошибках",
+            "Тишина рождает мудрые решения",
+            "Твой разум — источник мудрости",
+            "Мудрость в простоте действий",
+            "Размышляй, прежде чем действовать",
+            "Мудрость приходит через практику",
+            "Как природа, ты постоянно растёшь",
+            "Найди свой внутренний ритм",
+            "Гармония внутри создаёт гармонию вокруг",
+            "Как река, будь гибким и сильным",
+            "Природа учит терпению и красоте",
+            "Ты часть великого природного цикла",
+            "Как дерево, расти глубоко и высоко",
+            "Баланс — ключ к внутренней силе",
+            "Как океан, ты глубок и могущественен",
+            "Природная мудрость внутри тебя",
+            "Твои мечты ближе, чем кажутся",
+            "Вдохновение повсюду — открой глаза",
+            "Мечтай масштабно, действуй смело",
+            "Твоё воображение безгранично",
+            "Каждая мечта заслуживает реализации",
+            "Вдохновение приходит к готовым",
+            "Твои мечты — карта будущего",
+            "Верь в силу своих желаний",
+            "Мечты становятся реальностью через действие",
+            "Твоё вдохновение заражает других"
+        ];
 
-            let viewedArr = JSON.parse(localStorage.getItem('motiv300_viewed') || '[]');
-            let lastDateStr = localStorage.getItem('motiv300_lastDate');
-            let streakVal = parseInt(localStorage.getItem('motiv300_streak') || '0');
-            let currentMsgText = MESSAGES[0];
+        // Timer and breathing variables
+        let timerInterval = null;
+        let breathingInterval = null;
+        let timeLeft = 300;
+        let isRunning = false;
+        let lastQuoteIndex = -1;
+        let currentPattern = 'relax';
+        let breathingPhase = 0;
 
-            const dateSpan = document.getElementById('dateDisplay');
-            const streakSpan = document.getElementById('streakCount');
-            const collectedSpan = document.getElementById('collectedNum');
-            const totalSpan = document.getElementById('totalNum');
-            const percentSpan = document.getElementById('percentValue');
-            const progressFillDiv = document.getElementById('progressFill');
-            const getBtn = document.getElementById('getMotivationBtn');
-            const flipperDiv = document.getElementById('flipper');
-            const motivationDiv = document.getElementById('motivationTextArea');
-            const raritySpan = document.getElementById('rarityIcon');
-            const moodResultSpan = document.getElementById('moodResultText');
-            const moodIconSpan = document.getElementById('moodIconAnim');
-            const moodTagSpan = document.getElementById('moodTagline');
-            const toastDiv = document.getElementById('toastMsg');
-            
-            totalSpan.innerText = MESSAGES.length;
-            
-            function updateDate() { 
-                dateSpan.innerText = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'}); 
+        // Blob interaction variables
+        const blobs = [
+            { element: document.getElementById('blob1'), x: 0, y: 0, vx: 0, vy: 0 },
+            { element: document.getElementById('blob2'), x: 0, y: 0, vx: 0, vy: 0 },
+            { element: document.getElementById('blob3'), x: 0, y: 0, vx: 0, vy: 0 }
+        ];
+
+        // Breathing patterns
+        const breathingPatterns = {
+            relax: {
+                name: 'Расслабление',
+                phases: [
+                    { text: 'Вдох...', duration: 4000, scale: 1.3 },
+                    { text: 'Выдох...', duration: 4000, scale: 1 }
+                ]
+            },
+            balance: {
+                name: 'Баланс 4-7-8',
+                phases: [
+                    { text: 'Вдох...', duration: 4000, scale: 1.3 },
+                    { text: 'Задержи...', duration: 7000, scale: 1.3 },
+                    { text: 'Выдох...', duration: 8000, scale: 1 }
+                ]
+            },
+            box: {
+                name: 'Box Breathing',
+                phases: [
+                    { text: 'Вдох...', duration: 4000, scale: 1.3 },
+                    { text: 'Задержи...', duration: 4000, scale: 1.3 },
+                    { text: 'Выдох...', duration: 4000, scale: 1 },
+                    { text: 'Задержи...', duration: 4000, scale: 1 }
+                ]
             }
-            updateDate();
-            
-            function updateStatsUI() {
-                const unique = viewedArr.length;
-                const percent = Math.round((unique / MESSAGES.length)*100);
-                collectedSpan.innerText = unique;
-                percentSpan.innerText = percent+'%';
-                progressFillDiv.style.width = percent+'%';
-                if(unique < 30) raritySpan.innerText = "🪨";
-                else if(unique < 100) raritySpan.innerText = "⚙️";
-                else if(unique < 200) raritySpan.innerText = "💎";
-                else if(unique < 280) raritySpan.innerText = "👑";
-                else raritySpan.innerText = "🏆✨";
-            }
-            function updateStreakUI() { streakSpan.innerText = streakVal; }
-            
-            function canGetToday() {
-                const today = new Date().toDateString();
-                return lastDateStr !== today;
-            }
-            
-            function showToastMessage(msg, isErr=false) {
-                toastDiv.innerText = msg;
-                toastDiv.classList.add('show');
-                setTimeout(() => toastDiv.classList.remove('show'), 2200);
-            }
-            
-            function getFreshUnique() {
-                const unseen = MESSAGES.filter(m => !viewedArr.includes(m));
-                if(unseen.length === 0) {
-                    viewedArr = [];
-                    return MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
-                }
-                return unseen[Math.floor(Math.random() * unseen.length)];
-            }
-            
-            window.getMotivation = function() {
-                if(!canGetToday()) {
-                    showToastMessage("❌ Сегодня ты уже получал пророчество! Приходи завтра.", true);
-                    getBtn.style.transform = "scale(0.96)";
-                    setTimeout(() => getBtn.style.transform = "", 200);
-                    return;
-                }
-                getBtn.style.transform = "scale(0.96)";
-                setTimeout(() => getBtn.style.transform = "", 150);
-                
-                const newMsg = getFreshUnique();
-                currentMsgText = newMsg;
-                motivationDiv.innerText = newMsg;
-                const isNewRecord = !viewedArr.includes(newMsg);
-                if(isNewRecord) {
-                    viewedArr.push(newMsg);
-                    updateStatsUI();
-                    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-                    const lastDateObj = lastDateStr ? new Date(lastDateStr) : null;
-                    if(lastDateObj && lastDateObj.toDateString() === yesterday.toDateString()) streakVal++;
-                    else streakVal = 1;
-                    localStorage.setItem('motiv300_streak', streakVal);
-                    updateStreakUI();
-                } else {
-                    showToastMessage("📜 Знакомое пророчество, но сила не уменьшается!");
-                }
-                lastDateStr = new Date().toDateString();
-                localStorage.setItem('motiv300_lastDate', lastDateStr);
-                localStorage.setItem('motiv300_viewed', JSON.stringify(viewedArr));
-                getBtn.disabled = true;
-                setTimeout(() => { getBtn.disabled = false; }, 900);
-                flipperDiv.classList.add('flipped');
-                moodResultSpan.innerHTML = "✨ Нажми, чтобы проанализировать ✨";
-                moodTagSpan.innerText = "#анализируй_сообщение";
-                moodIconSpan.innerText = "🎯";
-            };
-            getBtn.onclick = window.getMotivation;
-            
-            document.getElementById('cardWrapper').addEventListener('click', (e) => {
-                if(e.target.closest('.action-button')) return;
-                flipperDiv.classList.toggle('flipped');
-            });
-            
-            window.analyzeMood = function() {
-                if(!currentMsgText) {
-                    moodResultSpan.innerHTML = "⚠️ Сначала получи пророчество!";
-                    moodIconSpan.innerText = "⚠️";
-                    return;
-                }
-                moodIconSpan.style.transform = "scale(1.3)";
-                setTimeout(() => moodIconSpan.style.transform = "", 300);
-                const txt = currentMsgText.toLowerCase();
-                let moodEmoji="", moodName="", tag="";
-                if(txt.includes('еб') || txt.includes('хуй') || txt.includes('пизд')) {
-                    moodName = "АГРЕССИВНЫЙ ДРАЙВ"; moodEmoji = "🤬⚡"; tag = "#порву_всех";
-                } else if(txt.includes('лень') || txt.includes('устал')) {
-                    moodName = "ФИЛОСОФСКАЯ УСТАЛОСТЬ"; moodEmoji = "😮‍💨🧠"; tag = "#отдохнуть_и_рвать";
-                } else if(txt.includes('цель') || txt.includes('успех')) {
-                    moodName = "ЦЕЛЕНАПРАВЛЕННЫЙ"; moodEmoji = "🎯🔥"; tag = "#в_пути_к_цели";
-                } else if(txt.includes('сил') || txt.includes('энерг')) {
-                    moodName = "ЭНЕРГИЧНЫЙ УРАГАН"; moodEmoji = "⚡💪"; tag = "#полный_заряд";
-                } else if(txt.includes('страх')) {
-                    moodName = "ПРЕОДОЛЕВАЮЩИЙ СТРАХ"; moodEmoji = "🦁✨"; tag = "#не_боюсь";
-                } else if(txt.includes('герой')) {
-                    moodName = "ГЕРОИЧЕСКИЙ ПОДЪЁМ"; moodEmoji = "🦸🏆"; tag = "#я_легенда";
-                } else {
-                    const vars = [["КОСМИЧЕСКИЙ","🌌🚀","#галактика"],["БУНТАРСКИЙ","🤘⚡","#бунт"],["ПРОСВЕТЛЁННЫЙ","🧘✨","#дзен"],["ДЕРЗКИЙ","😼💥","#вызов"]];
-                    const r = Math.floor(Math.random()*vars.length);
-                    moodName = vars[r][0]; moodEmoji = vars[r][1]; tag = vars[r][2];
-                }
-                moodResultSpan.innerHTML = `<span style="font-size:2rem">${moodEmoji}</span> <strong style="font-size:1.1rem">${moodName}</strong>`;
-                moodTagSpan.innerText = tag;
-                moodIconSpan.innerText = moodEmoji.split('')[0];
-                showToastMessage(`🔮 Твоё настроение: ${moodName}`);
-            };
-            document.getElementById('moodDetector').onclick = window.analyzeMood;
-            
-            const themesConfig = {
-                neon: {
-                    name: "НЕОН",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #ff00cc30, #3333ff30), #0a0a2a",
-                    sphere1: "radial-gradient(circle, #00ffff, #0088ff)",
-                    sphere2: "radial-gradient(circle, #ff00ff, #cc00cc)",
-                    sphere3: "radial-gradient(circle, #00ff88, #00cc66)",
-                    sphere4: "radial-gradient(circle, #ffcc00, #ff8800)",
-                    accent: "#00ffff",
-                    buttonGrad: "linear-gradient(135deg, rgba(0,255,255,0.4), rgba(0,100,255,0.4))",
-                    borderColor: "#00ffff",
-                    cardFrontIcon: "⚡💚",
-                    moodIcon: "🧠💚"
-                },
-                fire: {
-                    name: "ОГОНЬ",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #ff440030, #ff880030), #2a0a00",
-                    sphere1: "radial-gradient(circle, #ff6600, #ff3300)",
-                    sphere2: "radial-gradient(circle, #ff9933, #ff5500)",
-                    sphere3: "radial-gradient(circle, #ffcc00, #ff8800)",
-                    sphere4: "radial-gradient(circle, #ff4400, #cc2200)",
-                    accent: "#ff6600",
-                    buttonGrad: "linear-gradient(135deg, rgba(255,100,0,0.4), rgba(255,50,0,0.4))",
-                    borderColor: "#ff6600",
-                    cardFrontIcon: "🔥⚡",
-                    moodIcon: "🔥🧠"
-                },
-                ocean: {
-                    name: "ОКЕАН",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #0088ff30, #00ccff30), #001a2a",
-                    sphere1: "radial-gradient(circle, #00aaff, #0066cc)",
-                    sphere2: "radial-gradient(circle, #33ccff, #0099ff)",
-                    sphere3: "radial-gradient(circle, #00ffcc, #00aa88)",
-                    sphere4: "radial-gradient(circle, #66ddff, #2288aa)",
-                    accent: "#00aaff",
-                    buttonGrad: "linear-gradient(135deg, rgba(0,170,255,0.4), rgba(0,100,200,0.4))",
-                    borderColor: "#00aaff",
-                    cardFrontIcon: "🌊⚡",
-                    moodIcon: "🌊🧠"
-                },
-                forest: {
-                    name: "ЛЕС",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #44ff4430, #22aa2230), #0a2a0a",
-                    sphere1: "radial-gradient(circle, #44dd44, #229922)",
-                    sphere2: "radial-gradient(circle, #66ff66, #33cc33)",
-                    sphere3: "radial-gradient(circle, #aaffaa, #55dd55)",
-                    sphere4: "radial-gradient(circle, #88ff88, #44aa44)",
-                    accent: "#44dd44",
-                    buttonGrad: "linear-gradient(135deg, rgba(68,221,68,0.4), rgba(34,170,34,0.4))",
-                    borderColor: "#44dd44",
-                    cardFrontIcon: "🌲⚡",
-                    moodIcon: "🌲🧠"
-                },
-                royal: {
-                    name: "РОЯЛ",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #aa66ff30, #7733cc30), #1a0a2a",
-                    sphere1: "radial-gradient(circle, #aa66ff, #8844dd)",
-                    sphere2: "radial-gradient(circle, #cc88ff, #aa44ff)",
-                    sphere3: "radial-gradient(circle, #dd99ff, #bb66ff)",
-                    sphere4: "radial-gradient(circle, #bb77ff, #9933ee)",
-                    accent: "#aa66ff",
-                    buttonGrad: "linear-gradient(135deg, rgba(170,102,255,0.4), rgba(136,68,221,0.4))",
-                    borderColor: "#aa66ff",
-                    cardFrontIcon: "👑⚡",
-                    moodIcon: "👑🧠"
-                },
-                sunset: {
-                    name: "ЗАКАТ",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #ff884430, #ff664430), #2a0a2a",
-                    sphere1: "radial-gradient(circle, #ff8855, #ff6644)",
-                    sphere2: "radial-gradient(circle, #ffaa77, #ff7744)",
-                    sphere3: "radial-gradient(circle, #ffcc99, #ff9966)",
-                    sphere4: "radial-gradient(circle, #ffaa88, #ff8866)",
-                    accent: "#ff8855",
-                    buttonGrad: "linear-gradient(135deg, rgba(255,136,85,0.4), rgba(255,102,68,0.4))",
-                    borderColor: "#ff8855",
-                    cardFrontIcon: "🌅⚡",
-                    moodIcon: "🌅🧠"
-                },
-                midnight: {
-                    name: "ПОЛНОЧЬ",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #8888ff30, #4444aa30), #0a0a1a",
-                    sphere1: "radial-gradient(circle, #8888ff, #5555cc)",
-                    sphere2: "radial-gradient(circle, #aaaaff, #7777ee)",
-                    sphere3: "radial-gradient(circle, #6666dd, #3333aa)",
-                    sphere4: "radial-gradient(circle, #9999ff, #6666dd)",
-                    accent: "#8888ff",
-                    buttonGrad: "linear-gradient(135deg, rgba(136,136,255,0.4), rgba(68,68,170,0.4))",
-                    borderColor: "#8888ff",
-                    cardFrontIcon: "🌙⚡",
-                    moodIcon: "🌙🧠"
-                },
-                cherry: {
-                    name: "ВИШНЯ",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #ff448830, #cc226630), #2a0815",
-                    sphere1: "radial-gradient(circle, #ff3388, #cc2266)",
-                    sphere2: "radial-gradient(circle, #ff5599, #ff3377)",
-                    sphere3: "radial-gradient(circle, #ff77aa, #ff4499)",
-                    sphere4: "radial-gradient(circle, #ff66aa, #ff3388)",
-                    accent: "#ff3388",
-                    buttonGrad: "linear-gradient(135deg, rgba(255,51,136,0.4), rgba(204,34,102,0.4))",
-                    borderColor: "#ff3388",
-                    cardFrontIcon: "🌸⚡",
-                    moodIcon: "🌸🧠"
-                },
-                galaxy: {
-                    name: "ГАЛАКТИКА",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #c084fc30, #7c3aed30), #0a0520",
-                    sphere1: "radial-gradient(circle, #c084fc, #a855f7)",
-                    sphere2: "radial-gradient(circle, #d8b4fe, #c084fc)",
-                    sphere3: "radial-gradient(circle, #a78bfa, #8b5cf6)",
-                    sphere4: "radial-gradient(circle, #e9d5ff, #c084fc)",
-                    accent: "#c084fc",
-                    buttonGrad: "linear-gradient(135deg, rgba(192,132,252,0.4), rgba(124,58,237,0.4))",
-                    borderColor: "#c084fc",
-                    cardFrontIcon: "🌌✨",
-                    moodIcon: "🌌🧠"
-                },
-                aurora: {
-                    name: "АВРОРА",
-                    bgGradient: "radial-gradient(circle at 30% 40%, #4ade8030, #22c55e30), #082b2e",
-                    sphere1: "radial-gradient(circle, #4ade80, #22c55e)",
-                    sphere2: "radial-gradient(circle, #86efac, #4ade80)",
-                    sphere3: "radial-gradient(circle, #22c55e, #16a34a)",
-                    sphere4: "radial-gradient(circle, #bbf7d0, #86efac)",
-                    accent: "#4ade80",
-                    buttonGrad: "linear-gradient(135deg, rgba(74,222,128,0.4), rgba(34,197,94,0.4))",
-                    borderColor: "#4ade80",
-                    cardFrontIcon: "🌈⚡",
-                    moodIcon: "🌈🧠"
-                }
-            };
-            
-            function generateCosmicParticles(accentColor) {
-    const field = document.getElementById('particleUniverse');
-    field.innerHTML = '';
-    
-    for(let i = 0; i < 100; i++) {
-        const p = document.createElement('div');
-        p.className = 'cosmic-particle';
-        const size = 2 + Math.random() * 8;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.transform = 'translateY(100vh)';
-        p.style.animation = `floatCosmic ${5 + Math.random() * 16}s linear infinite`;
-        p.style.animationDelay = Math.random() * 14 + 's';
-        p.style.backgroundColor = accentColor;
-        p.style.boxShadow = `0 0 15px ${accentColor}`;
-        p.style.opacity = 0.2 + Math.random() * 0.6;
-        p.onclick = (e) => {
-            e.stopPropagation();
-            p.style.transform = 'scale(5)';
-            p.style.opacity = '0';
-            showToastMessage(`✨ ${accentColor.toUpperCase()} искра ✨`);
-            setTimeout(() => p.remove(), 200);
         };
-        field.appendChild(p);
-    }
-}
-            
-            function applyTheme(themeName) {
-                const theme = themesConfig[themeName];
-                if(!theme) return;
-                
-                document.body.style.background = theme.bgGradient;
-                
-                document.getElementById('sphere1').style.background = theme.sphere1;
-                document.getElementById('sphere2').style.background = theme.sphere2;
-                document.getElementById('sphere3').style.background = theme.sphere3;
-                document.getElementById('sphere4').style.background = theme.sphere4;
-                
-                getBtn.style.background = theme.buttonGrad;
-                getBtn.style.borderColor = theme.accent + 'cc';
-                
-                progressFillDiv.style.background = `linear-gradient(90deg, ${theme.accent}, ${theme.accent}cc, #fff)`;
-                
-                document.querySelector('.glass-panel').style.border = `2px solid ${theme.accent}aa`;
-                document.querySelector('.glass-panel').style.boxShadow = `0 0 30px ${theme.accent}80, 0 50px 100px rgba(0,0,0,0.5)`;
-                
-                document.getElementById('frontIcon').innerHTML = theme.cardFrontIcon;
-                document.getElementById('moodIconStatic').innerHTML = theme.moodIcon;
-                
-                generateCosmicParticles(theme.accent);
-                
-                localStorage.setItem('motiv300_theme', themeName);
-                showToastMessage(`🎨 Тема: ${theme.name}`, false);
-            }
-            
-            function initTheme() {
-                const saved = localStorage.getItem('motiv300_theme') || 'neon';
-                document.querySelectorAll('.theme-card').forEach(card => {
-                    card.classList.remove('active');
-                    if(card.getAttribute('data-theme') === saved) card.classList.add('active');
-                });
-                applyTheme(saved);
-            }
-            
-            document.querySelectorAll('.theme-card').forEach(card => {
-                card.onclick = () => {
-                    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                    const themeVal = card.getAttribute('data-theme');
-                    applyTheme(themeVal);
-                };
-            });
-            
-            const trail = document.getElementById('cursorTrail');
-            let mouseX = 0, mouseY = 0;
-            
-            function updateTrailColor() {
-                const savedTheme = localStorage.getItem('motiv300_theme') || 'neon';
-                const accent = themesConfig[savedTheme]?.accent || '#00ffff';
-                trail.style.background = `radial-gradient(circle, ${accent}dd, ${accent}00)`;
-                trail.style.boxShadow = `0 0 20px ${accent}`;
-                trail.style.setProperty('color', accent);
-            }
-            
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                trail.style.left = mouseX + 'px';
-                trail.style.top = mouseY + 'px';
-            });
-            
-            setInterval(updateTrailColor, 100);
 
-            if(lastDateStr && lastDateStr === new Date().toDateString() && viewedArr.length > 0) {
-                currentMsgText = viewedArr[viewedArr.length-1];
-                motivationDiv.innerText = currentMsgText;
-                if(currentMsgText) flipperDiv.classList.add('flipped');
+        const brushCursor = document.getElementById('brushCursor');
+        const svgParticlesContainer = document.getElementById('svgParticles');
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const breathingCircle = document.getElementById('breathingCircle');
+        const breathingText = document.getElementById('breathingText');
+        const progressCircle = document.getElementById('progressCircle');
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('organicFlowTheme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            brushCursor.style.left = e.clientX + 'px';
+            brushCursor.style.top = e.clientY + 'px';
+        });
+
+        function brushActive(isActive) {
+            brushCursor.classList.toggle('active', isActive);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('organicFlowTheme', isDark ? 'dark' : 'light');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            if (tab === 'motivation') {
+                document.getElementById('motivationSection').classList.add('active');
+            } else {
+                document.getElementById('meditationSection').classList.add('active');
             }
-            updateStatsUI();
-            updateStreakUI();
-            initTheme();
-            updateTrailColor();
-            setInterval(() => { updateDate(); }, 60000);
-            
-            // === THREE.JS MAXIMUM SETUP ===
-            const canvas = document.getElementById('three-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.z = 800;
-            
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            
-            // Post-processing with Bloom
-            const composer = new THREE.EffectComposer(renderer);
-            const renderPass = new THREE.RenderPass(scene, camera);
-            composer.addPass(renderPass);
-            
-            const bloomPass = new THREE.UnrealBloomPass(
-                new THREE.Vector2(window.innerWidth, window.innerHeight),
-                1.5, 0.4, 0.85
-            );
-            bloomPass.threshold = 0.1;
-            bloomPass.strength = 1.2;
-            bloomPass.radius = 0.8;
-            composer.addPass(bloomPass);
-            
-            // Particle system - cosmic dust
-            const particleCount = 3000;
-            const particlesGeometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
-            const velocities = [];
-            
-            for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 1500;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 1500;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+        }
+
+        // Create SVG particles
+        function createSVGParticles() {
+            const svgs = [
+                `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C12 2 8 6 8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2Z"/></svg>`,
+                `<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/></svg>`,
+                `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>`,
+                `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+                `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2C12 2 14 6 12 8C10 6 12 2 12 2Z"/><path d="M22 12C22 12 18 14 16 12C18 10 22 12 22 12Z"/><path d="M12 22C12 22 10 18 12 16C14 18 12 22 12 22Z"/><path d="M2 12C2 12 6 10 8 12C6 14 2 12 2 12Z"/></svg>`
+            ];
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'svg-particle';
+                particle.innerHTML = svgs[Math.floor(Math.random() * svgs.length)];
+                particle.style.left = Math.random() * 100 + '%';
                 
-                const colorChoice = Math.random();
-                if (colorChoice < 0.33) {
-                    colors[i * 3] = 0.4; colors[i * 3 + 1] = 0.6; colors[i * 3 + 2] = 1.0;
-                } else if (colorChoice < 0.66) {
-                    colors[i * 3] = 0.9; colors[i * 3 + 1] = 0.3; colors[i * 3 + 2] = 0.6;
+                const duration = 15 + Math.random() * 20;
+                const delay = Math.random() * 20;
+                
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = '-' + delay + 's';
+                
+                const colors = ['#FF6F61', '#40E0D0', '#F4A460', '#9B7EDE'];
+                particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                svgParticlesContainer.appendChild(particle);
+            }
+        }
+
+        // Typewriter effect
+        function typeWriter(text, element, speed = 50) {
+            element.innerHTML = '';
+            let i = 0;
+            
+            // Add cursor
+            const cursor = document.createElement('span');
+            cursor.className = 'typewriter-cursor';
+            element.appendChild(cursor);
+            
+            function type() {
+                if (i < text.length) {
+                    // Insert character before cursor
+                    const char = document.createTextNode(text.charAt(i));
+                    element.insertBefore(char, cursor);
+                    i++;
+                    setTimeout(type, speed);
                 } else {
-                    colors[i * 3] = 0.5; colors[i * 3 + 1] = 0.9; colors[i * 3 + 2] = 1.0;
+                    // Remove cursor after typing is done
+                    setTimeout(() => {
+                        cursor.remove();
+                    }, 2000);
                 }
-                
-                velocities.push({
-                    x: (Math.random() - 0.5) * 0.3,
-                    y: (Math.random() - 0.5) * 0.3,
-                    z: (Math.random() - 0.5) * 0.2
-                });
             }
             
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            type();
+        }
+
+        // Random quote generator
+        function getRandomQuote() {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * quotes.length);
+            } while (newIndex === lastQuoteIndex && quotes.length > 1);
             
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 2.5,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.85,
-                blending: THREE.AdditiveBlending,
-                sizeAttenuation: true
-            });
+            lastQuoteIndex = newIndex;
+            return quotes[newIndex];
+        }
+
+        document.getElementById('getQuoteBtn').addEventListener('click', () => {
+            const randomQuote = getRandomQuote();
+            typeWriter(randomQuote, quoteDisplay, 60);
+        });
+
+        // Ripple effect on click
+        document.addEventListener('click', (e) => {
+            // Create ripple
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
             
-            const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particleSystem);
+            // Position at click coordinates
+            const size = 100;
+            ripple.style.width = size + 'px';
+            ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - size/2) + 'px';
+            ripple.style.top = (e.clientY - size/2) + 'px';
             
-            // Floating geometric shapes
-            const shapes = [];
-            const geometries = [
-                new THREE.IcosahedronGeometry(30, 0),
-                new THREE.OctahedronGeometry(25, 0),
-                new THREE.TetrahedronGeometry(28, 0),
-                new THREE.TorusKnotGeometry(20, 6, 64, 8)
-            ];
+            document.body.appendChild(ripple);
             
-            const materials = [
-                new THREE.MeshPhongMaterial({ color: 0x7c3aed, wireframe: true, transparent: true, opacity: 0.6 }),
-                new THREE.MeshPhongMaterial({ color: 0xec4899, wireframe: true, transparent: true, opacity: 0.6 }),
-                new THREE.MeshPhongMaterial({ color: 0x3b82f6, wireframe: true, transparent: true, opacity: 0.6 }),
-                new THREE.MeshPhongMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 0.5 })
-            ];
+            // Remove after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
             
-            for (let i = 0; i < 12; i++) {
-                const geom = geometries[Math.floor(Math.random() * geometries.length)];
-                const mat = materials[Math.floor(Math.random() * materials.length)];
-                const mesh = new THREE.Mesh(geom, mat);
+            // Repel blobs from click point
+            repelBlobs(e.clientX, e.clientY);
+        });
+
+        // Blob repulsion logic
+        function repelBlobs(clickX, clickY) {
+            blobs.forEach(blob => {
+                const rect = blob.element.getBoundingClientRect();
+                const blobCenterX = rect.left + rect.width / 2;
+                const blobCenterY = rect.top + rect.height / 2;
                 
-                mesh.position.x = (Math.random() - 0.5) * 800;
-                mesh.position.y = (Math.random() - 0.5) * 600;
-                mesh.position.z = (Math.random() - 0.5) * 400 - 200;
+                // Calculate distance and direction
+                const dx = blobCenterX - clickX;
+                const dy = blobCenterY - clickY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                mesh.rotation.x = Math.random() * Math.PI;
-                mesh.rotation.y = Math.random() * Math.PI;
-                
-                mesh.userData = {
-                    rotSpeedX: (Math.random() - 0.5) * 0.02,
-                    rotSpeedY: (Math.random() - 0.5) * 0.02,
-                    floatSpeed: 0.5 + Math.random() * 0.5,
-                    floatOffset: Math.random() * Math.PI * 2,
-                    originalY: mesh.position.y
-                };
-                
-                scene.add(mesh);
-                shapes.push(mesh);
-            }
-            
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-            scene.add(ambientLight);
-            
-            const pointLight1 = new THREE.PointLight(0x7c3aed, 1, 1000);
-            pointLight1.position.set(300, 300, 300);
-            scene.add(pointLight1);
-            
-            const pointLight2 = new THREE.PointLight(0xec4899, 1, 1000);
-            pointLight2.position.set(-300, -200, 200);
-            scene.add(pointLight2);
-            
-            const pointLight3 = new THREE.PointLight(0x3b82f6, 0.8, 1000);
-            pointLight3.position.set(0, 400, -100);
-            scene.add(pointLight3);
-            
-            // Mouse interaction (используем существующие mouseX/mouseY из секции курсора)
-            let targetRotationX = 0, targetRotationY = 0;
-            
-            document.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
-                mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
-                targetRotationX = mouseY;
-                targetRotationY = mouseX;
-            });
-            
-            // Animation loop
-            let time = 0;
-            function animate() {
-                requestAnimationFrame(animate);
-                time += 0.01;
-                
-                // Rotate particle system slowly
-                particleSystem.rotation.y += 0.0005;
-                particleSystem.rotation.x += 0.0002;
-                
-                // Animate particles
-                const positions = particleSystem.geometry.attributes.position.array;
-                for (let i = 0; i < particleCount; i++) {
-                    positions[i * 3] += velocities[i].x;
-                    positions[i * 3 + 1] += velocities[i].y;
-                    positions[i * 3 + 2] += velocities[i].z;
+                // Only affect blobs within reasonable distance
+                if (distance < 500) {
+                    // Calculate repulsion force (stronger when closer)
+                    const force = 100 / (distance + 1);
                     
-                    // Wrap around
-                    if (positions[i * 3] > 750) positions[i * 3] = -750;
-                    if (positions[i * 3] < -750) positions[i * 3] = 750;
-                    if (positions[i * 3 + 1] > 750) positions[i * 3 + 1] = -750;
-                    if (positions[i * 3 + 1] < -750) positions[i * 3 + 1] = 750;
-                    if (positions[i * 3 + 2] > 500) positions[i * 3 + 2] = -500;
-                    if (positions[i * 3 + 2] < -500) positions[i * 3 + 2] = 500;
+                    // Apply velocity to blob
+                    blob.vx += (dx / distance) * force;
+                    blob.vy += (dy / distance) * force;
                 }
-                particleSystem.geometry.attributes.position.needsUpdate = true;
+            });
+        }
+
+        // Animate blobs with physics
+        function animateBlobs() {
+            blobs.forEach(blob => {
+                // Apply velocity to position
+                blob.x += blob.vx;
+                blob.y += blob.vy;
                 
-                // Animate shapes
-                shapes.forEach((shape, idx) => {
-                    shape.rotation.x += shape.userData.rotSpeedX;
-                    shape.rotation.y += shape.userData.rotSpeedY;
-                    shape.position.y = shape.userData.originalY + 
-                        Math.sin(time * shape.userData.floatSpeed + shape.userData.floatOffset) * 30;
-                });
+                // Apply damping (friction)
+                blob.vx *= 0.95;
+                blob.vy *= 0.95;
                 
-                // Camera follow mouse
-                targetRotationX += (mouseY - targetRotationX) * 0.05;
-                targetRotationY += (mouseX - targetRotationY) * 0.05;
-                camera.position.x += (targetRotationY * 500 - camera.position.x) * 0.02;
-                camera.position.y += (-targetRotationX * 500 - camera.position.y) * 0.02;
-                camera.lookAt(scene.position);
+                // Return to original position gradually
+                blob.vx -= blob.x * 0.01;
+                blob.vy -= blob.y * 0.01;
                 
-                // Pulse lights
-                pointLight1.intensity = 0.8 + Math.sin(time * 2) * 0.2;
-                pointLight2.intensity = 0.7 + Math.cos(time * 1.5) * 0.3;
-                pointLight3.intensity = 0.6 + Math.sin(time * 3) * 0.2;
+                // Apply transform
+                blob.element.style.transform = `translate(${blob.x}px, ${blob.y}px)`;
+            });
+            
+            requestAnimationFrame(animateBlobs);
+        }
+
+        // Breathing functions
+        function setBreathingPattern(pattern) {
+            currentPattern = pattern;
+            
+            // Update active button
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.pattern === pattern) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Restart breathing if running
+            if (isRunning) {
+                stopBreathing();
+                startBreathing();
+            }
+        }
+
+        function startBreathing() {
+            const pattern = breathingPatterns[currentPattern];
+            let phaseIndex = 0;
+            let phaseStartTime = Date.now();
+            
+            function updateBreathing() {
+                const phase = pattern.phases[phaseIndex];
+                const elapsed = Date.now() - phaseStartTime;
+                const progress = Math.min(elapsed / phase.duration, 1);
                 
-                composer.render();
+                // Update text
+                breathingText.textContent = phase.text;
+                
+                // Update circle scale
+                const scale = 1 + (phase.scale - 1) * progress;
+                breathingCircle.style.transform = `scale(${scale})`;
+                
+                // Update circular progress
+                const circumference = 2 * Math.PI * 90;
+                const offset = circumference * (1 - progress);
+                progressCircle.style.strokeDashoffset = offset;
+                
+                if (elapsed >= phase.duration) {
+                    phaseIndex = (phaseIndex + 1) % pattern.phases.length;
+                    phaseStartTime = Date.now();
+                }
+                
+                if (isRunning) {
+                    breathingInterval = requestAnimationFrame(updateBreathing);
+                }
             }
             
-            animate();
-            
-            // Resize handler
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                composer.setSize(window.innerWidth, window.innerHeight);
-            });
-        })();
+            breathingInterval = requestAnimationFrame(updateBreathing);
+        }
+
+        function stopBreathing() {
+            if (breathingInterval) {
+                cancelAnimationFrame(breathingInterval);
+                breathingInterval = null;
+            }
+            breathingCircle.style.transform = 'scale(1)';
+            progressCircle.style.strokeDashoffset = 565;
+        }
+
+        // Timer functions
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+        }
+
+        function setTimer(minutes) {
+            pauseTimer();
+            timeLeft = minutes * 60;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+                breathingCircle.classList.add('active');
+                breathingText.classList.add('active');
+                
+                startBreathing();
+                
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        pauseTimer();
+                        alert('Медитация завершена! 🧘‍♀️');
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            stopBreathing();
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('pauseBtn').style.display = 'none';
+            breathingCircle.classList.remove('active');
+            breathingText.classList.remove('active');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = 300;
+            updateTimerDisplay();
+        }
+
+        // Initialize
+        createSVGParticles();
+        updateTimerDisplay();
+        animateBlobs();
+        
+        // Initial quote
+        setTimeout(() => {
+            typeWriter("Нажми кнопку, чтобы получить случайную мысль...", quoteDisplay, 40);
+        }, 500);
     </script>
 </body>
 </html>
