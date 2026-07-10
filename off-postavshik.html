@@ -3,531 +3,602 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!-- Шрифты и стили -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<title>Аналитика поставщиков</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
   :root {
-    /* Светлая тема (по умолчанию) */
-    --bg-primary: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.95);
-  --bg-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-inverse: #ffffff;
-  --border-color: rgba(226, 232, 240, 0.8);
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --accent-primary: #6366f1;
-  --accent-secondary: #8b5cf6;
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  --success: #10b981;
-  --error: #ef4444;
-  --warning: #f59e0b;
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
+    --bg-primary: #fafbfc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f5f7fa;
+    --accent-primary: #2563eb;
+    --accent-secondary: #3b82f6;
+    --accent-light: #dbeafe;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --border-color: #e5e7eb;
+    --border-strong: #d1d5db;
+    --success: #10b981;
+    --success-bg: #d1fae5;
+    --error: #ef4444;
+    --error-bg: #fee2e2;
+    --warning: #f59e0b;
+    --warning-bg: #fef3c7;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+    --green: #059669;
+    --orange: #d97706;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --transition: all 0.15s ease;
   }
 
   .dark-theme {
-    /* Темная тема */
-    --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  --bg-secondary: #1e293b;
-  --bg-card: rgba(30, 41, 59, 0.8);
-  --bg-header: linear-gradient(135deg, #3730a3 0%, #5b21b6 100%);
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-inverse: #0f172a;
-  --border-color: rgba(51, 65, 85, 0.6);
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
-  --accent-primary: #818cf8;
-  --accent-secondary: #a78bfa;
-  --accent-gradient: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --accent-primary: #60a5fa;
+    --accent-secondary: #93c5fd;
+    --accent-light: #1e3a8a;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --border-color: #334155;
+    --border-strong: #475569;
+    --success-bg: #064e3b;
+    --error-bg: #7f1d1d;
+    --warning-bg: #78350f;
+    --purple-bg: #4c1d95;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Inter', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: var(--transition);
-  line-height: 1.6;
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    transition: background 0.3s ease, color 0.3s ease;
   }
-  body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-  z-index: -1;
-}
-html {
-  scroll-behavior: smooth;
-}
-  /* Хедер */
-  .header {
-  background: var(--bg-header);
-  backdrop-filter: blur(20px);
-  padding: 3rem 1.5rem 4rem;
-  position: relative;
-  overflow: hidden;
-  min-height: 50px;
-  border-bottom-left-radius: 40px;
-  border-bottom-right-radius: 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}
 
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-  opacity: 0.3;
-}
+  html { scroll-behavior: smooth; }
+
+  /* Sticky Header */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.875rem 2rem;
+    transition: var(--transition);
+  }
+
+  .dark-theme .header {
+    background: rgba(30, 41, 59, 0.85);
+  }
 
   .header-content {
-    position: relative;
-  z-index: 2;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  color: var(--text-inverse);
-  }
-
-  .header h1 {
-    font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .header-subtitle {
-    font-size: 1.25rem;
-  opacity: 0.9;
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.6;
-  font-weight: 300;
-  }
-
-  /* Контролы темы */
-  .theme-toggle {
-    position: absolute;
-  top: 1rem;
-  right: 2rem;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  font-size: 1.5rem;
-  transition: var(--transition);
-  z-index: 10;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: rotate(15deg) scale(1.1);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
-}
-
-  /* Основной контент */
-  .container {
-    max-width: 1200px;
-  margin: -2rem auto 0;
-  padding: 0 1.5rem 2rem;
-  position: relative;
-  }
-
-  /* Карточка с действиями */
-  .action-card {
-    background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
-  padding: 2.5rem;
-  box-shadow: var(--shadow-lg);
-  margin-top: 30px;
-  margin-bottom: 2.5rem;
-  border: 1px solid var(--border-color);
-  transition: var(--transition);
-  animation: fadeInUp 0.6s ease-out;
-  position: relative;
-  overflow: hidden;
-  }
-
-.action-card:hover {
-  box-shadow: var(--shadow-lg), 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-}
-
-  .action-header {
-   display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  }
-
-  .action-icon {
-    background: var(--accent-gradient);
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  color: white;
-  font-size: 1.5rem;
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-  transition: var(--transition);
-  }
-.action-card:hover .action-icon {
-  transform: scale(1.1) rotate(5deg);
-}
-  .action-header h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-  .action-buttons {
+    max-width: 1280px;
+    margin: 0 auto;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-    justify-content: center; /* Центрирование по горизонтали */
   }
 
-  /* Кнопки */
-  .btn {
-    display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 2rem;
-  gap: 0.75rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 220px;
-  position: relative;
-  overflow: hidden;
-  text-decoration: none;
-  }
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.btn:hover::before {
-  left: 100%;
-}
-
-  .btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%);
-    transform-origin: 50% 50%;
-  }
-
-  .btn:focus:not(:active)::after {
-    animation: ripple 1s ease-out;
-  }
-
-  .btn i {
-    margin-right: 0.75rem;
-    font-size: 1.1rem;
-  }
-
-  .btn-primary {
-  background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
-  border-radius: var(--radius-lg);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
-}
-
-  .btn-secondary {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 2px solid var(--border-color);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-secondary:hover {
-  background: var(--bg-secondary);
-  border-color: var(--accent-primary);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-  /* Статусы */
-  .status-container {
-    margin-top: 1.5rem;
-  }
-
-  .status {
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    transition: var(--transition);
-    animation: slideIn 0.4s ease-out;
+  .logo {
     display: flex;
     align-items: center;
-    margin-bottom: 0.75rem;
+    gap: 0.75rem;
   }
 
-  .status i {
-    margin-right: 0.75rem;
-    font-size: 1.2rem;
-  }
-
-  .status.success {
-    background-color: rgba(16, 185, 129, 0.1);
-    color: var(--success);
-    border-left: 4px solid var(--success);
-  }
-
-  .status.error {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--error);
-    border-left: 4px solid var(--error);
-  }
-
-  /* Загрузка */
-  .loading {
-    display: none;
-    margin-top: 1.5rem;
-    text-align: center;
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    background: var(--bg-secondary);
-    animation: pulse 2s infinite;
-  }
-
-  .loading-content {
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-primary);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .logo-text h1 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+  }
+
+  .logo-text p {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+  }
+
+  .btn:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background: var(--bg-tertiary);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+
+  .dark-theme .btn-primary:hover:not(:disabled) {
+    background: #3b82f6;
+    border-color: #3b82f6;
+  }
+
+  .btn-icon {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  /* Container */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem;
+  }
+
+  /* Page Title */
+  .page-title {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
     gap: 1rem;
   }
 
-  .spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--accent-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  .page-title h2 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
   }
 
-  /* KPI Карточки */
+  .page-title p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .page-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+  }
+
+  .page-meta .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Status Messages */
+  .status-container {
+    margin-bottom: 1.5rem;
+    min-height: 0;
+  }
+
+  .status {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .status.show { display: flex; }
+
+  .status.success {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: var(--success);
+  }
+
+  .status.error {
+    background: var(--error-bg);
+    color: var(--error);
+    border-color: var(--error);
+  }
+
+  .status.info {
+    background: var(--accent-light);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+  }
+
+  /* Loading */
+  .loading {
+    display: none;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--accent-light);
+    color: var(--accent-primary);
+    font-size: 0.85rem;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--accent-primary);
+  }
+
+  .loading.show { display: flex; }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* KPI Cards */
   .kpi-container {
     display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .kpi-card {
-    background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
-  transition: var(--transition);
-  text-align: center;
-  transform: translateY(30px);
-  opacity: 0;
-  animation: slideUp 0.6s ease forwards;
-  position: relative;
-  overflow: hidden;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
   }
-  
-.kpi-card:nth-child(1) { animation-delay: 0.1s; }
-.kpi-card:nth-child(2) { animation-delay: 0.2s; }
-.kpi-card:nth-child(3) { animation-delay: 0.3s; }
 
-@keyframes slideUp {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
   .kpi-card:hover {
-  box-shadow: var(--shadow-lg);
-}
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .kpi-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
 
   .kpi-icon {
-    width: 70px;
-  height: 70px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 1.8rem;
-  color: white;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  transition: var(--transition);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
   }
-.kpi-card:hover .kpi-icon {
-  transform: scale(1.1) rotate(5deg);
-}
 
-.kpi-icon.suppliers {
-  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-}
+  .kpi-icon.suppliers {
+    background: var(--purple-bg);
+    color: var(--purple);
+  }
 
-.kpi-icon.rows {
-  background: linear-gradient(135deg, #10b981, #34d399);
-}
+  .kpi-icon.rows {
+    background: var(--success-bg);
+    color: var(--green);
+  }
 
-.kpi-icon.avg {
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-}
+  .kpi-icon.avg {
+    background: var(--warning-bg);
+    color: var(--orange);
+  }
 
   .kpi-value {
-    font-size: 3rem;
-  font-weight: 800;
-  margin: 1rem 0;
-  color: var(--accent-primary);
-  text-shadow: 0 2px 10px rgba(99, 102, 241, 0.2);
-  font-feature-settings: "tnum";
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+    font-feature-settings: "tnum";
+    color: var(--text-primary);
   }
 
- .kpi-label {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
+  .kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+  }
 
-  /* Секции */
+  /* Sections */
   .section {
-    margin-top: 3rem;
-    animation: fadeIn 0.8s ease-out;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
   }
 
   .section-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
-  .section-header h2 {
-    font-size: 1.75rem;
+  .section-title {
+    font-size: 0.95rem;
     font-weight: 600;
     display: flex;
     align-items: center;
+    gap: 0.6rem;
+    color: var(--text-primary);
   }
 
-  .section-header i {
-    margin-right: 0.75rem;
+  .section-title i {
     color: var(--accent-primary);
+    font-size: 0.9rem;
   }
 
-  /* График */
-  .chart-container {
-    background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
-  height: 500px;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
+  .section-body {
+    padding: 1.5rem;
   }
-.chart-container:hover {
-  box-shadow: var(--shadow-lg);
-}
+
+  /* Chart Controls */
+  .chart-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .chart-type-buttons {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg-tertiary);
+    padding: 0.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .chart-type-btn {
+    padding: 0.4rem 0.85rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: inherit;
+  }
+
+  .chart-type-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .chart-type-btn.active {
+    background: var(--bg-secondary);
+    color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .chart-filter select {
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+
+  .chart-filter select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  /* Chart Container */
+  .chart-container {
+    height: 420px;
+    position: relative;
+  }
 
   #data-chart {
     max-width: 100%;
     max-height: 100%;
   }
 
-  /* Таблица и фильтры */
+  /* Chart Legend */
+  .chart-legend {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .chart-legend.show { display: flex; }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+  }
+
+  .legend-item:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .legend-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Download Section */
+  .download-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+  }
+
+  .download-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .download-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 220px;
+    z-index: 50;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+  }
+
+  .download-options.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .download-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+  }
+
+  .download-option:last-child { border-bottom: none; }
+
+  .download-option:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .download-option i {
+    color: var(--accent-primary);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  /* Table Controls */
   .table-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
   }
@@ -535,110 +606,154 @@ html {
   .search-box {
     position: relative;
     flex-grow: 1;
-    max-width: 400px;
-  }
-
-  .search-box i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
+    max-width: 320px;
   }
 
   .search-box input {
     width: 100%;
-    padding: 0.875rem 1rem 0.875rem 3rem;
+    padding: 0.55rem 1rem 0.55rem 2.25rem;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    background: var(--bg-card);
+    background: var(--bg-tertiary);
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 0.85rem;
     transition: var(--transition);
+    font-family: inherit;
   }
 
   .search-box input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
   }
 
   .table-info {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.8rem;
   }
 
+  .table-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Table */
   .table-container {
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color);
     overflow-x: auto;
-    transition: var(--transition);
-  }
-
-  .table-container:hover {
-    box-shadow: var(--shadow-lg);
+    margin-top: 1rem;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
-  }
-
-  thead {
-    background: var(--bg-secondary);
+    min-width: 500px;
   }
 
   th {
-    padding: 1.25rem 1rem;
+    padding: 0.75rem 1.25rem;
     text-align: left;
     font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--border-color);
-    font-size: 1rem;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
   }
 
   td {
-    padding: 1.25rem 1rem;
+    padding: 0.9rem 1.25rem;
     border-bottom: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    font-size: 0.875rem;
+    color: var(--text-primary);
   }
 
   tbody tr {
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-tbody tr:hover {
-  background: var(--bg-secondary);
-}
-
-  /* Пагинация */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
+    transition: background 0.15s ease;
   }
 
-  .pagination button {
-    padding: 0.5rem 1rem;
+  tbody tr:hover {
+    background: var(--bg-tertiary);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .supplier-name {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-feature-settings: "tnum";
     border: 1px solid var(--border-color);
-    background: var(--bg-card);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-tertiary);
+  }
+
+  .empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    opacity: 0.5;
+  }
+
+  .empty-state p {
+    font-size: 0.875rem;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .pagination.show { display: flex; }
+
+  .pagination button {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
     color: var(--text-primary);
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition);
-    min-width: 40px;
+    min-width: 34px;
+    font-size: 0.8rem;
+    font-family: inherit;
   }
 
   .pagination button:hover:not(:disabled) {
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
+    border-color: var(--border-strong);
   }
 
   .pagination button.active {
@@ -648,454 +763,256 @@ tbody tr:hover {
   }
 
   .pagination button:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
-  /* Кнопка скачивания */
-  .download-section {
-    margin-top: 2rem;
-    text-align: center;
-  }
-
-  .download-dropdown {
-    position: relative;
-    display: inline-block;
-  }
-
-  .download-btn {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    color: white;
-    padding: 0.875rem 2rem;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-  }
-
-  .download-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
-  }
-
-  .download-btn i {
-    font-size: 1.2rem;
-  }
-
-  .download-options {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    min-width: 200px;
-    z-index: 100;
-    margin-top: 0.5rem;
-    overflow: hidden;
-  }
-
-  .download-options.show {
-    display: block;
-  }
-
-  .download-option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: var(--transition);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .download-option:last-child {
-    border-bottom: none;
-  }
-
-  .download-option:hover {
-    background: var(--bg-secondary);
-  }
-
-  .download-option i {
-    color: var(--accent-primary);
-    font-size: 1.1rem;
-  }
-
-  /* Футер */
+  /* Footer */
   .footer {
-  text-align: center;
-  padding: 3rem 1.5rem;
-  margin-top: 4rem;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  position: relative;
-}
-
-.footer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vh;
-  height: 4px;
-  background: var(--accent-gradient);
-  border-radius: 0 0 2px 2px;
-}
-
-.footer p {
-  margin: 0.5rem 0;
-  font-weight: 500;
-}
-
-#update-time {
-  color: var(--accent-primary);
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-  /* Анимации */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border-color);
   }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .footer p { margin: 0.25rem 0; }
+
+  #update-time {
+    color: var(--accent-primary);
+    font-weight: 600;
   }
 
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  @keyframes ripple {
-    0% {
-      transform: scale(0, 0);
-      opacity: 1;
-    }
-    20% {
-      transform: scale(25, 25);
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: scale(40, 40);
-    }
-  }
-
-  @keyframes countUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Адаптивность */
+  /* Responsive */
   @media (max-width: 768px) {
-    .header h1 {
-      font-size: 2rem;
-    }
-    
-    .header-subtitle {
-      font-size: 1rem;
-    }
-    
-    .action-buttons {
-      flex-direction: column;
-    }
-    
-    .btn {
-      width: 100%;
-    }
-    
-    .chart-container {
-      height: 400px;
-      padding: 1.5rem;
-    }
-    
-    .container {
-      padding: 1.5rem 1rem;
-    }
-    
-    .action-card {
-      padding: 1.5rem;
-    }
-    
-    .section-header h2 {
-      font-size: 1.5rem;
-    }
-    
-    .download-options {
-      left: 0;
-      transform: none;
-    }
-    
-    .table-controls {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    
-    .search-box {
-      max-width: 100%;
-    }
+    .header { padding: 0.75rem 1rem; }
+    .container { padding: 1.25rem 1rem 2rem; }
+    .logo-text p { display: none; }
+    .page-title h2 { font-size: 1.35rem; }
+    .btn span { display: none; }
+    .btn i { margin: 0; }
+    .chart-controls { width: 100%; justify-content: space-between; }
+    .search-box { max-width: 100%; }
+    .table-controls { flex-direction: column; align-items: stretch; }
   }
 
   @media (max-width: 480px) {
-    .chart-container {
-      height: 300px;
-      padding: 1rem;
-    }
-    
-    .header {
-      padding: 1.5rem 1rem;
-    }
-    
-    .theme-toggle {
-      top: 1rem;
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-    }
-    
-    .download-btn {
-      width: 100%;
-      justify-content: center;
-    }
-    
-    .kpi-container {
-      grid-template-columns: 1fr;
-    }
+    .kpi-container { grid-template-columns: 1fr; }
+    .chart-type-btn span { display: none; }
   }
-  @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-.count-badge {
-  display: inline-block;
-  background: var(--accent-gradient);
-  color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  animation: countUp 0.5s ease-out;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.count-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.count-badge:hover::before {
-  left: 100%;
-}
 </style>
 </head>
 <body>
-  <!-- Хедер -->
+  <!-- Sticky Header -->
   <header class="header">
-    <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему">
-      <i class="fas fa-moon"></i>
-    </button>
     <div class="header-content">
-    </div>
-  </header>
-  
-  <!-- Основной контент -->
-  <main class="container">
-    <!-- Карточка с действиями -->
-    <section class="action-card">
-      <div class="action-header">
-        <div class="action-icon">
+      <div class="logo">
+        <div class="logo-icon">
           <i class="fas fa-chart-line"></i>
         </div>
-        <h2>Данные по количеству отключенных товаров и поставщиков</h2>
+        <div class="logo-text">
+          <h1>Аналитика</h1>
+          <p>Поставщики · Отключенные товары</p>
+        </div>
       </div>
-      
-      <div class="action-buttons">
+      <div class="header-actions">
         <button id="load-data" class="btn btn-primary">
-          <i class="fas fa-cloud-download-alt"></i>Загрузить данные
+          <i class="fas fa-cloud-download-alt"></i><span>Загрузить</span>
         </button>
-        <button id="refresh-data" class="btn btn-secondary">
-          <i class="fas fa-sync-alt"></i>Обновить данные
+        <button id="refresh-data" class="btn">
+          <i class="fas fa-sync-alt"></i><span>Обновить</span>
+        </button>
+        <button class="btn btn-icon" id="theme-toggle" aria-label="Переключить тему">
+          <i class="fas fa-moon"></i>
         </button>
       </div>
-      
-      <div class="status-container">
-        <div class="status" id="status"></div>
-        <div class="status error" id="error" style="display:none;"></div>
-      </div>
-      
-      <div class="loading" id="loading">
-        <div class="loading-content">
-          <div class="spinner"></div>
-          <span>Обработка данных...</span>
-        </div>
-      </div>
-    </section>
+    </div>
+  </header>
 
-    <!-- KPI Карточки -->
-    <div class="kpi-container" id="kpi-container" style="display: none;">
-      <div class="kpi-card">
-        <div class="kpi-icon suppliers">
-          <i class="fas fa-truck"></i>
-        </div>
-        <div class="kpi-value" id="kpi-suppliers">0</div>
-        <div class="kpi-label">Всего поставщиков</div>
+  <div class="container">
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <div>
+        <h2>Отключенные товары</h2>
+        <p>Анализ количества кодов 1С по каждому поставщику</p>
       </div>
-      
-      <div class="kpi-card">
-        <div class="kpi-icon rows">
-          <i class="fas fa-list-alt"></i>
-        </div>
-        <div class="kpi-value" id="kpi-total-rows">0</div>
-        <div class="kpi-label">Всего строк с кодом 1С</div>
-      </div>
-      
-      <div class="kpi-card">
-        <div class="kpi-icon avg">
-          <i class="fas fa-calculator"></i>
-        </div>
-        <div class="kpi-value" id="kpi-avg-rows">0</div>
-        <div class="kpi-label">Среднее на поставщика</div>
+      <div class="page-meta">
+        <span class="dot"></span>
+        <span>Обновлено: <strong id="update-time">—</strong></span>
       </div>
     </div>
 
-    <!-- График -->
-    <section class="section">
-      <div class="section-header">
-        <h2><i class="fas fa-chart-bar"></i>Визуализация данных</h2>
-      </div>
-      <div class="chart-container">
-        <canvas id="data-chart"></canvas>
-      </div>
-    </section>
+    <!-- Status & Loading -->
+    <div class="status-container">
+      <div class="status" id="status"></div>
+      <div class="status error" id="error"></div>
+    </div>
 
-    <!-- Кнопка скачивания -->
-    <section class="download-section">
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <span>Загрузка и обработка данных...</span>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-container" id="kpi-container" style="display: none;">
+      <div class="kpi-card" data-target="chart">
+        <div class="kpi-header">
+          <div class="kpi-label">Всего поставщиков</div>
+          <div class="kpi-icon suppliers">
+            <i class="fas fa-truck"></i>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-suppliers">0</div>
+        <div class="kpi-trend">
+          <i class="fas fa-database"></i>
+          <span>Уникальные поставщики</span>
+        </div>
+      </div>
+
+      <div class="kpi-card" data-target="table">
+        <div class="kpi-header">
+          <div class="kpi-label">Строк с кодом 1С</div>
+          <div class="kpi-icon rows">
+            <i class="fas fa-list-alt"></i>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-total-rows">0</div>
+        <div class="kpi-trend">
+          <i class="fas fa-check-circle"></i>
+          <span>С заполненным кодом</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-label">Среднее на поставщика</div>
+          <div class="kpi-icon avg">
+            <i class="fas fa-calculator"></i>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-avg-rows">0</div>
+        <div class="kpi-trend">
+          <i class="fas fa-chart-line"></i>
+          <span>Среднее значение</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <i class="fas fa-chart-bar"></i>
+          Визуализация данных
+        </div>
+        <div class="chart-controls">
+          <div class="chart-type-buttons">
+            <button class="chart-type-btn active" data-type="bar">
+              <i class="fas fa-chart-bar"></i><span>Столбцы</span>
+            </button>
+            <button class="chart-type-btn" data-type="line">
+              <i class="fas fa-chart-line"></i><span>Линия</span>
+            </button>
+            <button class="chart-type-btn" data-type="pie">
+              <i class="fas fa-chart-pie"></i><span>Круговая</span>
+            </button>
+          </div>
+          <div class="chart-filter">
+            <select id="chart-limit">
+              <option value="10">Топ 10</option>
+              <option value="20">Топ 20</option>
+              <option value="50">Топ 50</option>
+              <option value="all">Все</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="chart-container">
+          <canvas id="data-chart"></canvas>
+        </div>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="download-section">
       <div class="download-dropdown">
-        <button class="download-btn" id="download-btn">
-          <i class="fas fa-download"></i>Скачать данные
-          <i class="fas fa-chevron-down"></i>
+        <button class="btn" id="download-btn">
+          <i class="fas fa-download"></i><span>Скачать</span>
+          <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.25rem;"></i>
         </button>
         <div class="download-options" id="download-options">
           <a href="#" class="download-option" id="download-png">
             <i class="fas fa-file-image"></i>
-            <span>Скачать график (PNG)</span>
+            <span>График (PNG)</span>
           </a>
           <a href="#" class="download-option" id="download-excel">
-            <i class="fas fa-file-excel"></i>
-            <span>Скачать данные (CSV)</span>
+            <i class="fas fa-file-csv"></i>
+            <span>Данные (CSV)</span>
           </a>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Таблица -->
-    <section class="section">
+    <!-- Table Section -->
+    <div class="section">
       <div class="section-header">
-        <h2><i class="fas fa-table"></i>Результаты анализа</h2>
-      </div>
-      
-      <div class="table-controls">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" id="search-input" placeholder="Поиск поставщика...">
+        <div class="section-title">
+          <i class="fas fa-table"></i>
+          Результаты анализа
         </div>
         <div class="table-info">
-          Показано: <span id="shown-count">0</span> из <span id="total-count">0</span>
+          Показано: <strong id="shown-count">0</strong> из <strong id="total-count">0</strong>
         </div>
       </div>
-      
-      <div class="table-container">
-        <table id="data-table">
-          <thead>
-            <tr>
-              <th>Поставщик</th>
-              <th>Количество кодов 1С</th>
-            </tr>
-          </thead>
-          <tbody id="table-body">
-            <tr>
-              <td colspan="2" style="text-align: center; padding: 3rem;">
-                <i class="fas fa-database" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 1rem; display: block;"></i>
-                <p>Данные не загружены. Нажмите "Загрузить данные" для начала анализа.</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="section-body">
+        <div class="table-controls">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="Поиск поставщика...">
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="data-table">
+            <thead>
+              <tr>
+                <th>Поставщик</th>
+                <th>Количество кодов 1С</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr>
+                <td colspan="2">
+                  <div class="empty-state">
+                    <i class="fas fa-database"></i>
+                    <p>Данные не загружены. Нажмите «Загрузить» для начала анализа.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="pagination">
+          <button id="prev-page"><i class="fas fa-chevron-left"></i></button>
+          <div id="page-numbers"></div>
+          <button id="next-page"><i class="fas fa-chevron-right"></i></button>
+        </div>
       </div>
-      
-      <div class="pagination" id="pagination" style="display: none;">
-        <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
-        <div id="page-numbers"></div>
-        <button id="next-page" disabled><i class="fas fa-chevron-right"></i></button>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
-  <!-- Футер -->
+  <!-- Footer -->
   <footer class="footer">
-    <p>Обновлено: <span id="update-time">-</span></p>
+    <p>Аналитика поставщиков · Дашборд для анализа отключенных товаров</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Элементы DOM
+      // DOM Elements
       const themeToggle = document.getElementById('theme-toggle');
       const loadBtn = document.getElementById('load-data');
       const refreshBtn = document.getElementById('refresh-data');
@@ -1116,20 +1033,22 @@ tbody tr:hover {
       const prevPageBtn = document.getElementById('prev-page');
       const nextPageBtn = document.getElementById('next-page');
       const pageNumbersEl = document.getElementById('page-numbers');
-      
+      const chartLimitSelect = document.getElementById('chart-limit');
+      const chartLegendEl = document.getElementById('chart-legend');
+      const chartTypeButtons = document.querySelectorAll('.chart-type-btn');
+
       let dataChart = null;
       let currentData = [];
       let filteredData = [];
-      
-      // Настройки пагинации
+      let currentChartType = 'bar';
+      let currentChartLimit = 10;
       const rowsPerPage = 10;
       let currentPage = 1;
       let totalPages = 1;
-      
-      // URL таблицы
+
       const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1h0aN6sMWmnGwWYGYLWLlSZxVHRU2YI4Qh0BEX_SVHQE/edit?gid=0';
 
-      // Переключение темы
+      // Theme Toggle
       themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-theme');
         const icon = themeToggle.querySelector('i');
@@ -1140,17 +1059,26 @@ tbody tr:hover {
           icon.classList.remove('fa-sun');
           icon.classList.add('fa-moon');
         }
-        
-        // Обновляем график при смене темы
-        if (dataChart) {
-          dataChart.destroy();
-          if (currentData.length > 0) {
-            createChart(currentData);
-          }
-        }
+        if (dataChart && currentData.length > 0) updateChart();
       });
 
-      // Управление выпадающим меню скачивания
+      // Chart Type
+      chartTypeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          chartTypeButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentChartType = btn.dataset.type;
+          if (currentData.length > 0) updateChart();
+        });
+      });
+
+      // Chart Limit
+      chartLimitSelect.addEventListener('change', () => {
+        currentChartLimit = chartLimitSelect.value === 'all' ? 'all' : parseInt(chartLimitSelect.value);
+        if (currentData.length > 0) updateChart();
+      });
+
+      // Download Dropdown
       downloadBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         downloadOptions.classList.toggle('show');
@@ -1162,7 +1090,7 @@ tbody tr:hover {
         }
       });
 
-      // Поиск
+      // Search
       searchInput.addEventListener('input', () => {
         currentPage = 1;
         filterData();
@@ -1170,7 +1098,7 @@ tbody tr:hover {
         updatePagination();
       });
 
-      // Пагинация
+      // Pagination
       prevPageBtn.addEventListener('click', () => {
         if (currentPage > 1) {
           currentPage--;
@@ -1187,7 +1115,7 @@ tbody tr:hover {
         }
       });
 
-      // Функции для скачивания
+      // Download handlers
       downloadPng.addEventListener('click', (e) => {
         e.preventDefault();
         downloadOptions.classList.remove('show');
@@ -1205,7 +1133,6 @@ tbody tr:hover {
           showStatus('График не загружен. Сначала загрузите данные.', false);
           return;
         }
-
         try {
           const canvas = document.getElementById('data-chart');
           const link = document.createElement('a');
@@ -1214,74 +1141,66 @@ tbody tr:hover {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          
           showStatus('График успешно скачан в формате PNG!', true);
         } catch (err) {
-          console.error('Ошибка скачивания PNG:', err);
           showError('Не удалось скачать график в формате PNG');
         }
       }
 
       function downloadDataAsExcel() {
-        const data = currentData;
-        if (!data || data.length === 0) {
-          showStatus('Нет данных для скачивания. Сначала загрузите данные.', false);
+        if (!currentData || currentData.length === 0) {
+          showStatus('Нет данных для скачивания.', false);
           return;
         }
-
         try {
           let csvContent = "Поставщик,Количество строк с Кодом 1С\n";
-          data.forEach(item => {
+          currentData.forEach(item => {
             csvContent += `"${item.supplier}",${item.count}\n`;
           });
-
           const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
-          
           link.setAttribute('href', url);
           link.setAttribute('download', `данные_поставщиков_${new Date().toISOString().split('T')[0]}.csv`);
           link.style.visibility = 'hidden';
-          
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          
           showStatus('Данные успешно скачаны в формате CSV!', true);
         } catch (err) {
-          console.error('Ошибка скачивания CSV:', err);
           showError('Не удалось скачать данные в формате CSV');
         }
       }
 
-      // Функции для работы с UI
+      // UI Functions
       function showLoading(show) {
-        loadingEl.style.display = show ? 'block' : 'none';
         if (show) {
+          loadingEl.classList.add('show');
           loadBtn.disabled = true;
           refreshBtn.disabled = true;
+        } else {
+          loadingEl.classList.remove('show');
+          loadBtn.disabled = false;
+          refreshBtn.disabled = false;
         }
       }
 
       function showError(msg) {
         errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i>${msg}`;
-        errorEl.style.display = 'flex';
-        statusEl.innerHTML = `<i class="fas fa-times-circle"></i>Ошибка: ${msg}`;
-        statusEl.className = 'status error';
+        errorEl.classList.add('show');
+        statusEl.classList.remove('show');
       }
 
       function showStatus(msg, success = true) {
         const icon = success ? 'fa-check-circle' : 'fa-exclamation-circle';
         statusEl.innerHTML = `<i class="fas ${icon}"></i>${msg}`;
-        statusEl.className = success ? 'status success' : 'status error';
-        errorEl.style.display = 'none';
-        
-        // Обновляем время
+        statusEl.className = success ? 'status success show' : 'status error show';
+        errorEl.classList.remove('show');
+
         const now = new Date();
-        updateTimeEl.textContent = now.toLocaleTimeString('ru-RU', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          second: '2-digit'
+        updateTimeEl.textContent = now.toLocaleTimeString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit'
         });
       }
 
@@ -1290,14 +1209,10 @@ tbody tr:hover {
           kpiContainer.style.display = 'none';
           return;
         }
-        
         kpiContainer.style.display = 'grid';
-        
         const totalSuppliers = data.length;
         const totalRows = data.reduce((sum, item) => sum + item.count, 0);
         const avgRows = totalSuppliers > 0 ? (totalRows / totalSuppliers).toFixed(1) : 0;
-        
-        // Анимируем счетчики
         animateCounter('kpi-suppliers', totalSuppliers);
         animateCounter('kpi-total-rows', totalRows);
         animateCounter('kpi-avg-rows', avgRows);
@@ -1305,20 +1220,22 @@ tbody tr:hover {
 
       function animateCounter(elementId, targetValue) {
         const element = document.getElementById(elementId);
-        const currentValue = parseInt(element.textContent) || 0;
-        const duration = 1000; // 1 секунда
-        const stepTime = 20; // каждые 20мс
+        const currentValue = parseFloat(element.textContent) || 0;
+        const duration = 800;
+        const stepTime = 20;
         const steps = duration / stepTime;
         const increment = (targetValue - currentValue) / steps;
         let currentStep = 0;
-        
         const timer = setInterval(() => {
           currentStep++;
-          const newValue = Math.round(currentValue + (increment * currentStep));
-          element.textContent = newValue;
-          
+          const newValue = currentValue + (increment * currentStep);
+          element.textContent = Number.isInteger(targetValue)
+            ? Math.round(newValue).toLocaleString('ru-RU')
+            : newValue.toFixed(1);
           if (currentStep >= steps) {
-            element.textContent = targetValue;
+            element.textContent = Number.isInteger(targetValue)
+              ? targetValue.toLocaleString('ru-RU')
+              : targetValue;
             clearInterval(timer);
           }
         }, stepTime);
@@ -1326,15 +1243,9 @@ tbody tr:hover {
 
       function filterData() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        
-        if (!searchTerm) {
-          filteredData = [...currentData];
-        } else {
-          filteredData = currentData.filter(item => 
-            item.supplier.toLowerCase().includes(searchTerm)
-          );
-        }
-        
+        filteredData = !searchTerm
+          ? [...currentData]
+          : currentData.filter(item => item.supplier.toLowerCase().includes(searchTerm));
         totalPages = Math.ceil(filteredData.length / rowsPerPage);
         shownCountEl.textContent = filteredData.length;
       }
@@ -1343,75 +1254,43 @@ tbody tr:hover {
         if (!filteredData || filteredData.length === 0) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="2" style="text-align: center; padding: 2rem;">
-                <i class="fas fa-search" style="font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;"></i>
-                <p>${currentData.length === 0 ? 'Данные не загружены' : 'По вашему запросу ничего не найдено'}</p>
+              <td colspan="2">
+                <div class="empty-state">
+                  <i class="fas fa-search"></i>
+                  <p>${currentData.length === 0 ? 'Данные не загружены' : 'По вашему запросу ничего не найдено'}</p>
+                </div>
               </td>
             </tr>
           `;
           return;
         }
-        
         const startIndex = (currentPage - 1) * rowsPerPage;
         const endIndex = startIndex + rowsPerPage;
         const pageData = filteredData.slice(startIndex, endIndex);
-        
         tableBody.innerHTML = '';
         pageData.forEach(item => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td><strong>${item.supplier}</strong></td>
-            <td><span class="count-badge">${item.count}</span></td>
+            <td class="supplier-name">${item.supplier}</td>
+            <td><span class="count-badge">${item.count.toLocaleString('ru-RU')}</span></td>
           `;
           tableBody.appendChild(row);
         });
-        
-        // Добавляем стили для бейджей
-        if (!document.querySelector('#badge-styles')) {
-          const style = document.createElement('style');
-          style.id = 'badge-styles';
-          style.textContent = `
-            .count-badge {
-              display: inline-block;
-              background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-              color: white;
-              padding: 0.25rem 0.75rem;
-              border-radius: 20px;
-              font-weight: 600;
-              font-size: 0.9rem;
-              animation: countUp 0.5s ease-out;
-            }
-          `;
-          document.head.appendChild(style);
-        }
       }
 
       function updatePagination() {
         if (filteredData.length <= rowsPerPage) {
-          paginationEl.style.display = 'none';
+          paginationEl.classList.remove('show');
           return;
         }
-        
-        paginationEl.style.display = 'flex';
-        
-        // Обновляем кнопки "Назад"/"Вперед"
+        paginationEl.classList.add('show');
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages;
-        
-        // Обновляем номера страниц
         pageNumbersEl.innerHTML = '';
-        
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, currentPage + 2);
-        
-        if (currentPage <= 3) {
-          endPage = Math.min(5, totalPages);
-        }
-        
-        if (currentPage >= totalPages - 2) {
-          startPage = Math.max(1, totalPages - 4);
-        }
-        
+        if (currentPage <= 3) endPage = Math.min(5, totalPages);
+        if (currentPage >= totalPages - 2) startPage = Math.max(1, totalPages - 4);
         for (let i = startPage; i <= endPage; i++) {
           const pageBtn = document.createElement('button');
           pageBtn.textContent = i;
@@ -1458,86 +1337,127 @@ tbody tr:hover {
       }
 
       function aggregateData(rows) {
-  const result = {};
-  const headers = rows[0];
-  const codeIdx = headers.findIndex(h => h && (h.toLowerCase().includes('код') || h.toLowerCase().includes('1с')));
-  const supplierIdx = headers.findIndex(h => h && h.toLowerCase().includes('поставщик'));
-
-  const codeCol = codeIdx >= 0 ? codeIdx : 0;
-  const supplierCol = supplierIdx >= 0 ? supplierIdx : 2;
-
-  // Используем объект для группировки и суммирования
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    if (row.length === 0 || row.every(c => c.trim() === '')) continue;
-    
-    const supplier = (row[supplierCol] || '').trim() || 'Не указан';
-    const hasCode = row[codeCol] !== undefined && row[codeCol].toString().trim() !== '';
-
-    if (hasCode) {
-      // Если поставщик уже есть в объекте, увеличиваем счетчик
-      if (result[supplier]) {
-        result[supplier] += 1;
-      } else {
-        // Иначе создаем новую запись
-        result[supplier] = 1;
+        const result = {};
+        const headers = rows[0];
+        const codeIdx = headers.findIndex(h => h && (h.toLowerCase().includes('код') || h.toLowerCase().includes('1с')));
+        const supplierIdx = headers.findIndex(h => h && h.toLowerCase().includes('поставщик'));
+        const codeCol = codeIdx >= 0 ? codeIdx : 0;
+        const supplierCol = supplierIdx >= 0 ? supplierIdx : 2;
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (row.length === 0 || row.every(c => c.trim() === '')) continue;
+          const supplier = (row[supplierCol] || '').trim() || 'Не указан';
+          const hasCode = row[codeCol] !== undefined && row[codeCol].toString().trim() !== '';
+          if (hasCode) {
+            result[supplier] = (result[supplier] || 0) + 1;
+          }
+        }
+        return Object.keys(result).map(supplier => ({
+          supplier: supplier,
+          count: result[supplier]
+        })).sort((a, b) => b.count - a.count);
       }
-    }
-  }
 
-  // Преобразуем объект в массив и сортируем
-  const aggregatedArray = Object.keys(result).map(supplier => ({
-    supplier: supplier,
-    count: result[supplier]
-  }));
+      function getChartData() {
+        let chartData = [...currentData];
+        if (currentChartLimit !== 'all') {
+          chartData = chartData.slice(0, currentChartLimit);
+        }
+        return chartData;
+      }
 
-  // Сортируем по количеству (по убыванию)
-  return aggregatedArray.sort((a, b) => b.count - a.count);
-}
+      function generateColors(count) {
+        const colors = [];
+        const palette = [
+          '#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626',
+          '#0891b2', '#4f46e5', '#16a34a', '#ea580c', '#be185d',
+          '#0d9488', '#6366f1', '#65a30d', '#c026d3', '#0284c7'
+        ];
+        for (let i = 0; i < count; i++) {
+          colors.push(palette[i % palette.length]);
+        }
+        return colors;
+      }
+
+      function updateChartLegend(data, colors) {
+        if (currentChartType === 'pie') {
+          chartLegendEl.classList.add('show');
+          chartLegendEl.innerHTML = '';
+          data.forEach((item, index) => {
+            const legendItem = document.createElement('div');
+            legendItem.className = 'legend-item';
+            legendItem.innerHTML = `
+              <div class="legend-color" style="background: ${colors[index]}"></div>
+              <span>${item.supplier}: ${item.count}</span>
+            `;
+            chartLegendEl.appendChild(legendItem);
+          });
+        } else {
+          chartLegendEl.classList.remove('show');
+        }
+      }
 
       function createChart(data) {
         const ctx = document.getElementById('data-chart').getContext('2d');
         if (dataChart) dataChart.destroy();
-        
         const labels = data.map(d => d.supplier);
         const values = data.map(d => d.count);
-        
-        // Генерация цветов с учетом темы
         const isDark = document.body.classList.contains('dark-theme');
-        const colors = generateColors(labels.length, isDark);
+        const colors = generateColors(labels.length);
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.5)';
 
-        dataChart = new Chart(ctx, {
-          type: 'bar',
+        const chartConfig = {
+          type: currentChartType,
           data: {
             labels: labels,
             datasets: [{
               label: 'Кол-во товаров',
               data: values,
-              backgroundColor: colors,
-              borderColor: colors.map(c => c.replace('0.8', '1')),
-              borderWidth: 1,
-              borderRadius: 6,
+              backgroundColor: currentChartType === 'line'
+                ? 'rgba(37, 99, 235, 0.1)'
+                : colors,
+              borderColor: currentChartType === 'line'
+                ? '#2563eb'
+                : colors,
+              borderWidth: currentChartType === 'line' ? 2 : 1,
+              borderRadius: currentChartType === 'bar' ? 4 : 0,
               borderSkipped: false,
+              fill: currentChartType === 'line',
+              tension: 0.4,
+              pointRadius: currentChartType === 'line' ? 3 : 0,
+              pointHoverRadius: currentChartType === 'line' ? 5 : 0,
+              pointBackgroundColor: '#2563eb',
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { 
-                display: false 
+              legend: {
+                display: currentChartType === 'pie',
+                position: 'right',
+                labels: {
+                  color: isDark ? '#f1f5f9' : '#0f172a',
+                  padding: 12,
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  font: { size: 11 }
+                }
               },
               tooltip: {
-                backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                titleColor: isDark ? '#f1f5f9' : '#1e293b',
+                backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                titleColor: isDark ? '#f1f5f9' : '#0f172a',
                 bodyColor: isDark ? '#94a3b8' : '#64748b',
-                borderColor: isDark ? '#475569' : '#e2e8f0',
+                borderColor: isDark ? '#475569' : '#e5e7eb',
                 borderWidth: 1,
-                padding: 12,
+                padding: 10,
+                cornerRadius: 6,
+                displayColors: true,
                 callbacks: {
                   label: function(context) {
-                    const label = context.dataset.label || '';
-                    const value = context.parsed.y;
+                    const label = context.label || '';
+                    const value = context.parsed.y ?? context.parsed;
                     const total = values.reduce((a, b) => a + b, 0);
                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                     return [`${label}: ${value}`, `Доля: ${percentage}%`];
@@ -1545,98 +1465,100 @@ tbody tr:hover {
                 }
               }
             },
-            scales: {
+            scales: currentChartType !== 'pie' ? {
               y: {
                 beginAtZero: true,
-                title: { 
-                  display: true, 
+                title: {
+                  display: true,
                   text: 'Количество строк',
-                  color: isDark ? '#94a3b8' : '#64748b'
+                  color: textColor,
+                  font: { size: 11, weight: '500' }
                 },
-                grid: {
-                  color: isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.5)'
-                },
-                ticks: {
-                  color: isDark ? '#94a3b8' : '#64748b'
-                }
+                grid: { color: gridColor },
+                ticks: { color: textColor, font: { size: 11 } },
+                border: { display: false }
               },
               x: {
-                title: { 
-                  display: true, 
+                title: {
+                  display: true,
                   text: 'Поставщик',
-                  color: isDark ? '#94a3b8' : '#64748b'
+                  color: textColor,
+                  font: { size: 11, weight: '500' }
                 },
-                grid: {
-                  display: false
-                },
+                grid: { display: false },
                 ticks: {
-                  color: isDark ? '#94a3b8' : '#64748b',
+                  color: textColor,
+                  font: { size: 11 },
                   maxRotation: 45,
-                  minRotation: 0
-                }
+                  minRotation: 0,
+                  autoSkip: true,
+                  maxTicksLimit: 15,
+                  callback: function(value) {
+                    const label = this.getLabelForValue(value);
+                    return label.length > 20 ? label.substring(0, 20) + '...' : label;
+                  }
+                },
+                border: { display: false }
               }
-            }
+            } : {}
           }
-        });
+        };
+        dataChart = new Chart(ctx, chartConfig);
+        updateChartLegend(data, colors);
       }
 
-      function generateColors(count, isDark = false) {
-        const colors = [];
-        const baseHue = 260; // Фиолетовый оттенок
-        
-        for (let i = 0; i < count; i++) {
-          const hue = (baseHue + (i * 360) / count) % 360;
-          const saturation = 70;
-          const lightness = isDark ? 50 : 60;
-          colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.8)`);
-        }
-        return colors;
+      function updateChart() {
+        const chartData = getChartData();
+        createChart(chartData);
       }
 
       async function loadData() {
         try {
           showLoading(true);
           showStatus('Загрузка данных...', true);
-          
           const url = convertToCsvUrl(SHEET_URL);
           const response = await fetch(`${url}&t=${Date.now()}`);
-          
           if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
-          
           const csvText = await response.text();
           const rows = parseCSV(csvText);
-          
           if (rows.length < 2) throw new Error('Недостаточно данных');
-          
           const data = aggregateData(rows);
           currentData = data;
           totalCountEl.textContent = data.length;
-          
           filterData();
           updateTable();
           updatePagination();
           updateKPI(data);
-          createChart(data);
-          
+          updateChart();
           showStatus(`Обработано ${rows.length - 1} строк, ${data.length} поставщиков.`, true);
         } catch (err) {
           console.error('Ошибка загрузки данных:', err);
           showError(err.message);
         } finally {
           showLoading(false);
-          loadBtn.disabled = false;
-          refreshBtn.disabled = false;
         }
       }
 
-      // Назначаем обработчики событий
       loadBtn.addEventListener('click', loadData);
       refreshBtn.addEventListener('click', loadData);
 
-      // Автоматическая загрузка при запуске
-      setTimeout(() => {
-        loadData();
-      }, 500);
+      // KPI Card click -> scroll
+      document.querySelectorAll('.kpi-card[data-target]').forEach(card => {
+        card.addEventListener('click', () => {
+          const target = card.dataset.target;
+          const sections = document.querySelectorAll('.section');
+          const section = target === 'chart' ? sections[0] : sections[1];
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            section.style.transition = 'box-shadow 0.3s';
+            section.style.boxShadow = '0 0 0 2px var(--accent-primary)';
+            setTimeout(() => { section.style.boxShadow = ''; }, 1200);
+          }
+        });
+      });
+
+      // Auto-load
+      setTimeout(() => { loadData(); }, 500);
     });
   </script>
 </body>
