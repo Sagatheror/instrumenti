@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика каталога</title>
+    <style>
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-sidebar: #1f2937;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .logo span { color: var(--accent); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 0; }
+        
+        .nav-section { padding: 0 16px; margin-bottom: 24px; }
+        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 12px; padding-left: 12px; }
+        
+        .nav-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer;
+            color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--accent); color: white; font-weight: 500; }
+        .nav-badge { background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+        .nav-item.active .nav-badge { background: rgba(255,255,255,0.25); }
+
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn-action {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.9rem; margin-bottom: 10px;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+        /* Top Bar */
+        .top-bar {
+            height: 70px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 30px; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .search-container { position: relative; width: 400px; }
+        .search-input {
+            width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.9rem; background: var(--bg-body); transition: all 0.2s;
+        }
+        .search-input:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        .stats-row { display: flex; gap: 20px; }
+        .stat-pill { display: flex; flex-direction: column; align-items: flex-end; }
+        .stat-val { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Content Area */
+        .content-area { flex: 1; overflow-y: auto; padding: 30px; }
+
+        /* Table View */
+        .data-table-wrapper { background: var(--bg-card); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .data-table th { text-align: left; padding: 16px 20px; background: #f9fafb; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: #f9fafb; cursor: pointer; }
+        .data-table tr.selected { background: #eff6ff; }
+        
+        .product-name-cell { font-weight: 600; color: var(--text-main); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .category-tag { display: inline-block; padding: 4px 10px; background: #f3f4f6; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .price-cell { font-weight: 700; color: var(--text-main); font-variant-numeric: tabular-nums; }
+        .variants-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .vb-has { background: #ecfdf5; color: var(--success); }
+        .vb-none { background: #fef2f2; color: var(--danger); }
+        .link-icon { color: var(--accent); opacity: 0; transition: opacity 0.2s; }
+        tr:hover .link-icon { opacity: 1; }
+
+        /* Detail Panel (Slide-over) */
+        .detail-panel {
+            position: absolute; top: 70px; right: 0; bottom: 0; width: 450px;
+            background: var(--bg-card); border-left: 1px solid var(--border);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.05); transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;
+            display: flex; flex-direction: column;
+        }
+        .detail-panel.open { transform: translateX(0); }
+        
+        .dp-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+        .dp-title { font-size: 1.2rem; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
+        .dp-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 1; }
+        .dp-close:hover { color: var(--text-main); }
+        
+        .dp-body { flex: 1; overflow-y: auto; padding: 24px; }
+        .dp-section { margin-bottom: 24px; }
+        .dp-section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        
+        .variant-card { background: #f9fafb; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; transition: all 0.2s; }
+        .variant-card:hover { border-color: var(--accent); background: #eff6ff; }
+        .vc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .vc-name { font-weight: 600; font-size: 0.95rem; }
+        .vc-price { font-weight: 800; font-size: 1.1rem; color: var(--accent); }
+        .vc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .vc-tag { font-size: 0.75rem; padding: 3px 8px; background: white; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); }
+
+        .dp-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+        .btn-full { width: 100%; padding: 14px; background: var(--text-main); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-full:hover { background: black; }
+
+        /* Progress Overlay */
+        .progress-overlay {
+            position: absolute; bottom: 30px; left: 30px; right: 30px;
+            background: var(--bg-card); border-radius: 12px; padding: 20px 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border);
+            display: none; z-index: 200; animation: slideUp 0.3s ease;
+        }
+        .progress-overlay.active { display: block; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .po-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; font-weight: 500; }
+        .po-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .po-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; border-radius: 3px; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); }
+        .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-title { font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+
+        /* Debug Toggle */
+        .debug-toggle { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; cursor: pointer; font-size: 0.7rem; color: var(--text-muted); z-index: 999; }
+        .debug-toggle:hover { opacity: 1; }
+        .debug-panel { display: none; position: fixed; bottom: 30px; right: 10px; width: 600px; max-height: 400px; background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 0.8rem; padding: 16px; border-radius: 8px; overflow-y: auto; z-index: 1000; white-space: pre-wrap; word-break: break-all; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .debug-panel.active { display: block; }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .detail-panel { width: 100%; top: 0; }
+            .search-container { width: 200px; }
+            .stats-row { display: none; }
+            .mobile-menu-btn { display: block !important; }
+        }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; margin-right: 16px; color: var(--text-main); }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+    </div>
+    <nav class="sidebar-nav" id="categoryNav">
+        <div class="nav-section">
+            <div class="nav-label">Категории</div>
+            <div class="nav-item active" onclick="filterByCategory('all', this)">
+                <span>Все товары</span>
+                <span class="nav-badge" id="badgeAll">0</span>
+            </div>
+        </div>
+        <div class="nav-section" id="categoryList"></div>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-action btn-primary" id="startBtn" onclick="startParsing()">▶ Запустить парсинг</button>
+        <button class="btn-action btn-outline" id="exportBtn" onclick="exportData()" disabled>⬇ Экспорт JSON</button>
+        <button class="btn-action btn-outline" onclick="exportCSV()" style="margin-bottom:0;">⬇ Экспорт CSV</button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div style="display:flex;align-items:center;">
+            <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">☰</button>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию, категории..." oninput="handleSearch()">
+            </div>
+        </div>
+        <div class="stats-row">
+            <div class="stat-pill"><span class="stat-val" id="statProducts">0</span><span class="stat-lbl">Товаров</span></div>
+            <div class="stat-pill"><span class="stat-val" id="statVariants">0</span><span class="stat-lbl">Вариантов</span></div>
+            <div class="stat-pill"><span class="stat-val" id="statAvg">0 ₽</span><span class="stat-lbl">Ср. цена</span></div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content-area" id="contentArea">
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">Каталог пуст</div>
+            <p>Нажмите «Запустить парсинг» в боковой панели,<br>чтобы загрузить данные с сайта</p>
+        </div>
+
+        <div class="data-table-wrapper" id="tableWrapper" style="display:none;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:35%">Наименование</th>
+                        <th style="width:20%">Категория</th>
+                        <th style="width:15%">Варианты</th>
+                        <th style="width:15%">Мин. цена</th>
+                        <th style="width:15%">Макс. цена</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detail Slide Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="dp-header">
+            <div>
+                <div class="dp-title" id="dpTitle">—</div>
+                <span class="category-tag" id="dpCategory">—</span>
+            </div>
+            <button class="dp-close" onclick="closeDetail()">×</button>
+        </div>
+        <div class="dp-body">
+            <div class="dp-section">
+                <div class="dp-section-title">Варианты и цены</div>
+                <div id="dpVariants"></div>
+            </div>
+        </div>
+        <div class="dp-footer" id="dpFooter"></div>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="po-info">
+            <span id="poText">Подготовка...</span>
+            <span id="poPercent">0%</span>
+        </div>
+        <div class="po-bar"><div class="po-fill" id="poFill"></div></div>
+    </div>
+</main>
+
+<div class="debug-toggle" onclick="document.getElementById('debugPanel').classList.toggle('active')">DEBUG</div>
+<div class="debug-panel" id="debugPanel"></div>
+
+<script>
+/* ===== CONFIG ===== */
+const BASE_URL = 'https://xn--80aaacwajzbdt1dxa.xn--p1ai';
+const CORS_PROXIES = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest='
+];
+const CATEGORIES = [
+    { name: 'Стальные скамейки', url: 'stalnie-skameiki-sadovo-parkovie.html' },
+    { name: 'Скамейки без спинки', url: 'skameiki-bez-spinki.html' },
+    { name: 'Чугунные скамейки', url: 'chugunnie-skameiki.html' },
+    { name: 'Комплекты', url: 'komplekti-ulichnoy-mebeli.html' },
+    { name: 'Столы', url: 'stoli.html' },
+    { name: 'Скамейка для раздевалок', url: 'skameika-dlya-razdevalok.html' },
+    { name: 'Уличные ограждения', url: 'ulichnie-ograzhdeniya.html' },
+    { name: 'Велопарковки', url: 'veliparkovki.html' },
+    { name: 'Урны и цветочницы', url: 'urni.html' },
+    { name: 'Мебель лофт для дома', url: 'mebel-dlya-doma-loft.html' },
+    { name: 'Декоративные решетки', url: 'dekorativnie-reshetki.html' },
+    { name: 'Стеллажи из дерева', url: 'stelashi-iz-dereva.html' },
+    { name: 'Уличное освещение', url: 'ulichnoe-osveschenie.html' },
+    { name: 'Качели парковые', url: 'kacheli-parkovie.html' },
+    { name: 'Перголы', url: 'перголы.html' },
+    { name: 'Детское игровое оборудование', url: 'детское игровое оборудование.html' },
+    { name: 'Спортивное оборудование', url: 'спортивное оборудование.html' }
+];
+
+/* ===== STATE ===== */
+let allProducts = [];
+let currentFilter = 'all';
+let selectedProductIdx = null;
+let proxyIdx = 0;
+
+/* ===== FETCH ===== */
+async function fetchPage(url) {
+    for (let i = 0; i < CORS_PROXIES.length; i++) {
+        const idx = (proxyIdx + i) % CORS_PROXIES.length;
+        try {
+            const r = await fetch(CORS_PROXIES[idx] + encodeURIComponent(url));
+            if (r.ok) { proxyIdx = idx; return await r.text(); }
+        } catch(e) {}
+    }
+    throw new Error('Proxies failed');
+}
+
+/* ===== PARSER ===== */
+function extractVariants(html, pid) {
+    const variants = [];
+    const positions = [];
+    let pos = 0;
+    while ((pos = html.indexOf(pid, pos)) !== -1) { positions.push(pos); pos += pid.length; }
+
+    for (const p of positions) {
+        const ctx = html.substring(Math.max(0, p - 5000), Math.min(html.length, p + 5000));
+        const re1 = /\{[^{}]*name\s*:\s*'([^']*)'[^{}]*pricevar\s*:\s*([\d.]+)[^{}]*\}/g;
+        const re2 = /\{[^{}]*pricevar\s*:\s*([\d.]+)[^{}]*name\s*:\s*'([^']*)'[^{}]*\}/g;
+        let m;
+        while ((m = re1.exec(ctx))) addVariant(variants, m[1], parseFloat(m[2]), m[0]);
+        while ((m = re2.exec(ctx))) addVariant(variants, m[2], parseFloat(m[1]), m[0]);
+    }
+    return variants;
+}
+
+function addVariant(arr, name, price, raw) {
+    if (price <= 0 || arr.find(v => v.name === name && v.price === price)) return;
+    const subMatch = raw.match(/suboptions\s*:\s*\[([^\]]*)\]/);
+    const subs = [];
+    if (subMatch) { const re = /'([^']*)'/g; let s; while ((s = re.exec(subMatch[1]))) subs.push(s[1]); }
+    arr.push({ name, price, suboptions: subs });
+}
+
+function getBasePrice(html, pid) {
+    const m = html.match(new RegExp(`id=["']product_${pid}_fullprice["'][^>]*>([^<]+)<`, 'i'));
+    if (!m) return null;
+    const v = parseInt((m[1].match(/([\d\s]+)/) || [])[1]?.replace(/\s/g, ''));
+    return v > 0 ? v : null;
+}
+
+function parseHTML(html, category) {
+    const products = [];
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const names = doc.querySelectorAll('.im-cc-products-name');
+
+    names.forEach(el => {
+        const name = el.textContent.trim();
+        if (!name) return;
+
+        // Find productId
+        let pid = null, parent = el;
+        for (let i = 0; i < 15 && parent; i++) {
+            const id = parent.getAttribute?.('id') || '';
+            const m = id.match(/product_([a-z0-9]+)/i);
+            if (m) { pid = m[1]; break; }
+            const ps = parent.querySelector?.('[id*="product_"][id*="price"]');
+            if (ps) { const sm = (ps.getAttribute('id')||'').match(/product_([a-z0-9]+)/i); if (sm) { pid = sm[1]; break; } }
+            parent = parent.parentElement;
+        }
+
+        // Find URL
+        let url = null; parent = el;
+        for (let i = 0; i < 15 && parent; i++) {
+            if (parent.tagName === 'A' && parent.getAttribute('href')) {
+                let h = parent.getAttribute('href');
+                if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
+                url = h; break;
+            }
+            const link = parent.querySelector?.('a[href]');
+            if (link) {
+                let h = link.getAttribute('href');
+                if (h && !h.startsWith('javascript')) {
+                    if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
+                    url = h; break;
+                }
+            }
+            parent = parent.parentElement;
+        }
+
+        // Variants
+        let variants = pid ? extractVariants(html, pid) : [];
+        if (!variants.length && pid) {
+            const bp = getBasePrice(html, pid);
+            if (bp) variants.push({ name: 'Базовая цена', price: bp, suboptions: [] });
+        }
+        if (!variants.length) {
+            let pe = null, p = el;
+            for (let i = 0; i < 10 && p; i++) { pe = p.querySelector?.('.product_fullprice,.product_price'); if (pe) break; p = p.parentElement; }
+            if (pe) {
+                const pm = (pe.textContent.match(/([\d\s]+)/) || [])[1];
+                const v = pm ? parseInt(pm.replace(/\s/g, '')) : 0;
+                if (v > 0) variants.push({ name: 'Базовая цена', price: v, suboptions: [] });
+            }
+        }
+
+        products.push({ name, variants, category, productId: pid, url });
+    });
+    return products;
+}
+
+/* ===== PARSING ORCHESTRATOR ===== */
+async function startParsing() {
+    const btn = document.getElementById('startBtn');
+    btn.disabled = true; btn.classList.add('btn-disabled');
+    allProducts = [];
+    showProgress(true);
+
+    for (let i = 0; i < CATEGORIES.length; i++) {
+        const cat = CATEGORIES[i];
+        updateProgress(i, CATEGORIES.length, `Загрузка: ${cat.name}`);
+        try {
+            const html = await fetchPage(`${BASE_URL}/${cat.url}`);
+            const products = parseHTML(html, cat.name);
+            // Dedupe
+            const seen = new Set();
+            products.forEach(p => {
+                const k = p.name.toLowerCase().trim();
+                if (!seen.has(k) && !allProducts.find(x => x.name.toLowerCase().trim() === k)) {
+                    seen.add(k);
+                    allProducts.push(p);
+                }
+            });
+        } catch(e) { console.error(cat.name, e); }
+        await new Promise(r => setTimeout(r, 80));
+    }
+
+    updateProgress(CATEGORIES.length, CATEGORIES.length, 'Готово!');
+    setTimeout(() => showProgress(false), 1500);
+    btn.disabled = false; btn.classList.remove('btn-disabled');
+    document.getElementById('exportBtn').disabled = false;
+
+    renderAll();
+}
+
+/* ===== RENDERING ===== */
+function renderAll() {
+    renderSidebar();
+    renderTable();
+    updateStats();
+}
+
+function renderSidebar() {
+    const list = document.getElementById('categoryList');
+    const counts = {};
+    allProducts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+
+    document.getElementById('badgeAll').textContent = allProducts.length;
+
+    list.innerHTML = CATEGORIES.map(c => {
+        const count = counts[c.name] || 0;
+        if (count === 0) return '';
+        const active = currentFilter === c.name ? 'active' : '';
+        return `<div class="nav-item ${active}" onclick="filterByCategory('${c.name}', this)">
+            <span>${c.name}</span>
+            <span class="nav-badge">${count}</span>
+        </div>`;
+    }).join('');
+}
+
+function getFilteredProducts() {
+    let list = currentFilter === 'all' ? allProducts : allProducts.filter(p => p.category === currentFilter);
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+    return list;
+}
+
+function renderTable() {
+    const filtered = getFilteredProducts();
+    const empty = document.getElementById('emptyState');
+    const table = document.getElementById('tableWrapper');
+
+    if (allProducts.length === 0) { empty.style.display = ''; table.style.display = 'none'; return; }
+    empty.style.display = 'none'; table.style.display = '';
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = filtered.map((p, i) => {
+        const prices = p.variants.map(v => v.price);
+        const minP = prices.length ? Math.min(...prices) : 0;
+        const maxP = prices.length ? Math.max(...prices) : 0;
+        const hasV = p.variants.length > 0;
+        const realIdx = allProducts.indexOf(p);
+        const sel = selectedProductIdx === realIdx ? 'selected' : '';
+
+        return `<tr class="${sel}" onclick="openDetail(${realIdx})">
+            <td class="product-name-cell">${p.name} ${p.url ? '<span class="link-icon">↗</span>' : ''}</td>
+            <td><span class="category-tag">${p.category}</span></td>
+            <td><span class="variants-badge ${hasV ? 'vb-has' : 'vb-none'}">${hasV ? p.variants.length + ' шт.' : 'Нет'}</span></td>
+            <td class="price-cell">${minP ? minP.toLocaleString('ru-RU') + ' ₽' : '—'}</td>
+            <td class="price-cell">${maxP && maxP !== minP ? maxP.toLocaleString('ru-RU') + ' ₽' : (minP ? '' : '—')}</td>
+        </tr>`;
+    }).join('');
+}
+
+function updateStats() {
+    const filtered = getFilteredProducts();
+    let tv = 0, tp = 0, pc = 0;
+    filtered.forEach(p => { tv += p.variants.length; p.variants.forEach(v => { tp += v.price; pc++; }); });
+    document.getElementById('statProducts').textContent = filtered.length;
+    document.getElementById('statVariants').textContent = tv;
+    document.getElementById('statAvg').textContent = pc ? Math.round(tp / pc).toLocaleString('ru-RU') + ' ₽' : '0 ₽';
+}
+
+/* ===== INTERACTIONS ===== */
+function filterByCategory(name, el) {
+    currentFilter = name;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    else document.querySelector('.nav-item')?.classList.add('active');
+    closeDetail();
+    renderTable();
+    updateStats();
+    // Close mobile sidebar
+    document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+function handleSearch() { renderTable(); updateStats(); }
+
+function openDetail(idx) {
+    selectedProductIdx = idx;
+    const p = allProducts[idx];
+    document.getElementById('dpTitle').textContent = p.name;
+    document.getElementById('dpCategory').textContent = p.category;
+
+    const vContainer = document.getElementById('dpVariants');
+    if (p.variants.length) {
+        vContainer.innerHTML = p.variants.map(v => `
+            <div class="variant-card">
+                <div class="vc-top">
+                    <span class="vc-name">${v.name}</span>
+                    <span class="vc-price">${v.price.toLocaleString('ru-RU')} ₽</span>
+                </div>
+                ${v.suboptions.length ? `<div class="vc-tags">${v.suboptions.map(s => `<span class="vc-tag">${s}</span>`).join('')}</div>` : ''}
+            </div>
+        `).join('');
+    } else {
+        vContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Цены не найдены на странице категории</div>';
+    }
+
+    const footer = document.getElementById('dpFooter');
+    footer.innerHTML = p.url
+        ? `<a href="${p.url}" target="_blank" rel="noopener" class="btn-full">🔗 Открыть на сайте</a>`
+        : `<button class="btn-full" disabled style="opacity:0.5;cursor:not-allowed;">Ссылка недоступна</button>`;
+
+    document.getElementById('detailPanel').classList.add('open');
+    renderTable(); // highlight row
+}
+
+function closeDetail() {
+    selectedProductIdx = null;
+    document.getElementById('detailPanel').classList.remove('open');
+    renderTable();
+}
+
+/* ===== PROGRESS ===== */
+function showProgress(show) {
+    document.getElementById('progressOverlay').classList.toggle('active', show);
+}
+function updateProgress(current, total, text) {
+    const pct = Math.round((current / total) * 100);
+    document.getElementById('poText').textContent = text;
+    document.getElementById('poPercent').textContent = pct + '%';
+    document.getElementById('poFill').style.width = pct + '%';
+}
+
+/* ===== EXPORT ===== */
+function exportData() {
+    const b = new Blob([JSON.stringify({ products: allProducts }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'azbuka-catalog.json'; a.click();
+}
+function exportCSV() {
+    let csv = 'Категория;Товар;Ссылка;Вариант;Цена;Опции\n';
+    allProducts.forEach(p => {
+        if (p.variants.length) p.variants.forEach(v => {
+            csv += `"${p.category}";"${p.name}";"${p.url||''}";"${v.name}";${v.price};"${(v.suboptions||[]).join(', ')}"\n`;
+        }); else {
+            csv += `"${p.category}";"${p.name}";"${p.url||''}";"Нет";0;""\n`;
+        }
+    });
+    const b = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'azbuka-catalog.csv'; a.click();
+}
+
+/* ===== DEBUG ===== */
+async function testOneCategory() {
+    const dp = document.getElementById('debugPanel');
+    dp.classList.add('active');
+    dp.textContent = 'Загрузка...';
+    try {
+        const html = await fetchPage(`${BASE_URL}/komplekti-ulichnoy-mebeli.html`);
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const names = doc.querySelectorAll('.im-cc-products-name');
+        const pvCount = (html.match(/pricevar/g) || []).length;
+        let out = `HTML: ${html.length} chars | Names: ${names.length} | pricevar: ${pvCount}\n\n`;
+        names.forEach((el, i) => {
+            if (i >= 3) return;
+            const name = el.textContent.trim();
+            let pid = null, p = el;
+            for (let j = 0; j < 15 && p; j++) {
+                const m = (p.getAttribute?.('id')||'').match(/product_([a-z0-9]+)/i);
+                if (m) { pid = m[1]; break; }
+                const ps = p.querySelector?.('[id*="product_"][id*="price"]');
+                if (ps) { const sm = (ps.getAttribute('id')||'').match(/product_([a-z0-9]+)/i); if (sm) { pid = sm[1]; break; } }
+                p = p.parentElement;
+            }
+            const vars = pid ? extractVariants(html, pid) : [];
+            out += `[${i}] ${name}\n  PID: ${pid || 'NONE'} | Variants: ${vars.length}\n`;
+            vars.forEach(v => out += `    → ${v.name}: ${v.price}₽ [${v.suboptions.join(',')}] \n`);
+            out += '\n';
+        });
+        dp.textContent = out;
+    } catch(e) { dp.textContent = 'ERROR: ' + e.message; }
+}
+// Expose for debug button
+window.testOneCategory = testOneCategory;
+</script>
+</body>
+</html>
