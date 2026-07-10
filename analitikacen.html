@@ -336,26 +336,42 @@ function extractVariants(html, pid) {
     const variants = [];
     const positions = [];
     let pos = 0;
-    while ((pos = html.indexOf(pid, pos)) !== -1) { positions.push(pos); pos += pid.length; }
+    
+    // Находим все позиции ID товара
+    while ((pos = html.indexOf(pid, pos)) !== -1) { 
+        positions.push(pos); 
+        pos += pid.length; 
+    }
 
     for (const p of positions) {
-        const ctx = html.substring(Math.max(0, p - 5000), Math.min(html.length, p + 5000));
-        const re1 = /\{[^{}]*name\s*:\s*'([^']*)'[^{}]*pricevar\s*:\s*([\d.]+)[^{}]*\}/g;
-        const re2 = /\{[^{}]*pricevar\s*:\s*([\d.]+)[^{}]*name\s*:\s*'([^']*)'[^{}]*\}/g;
+        // Возвращаем широкий контекст, так как варианты могут быть далеко от ID
+        const start = Math.max(0, p - 2000);
+        const end = Math.min(html.length, p + 5000);
+        const ctx = html.substring(start, end);
+        
+        // Ищем оба варианта порядка ключей
+        const re1 = /\{[^{}]*?name\s*:\s*'([^']*)'[^{}]*?pricevar\s*:\s*([\d.]+)[^{}]*?\}/g;
+        const re2 = /\{[^{}]*?pricevar\s*:\s*([\d.]+)[^{}]*?name\s*:\s*'([^']*)'[^{}]*?\}/g;
+        
         let m;
-        while ((m = re1.exec(ctx))) addVariant(variants, m[1], parseFloat(m[2]), m[0]);
-        while ((m = re2.exec(ctx))) addVariant(variants, m[2], parseFloat(m[1]), m[0]);
+        while ((m = re1.exec(ctx))) processVariant(variants, m[1], parseFloat(m[2]));
+        while ((m = re2.exec(ctx))) processVariant(variants, m[2], parseFloat(m[1]));
     }
     return variants;
 }
 
-function addVariant(arr, name, price, raw) {
-    if (price <= 0 || arr.find(v => v.name === name && v.price === price)) return;
-    const subMatch = raw.match(/suboptions\s*:\s*\[([^\]]*)\]/);
-    const subs = [];
-    if (subMatch) { const re = /'([^']*)'/g; let s; while ((s = re.exec(subMatch[1]))) subs.push(s[1]); }
-    arr.push({ name, price, suboptions: subs });
+function processVariant(arr, name, price) {
+    if (price <= 0 || 
+        name.length > 80 || 
+        /[<>\n\r\t]/.test(name) || 
+        name.includes("'")) return;
+        
+    if (arr.find(v => v.name === name && v.price === price)) return;
+    
+    arr.push({ name, price, suboptions: [] });
 }
+
+function addVariant() {} 
 
 function getBasePrice(html, pid) {
     const m = html.match(new RegExp(`id=["']product_${pid}_fullprice["'][^>]*>([^<]+)<`, 'i'));
@@ -405,10 +421,14 @@ function parseHTML(html, category) {
 
         // Variants
         let variants = pid ? extractVariants(html, pid) : [];
+        
+        // Если вариантов нет, но есть базовая цена в HTML
         if (!variants.length && pid) {
             const bp = getBasePrice(html, pid);
             if (bp) variants.push({ name: 'Базовая цена', price: bp, suboptions: [] });
         }
+        
+        // Если все еще нет, ищем цену в верстке
         if (!variants.length) {
             let pe = null, p = el;
             for (let i = 0; i < 10 && p; i++) { pe = p.querySelector?.('.product_fullprice,.product_price'); if (pe) break; p = p.parentElement; }
