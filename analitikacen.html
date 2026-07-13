@@ -3,212 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аналитика каталога</title>
+    <title>Аналитика каталога Pro</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
-            --bg-body: #f3f4f6;
-            --bg-sidebar: #1f2937;
-            --bg-card: #ffffff;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #e5e7eb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --bg-main: #f8fafc; --bg-white: #ffffff; --text-primary: #1e293b; --text-secondary: #64748b;
+            --border: #e2e8f0; --accent: #3b82f6; --accent-light: #eff6ff;
+            --success-bg: #dcfce7; --success-text: #166534; --danger-bg: #fee2e2; --danger-text: #991b1b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1); --skeleton-base: #e2e8f0;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        [data-theme="dark"] {
+            --bg-main: #0f172a; --bg-white: #1e293b; --text-primary: #f1f5f9; --text-secondary: #94a3b8;
+            --border: #334155; --accent: #60a5fa; --accent-light: rgba(96, 165, 250, 0.1);
+            --success-bg: rgba(16, 185, 129, 0.1); --success-text: #34d399;
+            --danger-bg: rgba(239, 68, 68, 0.1); --danger-text: #f87171;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5); --skeleton-base: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 280px;
-            background: var(--bg-sidebar);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: transform 0.3s ease;
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
-        .logo span { color: var(--accent); }
-
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 0; }
+        .icon { width: 20px; height: 20px; fill: currentColor; }
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-lg { width: 24px; height: 24px; }
         
-        .nav-section { padding: 0 16px; margin-bottom: 24px; }
-        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 12px; padding-left: 12px; }
+        /* Layout */
+        .sidebar { width: 280px; background: var(--bg-white); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 18px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+        .theme-toggle { background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .theme-toggle:hover { background: var(--bg-main); color: var(--accent); }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px; }
+        .nav-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px; padding-left: 12px; }
+        .nav-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 8px; cursor: pointer; color: var(--text-secondary); font-size: 14px; font-weight: 500; transition: all 0.2s; margin-bottom: 4px; }
+        .nav-item:hover { background: var(--bg-main); color: var(--text-primary); }
+        .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+        .nav-badge { background: var(--bg-main); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+        .nav-item.active .nav-badge { background: var(--bg-white); color: var(--accent); }
+        .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
         
-        .nav-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 12px; border-radius: 8px; cursor: pointer;
-            color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: all 0.2s;
-            margin-bottom: 4px;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--accent); color: white; font-weight: 500; }
-        .nav-badge { background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
-        .nav-item.active .nav-badge { background: rgba(255,255,255,0.25); }
+        .btn { padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background: var(--bg-white); border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-secondary:hover { background: var(--bg-main); border-color: var(--text-secondary); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .btn-action {
-            width: 100%; padding: 12px; border: none; border-radius: 8px;
-            font-weight: 600; cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.9rem; margin-bottom: 10px;
-        }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
-        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
-        .btn-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-
-        /* Top Bar */
-        .top-bar {
-            height: 70px; background: var(--bg-card); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; padding: 0 30px; justify-content: space-between;
-            flex-shrink: 0;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar { height: 72px; background: var(--bg-white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; justify-content: space-between; flex-shrink: 0; }
         .search-container { position: relative; width: 400px; }
-        .search-input {
-            width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border);
-            border-radius: 8px; font-size: 0.9rem; background: var(--bg-body); transition: all 0.2s;
+        .search-input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg-main); color: var(--text-primary); transition: all 0.2s; }
+        .search-input:focus { border-color: var(--accent); background: var(--bg-white); box-shadow: 0 0 0 3px var(--accent-light); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+        .stats-row { display: flex; gap: 24px; }
+        .stat-item { display: flex; flex-direction: column; align-items: flex-end; }
+        .stat-value { font-weight: 700; font-size: 16px; color: var(--text-primary); }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .content-area { flex: 1; overflow-y: auto; padding: 32px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .product-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .product-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+        .product-card.selected { border-color: var(--accent); background: var(--accent-light); }
+        
+        .card-image-wrapper { 
+            width: 100%; height: 180px; background: var(--bg-main); border-radius: 8px; margin-bottom: 16px; 
+            overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; 
         }
-        .search-input:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-
-        .stats-row { display: flex; gap: 20px; }
-        .stat-pill { display: flex; flex-direction: column; align-items: flex-end; }
-        .stat-val { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
-        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Content Area */
-        .content-area { flex: 1; overflow-y: auto; padding: 30px; }
-
-        /* Table View */
-        .data-table-wrapper { background: var(--bg-card); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .data-table th { text-align: left; padding: 16px 20px; background: #f9fafb; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-        .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:hover { background: #f9fafb; cursor: pointer; }
-        .data-table tr.selected { background: #eff6ff; }
+        .card-image { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s; }
+        .product-card:hover .card-image { transform: scale(1.05); }
         
-        .product-name-cell { font-weight: 600; color: var(--text-main); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .category-tag { display: inline-block; padding: 4px 10px; background: #f3f4f6; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-        .price-cell { font-weight: 700; color: var(--text-main); font-variant-numeric: tabular-nums; }
-        .variants-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .vb-has { background: #ecfdf5; color: var(--success); }
-        .vb-none { background: #fef2f2; color: var(--danger); }
-        .link-icon { color: var(--accent); opacity: 0; transition: opacity 0.2s; }
-        tr:hover .link-icon { opacity: 1; }
+        .card-category { display: inline-block; padding: 4px 10px; background: var(--bg-main); border-radius: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-bottom: 12px; }
+        .card-title { font-size: 16px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price-tag { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .price-range { font-size: 14px; color: var(--text-secondary); font-weight: 400; }
+        .variant-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .vb-has { background: var(--success-bg); color: var(--success-text); }
+        .vb-none { background: var(--danger-bg); color: var(--danger-text); }
 
-        /* Detail Panel (Slide-over) */
-        .detail-panel {
-            position: absolute; top: 70px; right: 0; bottom: 0; width: 450px;
-            background: var(--bg-card); border-left: 1px solid var(--border);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.05); transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;
-            display: flex; flex-direction: column;
-        }
-        .detail-panel.open { transform: translateX(0); }
-        
-        .dp-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
-        .dp-title { font-size: 1.2rem; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
-        .dp-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 1; }
-        .dp-close:hover { color: var(--text-main); }
-        
+        .skeleton-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 16px; padding: 20px; height: 320px; display: flex; flex-direction: column; }
+        .skeleton { background: var(--skeleton-base); border-radius: 4px; position: relative; overflow: hidden; }
+        .skeleton::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%); background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.2) 20%, rgba(255,255,255,0.5) 60%, rgba(255,255,255,0) 100%); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+        .sk-image { height: 180px; margin-bottom: 16px; border-radius: 8px; }
+        .sk-title { height: 20px; width: 80%; margin-bottom: 8px; }
+        .sk-text { height: 16px; width: 60%; margin-bottom: 16px; }
+        .sk-footer { margin-top: auto; display: flex; justify-content: space-between; }
+        .sk-price { height: 24px; width: 80px; }
+        .sk-badge { height: 24px; width: 60px; border-radius: 12px; }
+
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; }
+        .empty-icon { margin-bottom: 16px; opacity: 0.3; }
+        .empty-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .btn-reset { margin-top: 16px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .btn-reset:hover { background: var(--border); }
+
+        .detail-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 90; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .detail-overlay.active { opacity: 1; visibility: visible; }
+        .detail-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 450px; background: var(--bg-white); box-shadow: -10px 0 30px rgba(0,0,0,0.2); z-index: 100; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+        .detail-panel.active { transform: translateX(0); }
+        .dp-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: start; }
+        .dp-title { font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 8px; color: var(--text-primary); }
+        .dp-close { background: none; border: none; cursor: pointer; color: var(--text-secondary); line-height: 1; padding: 4px; border-radius: 4px; }
+        .dp-close:hover { background: var(--bg-main); color: var(--danger-text); }
         .dp-body { flex: 1; overflow-y: auto; padding: 24px; }
-        .dp-section { margin-bottom: 24px; }
-        .dp-section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
-        
-        .variant-card { background: #f9fafb; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; transition: all 0.2s; }
-        .variant-card:hover { border-color: var(--accent); background: #eff6ff; }
-        .vc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .vc-name { font-weight: 600; font-size: 0.95rem; }
-        .vc-price { font-weight: 800; font-size: 1.1rem; color: var(--accent); }
-        .vc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-        .vc-tag { font-size: 0.75rem; padding: 3px 8px; background: white; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); }
+        .section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 16px; }
+        .variant-item { background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; transition: all 0.2s; }
+        .variant-item:hover { border-color: var(--accent); background: var(--accent-light); }
+        .vi-header { display: flex; justify-content: space-between; align-items: center; }
+        .vi-name { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+        .vi-price { font-weight: 700; font-size: 16px; color: var(--accent); }
+        .dp-footer { padding: 24px; border-top: 1px solid var(--border); }
+        .btn-full { width: 100%; padding: 14px; background: var(--text-primary); color: var(--bg-white); border: none; border-radius: 10px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; display: block; transition: all 0.2s; }
+        .btn-full:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-        .dp-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
-        .btn-full { width: 100%; padding: 14px; background: var(--text-main); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
-        .btn-full:hover { background: black; }
+        .progress-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--bg-white); padding: 16px 24px; border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); width: 400px; z-index: 200; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .progress-toast.active { transform: translateX(-50%) translateY(0); }
+        .pt-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .pt-bar { height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden; }
+        .pt-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
-        /* Progress Overlay */
-        .progress-overlay {
-            position: absolute; bottom: 30px; left: 30px; right: 30px;
-            background: var(--bg-card); border-radius: 12px; padding: 20px 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border);
-            display: none; z-index: 200; animation: slideUp 0.3s ease;
-        }
-        .progress-overlay.active { display: block; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .po-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; font-weight: 500; }
-        .po-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-        .po-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; border-radius: 3px; }
-
-        /* Empty State */
-        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); }
-        .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
-        .empty-title { font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
-
-        /* Debug Toggle */
-        .debug-toggle { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; cursor: pointer; font-size: 0.7rem; color: var(--text-muted); z-index: 999; }
-        .debug-toggle:hover { opacity: 1; }
-        .debug-panel { display: none; position: fixed; bottom: 30px; right: 10px; width: 600px; max-height: 400px; background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 0.8rem; padding: 16px; border-radius: 8px; overflow-y: auto; z-index: 1000; white-space: pre-wrap; word-break: break-all; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .debug-panel.active { display: block; }
-
-        /* Mobile */
-        @media (max-width: 900px) {
-            .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
-            .detail-panel { width: 100%; top: 0; }
-            .search-container { width: 200px; }
-            .stats-row { display: none; }
-            .mobile-menu-btn { display: block !important; }
-        }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; margin-right: 16px; color: var(--text-main); }
+        .notification-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--bg-white); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 8px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; min-width: 300px; animation: slideInRight 0.3s ease; color: var(--text-primary); }
+        .toast.error { border-left-color: var(--danger-text); }
+        .toast.success { border-left-color: var(--success-text); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
+<aside class="sidebar">
     <div class="sidebar-header">
+        <div class="logo">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h2v2H7V7zm4 0h2v2h-2V7zm4 0h2v2h-2V7zM7 11h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 15h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
+            Аналитика Pro
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
+            <svg id="icon-sun" class="icon" style="display:none" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+            <svg id="icon-moon" class="icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        </button>
     </div>
     <nav class="sidebar-nav" id="categoryNav">
-        <div class="nav-section">
-            <div class="nav-label">Категории</div>
-            <div class="nav-item active" onclick="filterByCategory('all', this)">
-                <span>Все товары</span>
-                <span class="nav-badge" id="badgeAll">0</span>
-            </div>
+        <div class="nav-section-title">Категории</div>
+        <div class="nav-item active" onclick="filterByCategory('all', this)">
+            <span>Все товары</span>
+            <span class="nav-badge" id="badgeAll">0</span>
         </div>
-        <div class="nav-section" id="categoryList"></div>
+        <div id="categoryList"></div>
     </nav>
     <div class="sidebar-footer">
-        <button class="btn-action btn-primary" id="startBtn" onclick="startParsing()">▶ Запустить парсинг</button>
-        <button class="btn-action btn-outline" id="exportBtn" onclick="exportData()" disabled>⬇ Экспорт JSON</button>
-        <button class="btn-action btn-outline" onclick="exportCSV()" style="margin-bottom:0;">⬇ Экспорт CSV</button>
+        <button class="btn btn-primary" id="startBtn" onclick="toggleParsing()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span id="btnText">Запустить парсинг</span>
+        </button>
+        <button class="btn btn-secondary" id="exportBtn" onclick="exportData()" disabled>
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Экспорт JSON
+        </button>
+        <button class="btn btn-secondary" onclick="exportCSV()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Экспорт CSV
+        </button>
     </div>
 </aside>
 
@@ -216,77 +177,78 @@
 <main class="main-content">
     <!-- Top Bar -->
     <header class="top-bar">
-        <div style="display:flex;align-items:center;">
-            <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">☰</button>
-            <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию, категории..." oninput="handleSearch()">
-            </div>
+        <div class="search-container">
+            <svg class="icon search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию..." oninput="handleSearchInput()">
         </div>
         <div class="stats-row">
-            <div class="stat-pill"><span class="stat-val" id="statProducts">0</span><span class="stat-lbl">Товаров</span></div>
-            <div class="stat-pill"><span class="stat-val" id="statVariants">0</span><span class="stat-lbl">Вариантов</span></div>
-            <div class="stat-pill"><span class="stat-val" id="statAvg">0 ₽</span><span class="stat-lbl">Ср. цена</span></div>
+            <div class="stat-item">
+                <span class="stat-value" id="statProducts">0</span>
+                <span class="stat-label">Товаров</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="statVariants">0</span>
+                <span class="stat-label">Вариантов</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="statAvg">0 ₽</span>
+                <span class="stat-label">Ср. цена</span>
+            </div>
         </div>
     </header>
 
     <!-- Content -->
     <div class="content-area" id="contentArea">
         <div class="empty-state" id="emptyState">
-            <div class="empty-icon">📋</div>
+            <svg class="icon empty-icon" style="width:64px;height:64px" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
             <div class="empty-title">Каталог пуст</div>
-            <p>Нажмите «Запустить парсинг» в боковой панели,<br>чтобы загрузить данные с сайта</p>
+            <p>Нажмите «Запустить парсинг» в боковой панели</p>
         </div>
 
-        <div class="data-table-wrapper" id="tableWrapper" style="display:none;">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width:35%">Наименование</th>
-                        <th style="width:20%">Категория</th>
-                        <th style="width:15%">Варианты</th>
-                        <th style="width:15%">Мин. цена</th>
-                        <th style="width:15%">Макс. цена</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <div class="empty-state" id="noResultsState" style="display:none;">
+            <svg class="icon empty-icon" style="width:64px;height:64px" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <div class="empty-title">Ничего не найдено</div>
+            <p>Попробуйте изменить запрос или сбросить фильтры</p>
+            <button class="btn-reset" onclick="resetFilters()">Сбросить фильтры</button>
         </div>
-    </div>
 
-    <!-- Detail Slide Panel -->
-    <div class="detail-panel" id="detailPanel">
-        <div class="dp-header">
-            <div>
-                <div class="dp-title" id="dpTitle">—</div>
-                <span class="category-tag" id="dpCategory">—</span>
-            </div>
-            <button class="dp-close" onclick="closeDetail()">×</button>
-        </div>
-        <div class="dp-body">
-            <div class="dp-section">
-                <div class="dp-section-title">Варианты и цены</div>
-                <div id="dpVariants"></div>
-            </div>
-        </div>
-        <div class="dp-footer" id="dpFooter"></div>
-    </div>
-
-    <!-- Progress Overlay -->
-    <div class="progress-overlay" id="progressOverlay">
-        <div class="po-info">
-            <span id="poText">Подготовка...</span>
-            <span id="poPercent">0%</span>
-        </div>
-        <div class="po-bar"><div class="po-fill" id="poFill"></div></div>
+        <div class="product-grid" id="productGrid" style="display:none;"></div>
     </div>
 </main>
 
-<div class="debug-toggle" onclick="document.getElementById('debugPanel').classList.toggle('active')">DEBUG</div>
-<div class="debug-panel" id="debugPanel"></div>
+<!-- Detail Panel -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+    <div class="dp-header">
+        <div>
+            <div class="dp-title" id="dpTitle">—</div>
+            <span class="card-category" id="dpCategory">—</span>
+        </div>
+        <button class="dp-close" onclick="closeDetail()">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+    </div>
+    <div class="dp-body">
+        <div class="section-title">Варианты и цены</div>
+        <div id="dpVariants"></div>
+    </div>
+    <div class="dp-footer" id="dpFooter"></div>
+</div>
+
+<!-- Progress Toast -->
+<div class="progress-toast" id="progressToast">
+    <div class="pt-info">
+        <span id="poText">Подготовка...</span>
+        <span id="poPercent">0%</span>
+    </div>
+    <div class="pt-bar"><div class="pt-fill" id="poFill"></div></div>
+</div>
+
+<!-- Notification Container -->
+<div class="notification-container" id="notificationContainer"></div>
 
 <script>
-/* ===== CONFIG ===== */
+/* ===== CONFIG & LOGIC ===== */
 const BASE_URL = 'https://xn--80aaacwajzbdt1dxa.xn--p1ai';
 const CORS_PROXIES = [
     'https://api.allorigins.win/raw?url=',
@@ -313,13 +275,65 @@ const CATEGORIES = [
     { name: 'Спортивное оборудование', url: 'спортивное оборудование.html' }
 ];
 
-/* ===== STATE ===== */
 let allProducts = [];
 let currentFilter = 'all';
 let selectedProductIdx = null;
 let proxyIdx = 0;
+let isParsing = false;
+let pauseParsing = false;
+let searchTimeout = null;
 
-/* ===== FETCH ===== */
+// Rate Limiter
+const RATE_LIMIT = {
+    maxTokens: 10, tokens: 10, lastRefill: Date.now(),
+    canMakeRequest() {
+        const now = Date.now();
+        const timePassed = now - this.lastRefill;
+        const tokensToAdd = Math.floor(timePassed / 6000); 
+        if (tokensToAdd > 0) { this.tokens = Math.min(this.maxTokens, this.tokens + tokensToAdd); this.lastRefill = now; }
+        return this.tokens > 0;
+    },
+    consume() { this.tokens--; }
+};
+
+// Theme Logic
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon(next);
+}
+function updateThemeIcon(theme) {
+    const sun = document.getElementById('icon-sun');
+    const moon = document.getElementById('icon-moon');
+    if (theme === 'dark') { sun.style.display = 'block'; moon.style.display = 'none'; }
+    else { sun.style.display = 'none'; moon.style.display = 'block'; }
+}
+initTheme();
+
+// Toast Notifications
+function showToast(message, type = 'info') {
+    const container = document.getElementById('notificationContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    let icon = '';
+    if (type === 'success') icon = '<svg class="icon" style="color:var(--success-text)" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+    else if (type === 'error') icon = '<svg class="icon" style="color:var(--danger-text)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+    else icon = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
+    toast.innerHTML = `${icon}<span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 async function fetchPage(url) {
     for (let i = 0; i < CORS_PROXIES.length; i++) {
         const idx = (proxyIdx + i) % CORS_PROXIES.length;
@@ -331,28 +345,236 @@ async function fetchPage(url) {
     throw new Error('Proxies failed');
 }
 
-/* ===== PARSER ===== */
+// Helper to parse price string safely
+function parsePriceString(str) {
+    if (!str) return 0;
+    // Remove everything except digits, dots and commas
+    let clean = str.replace(/[^\d.,]/g, '');
+    // Replace comma with dot
+    clean = clean.replace(',', '.');
+    
+    // Handle cases like "23.000,00" -> "23000.00" or "23000.00"
+    // If there are multiple dots, it's likely thousands separator + decimal
+    const parts = clean.split('.');
+    if (parts.length > 2) {
+        // e.g. 23.000.00 -> remove all but last dot
+        clean = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
+    }
+    
+    let val = parseFloat(clean);
+    
+    // Fix for "23000.00" being parsed as 23000, but sometimes we get "2300000" if format was weird
+    // Heuristic: if value > 100000 and ends with 00 after dot, it might be kopecks included incorrectly
+    // But usually parseFloat handles "23000.00" correctly as 23000.
+    
+    // Specific fix for the issue seen: "23 000,00" -> "23000.00" -> 23000. Correct.
+    // Issue was likely "23 0 00" -> "23000" -> correct.
+    // Wait, user said 2,300,000. That means input was likely "23 000 00" or similar without decimal point handling.
+    
+    return isNaN(val) ? 0 : val;
+}
+
+// --- IMPROVED PARSER ---
+function parseHTML(html, category) {
+    const products = [];
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    
+    // 1. Get all names (Standard and Quick-view types)
+    const standardNames = Array.from(doc.querySelectorAll('.im-cc-products-name'));
+    const quickViewNames = Array.from(doc.querySelectorAll('b.fs16lh1-5'));
+    const allNameNodes = [...standardNames, ...quickViewNames];
+
+    // 2. Collect ALL images globally but FILTER out noise strictly
+    const allImages = Array.from(doc.querySelectorAll('img')).filter(img => {
+        const src = img.src || '';
+        // Must be in images folder
+        if (!src.includes('/images/')) return false;
+        
+        const filename = src.split('/').pop().split('?')[0].toLowerCase();
+        
+        // STRICT BLACKLIST based on provided HTML analysis
+        // Logo: 98989999900066.webp
+        // Cart/Sticky: 3433333.webp
+        // Palette: 576776.webp
+        // Banners: novinka, hit, akciya, mahagon, uspey
+        if (filename.startsWith('9898') || filename.startsWith('3433') || 
+            filename.includes('novinka') || filename.includes('hit') || 
+            filename.includes('akciya') || filename.includes('mahagon') || 
+            filename.includes('uspey') || filename === '576776.webp' || filename.includes('palitra')) {
+            return false;
+        }
+        
+        // Additional heuristic: exclude purely numeric filenames that aren't product codes
+        // Product codes usually have letters or specific patterns, pure numbers like 12345.webp are often system icons
+        const nameWithoutExt = filename.split('.')[0];
+        if (/^\d+$/.test(nameWithoutExt) && nameWithoutExt.length < 6) return false;
+
+        return true;
+    });
+
+    allNameNodes.forEach((nameNode, index) => {
+        const name = nameNode.textContent.trim();
+        if (!name) return;
+
+        // Image Mapping (by index)
+        let imageUrl = null;
+        if (allImages[index]) {
+            let src = allImages[index].getAttribute('src');
+            if (src) {
+                if (!src.startsWith('http')) {
+                    const cleanSrc = src.startsWith('/') ? src.substring(1) : src;
+                    imageUrl = BASE_URL + '/' + cleanSrc;
+                } else {
+                    imageUrl = src;
+                }
+            }
+        }
+
+        let variants = [];
+        let pid = null;
+        let url = null;
+
+        // CHECK TYPE A: Standard Product (has ID in DOM)
+        let parent = nameNode;
+        for (let i = 0; i < 15 && parent; i++) {
+            const id = parent.getAttribute?.('id') || '';
+            const m = id.match(/product_([a-z0-9]+)/i);
+            if (m) { pid = m[1]; break; }
+            parent = parent.parentElement;
+        }
+
+        if (pid) {
+            // It's a standard product, use regex extraction
+            variants = extractVariants(html, pid);
+            
+            // Find URL for standard product
+            parent = nameNode;
+            for (let i = 0; i < 15 && parent; i++) {
+                if (parent.tagName === 'A' && parent.getAttribute('href')) {
+                    let h = parent.getAttribute('href');
+                    if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
+                    url = h; break;
+                }
+                const link = parent.querySelector?.('a[href]');
+                if (link) {
+                    let h = link.getAttribute('href');
+                    if (h && !h.startsWith('javascript')) {
+                        if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
+                        url = h; break;
+                    }
+                }
+                parent = parent.parentElement;
+            }
+        } 
+        // CHECK TYPE B: Quick View / Simple Product (No ID)
+        else {
+            // Strategy 1: Look for variants in <li> list (like "Azalia")
+            let listContainer = nameNode.closest('ul');
+            if (listContainer) {
+                const items = listContainer.querySelectorAll('li');
+                items.forEach(item => {
+                    // Look for price in <b> tags inside LI specifically
+                    const bolds = item.querySelectorAll('b');
+                    let foundPrice = 0;
+                    
+                    bolds.forEach(b => {
+                        const txt = b.textContent.trim();
+                        // Only consider it a price if it looks like money (has digits and maybe currency symbol nearby)
+                        // Or just pure number logic
+                        const val = parsePriceString(txt);
+                        if (val > 100) foundPrice = val; // Threshold to avoid catching dimensions
+                    });
+
+                    if (foundPrice > 0) {
+                        let vName = item.textContent.replace(/\d+[.,]?\d*/g, '').replace(/[₽руб]/gi, '').trim();
+                        vName = vName.replace(/^[-–\s]+|[-–\s]+$/g, '');
+                        if (!vName || vName.length < 2) vName = `Вариант ${variants.length + 1}`;
+                        variants.push({ name: vName, price: foundPrice, suboptions: [] });
+                    }
+                });
+            }
+
+            // Strategy 2: If no list, look for immediate sibling price (like "Zvezda" or "Skamya primireniya")
+            if (variants.length === 0) {
+                // Find the closest container that holds the description and prices
+                // Usually it's a div with class "text-inner" or similar, but let's go up to the cell
+                const container = nameNode.closest('[id^="imTextObject"]') || nameNode.parentElement;
+                
+                if (container) {
+                    // Look for the "Prices:" section specifically
+                    // The HTML structure is usually: <div>Цены:</div><ul><li>...price...</li></ul>
+                    // We need to find the <ul> that comes AFTER the text "Цены"
+                    
+                    const allUls = container.querySelectorAll('ul');
+                    let targetUl = null;
+                    
+                    // Simple heuristic: take the last <ul> in the container, as prices are usually at the bottom
+                    if (allUls.length > 0) {
+                        targetUl = allUls[allUls.length - 1];
+                    }
+
+                    if (targetUl) {
+                        const items = targetUl.querySelectorAll('li');
+                        items.forEach(item => {
+                            // Get FULL text content of the LI, including all nested spans/bolds
+                            // This fixes the issue where "23 0" and "0" and "0" are in separate tags
+                            const fullText = item.textContent;
+                            
+                            // Extract price from full text
+                            // Pattern: digits, spaces, dots, commas followed by currency or end of string
+                            const priceMatch = fullText.match(/([\d\s.,]+)\s*[₽RUB]/i);
+                            
+                            if (priceMatch) {
+                                const val = parsePriceString(priceMatch[1]);
+                                if (val > 1000) { // Threshold for benches
+                                    variants.push({ name: 'Цена', price: val, suboptions: [] });
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // Generate Anchor Link for Quick View items
+            const catUrl = CATEGORIES.find(c => c.name === category)?.url || '';
+            if (catUrl) {
+                const anchor = name.replace(/[^a-zA-Z0-9а-яА-Я]/g, '+');
+                url = `${BASE_URL}/${catUrl}#${anchor}`;
+            }
+        }
+
+        // Fallback for variants if nothing found
+        if (variants.length === 0 && !pid) {
+             let pe = null, p = nameNode;
+             for (let i = 0; i < 10 && p; i++) { 
+                 pe = p.querySelector?.('.product_fullprice,.product_price,b.fs12lh1-5'); 
+                 if (pe) break; 
+                 p = p.parentElement; 
+             }
+             if (pe) {
+                 const pm = (pe.textContent.match(/([\d\s]+)/) || [])[1];
+                 const v = pm ? parseInt(pm.replace(/\s/g, '')) : 0;
+                 if (v > 0) variants.push({ name: 'Цена', price: v, suboptions: [] });
+             }
+        }
+
+        products.push({ name, variants, category, productId: pid, url, image: imageUrl });
+    });
+    
+    return products;
+}
+
 function extractVariants(html, pid) {
     const variants = [];
     const positions = [];
     let pos = 0;
-    
-    // Находим все позиции ID товара
-    while ((pos = html.indexOf(pid, pos)) !== -1) { 
-        positions.push(pos); 
-        pos += pid.length; 
-    }
-
+    while ((pos = html.indexOf(pid, pos)) !== -1) { positions.push(pos); pos += pid.length; }
     for (const p of positions) {
-        // Возвращаем широкий контекст, так как варианты могут быть далеко от ID
         const start = Math.max(0, p - 2000);
         const end = Math.min(html.length, p + 5000);
         const ctx = html.substring(start, end);
-        
-        // Ищем оба варианта порядка ключей
         const re1 = /\{[^{}]*?name\s*:\s*'([^']*)'[^{}]*?pricevar\s*:\s*([\d.]+)[^{}]*?\}/g;
         const re2 = /\{[^{}]*?pricevar\s*:\s*([\d.]+)[^{}]*?name\s*:\s*'([^']*)'[^{}]*?\}/g;
-        
         let m;
         while ((m = re1.exec(ctx))) processVariant(variants, m[1], parseFloat(m[2]));
         while ((m = re2.exec(ctx))) processVariant(variants, m[2], parseFloat(m[1]));
@@ -361,103 +583,58 @@ function extractVariants(html, pid) {
 }
 
 function processVariant(arr, name, price) {
-    if (price <= 0 || 
-        name.length > 80 || 
-        /[<>\n\r\t]/.test(name) || 
-        name.includes("'")) return;
-        
+    if (price <= 0 || name.length > 80 || /[<>\n\r\t]/.test(name) || name.includes("'")) return;
     if (arr.find(v => v.name === name && v.price === price)) return;
-    
     arr.push({ name, price, suboptions: [] });
 }
 
-function addVariant() {} 
-
-function getBasePrice(html, pid) {
-    const m = html.match(new RegExp(`id=["']product_${pid}_fullprice["'][^>]*>([^<]+)<`, 'i'));
-    if (!m) return null;
-    const v = parseInt((m[1].match(/([\d\s]+)/) || [])[1]?.replace(/\s/g, ''));
-    return v > 0 ? v : null;
-}
-
-function parseHTML(html, category) {
-    const products = [];
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const names = doc.querySelectorAll('.im-cc-products-name');
-
-    names.forEach(el => {
-        const name = el.textContent.trim();
-        if (!name) return;
-
-        // Find productId
-        let pid = null, parent = el;
-        for (let i = 0; i < 15 && parent; i++) {
-            const id = parent.getAttribute?.('id') || '';
-            const m = id.match(/product_([a-z0-9]+)/i);
-            if (m) { pid = m[1]; break; }
-            const ps = parent.querySelector?.('[id*="product_"][id*="price"]');
-            if (ps) { const sm = (ps.getAttribute('id')||'').match(/product_([a-z0-9]+)/i); if (sm) { pid = sm[1]; break; } }
-            parent = parent.parentElement;
+async function toggleParsing() {
+    if (isParsing) {
+        pauseParsing = !pauseParsing;
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.querySelector('#startBtn svg');
+        if (pauseParsing) {
+            btnText.textContent = "Продолжить";
+            btnIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            showToast("Парсинг приостановлен", "info");
+        } else {
+            btnText.textContent = "Пауза";
+            btnIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            showToast("Парсинг возобновлен", "success");
         }
+        return;
+    }
 
-        // Find URL
-        let url = null; parent = el;
-        for (let i = 0; i < 15 && parent; i++) {
-            if (parent.tagName === 'A' && parent.getAttribute('href')) {
-                let h = parent.getAttribute('href');
-                if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
-                url = h; break;
-            }
-            const link = parent.querySelector?.('a[href]');
-            if (link) {
-                let h = link.getAttribute('href');
-                if (h && !h.startsWith('javascript')) {
-                    if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
-                    url = h; break;
-                }
-            }
-            parent = parent.parentElement;
-        }
-
-        // Variants
-        let variants = pid ? extractVariants(html, pid) : [];
-        
-        // Если вариантов нет, но есть базовая цена в HTML
-        if (!variants.length && pid) {
-            const bp = getBasePrice(html, pid);
-            if (bp) variants.push({ name: 'Базовая цена', price: bp, suboptions: [] });
-        }
-        
-        // Если все еще нет, ищем цену в верстке
-        if (!variants.length) {
-            let pe = null, p = el;
-            for (let i = 0; i < 10 && p; i++) { pe = p.querySelector?.('.product_fullprice,.product_price'); if (pe) break; p = p.parentElement; }
-            if (pe) {
-                const pm = (pe.textContent.match(/([\d\s]+)/) || [])[1];
-                const v = pm ? parseInt(pm.replace(/\s/g, '')) : 0;
-                if (v > 0) variants.push({ name: 'Базовая цена', price: v, suboptions: [] });
-            }
-        }
-
-        products.push({ name, variants, category, productId: pid, url });
-    });
-    return products;
-}
-
-/* ===== PARSING ORCHESTRATOR ===== */
-async function startParsing() {
     const btn = document.getElementById('startBtn');
-    btn.disabled = true; btn.classList.add('btn-disabled');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.querySelector('#startBtn svg');
+    
+    isParsing = true;
+    pauseParsing = false;
+    btnText.textContent = "Пауза";
+    btnIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    
     allProducts = [];
     showProgress(true);
+    renderSkeletons();
 
     for (let i = 0; i < CATEGORIES.length; i++) {
+        if (!isParsing) break;
+        while (pauseParsing && isParsing) await new Promise(r => setTimeout(r, 500));
+        if (!isParsing) break;
+
         const cat = CATEGORIES[i];
         updateProgress(i, CATEGORIES.length, `Загрузка: ${cat.name}`);
+        
+        if (!RATE_LIMIT.canMakeRequest()) {
+            showToast("Лимит запросов. Пауза 10 сек...", "warning");
+            await new Promise(r => setTimeout(r, 10000));
+        }
+        RATE_LIMIT.consume();
+
         try {
             const html = await fetchPage(`${BASE_URL}/${cat.url}`);
             const products = parseHTML(html, cat.name);
-            // Dedupe
             const seen = new Set();
             products.forEach(p => {
                 const k = p.name.toLowerCase().trim();
@@ -466,22 +643,31 @@ async function startParsing() {
                     allProducts.push(p);
                 }
             });
-        } catch(e) { console.error(cat.name, e); }
-        await new Promise(r => setTimeout(r, 80));
+        } catch(e) {
+            console.error(cat.name, e);
+            showToast(`Ошибка загрузки: ${cat.name}`, "error");
+        }
+        
+        const delay = Math.floor(Math.random() * 2000) + 1000;
+        await new Promise(r => setTimeout(r, delay));
     }
 
+    isParsing = false;
+    pauseParsing = false;
+    btnText.textContent = "Запустить парсинг";
+    btnIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    
     updateProgress(CATEGORIES.length, CATEGORIES.length, 'Готово!');
     setTimeout(() => showProgress(false), 1500);
-    btn.disabled = false; btn.classList.remove('btn-disabled');
+    
     document.getElementById('exportBtn').disabled = false;
-
     renderAll();
+    showToast("Парсинг завершен успешно", "success");
 }
 
-/* ===== RENDERING ===== */
 function renderAll() {
     renderSidebar();
-    renderTable();
+    renderGrid();
     updateStats();
 }
 
@@ -489,7 +675,6 @@ function renderSidebar() {
     const list = document.getElementById('categoryList');
     const counts = {};
     allProducts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
-
     document.getElementById('badgeAll').textContent = allProducts.length;
 
     list.innerHTML = CATEGORIES.map(c => {
@@ -510,16 +695,21 @@ function getFilteredProducts() {
     return list;
 }
 
-function renderTable() {
+function renderGrid() {
     const filtered = getFilteredProducts();
     const empty = document.getElementById('emptyState');
-    const table = document.getElementById('tableWrapper');
+    const noResults = document.getElementById('noResultsState');
+    const grid = document.getElementById('productGrid');
 
-    if (allProducts.length === 0) { empty.style.display = ''; table.style.display = 'none'; return; }
-    empty.style.display = 'none'; table.style.display = '';
+    if (allProducts.length === 0) { 
+        empty.style.display = ''; noResults.style.display = 'none'; grid.style.display = 'none'; return; 
+    }
+    empty.style.display = 'none';
+    if (filtered.length === 0) { noResults.style.display = ''; grid.style.display = 'none'; return; } 
+    else { noResults.style.display = 'none'; }
+    grid.style.display = 'grid';
 
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = filtered.map((p, i) => {
+    grid.innerHTML = filtered.map((p, i) => {
         const prices = p.variants.map(v => v.price);
         const minP = prices.length ? Math.min(...prices) : 0;
         const maxP = prices.length ? Math.max(...prices) : 0;
@@ -527,14 +717,45 @@ function renderTable() {
         const realIdx = allProducts.indexOf(p);
         const sel = selectedProductIdx === realIdx ? 'selected' : '';
 
-        return `<tr class="${sel}" onclick="openDetail(${realIdx})">
-            <td class="product-name-cell">${p.name} ${p.url ? '<span class="link-icon">↗</span>' : ''}</td>
-            <td><span class="category-tag">${p.category}</span></td>
-            <td><span class="variants-badge ${hasV ? 'vb-has' : 'vb-none'}">${hasV ? p.variants.length + ' шт.' : 'Нет'}</span></td>
-            <td class="price-cell">${minP ? minP.toLocaleString('ru-RU') + ' ₽' : '—'}</td>
-            <td class="price-cell">${maxP && maxP !== minP ? maxP.toLocaleString('ru-RU') + ' ₽' : (minP ? '' : '—')}</td>
-        </tr>`;
+        const imgHtml = p.image 
+            ? `<img src="${p.image}" class="card-image" loading="lazy" alt="${p.name}" onerror="this.parentElement.innerHTML='<div style=\\'color:var(--text-secondary);font-size:12px;\\'>Фото недоступно</div>'">`
+            : `<div style="color:var(--text-secondary);font-size:12px;">Нет фото</div>`;
+
+        return `<div class="product-card ${sel}" id="card-${realIdx}" onclick="openDetail(${realIdx})">
+            <div class="card-image-wrapper">${imgHtml}</div>
+            <div class="card-category">${p.category}</div>
+            <div class="card-title">${p.name}</div>
+            <div class="card-footer">
+                <div>
+                    <div class="price-tag">${minP ? minP.toLocaleString('ru-RU') + ' ₽' : '—'}</div>
+                    ${maxP && maxP !== minP ? `<div class="price-range">до ${maxP.toLocaleString('ru-RU')} ₽</div>` : ''}
+                </div>
+                <span class="variant-badge ${hasV ? 'vb-has' : 'vb-none'}">
+                    ${hasV ? p.variants.length + ' вар.' : 'Нет вариантов'}
+                </span>
+            </div>
+        </div>`;
     }).join('');
+}
+
+function renderSkeletons() {
+    const grid = document.getElementById('productGrid');
+    const empty = document.getElementById('emptyState');
+    const noResults = document.getElementById('noResultsState');
+    empty.style.display = 'none'; noResults.style.display = 'none'; grid.style.display = 'grid';
+    let html = '';
+    for(let i=0; i<8; i++) {
+        html += `<div class="skeleton-card">
+            <div class="skeleton sk-image"></div>
+            <div class="skeleton sk-title"></div>
+            <div class="skeleton sk-text"></div>
+            <div class="sk-footer">
+                <div class="skeleton sk-price"></div>
+                <div class="skeleton sk-badge"></div>
+            </div>
+        </div>`;
+    }
+    grid.innerHTML = html;
 }
 
 function updateStats() {
@@ -546,23 +767,35 @@ function updateStats() {
     document.getElementById('statAvg').textContent = pc ? Math.round(tp / pc).toLocaleString('ru-RU') + ' ₽' : '0 ₽';
 }
 
-/* ===== INTERACTIONS ===== */
 function filterByCategory(name, el) {
     currentFilter = name;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
     else document.querySelector('.nav-item')?.classList.add('active');
     closeDetail();
-    renderTable();
+    renderGrid();
     updateStats();
-    // Close mobile sidebar
-    document.getElementById('sidebar').classList.remove('mobile-open');
 }
 
-function handleSearch() { renderTable(); updateStats(); }
+function handleSearchInput() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => { renderGrid(); updateStats(); }, 300);
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    filterByCategory('all', document.querySelector('.nav-item'));
+}
 
 function openDetail(idx) {
+    if (selectedProductIdx !== null) {
+        const prevCard = document.getElementById(`card-${selectedProductIdx}`);
+        if (prevCard) prevCard.classList.remove('selected');
+    }
     selectedProductIdx = idx;
+    const currCard = document.getElementById(`card-${idx}`);
+    if (currCard) currCard.classList.add('selected');
+
     const p = allProducts[idx];
     document.getElementById('dpTitle').textContent = p.name;
     document.getElementById('dpCategory').textContent = p.category;
@@ -570,37 +803,37 @@ function openDetail(idx) {
     const vContainer = document.getElementById('dpVariants');
     if (p.variants.length) {
         vContainer.innerHTML = p.variants.map(v => `
-            <div class="variant-card">
-                <div class="vc-top">
-                    <span class="vc-name">${v.name}</span>
-                    <span class="vc-price">${v.price.toLocaleString('ru-RU')} ₽</span>
+            <div class="variant-item">
+                <div class="vi-header">
+                    <span class="vi-name">${v.name}</span>
+                    <span class="vi-price">${v.price.toLocaleString('ru-RU')} ₽</span>
                 </div>
-                ${v.suboptions.length ? `<div class="vc-tags">${v.suboptions.map(s => `<span class="vc-tag">${s}</span>`).join('')}</div>` : ''}
             </div>
         `).join('');
     } else {
-        vContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Цены не найдены на странице категории</div>';
+        vContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-style:italic;">Цены не найдены</div>';
     }
 
     const footer = document.getElementById('dpFooter');
     footer.innerHTML = p.url
-        ? `<a href="${p.url}" target="_blank" rel="noopener" class="btn-full">🔗 Открыть на сайте</a>`
+        ? `<a href="${p.url}" target="_blank" rel="noopener" class="btn-full">Открыть на сайте ↗</a>`
         : `<button class="btn-full" disabled style="opacity:0.5;cursor:not-allowed;">Ссылка недоступна</button>`;
 
-    document.getElementById('detailPanel').classList.add('open');
-    renderTable(); // highlight row
+    document.getElementById('detailOverlay').classList.add('active');
+    document.getElementById('detailPanel').classList.add('active');
 }
 
 function closeDetail() {
+    if (selectedProductIdx !== null) {
+        const prevCard = document.getElementById(`card-${selectedProductIdx}`);
+        if (prevCard) prevCard.classList.remove('selected');
+    }
     selectedProductIdx = null;
-    document.getElementById('detailPanel').classList.remove('open');
-    renderTable();
+    document.getElementById('detailOverlay').classList.remove('active');
+    document.getElementById('detailPanel').classList.remove('active');
 }
 
-/* ===== PROGRESS ===== */
-function showProgress(show) {
-    document.getElementById('progressOverlay').classList.toggle('active', show);
-}
+function showProgress(show) { document.getElementById('progressToast').classList.toggle('active', show); }
 function updateProgress(current, total, text) {
     const pct = Math.round((current / total) * 100);
     document.getElementById('poText').textContent = text;
@@ -608,56 +841,29 @@ function updateProgress(current, total, text) {
     document.getElementById('poFill').style.width = pct + '%';
 }
 
-/* ===== EXPORT ===== */
 function exportData() {
-    const b = new Blob([JSON.stringify({ products: allProducts }, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'azbuka-catalog.json'; a.click();
-}
-function exportCSV() {
-    let csv = 'Категория;Товар;Ссылка;Вариант;Цена;Опции\n';
-    allProducts.forEach(p => {
-        if (p.variants.length) p.variants.forEach(v => {
-            csv += `"${p.category}";"${p.name}";"${p.url||''}";"${v.name}";${v.price};"${(v.suboptions||[]).join(', ')}"\n`;
-        }); else {
-            csv += `"${p.category}";"${p.name}";"${p.url||''}";"Нет";0;""\n`;
-        }
-    });
-    const b = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'azbuka-catalog.csv'; a.click();
+    try {
+        const b = new Blob([JSON.stringify({ products: allProducts }, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'catalog.json'; a.click();
+        showToast("JSON файл сохранен", "success");
+    } catch (e) { showToast("Ошибка при экспорте JSON", "error"); }
 }
 
-/* ===== DEBUG ===== */
-async function testOneCategory() {
-    const dp = document.getElementById('debugPanel');
-    dp.classList.add('active');
-    dp.textContent = 'Загрузка...';
+function exportCSV() {
     try {
-        const html = await fetchPage(`${BASE_URL}/komplekti-ulichnoy-mebeli.html`);
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const names = doc.querySelectorAll('.im-cc-products-name');
-        const pvCount = (html.match(/pricevar/g) || []).length;
-        let out = `HTML: ${html.length} chars | Names: ${names.length} | pricevar: ${pvCount}\n\n`;
-        names.forEach((el, i) => {
-            if (i >= 3) return;
-            const name = el.textContent.trim();
-            let pid = null, p = el;
-            for (let j = 0; j < 15 && p; j++) {
-                const m = (p.getAttribute?.('id')||'').match(/product_([a-z0-9]+)/i);
-                if (m) { pid = m[1]; break; }
-                const ps = p.querySelector?.('[id*="product_"][id*="price"]');
-                if (ps) { const sm = (ps.getAttribute('id')||'').match(/product_([a-z0-9]+)/i); if (sm) { pid = sm[1]; break; } }
-                p = p.parentElement;
+        let csv = 'Категория;Товар;Ссылка;Вариант;Цена\n';
+        allProducts.forEach(p => {
+            if (p.variants.length) p.variants.forEach(v => {
+                csv += `"${p.category}";"${p.name}";"${p.url||''}";"${v.name}";${v.price}\n`;
+            }); else {
+                csv += `"${p.category}";"${p.name}";"${p.url||''}";"Нет";0\n`;
             }
-            const vars = pid ? extractVariants(html, pid) : [];
-            out += `[${i}] ${name}\n  PID: ${pid || 'NONE'} | Variants: ${vars.length}\n`;
-            vars.forEach(v => out += `    → ${v.name}: ${v.price}₽ [${v.suboptions.join(',')}] \n`);
-            out += '\n';
         });
-        dp.textContent = out;
-    } catch(e) { dp.textContent = 'ERROR: ' + e.message; }
+        const b = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'catalog.csv'; a.click();
+        showToast("CSV файл сохранен", "success");
+    } catch (e) { showToast("Ошибка при экспорте CSV", "error"); }
 }
-// Expose for debug button
-window.testOneCategory = testOneCategory;
 </script>
 </body>
 </html>
