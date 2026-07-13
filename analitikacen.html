@@ -29,12 +29,9 @@
         
         .icon { width: 20px; height: 20px; fill: currentColor; }
         .icon-sm { width: 16px; height: 16px; }
-        .icon-lg { width: 24px; height: 24px; }
         
-        /* Layout */
         .sidebar { width: 280px; background: var(--bg-white); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
         .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 18px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
         .theme-toggle { background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
         .theme-toggle:hover { background: var(--bg-main); color: var(--accent); }
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px; }
@@ -70,10 +67,7 @@
         .product-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-4px); }
         .product-card.selected { border-color: var(--accent); background: var(--accent-light); }
         
-        .card-image-wrapper { 
-            width: 100%; height: 180px; background: var(--bg-main); border-radius: 8px; margin-bottom: 16px; 
-            overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; 
-        }
+        .card-image-wrapper { width: 100%; height: 180px; background: var(--bg-main); border-radius: 8px; margin-bottom: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
         .card-image { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s; }
         .product-card:hover .card-image { transform: scale(1.05); }
         
@@ -137,7 +131,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-header">
         <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
@@ -169,9 +162,7 @@
     </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main-content">
-    <!-- Top Bar -->
     <header class="top-bar">
         <div class="search-container">
             <svg class="icon search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -193,7 +184,6 @@
         </div>
     </header>
 
-    <!-- Content -->
     <div class="content-area" id="contentArea">
         <div class="empty-state" id="emptyState">
             <svg class="icon empty-icon" style="width:64px;height:64px" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
@@ -212,7 +202,6 @@
     </div>
 </main>
 
-<!-- Detail Panel -->
 <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
 <div class="detail-panel" id="detailPanel">
     <div class="dp-header">
@@ -231,7 +220,6 @@
     <div class="dp-footer" id="dpFooter"></div>
 </div>
 
-<!-- Progress Toast -->
 <div class="progress-toast" id="progressToast">
     <div class="pt-info">
         <span id="poText">Подготовка...</span>
@@ -240,11 +228,9 @@
     <div class="pt-bar"><div class="pt-fill" id="poFill"></div></div>
 </div>
 
-<!-- Notification Container -->
 <div class="notification-container" id="notificationContainer"></div>
 
 <script>
-/* ===== CONFIG & LOGIC ===== */
 const BASE_URL = 'https://xn--80aaacwajzbdt1dxa.xn--p1ai';
 const CORS_PROXIES = [
     'https://api.allorigins.win/raw?url=',
@@ -279,7 +265,6 @@ let isParsing = false;
 let pauseParsing = false;
 let searchTimeout = null;
 
-// Rate Limiter
 const RATE_LIMIT = {
     maxTokens: 10, tokens: 10, lastRefill: Date.now(),
     canMakeRequest() {
@@ -292,7 +277,6 @@ const RATE_LIMIT = {
     consume() { this.tokens--; }
 };
 
-// Theme Logic
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -313,7 +297,6 @@ function updateThemeIcon(theme) {
 }
 initTheme();
 
-// Toast Notifications
 function showToast(message, type = 'info') {
     const container = document.getElementById('notificationContainer');
     const toast = document.createElement('div');
@@ -341,220 +324,140 @@ async function fetchPage(url) {
     throw new Error('Proxies failed');
 }
 
-// Helper to parse price string safely
 function parsePriceString(str) {
     if (!str) return 0;
-    // Remove everything except digits, dots and commas
-    let clean = str.replace(/[^\d.,]/g, '');
-    // Replace comma with dot
-    clean = clean.replace(',', '.');
-    
-    // Handle cases like "23.000,00" -> "23000.00" or "23000.00"
-    // If there are multiple dots, it's likely thousands separator + decimal
+    let clean = str.replace(/[^\d.,]/g, '').replace(',', '.');
     const parts = clean.split('.');
     if (parts.length > 2) {
-        // e.g. 23.000.00 -> remove all but last dot
         clean = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
     }
-    
     let val = parseFloat(clean);
-    
-    // Fix for "23000.00" being parsed as 23000, but sometimes we get "2300000" if format was weird
-    // Heuristic: if value > 100000 and ends with 00 after dot, it might be kopecks included incorrectly
-    // But usually parseFloat handles "23000.00" correctly as 23000.
-    
-    // Specific fix for the issue seen: "23 000,00" -> "23000.00" -> 23000. Correct.
-    // Issue was likely "23 0 00" -> "23000" -> correct.
-    // Wait, user said 2,300,000. That means input was likely "23 000 00" or similar without decimal point handling.
-    
     return isNaN(val) ? 0 : val;
 }
 
-// --- IMPROVED PARSER ---
+function isValidProductImage(src) {
+    if (!src || !src.includes('/images/')) return false;
+    const filename = src.split('/').pop().split('?')[0].toLowerCase();
+    const blacklist = ['9898', '3433', '576776', 'novinka', 'hit', 'akciya', 'mahagon', 'uspey', 'palitra', 'icon'];
+    if (blacklist.some(b => filename.includes(b))) return false;
+    const nameWithoutExt = filename.split('.')[0];
+    if (/^\d+$/.test(nameWithoutExt) && nameWithoutExt.length < 6) return false;
+    return true;
+}
+
+function resolveUrl(src) {
+    if (!src) return null;
+    if (src.startsWith('http')) return src;
+    const clean = src.startsWith('/') ? src.substring(1) : src;
+    return BASE_URL + '/' + clean;
+}
+
+// === УЛУЧШЕННЫЙ ПАРСЕР ===
 function parseHTML(html, category) {
     const products = [];
     const doc = new DOMParser().parseFromString(html, 'text/html');
     
-    // 1. Get all names (Standard and Quick-view types)
-    const standardNames = Array.from(doc.querySelectorAll('.im-cc-products-name'));
-    const quickViewNames = Array.from(doc.querySelectorAll('b.fs16lh1-5'));
-    const allNameNodes = [...standardNames, ...quickViewNames];
+    // 1. Стандартные карточки товаров (с ID и JS-вариантами)
+    const standardCards = doc.querySelectorAll('.im-cc-products-card');
+    standardCards.forEach(card => {
+        const nameNode = card.querySelector('.im-cc-products-name');
+        if (!nameNode) return;
+        const name = nameNode.textContent.trim();
+        
+        let pid = null;
+        const idMatch = card.id?.match(/product_([a-z0-9]+)/i);
+        if (idMatch) pid = idMatch[1];
+        
+        const img = card.querySelector('.im-cc-products-image');
+        let imageUrl = isValidProductImage(img?.src) ? resolveUrl(img.src) : null;
 
-    // 2. Collect ALL images globally but FILTER out noise strictly
-    const allImages = Array.from(doc.querySelectorAll('img')).filter(img => {
-        const src = img.src || '';
-        // Must be in images folder
-        if (!src.includes('/images/')) return false;
-        
-        const filename = src.split('/').pop().split('?')[0].toLowerCase();
-        
-        // STRICT BLACKLIST based on provided HTML analysis
-        // Logo: 98989999900066.webp
-        // Cart/Sticky: 3433333.webp
-        // Palette: 576776.webp
-        // Banners: novinka, hit, akciya, mahagon, uspey
-        if (filename.startsWith('9898') || filename.startsWith('3433') || 
-            filename.includes('novinka') || filename.includes('hit') || 
-            filename.includes('akciya') || filename.includes('mahagon') || 
-            filename.includes('uspey') || filename === '576776.webp' || filename.includes('palitra')) {
-            return false;
-        }
-        
-        // Additional heuristic: exclude purely numeric filenames that aren't product codes
-        // Product codes usually have letters or specific patterns, pure numbers like 12345.webp are often system icons
-        const nameWithoutExt = filename.split('.')[0];
-        if (/^\d+$/.test(nameWithoutExt) && nameWithoutExt.length < 6) return false;
+        const link = card.querySelector('a[href]');
+        let url = link ? resolveUrl(link.getAttribute('href')) : null;
 
-        return true;
+        let variants = pid ? extractVariants(html, pid) : [];
+        products.push({ name, variants, category, productId: pid, url, image: imageUrl });
     });
 
-    allNameNodes.forEach((nameNode, index) => {
-        const name = nameNode.textContent.trim();
-        if (!name) return;
+    // 2. Текстовые/быстрые блоки товаров (как "Stenle", "Примирения" и т.д.)
+    const textBlocks = doc.querySelectorAll('[id^="imTextObject_"]');
+    textBlocks.forEach(block => {
+        // Пропускаем футер, хедер и уже обработанные стандартные карточки
+        if (block.closest('footer') || block.closest('header') || block.querySelector('.im-cc-products-name')) return;
 
-        // Image Mapping (by index)
+        // Ищем название: теперь ловим и span, и b с классом fs16lh1-5
+        const titleCandidates = block.querySelectorAll('.fs16lh1-5');
+        if (titleCandidates.length === 0) return;
+
+        let name = "";
+        const titleNode = titleCandidates[0];
+        const parent = titleNode.parentElement;
+        
+        // Если название разбито на несколько строк с одинаковым классом, объединяем их
+        const siblingTitles = parent.querySelectorAll('.fs16lh1-5');
+        if (siblingTitles.length > 1 && siblingTitles.length <= 3) {
+            name = Array.from(siblingTitles).map(n => n.textContent.trim()).join(' ').trim();
+        } else {
+            name = titleNode.textContent.trim();
+        }
+
+        // Фильтр мусора (заголовки разделов внутри блока)
+        if (name.length < 5 || /цен|характеристик|внимани|материал|поставляется/i.test(name)) return;
+
+        // Ищем картинку внутри этого же блока
         let imageUrl = null;
-        if (allImages[index]) {
-            let src = allImages[index].getAttribute('src');
-            if (src) {
-                if (!src.startsWith('http')) {
-                    const cleanSrc = src.startsWith('/') ? src.substring(1) : src;
-                    imageUrl = BASE_URL + '/' + cleanSrc;
-                } else {
-                    imageUrl = src;
-                }
-            }
+        const blockImg = block.querySelector('img');
+        if (blockImg && isValidProductImage(blockImg.src)) {
+            imageUrl = resolveUrl(blockImg.src);
         }
 
+        // Ищем варианты и цены внутри этого же блока
         let variants = [];
-        let pid = null;
-        let url = null;
-
-        // CHECK TYPE A: Standard Product (has ID in DOM)
-        let parent = nameNode;
-        for (let i = 0; i < 15 && parent; i++) {
-            const id = parent.getAttribute?.('id') || '';
-            const m = id.match(/product_([a-z0-9]+)/i);
-            if (m) { pid = m[1]; break; }
-            parent = parent.parentElement;
+        const uls = block.querySelectorAll('ul');
+        if (uls.length > 0) {
+            // Цены обычно в последнем списке
+            const targetUl = uls[uls.length - 1];
+            const items = targetUl.querySelectorAll('li');
+            items.forEach(item => {
+                // Берем весь текст, игнорируя разбивку на вложенные span/b
+                const fullText = item.textContent;
+                // Ищем паттерн: цифры, пробелы, точки, запятые, затем валюта
+                const priceMatch = fullText.match(/([\d\s.,]+)\s*[₽RUBруб]/i);
+                if (priceMatch) {
+                    const val = parsePriceString(priceMatch[1]);
+                    if (val > 500) { // Минимальный порог для отсечения мусора
+                        // Убираем цену из текста, чтобы получить чистое название варианта
+                        let vName = fullText.replace(priceMatch[0], '').replace(/[-–:]/g, '').trim();
+                        if (!vName || vName.length < 2) vName = "Основной вариант";
+                        variants.push({ name: vName, price: val, suboptions: [] });
+                    }
+                }
+            });
         }
 
-        if (pid) {
-            // It's a standard product, use regex extraction
-            variants = extractVariants(html, pid);
-            
-            // Find URL for standard product
-            parent = nameNode;
-            for (let i = 0; i < 15 && parent; i++) {
-                if (parent.tagName === 'A' && parent.getAttribute('href')) {
-                    let h = parent.getAttribute('href');
-                    if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
-                    url = h; break;
-                }
-                const link = parent.querySelector?.('a[href]');
-                if (link) {
-                    let h = link.getAttribute('href');
-                    if (h && !h.startsWith('javascript')) {
-                        if (h.startsWith('/')) h = BASE_URL + h; else if (!h.startsWith('http')) h = BASE_URL + '/' + h;
-                        url = h; break;
-                    }
-                }
-                parent = parent.parentElement;
-            }
-        } 
-        // CHECK TYPE B: Quick View / Simple Product (No ID)
-        else {
-            // Strategy 1: Look for variants in <li> list (like "Azalia")
-            let listContainer = nameNode.closest('ul');
-            if (listContainer) {
-                const items = listContainer.querySelectorAll('li');
-                items.forEach(item => {
-                    // Look for price in <b> tags inside LI specifically
-                    const bolds = item.querySelectorAll('b');
-                    let foundPrice = 0;
-                    
-                    bolds.forEach(b => {
-                        const txt = b.textContent.trim();
-                        // Only consider it a price if it looks like money (has digits and maybe currency symbol nearby)
-                        // Or just pure number logic
-                        const val = parsePriceString(txt);
-                        if (val > 100) foundPrice = val; // Threshold to avoid catching dimensions
-                    });
-
-                    if (foundPrice > 0) {
-                        let vName = item.textContent.replace(/\d+[.,]?\d*/g, '').replace(/[₽руб]/gi, '').trim();
-                        vName = vName.replace(/^[-–\s]+|[-–\s]+$/g, '');
-                        if (!vName || vName.length < 2) vName = `Вариант ${variants.length + 1}`;
-                        variants.push({ name: vName, price: foundPrice, suboptions: [] });
-                    }
-                });
-            }
-
-            // Strategy 2: If no list, look for immediate sibling price (like "Zvezda" or "Skamya primireniya")
-            if (variants.length === 0) {
-                // Find the closest container that holds the description and prices
-                // Usually it's a div with class "text-inner" or similar, but let's go up to the cell
-                const container = nameNode.closest('[id^="imTextObject"]') || nameNode.parentElement;
-                
-                if (container) {
-                    // Look for the "Prices:" section specifically
-                    // The HTML structure is usually: <div>Цены:</div><ul><li>...price...</li></ul>
-                    // We need to find the <ul> that comes AFTER the text "Цены"
-                    
-                    const allUls = container.querySelectorAll('ul');
-                    let targetUl = null;
-                    
-                    // Simple heuristic: take the last <ul> in the container, as prices are usually at the bottom
-                    if (allUls.length > 0) {
-                        targetUl = allUls[allUls.length - 1];
-                    }
-
-                    if (targetUl) {
-                        const items = targetUl.querySelectorAll('li');
-                        items.forEach(item => {
-                            // Get FULL text content of the LI, including all nested spans/bolds
-                            // This fixes the issue where "23 0" and "0" and "0" are in separate tags
-                            const fullText = item.textContent;
-                            
-                            // Extract price from full text
-                            // Pattern: digits, spaces, dots, commas followed by currency or end of string
-                            const priceMatch = fullText.match(/([\d\s.,]+)\s*[₽RUB]/i);
-                            
-                            if (priceMatch) {
-                                const val = parsePriceString(priceMatch[1]);
-                                if (val > 1000) { // Threshold for benches
-                                    variants.push({ name: 'Цена', price: val, suboptions: [] });
-                                }
-                            }
-                        });
+        // Fallback: если в UL не нашли, ищем цену в ближайших bold-элементах
+        if (variants.length === 0) {
+            const priceNodes = block.querySelectorAll('b.fs12lh1-5, span.fs12lh1-5');
+            for (const pNode of priceNodes) {
+                const txt = pNode.textContent;
+                const pMatch = txt.match(/([\d\s.,]+)\s*[₽RUBруб]/i);
+                if (pMatch) {
+                    const val = parsePriceString(pMatch[1]);
+                    if (val > 500) {
+                        variants.push({ name: "Цена", price: val, suboptions: [] });
+                        break;
                     }
                 }
             }
-            
-            // Generate Anchor Link for Quick View items
-            const catUrl = CATEGORIES.find(c => c.name === category)?.url || '';
-            if (catUrl) {
-                const anchor = name.replace(/[^a-zA-Z0-9а-яА-Я]/g, '+');
-                url = `${BASE_URL}/${catUrl}#${anchor}`;
-            }
         }
 
-        // Fallback for variants if nothing found
-        if (variants.length === 0 && !pid) {
-             let pe = null, p = nameNode;
-             for (let i = 0; i < 10 && p; i++) { 
-                 pe = p.querySelector?.('.product_fullprice,.product_price,b.fs12lh1-5'); 
-                 if (pe) break; 
-                 p = p.parentElement; 
-             }
-             if (pe) {
-                 const pm = (pe.textContent.match(/([\d\s]+)/) || [])[1];
-                 const v = pm ? parseInt(pm.replace(/\s/g, '')) : 0;
-                 if (v > 0) variants.push({ name: 'Цена', price: v, suboptions: [] });
-             }
-        }
+        // Генерируем якорную ссылку
+        const catUrl = CATEGORIES.find(c => c.name === category)?.url || '';
+        const url = catUrl ? `${BASE_URL}/${catUrl}#${name.replace(/[^a-zA-Z0-9а-яА-Я]/g, '+')}` : null;
 
-        products.push({ name, variants, category, productId: pid, url, image: imageUrl });
+        // Защита от дубликатов
+        if (!products.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+            products.push({ name, variants, category, productId: null, url, image: imageUrl });
+        }
     });
     
     return products;
@@ -623,7 +526,7 @@ async function toggleParsing() {
         updateProgress(i, CATEGORIES.length, `Загрузка: ${cat.name}`);
         
         if (!RATE_LIMIT.canMakeRequest()) {
-            showToast("Лимит запросов. Пауза 10 сек...", "warning");
+            showToast("Лимит запросов. Пауза 10 сек...", "info");
             await new Promise(r => setTimeout(r, 10000));
         }
         RATE_LIMIT.consume();
