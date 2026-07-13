@@ -660,10 +660,203 @@
             .quote-card { bottom: 100px; padding: 0.8rem 1.5rem; font-size: 0.85rem; }
             .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
         }
+        /* --- Login System Styles --- */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(5, 5, 15, 0.85); /* Темный фон для фокуса */
+    backdrop-filter: blur(40px) saturate(180%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.6s cubic-bezier(0.2, 1, 0.3, 1), visibility 0.6s;
+}
+
+.login-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+[data-theme="light"] .login-overlay {
+    background: rgba(240, 244, 255, 0.85);
+}
+
+.login-card {
+    width: 380px;
+    padding: 2.5rem;
+    background: var(--window-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    opacity: 0.1;
+    pointer-events: none;
+    animation: rotateGlow 10s linear infinite;
+}
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.login-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.login-input:focus {
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent-1);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px var(--glow-color);
+}
+
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.login-error {
+    color: #FF5F56;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.login-error.show {
+    opacity: 1;
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), #2a9d8f);
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #000;
+    box-shadow: 0 0 20px var(--glow-color);
+}
     </style>
 </head>
 <body data-theme="dark">
-
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="user-avatar">
+                <svg viewBox="0 0 24 24" style="width: 40px; height: 40px; fill: currentColor;">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+            <div class="login-header">
+                <h2 id="greetingText">Добро пожаловать</h2>
+                <p>Введите ключ доступа для продолжения</p>
+            </div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Идентификатор</label>
+                    <input type="text" class="login-input" id="usernameInput" placeholder="Введие логин" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Ключ доступа</label>
+                    <input type="password" class="login-input" id="passwordInput" placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span id="btnText">Разблокировать систему</span>
+                </button>
+                <div class="login-error" id="loginError">Неверные данные доступа</div>
+            </form>
+        </div>
+    </div>
     <div class="background-layer" id="backgroundLayer"></div>
     <div class="noise-overlay"></div>
     <canvas id="particle-canvas"></canvas>
@@ -1515,6 +1708,114 @@
                 requestAnimationFrame(animate);
             }
             animate();
+        }
+        async function hashString(str) {
+            const msgBuffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        const VALID_USER_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
+        const VALID_PASS_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
+
+        let loginAttempts = 0;
+        let isLocked = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            updateGreeting();
+            setInterval(updateGreeting, 60000);
+        });
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('greetingText');
+            if (!greetingEl) return;
+            
+            let text = "Добро пожаловать";
+            if (hour >= 5 && hour < 12) text = "Доброе утро";
+            else if (hour >= 12 && hour < 18) text = "Добрый день";
+            else if (hour >= 18 && hour < 23) text = "Добрый вечер";
+            else text = "Доброй ночи";
+            
+            greetingEl.textContent = text;
+        }
+
+        function checkSession() {
+            const session = localStorage.getItem('os_session');
+            if (session) {
+                const data = JSON.parse(session);
+                const now = new Date().getTime();
+                if (now - data.timestamp < 86400000) {
+                    unlockSystem();
+                } else {
+                    localStorage.removeItem('os_session');
+                }
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            if (isLocked) return;
+
+            const userIn = document.getElementById('usernameInput').value;
+            const passIn = document.getElementById('passwordInput').value;
+            const errorEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+
+            btnText.textContent = "Проверка...";
+            btn.style.opacity = "0.7";
+            
+            await new Promise(r => setTimeout(r, 600));
+
+            const userHash = await hashString(userIn);
+            const passHash = await hashString(passIn);
+
+            if (userHash === VALID_USER_HASH && passHash === VALID_PASS_HASH) {
+                playSound('open');
+                createSession();
+                unlockSystem();
+            } else {
+                loginAttempts++;
+                playSound('close');
+                errorEl.classList.add('show');
+                btnText.textContent = "Разблокировать систему";
+                btn.style.opacity = "1";
+                
+                if (loginAttempts >= 3) {
+                    isLocked = true;
+                    btnText.textContent = "Система заблокирована (30с)";
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        isLocked = false;
+                        btn.disabled = false;
+                        btnText.textContent = "Разблокировать систему";
+                        loginAttempts = 0;
+                    }, 30000);
+                }
+                
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+            }
+        }
+
+        function createSession() {
+            const sessionData = {
+                user: 'Assortea',
+                timestamp: new Date().getTime(),
+                token: Math.random().toString(36).substring(2)
+            };
+            localStorage.setItem('os_session', JSON.stringify(sessionData));
+        }
+
+        function unlockSystem() {
+            const overlay = document.getElementById('loginOverlay');
+            overlay.classList.add('hidden');
+            if (particlesEnabled) initParticles();
+        }
+        function logout() {
+            localStorage.removeItem('os_session');
+            location.reload();
         }
     </script>
 </body>
