@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Конструктор палитр</title>
+  <title>Конструктор палитр (RAL Edition)</title>
   <style>
     * {
       box-sizing: border-box;
@@ -1256,10 +1256,28 @@
 
   <div class="app-layout">
     <div class="control-panel">
+      
+      <!-- Новая секция импорта -->
+      <div class="control-section">
+        <div class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          Импорт (RAL / HEX)
+        </div>
+        <div class="input-group">
+          <label>Массовый ввод (через запятую)</label>
+          <div class="input-row">
+            <input type="text" id="ralInput" placeholder="Например: RAL 3020, RAL 1003, #FF5733">
+            <button class="btn btn-primary" id="importRalBtn" style="flex:0;">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="control-section">
         <div class="section-title">
           <svg class="icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-          Добавить цвет
+          Добавить вручную
         </div>
         <div class="input-group">
           <label>Название</label>
@@ -1500,14 +1518,18 @@
     <div class="modal-body">
       <h3>🎨 Быстрый старт</h3>
       <ol>
-        <li><strong>Добавьте цвет</strong> — введите название, выберите цвет и нажмите «Добавить» или Enter</li>
-        <li><strong>Настройте внешний вид</strong> — выберите форму элементов и hover-эффект</li>
-        <li><strong>Измените размер</strong> — используйте слайдеры для размера и отступов</li>
-        <li><strong>Скопируйте код</strong> — нажмите «Скопировать» и вставьте на свой сайт</li>
+        <li><strong>Импорт RAL/HEX</strong> — введите коды через запятую (например: <code>RAL 3020, RAL 1003</code>) и нажмите кнопку загрузки.</li>
+        <li><strong>Ручной ввод</strong> — выберите цвет в пикере, дайте название и нажмите «Добавить».</li>
+        <li><strong>Настройка</strong> — меняйте форму, размер и анимацию при наведении.</li>
+        <li><strong>Экспорт</strong> — скопируйте готовый HTML/CSS код для вставки на сайт.</li>
       </ol>
 
       <h3>✨ Возможности</h3>
       <div class="feature-grid">
+        <div class="feature-item">
+          <strong>🔢 RAL Парсер</strong>
+          <span>Автоматическая конвертация RAL кодов в HEX цвета</span>
+        </div>
         <div class="feature-item">
           <strong>🎯 Drag-and-drop</strong>
           <span>Перетаскивайте цвета для изменения порядка</span>
@@ -1521,10 +1543,6 @@
           <span>Все изменения сохраняются в браузере</span>
         </div>
         <div class="feature-item">
-          <strong>📱 Адаптивность</strong>
-          <span>Превью на мобильных, планшетах и десктопе</span>
-        </div>
-        <div class="feature-item">
           <strong>🔷 8 форм элементов</strong>
           <span>Круг, квадрат, ромб, звезда, сердце и другие</span>
         </div>
@@ -1536,7 +1554,7 @@
 
       <h3>⌨️ Горячие клавиши</h3>
       <div class="shortcuts">
-        <p><kbd>Enter</kbd> — добавить цвет</p>
+        <p><kbd>Enter</kbd> — добавить цвет из поля ввода</p>
         <p><kbd>Ctrl+Z</kbd> — отменить действие</p>
         <p><kbd>Ctrl+Y</kbd> — вернуть действие</p>
         <p><kbd>Ctrl+Shift+Z</kbd> — вернуть действие (альтернатива)</p>
@@ -1544,7 +1562,6 @@
 
       <h3>📦 Экспорт</h3>
       <p>При копировании вы получаете полностью изолированный HTML-код внутри класса <code>.custom-section</code>. Это гарантирует, что стили палитры не пересекутся с другими стилями на вашем сайте.</p>
-      <p style="margin-top:8px;">Код включает все настройки: размер, отступы, форму элементов и hover-эффекты.</p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary" id="startBtn">Начать работу 🚀</button>
@@ -1554,6 +1571,70 @@
 
 <script>
   (function() {
+    // База данных RAL Classic (основные цвета)
+    const ralDatabase = {
+      "1000": "#BEBD7F", "1001": "#C2B078", "1002": "#C6A664", "1003": "#E5BE01", 
+      "1004": "#CDA009", "1005": "#A98307", "1006": "#E4A010", "1007": "#DC9D00",
+      "1011": "#8F763C", "1012": "#C7B446", "1013": "#EAE6CA", "1014": "#E1CC4F",
+      "1015": "#E6D690", "1016": "#EDFF21", "1017": "#FDDA0D", "1018": "#F8F32B",
+      "1019": "#9E9764", "1020": "#797350", "1021": "#F3DA0B", "1023": "#FAD201",
+      "1024": "#BA8F4C", "1026": "#FFEF00", "1027": "#A4912D", "1028": "#FFCC00",
+      "1032": "#E5A600", "1033": "#F99B19", "1034": "#F19C1A", "1035": "#8C784B",
+      "1036": "#6E5A3B", "1037": "#F68D2B",
+      
+      "2000": "#ED760E", "2001": "#BE4D25", "2002": "#CB2821", "2003": "#D3512E",
+      "2004": "#E64C17", "2005": "#FF2301", "2007": "#FFA420", "2008": "#F75E25",
+      "2009": "#F74E1E", "2010": "#D64527", "2011": "#EC7626", "2012": "#E95C4B",
+      
+      "3000": "#AB2524", "3001": "#A52019", "3002": "#9B111E", "3003": "#881518",
+      "3004": "#6D1E23", "3005": "#5E2129", "3007": "#4E232C", "3009": "#642424",
+      "3011": "#781F19", "3012": "#C1876B", "3013": "#9F2B27", "3014": "#E25D41",
+      "3015": "#EA899A", "3016": "#B32821", "3017": "#DE4454", "3018": "#E5325B",
+      "3020": "#CC0605", "3022": "#D94F43", "3024": "#F80000", "3026": "#FE0000",
+      "3027": "#C51D34", "3028": "#D50032", "3031": "#B32428", "3032": "#9E162E",
+      
+      "4001": "#6C4675", "4002": "#982E62", "4003": "#AC287E", "4004": "#6B1D3D",
+      "4005": "#7C4B82", "4006": "#924E7D", "4007": "#4A192C", "4008": "#803A5E",
+      "4009": "#9F4D68", "4010": "#D63C76",
+      
+      "5000": "#2B3467", "5001": "#1F345B", "5002": "#20214F", "5003": "#1D243F",
+      "5004": "#18171C", "5005": "#1E2460", "5007": "#3E5F8A", "5008": "#26252D",
+      "5009": "#025669", "5010": "#0E294B", "5011": "#231A24", "5012": "#3B83BD",
+      "5013": "#1E213D", "5014": "#222E48", "5015": "#26619C", "5017": "#063971",
+      "5018": "#0A7BA7", "5019": "#1B5583", "5020": "#1D334A", "5021": "#256D7B",
+      "5022": "#252850", "5023": "#4D5A7D", "5024": "#5D9B9B",
+      
+      "6000": "#316650", "6001": "#287233", "6002": "#2D572C", "6003": "#4A403A",
+      "6004": "#1F3A3D", "6005": "#2F4538", "6006": "#3E3B32", "6007": "#343B29",
+      "6008": "#39352A", "6009": "#303528", "6010": "#35682D", "6011": "#696848",
+      "6012": "#394039", "6013": "#48493D", "6014": "#47402E", "6015": "#3B3C36",
+      "6016": "#0D5C35", "6017": "#4C9141", "6018": "#57A639", "6019": "#BDECB6",
+      "6020": "#2E3A23", "6021": "#89AC76", "6022": "#25221B", "6024": "#008F39",
+      "6025": "#3D642D", "6026": "#015D52", "6027": "#84C3BE", "6028": "#2C5545",
+      "6029": "#007243", "6032": "#308446", "6033": "#497E76", "6034": "#7FB5B5",
+      
+      "7000": "#78858B", "7001": "#8F9599", "7002": "#8B8665", "7003": "#7F7665",
+      "7004": "#9E9E9E", "7005": "#6C7059", "7006": "#756C5F", "7008": "#695F48",
+      "7009": "#4D5645", "7010": "#4C514A", "7011": "#404A4C", "7012": "#575D57",
+      "7013": "#494C40", "7015": "#4E5154", "7016": "#293133", "7021": "#2F353B",
+      "7022": "#4B4D46", "7023": "#828977", "7024": "#44474A", "7026": "#373F43",
+      "7030": "#91958A", "7031": "#5D6970", "7032": "#B9BBA1", "7033": "#7D8471",
+      "7034": "#8B8878", "7035": "#D7D7D7", "7036": "#7F7679", "7037": "#7D7F7D",
+      "7038": "#B7B7B7", "7039": "#6F6C5D", "7040": "#9DA1AA", "7042": "#8D948D",
+      "7043": "#4E5452", "7044": "#CAC4B0", "7045": "#909090", "7046": "#82898F",
+      "7047": "#D0D0D0", "7048": "#969992",
+      
+      "8001": "#955F20", "8002": "#775641", "8003": "#6D4326", "8004": "#8E402A",
+      "8007": "#59351F", "8008": "#6F4F28", "8011": "#593521", "8012": "#592321",
+      "8014": "#382C1E", "8015": "#633A34", "8016": "#4C2F27", "8017": "#45322E",
+      "8019": "#413A3A", "8022": "#212121", "8023": "#A65E2E", "8024": "#79553D",
+      "8025": "#72563A", "8028": "#4E3731",
+      
+      "9001": "#FDF4E3", "9002": "#E7EBDA", "9003": "#F4F4F4", "9004": "#282828",
+      "9005": "#0A0A0A", "9006": "#A5A5A5", "9007": "#8F8F8F", "9010": "#FFFFFF",
+      "9011": "#1C1C1C", "9016": "#FFFFFF", "9017": "#1E1E1E", "9018": "#D7D7D7"
+    };
+
     let colors = [
       { name: 'Лаванда', hex: '#8b5cf6' },
       { name: 'Морская волна', hex: '#0ea5e9' },
@@ -1599,6 +1680,10 @@
     const helpModal = document.getElementById('helpModal');
     const closeHelpBtn = document.getElementById('closeHelpBtn');
     const startBtn = document.getElementById('startBtn');
+    
+    // Элементы для RAL импорта
+    const ralInput = document.getElementById('ralInput');
+    const importRalBtn = document.getElementById('importRalBtn');
 
     function showHelp() {
       helpModal.classList.add('active');
@@ -2199,6 +2284,50 @@
       colorNameInput.focus();
     }
 
+    // Функция импорта RAL и HEX
+    function importColorsFromText() {
+      const text = ralInput.value;
+      if (!text.trim()) return;
+
+      const parts = text.split(/[,;\n]+/);
+      let addedCount = 0;
+
+      parts.forEach(part => {
+        let cleanPart = part.trim();
+        if (!cleanPart) return;
+
+        let hex = null;
+        let name = cleanPart;
+
+        // Проверка на RAL формат (RAL 3020 или RAL3020)
+        const ralMatch = cleanPart.match(/RAL\s?(\d{4})/i);
+        if (ralMatch) {
+          const code = ralMatch[1];
+          if (ralDatabase[code]) {
+            hex = ralDatabase[code];
+            name = `RAL ${code}`;
+          }
+        } 
+        // Проверка на HEX формат
+        else if (cleanPart.startsWith('#') && (cleanPart.length === 4 || cleanPart.length === 7)) {
+          hex = cleanPart;
+        }
+
+        if (hex) {
+          colors.push({ name: name, hex: hex });
+          addedCount++;
+        }
+      });
+
+      if (addedCount > 0) {
+        renderAll();
+        saveState();
+        ralInput.value = '';
+      } else {
+        alert('Не удалось распознать цвета. Попробуйте формат: RAL 3020, #FF0000');
+      }
+    }
+
     function clearAll() {
       if (colors.length && !confirm('Удалить все цвета?')) return;
       colors = [];
@@ -2309,6 +2438,12 @@
     exportAndCopyBtn.addEventListener('click', copyExportCode);
     undoBtn.addEventListener('click', undo);
     redoBtn.addEventListener('click', redo);
+    
+    // Обработчики для импорта
+    importRalBtn.addEventListener('click', importColorsFromText);
+    ralInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') importColorsFromText();
+    });
 
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
