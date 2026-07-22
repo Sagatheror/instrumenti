@@ -3,2661 +3,637 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- Шрифты Google -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
-<!-- Иконки Font Awesome 6 -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
 <style>
   :root {
-    --bg-color: #f0f2f5;
-    --text-color: #222;
-    --section-bg: #fff;
-    --border-color: #d0d0d0;
-    --primary-gradient: linear-gradient(135deg, #4CAF50, #66bb6a);
-    --hover-gradient: linear-gradient(135deg, #45a049, #5fa362);
-    --shadow: rgba(0,0,0,0.1);
+    --bg-main: #f4f7f5; 
+    --surface: #ffffff;
+    --primary: #4a7c59;
+    --primary-hover: #3d664a;
+    --secondary: #d4a373;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --border-soft: #e0e6e3;
+    --shadow-soft: 0 10px 40px -10px rgba(74, 124, 89, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --blur: blur(20px);
+    --trans-speed: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --scroll-track: #f4f7f5;
+    --scroll-thumb: #c5d1c9;
+    --scroll-thumb-hover: #4a7c59;
   }
+
+  body.dark-theme {
+    --bg-main: #1e2220;
+    --surface: #2d3330;
+    --primary: #66bb6a;
+    --primary-hover: #4caf50;
+    --secondary: #bcaaa4;
+    --text-main: #eceff1;
+    --text-muted: #b0bec5;
+    --border-soft: #38403b;
+    --glass-bg: rgba(45, 51, 48, 0.9);
+    --scroll-track: #1e2220;
+    --scroll-thumb: #38403b;
+    --scroll-thumb-hover: #66bb6a;
+  }
+
   body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
-    padding: 30px;
-    background: var(--bg-color);
-    color: var(--text-color);
-    transition: background 0.5s, color 0.5s;
-    line-height: 1.6;
-  }
- /* Тёмная тема */
-  body.dark-theme {
-  --bg-color: #1a1a1a;
-  --text-color: #e0e0e0;
-  --section-bg: #2d2d2d;
-  --border-color: #404040;
-  --primary-gradient: linear-gradient(135deg, #66bb6a, #4CAF50);
-  --hover-gradient: linear-gradient(135deg, #5fa362, #45a049);
-  --shadow: rgba(0,0,0,0.4);
-  --editor-bg: #333;
-  --editor-text: #e0e0e0;
-  --editor-border: #555;
-  --toolbar-bg: #3a3a3a;
-  --toolbar-border: #444;
-  --toolbar-hover: #4a4a4a;
-}
-/* Стили для переключателя темы в тёмной теме */
-body.dark-theme .custom-theme-switcher {
-  color: #e0e0e0;
-}
-/* Стили для редакторов в тёмной теме */
-body.dark-theme .ql-editor {
-  background: var(--editor-bg);
-  color: var(--editor-text);
-}
-body.dark-theme .ql-toolbar {
-  background: var(--toolbar-bg);
-  border-color: var(--toolbar-border) !important;
-}
-body.dark-theme .ql-container {
-  border-color: var(--editor-border) !important;
-  background: var(--editor-bg);
-}
-body.dark-theme .ql-snow .ql-stroke {
-  stroke: var(--text-color) !important;
-}
-body.dark-theme .ql-snow .ql-fill {
-  fill: var(--text-color) !important;
-}
-body.dark-theme .ql-snow.ql-toolbar button:hover,
-body.dark-theme .ql-snow .ql-toolbar button:hover {
-  background: var(--toolbar-hover) !important;
-}
-body.dark-theme .ql-snow .ql-picker {
-  color: var(--text-color) !important;
-}
-body.dark-theme .ql-snow .ql-picker-options {
-  background: var(--toolbar-bg);
-  color: var(--text-color);
-}
-/* Стиль для кнопки инструкции */
-.instruction-btn {
-  position: fixed;
-  top: 10px;
-  left: 75px;
-  z-index: 999;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  color: #fff;
-  background-color: #f44336 !important;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: background-color 0.3s, transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.instruction-btn::before {
-  content: "\f059";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-/* Стиль для кнопки "Назад" вверху */
-.back-btn-top {
-   width: 40px;
-  height: 40px;
-  position: fixed;
-  top: 80px; /* под переключателем темы */
-  left: 20px;
-   z-index: 999;
-  padding: 10px 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-  background-color: #ff5722;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: background-color 0.3s, transform 0.2s;
-  display: none;
-  align-items: center;
-  gap: 8px;
-}
-.back-btn-top:hover {
-  background-color: #e64a19;
-  transform: translateY(-2px);
-}
-/* Подсказка при наведении (сокращенная) */
-.back-btn-top:hover::before {
-  content: "На главную";
-  position: absolute;
-  bottom: -35px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  z-index: 1000;
-}
-/* Контейнеры для редакторов */
-.editor-block {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: var(--section-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-.list-block {
-  margin-bottom: 25px;
-  padding: 15px;
-  background: var(--section-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-
-  /* Переключатель темы */
-  .theme-switcher {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.8s ease, color 0.8s ease;
+    min-height: 100vh;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
-    z-index: 999;
-    font-size: 14px;
-    background: var(--section-bg);
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    overflow-x: hidden;
   }
-  .theme-switcher input[type="checkbox"] {
-    width: 50px;
-    height: 25px;
-    appearance: none;
-    background: #c6c6c6;
-    outline: none;
-    border-radius: 25px;
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--scroll-track); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; border: 2px solid var(--scroll-track); transition: background 0.3s; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+  * { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) var(--scroll-track); }
+
+  .ambient-blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.4; transition: all 1s ease; }
+  .blob-1 { width: 600px; height: 600px; background: var(--primary); top: -100px; left: -100px; opacity: 0.1; }
+  .blob-2 { width: 500px; height: 500px; background: var(--secondary); bottom: -50px; right: -50px; opacity: 0.08; }
+
+  .organic-container {
+    width: 95%; max-width: 1200px; height: 90vh;
+    background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+    border-radius: 40px; box-shadow: var(--shadow-soft); border: 1px solid rgba(255,255,255,0.3);
+    display: grid; grid-template-columns: 280px 1fr; overflow: hidden; position: relative; transition: var(--trans-speed);
+  }
+
+  .sidebar {
+    padding: 40px 25px; background: rgba(255,255,255,0.03); border-right: 1px solid var(--border-soft);
+    display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2;
+  }
+
+  .nav-item {
+    padding: 16px 20px; border-radius: 20px; cursor: pointer; transition: var(--trans-speed);
+    font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 15px;
+    font-size: 15px; position: relative; overflow: hidden;
+  }
+  .nav-item:hover { background: rgba(74, 124, 89, 0.08); color: var(--primary); transform: translateX(5px); }
+  .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .nav-item.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--primary); border-radius: 0 4px 4px 0; }
+
+  .workspace { padding: 40px 50px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+  .ws-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+  h1 { font-size: 32px; font-weight: 700; margin: 0; color: var(--text-main); }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin-top: 5px; }
+
+  .tool-section { display: none; animation: fadeIn 0.5s ease; }
+  .tool-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .editor-block, .list-block {
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: 24px;
+    padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: var(--trans-speed);
+  }
+  .editor-block:hover { box-shadow: var(--shadow-soft); border-color: var(--primary); }
+
+  label { display: block; font-weight: 600; margin-bottom: 12px; color: var(--text-main); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  input[type="text"], textarea, select, input[type="number"] {
+    width: 100%; padding: 16px; border-radius: 16px; border: 2px solid var(--border-soft);
+    background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif;
+    font-size: 15px; transition: var(--trans-speed); box-sizing: border-box;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.1); }
+
+  .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid var(--border-soft) !important; border-radius: 24px 24px 0 0 !important; background: var(--surface); padding: 12px !important; }
+  .ql-container.ql-snow { border: 1px solid var(--border-soft) !important; border-top: none !important; border-radius: 0 0 24px 24px !important; background: var(--bg-main); font-family: 'Montserrat', sans-serif; font-size: 15px; }
+  .ql-editor { min-height: 150px; padding: 20px; }
+  body.dark-theme .ql-toolbar.ql-snow .ql-stroke { stroke: var(--text-muted); }
+  body.dark-theme .ql-container { color: var(--text-main); }
+  body.dark-theme .ql-editor.ql-blank::before { color: var(--text-muted); }
+
+  button {
+    padding: 16px 32px; font-size: 16px; font-weight: 600; border: none; border-radius: 30px;
+    cursor: pointer; background: var(--primary); color: #fff; box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+    transition: var(--trans-speed); display: inline-flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif;
     position: relative;
-    transition: background 0.3s;
-    cursor: pointer;
   }
-  .theme-switcher input[type="checkbox"]:checked {
-    background: #66bb6a;
+  button:hover { background: var(--primary-hover); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(74, 124, 89, 0.4); }
+  
+  button.secondary { background: transparent; border: 2px solid var(--border-soft); color: var(--text-muted); box-shadow: none; padding: 12px 20px; font-size: 14px; }
+  button.secondary:hover { border-color: var(--primary); color: var(--primary); background: rgba(74, 124, 89, 0.05); transform: translateY(-2px); }
+
+  button.copy-btn-animate.copied {
+    background: #2e7d32 !important;
+    transform: scale(0.95);
+    pointer-events: none;
   }
-  .theme-switcher input[type="checkbox"]::before {
-    content: "";
+  button.copy-btn-animate.copied i { display: none; }
+  button.copy-btn-animate.copied::after {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+
+  #tableContainer { margin-top: 20px; overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-soft); background: var(--surface); transition: background 0.3s; }
+  th { background: var(--primary); color: white; padding: 16px; font-weight: 600; text-align: left; }
+  td { padding: 16px; border-bottom: 1px solid var(--border-soft); color: var(--text-main); background: var(--surface); min-height: 24px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  #interactiveTable tbody tr:nth-child(even) { background-color: rgba(74, 124, 89, 0.03); }
+  #interactiveTable tbody tr:hover { background-color: rgba(74, 124, 89, 0.08); }
+  td.selected { background: rgba(74, 124, 89, 0.1) !important; outline: 2px solid var(--primary); }
+
+  .theme-switcher {
+    background: var(--surface); padding: 8px 16px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid var(--border-soft); transition: var(--trans-speed);
+  }
+  .theme-switcher:hover { transform: scale(1.05); }
+
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+  .modal.active { display: flex; }
+  .modal-content {
+    background: var(--surface); padding: 40px; border-radius: 30px; width: 90%; max-width: 600px;
+    box-shadow: var(--shadow-soft); position: relative; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 80vh; overflow-y: auto;
+  }
+  @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 0; box-shadow: none; }
+  .modal-close:hover { color: var(--primary); transform: none; background: none; box-shadow: none; }
+
+  #notification {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--primary); color: white; padding: 15px 30px; border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(74, 124, 89, 0.4); font-weight: 600; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000;
+  }
+  #notification.show { transform: translateX(-50%) translateY(0); }
+
+  #infoPreview { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px dashed var(--primary); display: flex; align-items: center; justify-content: center; min-height: 60px; }
+  #previewText { font-size: 20px; font-weight: 700; color: #d84315; text-align: center; }
+  .preview-wrapper { display: none; margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px dashed var(--primary); }
+
+  .tooltip {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 21px;
-    height: 21px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: 0.3s;
+    background: var(--text-main);
+    color: var(--surface);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 100;
+    white-space: nowrap;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
   }
-  input[type="checkbox"]:checked::before {
-    transform: translateX(25px);
+  .has-tooltip:hover .tooltip { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .organic-container { grid-template-columns: 1fr; height: auto; min-height: 100vh; border-radius: 0; }
+    .sidebar { display: none; } 
+    .workspace { padding: 20px; }
+    .ws-header { flex-direction: column; align-items: flex-start; gap: 15px; }
   }
-
-  h1 {
-     margin-top: 50px;
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 36px;
-    font-weight: 600;
-    color: var(--text-color);
-  }
-  /* Блок выбора */
-.select-container {
-  max-width: 600px;
-  margin: 0 auto 40px auto;
-  background: var(--section-bg);
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 16px 32px var(--shadow);
-  transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
-}
-.select-container:hover {
-  box-shadow: 0 20px 40px var(--shadow);
-  transform: translateY(-4px);
-}
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-select {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-select:focus {
-  border-color: #4CAF50;
-  box-shadow: 0 0 12px rgba(76, 175, 80, 0.2);
-  outline: none;
-}
-
-/* Скрытые разделы инструментов */
-.tools {
-  display: none;
-  max-width: 700px;
-  margin: 0 auto;
-}
-.tool-section {
-  display: none;
-  background: var(--section-bg);
-  padding: 20px;
-  margin-bottom: 30px;
-  border-radius: 16px;
-  box-shadow: 0 16px 32px var(--shadow);
-}
-h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text-color);
-  display: flex;
-  align-items: center;
-}
-h2 i {
-  margin-right: 10px;
-  font-size: 24px;
-  color: #4CAF50;
-}
-label {
-  display: block;
-  margin-bottom: 15px;
-  font-weight: 500;
-}
-input[type="text"], textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  font-size: 16px;
-}
-input[type="text"]:focus, textarea:focus {
-  border-color: #4CAF50;
-  box-shadow: 0 0 12px rgba(76, 175, 80, 0.2);
-  outline: none;
-}
-
-/* Кнопки */
-button {
-  padding: 14px 30px;
-  font-size: 17px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  background: var(--primary-gradient);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  font-weight: 600;
-}
-button:hover {
-  background: var(--hover-gradient);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-}
-button i {
-  margin-right: 12px;
-  font-size: 20px;
-}
-
-/* Таблица */
-#tableContainer {
-  margin-top: 40px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-  background: #fff;
-  transition: background 0.3s, box-shadow 0.3s;
-}
-body.dark-theme table {
-  background: #444;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
-thead {
-  background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
-}
-body.dark-theme thead {
-  background: linear-gradient(135deg, #555, #333);
-}
-th, td {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 16px;
-}
-td.editable {
-  background-color: #fff8dc;
-  cursor: text;
-}
-body.dark-theme td.editable {
-  background-color: #777;
-}
-td:hover {
-  background-color: #f0f0f0;
-}
-body.dark-theme td:hover {
-  background-color: #666;
-}
-
-/* Кнопка сохранения */
-#saveBtn {
-  display: block;
-  margin: 30px auto;
-}
-
-/* Модальное окно */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-}
-.modal.active {
-  display: flex;
-}
-.modal-content {
-  background: var(--section-bg);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80%;
-  overflow-y: auto;
-  border: 1px solid var(--border-color);
-  position: relative;
-}
-.modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: var(--text-color);
-  cursor: pointer;
-}
-.modal-header {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: var(--text-color);
-}
-.modal-body {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-color);
-}
-
-/* Футер */
-#footer {
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
-  text-align: center;
-  font-family: 'Arial', sans-serif;
-  font-size: 14px;
-  color: var(--text-color);
-  padding: 12px 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 16px 16px 0 0;
-}
-
-/* Уведомление */
-#notification {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #4CAF50;
-  color: #fff;
-  padding: 15px 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  font-size: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-#notification.show {
-  opacity: 1;
-}
-
-/* Блок информационной плашки */
-#infoBoxContainer {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background: var(--section-bg);
-  border-radius: 16px;
-  box-shadow: 0 16px 32px var(--shadow);
-  display: none;
-}
-#infoBoxContainer.active {
-  display: block;
-}
-#infoPreview {
-  margin-top: 20px;
-  padding: 10px;
-  background: var(--section-bg);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  min-height: 40px;
-  width: 100%;
-}
-#previewText {
-  font-size: 20px;
-  font-weight: 700;
-  color: #d84315;
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-wrap;
-  width: 100%;
-  min-height: 40px;
-}
-
-/* Остальные стили без изменений */
-
-.warning {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #fff0f5, #ffe0ec);
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-.warning:hover {
-  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
-  background: linear-gradient(135deg, #ffe0ec, #fff0f5);
-}
-.warning-text {
-  font-size: 25px;
-  font-weight: 700;
-  color: #d84315;
-}
-
-/* Медиазапрос для мобильных устройств */
-@media(max-width:600px) {
-  .warning {
-    align-items: center;
-  }
-  .warning-text {
-    font-size: 20px !important;
-  }
-}
-
-/* Стиль для иконки-инфо с высоким z-index */
-#infoIcon {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  cursor: pointer;
-  background: #4CAF50;
-  color: #fff;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  font-size: 24px;
-  display: none;
-}
-#tooltip {
-  position: absolute;
-  padding: 8px 12px;
-  background: #333;
-  color: #fff;
-  border-radius: 8px;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  display: none;
-  z-index: 10000;
-  max-width: 300px;
-  word-wrap: break-word;
-}
-
-/* Добавлены стили для иконок Yes и No */
-.copied-table td.icon-yes {
-  text-align: center;
-}
-.copied-table td.icon-no {
-  text-align: center;
-}
-.icon-yes {
-  color: green;
-  font-size: 22px;
-}
-.icon-no {
-  color: red;
-  font-size: 22px;
-}
-/* Стили для контейнера маркированного списка */
-#listContainer {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 20px;
-  background: var(--section-bg);
-  border-radius: 16px;
-  box-shadow: 0 16px 32px var(--shadow);
-}
-.list-block {
-  margin-bottom: 25px;
-  padding: 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-}
-.list-block-header {
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 18px;
-}
-/* Стили для блока подсказок */
-#styleHints {
-  margin-top: 20px;
-  padding: 15px;
-  background: var(--section-bg);
-  border-radius: 10px;
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-}
-
-#styleHints h3 {
-  margin-top: 0;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 22px;
-  color: var(--text-color);
-}
-
-#styleHints span {
-  color: #66bb6a;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-#styleHints code {
-  background: var(--bg-color);
-  color: var(--text-color);
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-family: monospace;
-}
-/* Стили для Changelog - обновленные */
-#changelogContainer {
-  display: none;
-  position: fixed;
-  top: 120px;
-  left: 20px;
-  width: 420px;
-  max-height: 500px;
-  overflow-y: auto;
-  background: var(--section-bg);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  z-index: 9999;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-#changelogContainer.show {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-#changelogContainer h4 {
-  margin-top: 0;
-  font-size: 18px;
-  margin-bottom: 15px;
-  font-weight: 600;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 8px;
-  color: var(--text-color);
-}
-
-/* Стиль для каждой записи */
-.changelog-entry {
-  margin-bottom: 10px;
-  padding: 12px 15px;
-  background-color: var(--section-bg);
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: background 0.2s, transform 0.2s;
-}
-
-.changelog-entry:hover {
-  background-color: var(--section-bg);
-  transform: translateY(-2px);
-}
-
-/* Заголовки внутри записи */
-.changelog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.changelog-version {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--text-color);
-}
-
-.changelog-date {
-  font-size: 15px;
-  color: #7f8c8d;
-   margin-left: 1px;  
-}
-
-.changelog-type {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background-color: #3498db;
-}
-
-/* Цвета для типов */
-.changelog-type.Добавлено { background-color: #27ae60; }
-.changelog-type.Исправлено { background-color: #f39c12; }
-.changelog-type.Общее { background-color: #8e44ad; }
-/* Стиль для описания в changelog */
-.changelog-description {
-  margin: 8px 0 0 0;
-  padding-left: 20px;
-  list-style-type: disc;
-}
-
-.changelog-description li {
-  margin-bottom: 4px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--text-color);
-}
-
 </style>
 </head>
 <body>
 
-<h1>Оформление текста</h1>
+<div class="ambient-blob blob-1"></div>
+<div class="ambient-blob blob-2"></div>
 
-<div class="select-container">
-  <label for="formatSelect">Выберите вид оформления:</label>
-  <select id="formatSelect">
-    <option value="">--Выберите--</option>
-    <option value="table">Таблица</option>
-    <option value="infoBox">Информационная плашка</option>
-    <option value="blocks">Блоки описаний</option>
-    <option value="list">Описание с маркированным списком</option>
-  </select>
-</div>
-
-<div class="tools">
-
-  <!-- Инструменты для таблицы -->
-  <div id="section-table" class="tool-section">
-    <h2><i class="fas fa-table"></i>Инструменты для таблицы</h2>
-    <label>Количество строк:
-      <input type="number" min="1" />
-    </label>
-    <label>Количество столбцов:
-      <input type="number" min="1" />
-    </label>
-  </div>
-
-  <!-- Инструменты для информационной плашки -->
-  <div id="section-infoBox" class="tool-section">
-    <h2><i class="fas fa-info-circle"></i>Инструменты для информационной плашки</h2>
-    <label>Заголовок:
-      <input type="text" />
-    </label>
-    <label>Текст:
-      <textarea rows="4"></textarea>
-    </label>
-  </div>
-
-  <!-- Инструменты для блоков описаний -->
-  <div id="section-blocks" class="tool-section">
-    <h2><i class="fas fa-th-large"></i>Инструменты для блоков описаний</h2>
-    <label>Количество блоков:
-      <input type="number" min="1" />
-    </label>
-  </div>
-  
-  <!-- Инструменты для маркированного списка -->
-  <div id="section-list" class="tool-section">
-    <h2><i class="fas fa-list"></i>Инструменты для маркированного списка</h2>
-    <label>Количество пунктов:
-      <input type="number" min="1" />
-    </label>
-  </div>
-
-</div>
-<!-- Кнопка Changelog -->
-<div style="position: fixed; top: 60px; left: 20px; z-index: 999;">
-  <button id="changelogToggle"
-          style="background: var(--primary-gradient); 
-           color: #fff; 
-           border: none; 
-           border-radius: 8px; 
-           padding: 12px 20px; 
-           cursor: pointer; 
-           font-weight: 600;
-           box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
-           transition: background-color 0.3s, transform 0.2s;">
-    <i class="fas fa-history"></i> Changelog
-  </button>
-</div>
-
-<!-- Контейнер для Changelog -->
-<!-- Контейнер для Changelog -->
-<div id="changelogContainer">
-  <h4>История изменений</h4>
-  <div id="changelogContent"></div>
-</div>
-<!-- Переключатель темы -->
-<div class="custom-theme-switcher">
-  <div id="custom-theme-toggle" style="width: 60px; height: 35px; background: #FFA500; border-radius: 25px; cursor: pointer; display: flex; align-items: center; padding: 0 5px; transition: background 0.5s; position: fixed; top: 20px; right: 20px; z-index: 999;">
-    <!-- Иконка луны -->
-    <div class="icon-moon" style="position: absolute; left: 10px; font-size: 18px; color: #fff;">
-      <i class="fas fa-moon"></i>
+<div class="organic-container">
+  <div class="sidebar">
+    <div class="nav-item active" onclick="switchTab('table')">
+      <i class="fas fa-table"></i> Таблица
     </div>
-    <!-- Иконка солнца -->
-    <div class="icon-sun" style="position: absolute; right: 10px; font-size: 18px; color: #fff;">
-      <i class="fas fa-sun"></i>
+    <div class="nav-item" onclick="switchTab('infoBox')">
+      <i class="fas fa-info-circle"></i> Плашка
     </div>
-    <!-- бегунок -->
-    <div class="knob" style="position: absolute; top: 3px; width: 30px; height: 30px; background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); transition: all 0.5s ease; left: 5px;"></div>
-  </div>
-</div>
-<!-- назад на главную - ВЕРХ -->
-<div style="position: fixed; top: 10px; left: 20px; z-index: 999;">
-  <button class="back-btn-top" onclick="window.open('index.html', '_self')" style="top: 10px;">
-     <i class="fas fa-home"></i>
+    <div class="nav-item" onclick="switchTab('blocks')">
+      <i class="fas fa-layer-group"></i> Блоки
+    </div>
+    <div class="nav-item" onclick="switchTab('list')">
+      <i class="fas fa-list-ul"></i> Список
+    </div>
+
+    <button id="instructionBtnNav" class="secondary" style="margin-top: auto; width: 100%; justify-content: center;">
+      <i class="fas fa-question-circle"></i> Инструкция
     </button>
-</div>
-<!-- Кнопка инструкции -->
-<button class="instruction-btn" id="instructionBtn" style="background: #f44336 !important;"></button>
+  </div>
 
-<!-- Модальное окно инструкции -->
+  <div class="workspace">
+    <div class="ws-header">
+      <div>
+        <h1 id="pageTitle">Интерактивная таблица</h1>
+        <div class="subtitle">Создавайте и редактируйте структуры данных</div>
+      </div>
+      
+      <div class="theme-switcher" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+        <span id="themeText">Тема</span>
+      </div>
+    </div>
+
+    <div id="section-table" class="tool-section active">
+      <div class="editor-block">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+          <button class="secondary has-tooltip" onclick="addRow()"><i class="fas fa-plus"></i> Строка<span class="tooltip">Добавить строку (Ctrl+Enter)</span></button>
+          <button class="secondary has-tooltip" onclick="addColumn()"><i class="fas fa-plus"></i> Столбец<span class="tooltip">Добавить столбец (Ctrl+i)</span></button>
+          <button class="secondary has-tooltip" onclick="removeLastRow()"><i class="fas fa-trash"></i><span class="tooltip">Удалить строку (Ctrl+Del)</span></button>
+          <button class="secondary has-tooltip" onclick="removeLastColumn()"><i class="fas fa-trash"></i><span class="tooltip">Удалить столбец (Ctrl+Back)</span></button>
+        </div>
+        
+        <div id="tableContainer">
+          <table id="interactiveTable">
+            <thead><tr></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="copy-trigger" onclick="copyContent(this)"><i class="fas fa-copy"></i> Копировать HTML</button>
+      </div>
+    </div>
+
+    <div id="section-infoBox" class="tool-section">
+      <div class="editor-block">
+        <label>Текст предупреждения</label>
+        <textarea id="infoText" rows="4" placeholder="Введите текст..."></textarea>
+        
+        <div id="infoPreview">
+          <div id="previewText">⚠️ Ваш текст появится здесь</div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="copy-trigger" onclick="copyContent(this)"><i class="fas fa-copy"></i> Копировать HTML</button>
+      </div>
+    </div>
+
+    <div id="section-blocks" class="tool-section">
+      <div id="blocksContainer"></div>
+      <div style="margin-top: 20px; display: flex; gap: 15px;">
+        <button class="secondary" id="addBlockBtn"><i class="fas fa-plus"></i> Добавить блок</button>
+        <button class="secondary" id="removeBlockBtn" style="display:none;"><i class="fas fa-trash"></i> Удалить</button>
+      </div>
+      
+      <div style="text-align: center; margin-top: 20px;">
+         <button class="secondary" id="showPreviewBtnBlocks"><i class="fas fa-eye"></i> Предпросмотр</button>
+      </div>
+      <div id="previewContainerBlocks" class="preview-wrapper"></div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="copy-trigger" onclick="copyContent(this)"><i class="fas fa-copy"></i> Копировать HTML</button>
+      </div>
+    </div>
+
+    <div id="section-list" class="tool-section">
+      <div id="listBlocksContainer"></div>
+      
+      <div style="text-align: center; margin-top: 20px;">
+         <button class="secondary" id="showPreviewBtnList"><i class="fas fa-eye"></i> Предпросмотр</button>
+      </div>
+      <div id="previewContainerList" class="preview-wrapper"></div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="copy-trigger" onclick="copyContent(this)"><i class="fas fa-copy"></i> Копировать HTML</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="instructionModal" class="modal">
   <div class="modal-content">
-    <button class="modal-close" id="closeModal">
-      <i class="fas fa-times"></i>
-    </button>
-    <h3 class="modal-header"><i class="fas fa-question-circle"></i> Инструкция по использованию</h3>
-    <div class="modal-body">
-      <h4><i class="fas fa-check-circle"></i> Основные возможности:</h4>
-      <ul>
-        <li><strong>Таблица</strong> - создание и редактирование таблиц</li>
-        <li><strong>Информационная плашка</strong> - выделение важной информации</li>
-        <li><strong>Блоки описаний</strong> - структурированное описание с раскрывающимися секциями</li>
-        <li><strong>Описание с маркированным списком</strong> - форматирование списков характеристик</li>
+    <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
+    <h2 style="color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--border-soft); padding-bottom: 15px;">📖 Инструкция по использованию</h2>
+    
+    <div style="line-height: 1.7; color: var(--text-main); font-size: 15px;">
+      <p>Добро пожаловать! Этот инструмент помогает создавать красивые HTML-блоки.</p>
+      
+      <h3 style="color: var(--primary); margin-top: 25px;">📊 Режим: Таблица</h3>
+      <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li>Используйте кнопки сверху для управления структурой.</li>
+        <li><strong>Магия иконок:</strong> Поставьте <code>+</code> в ячейку для галочки ✔ или <code>-</code> для крестика ✘ при копировании.</li>
+        <li><strong>Горячие клавиши:</strong> <code>Ctrl+Enter</code> (строка), <code>Ctrl+i</code> (столбец), <code>Ctrl+Del</code> (уд. строку), <code>Ctrl+Back</code> (уд. столбец).</li>
       </ul>
-      <h3 class="modal-header"><i class="fas fa-table"></i> Таблица</h3>
-      <ul>
-        <li>Выберите в селекторе режим <strong>Таблица</strong></li>
-        <li>С помощью <strong>кнопок на верхней панели</strong> можно добавлять новые строки снизу и новые столбцы справа. Также есть возможность удалить строку снизу и столбец справа</li>
-        <li><strong>Первый столбец</strong> автоматически форматируется при копировании жирным выделением</li>
-        <li>Чтобы получить в таблице значок <i class="fas fa-check-circle icon-yes"></i>, поставьте в ячейке <strong style="font-size: 30px;">+</strong>. При копировании стиль наложится автоматически. </li>
-        <li>Чтобы получить в таблице значок <i class="fas fa-times-circle icon-no"></i>, поставьте в ячейке <strong style="font-size: 30px;">-</strong>. При копировании стиль наложится автоматически. </li>
-        <li>Нажмите кнопку <strong>Копировать</strong> - код скопируется в буфер обмена. Вставьте код в описание карточки под режимом <strong>Источник</strong></li>
-      </ul>
-      <h4><i class="fas fa-keyboard"></i> Горячие клавиши для таблицы:</h4>
-      <ul>
-        <li><strong>Ctrl+Enter</strong> - новая строка</li>
-        <li><strong>Ctrl+i</strong> - новый столбец</li>
-        <li><strong>Ctrl+Delete</strong> - удаление строки</li>
-        <li><strong>Ctrl+Backspace</strong> - удаление столбца</li>
-      </ul>
-      <h3 class="modal-header"><i class="fas fa-info-circle"></i> Информационная плашка</h3>
-      <ul>
-        <li>Выберите в селекторе режим <strong>Информационная плашка</strong></li>
-        <li>Введите текст в поле на странице. Ниже будет отображаться предпросмотр</li>
-        <li>Под полем предпросмотра есть подсказки по адаптации HTML кода после копирования, если нужно изменить внешний вид текста</li>
-        <li>Нажмите кнопку <strong>Копировать</strong> - код скопируется в буфер обмена. Вставьте код в описание карточки под режимом <strong>Источник</strong></li>
-      </ul>
-      <h3 class="modal-header"><i class="fas fa-align-left"></i> Блоки описаний</h3>
-      <ul>
-        <li>Выберите в селекторе режим <strong>Блоки описаний</strong></li>
-        <li>Автоматически на странице появляется одно поле для ввода текста. </br> Для увеличения количества блоков нажмите кнопку <strong>Добавить блок</strong>.</br> Для удаления лишнего блока нажмите кнопку <strong>Удалить блок</strong> (кнопка появляется, если на странице больше одного блока).</li>
-        <li>У каждого блока есть инструменты для форматирования текста. форматирование учитывается при копировании</li>
-        <li>Каждый блок после копирования будет отдельной сворачиваемой секцией. Нажав на кнопку <strong>Показать предпросмотр</strong>, вы увидите готовый вид на странице.</li>
-        <li>Нажмите кнопку <strong>Копировать</strong> - код скопируется в буфер обмена. Вставьте код в описание карточки под режимом <strong>Источник</strong></li>
-      </ul>
-      <h3 class="modal-header"><i class="fas fa-list-ul"></i> Описание с маркированным списком</h3>
-      <ul>
-        <li>Выберите в селекторе режим <strong>Описание с маркированным списком</strong></li>
-        <li>У вас на странице появится три блока для ввода текста. У каждого блока есть свои инструменты для форматирования текста.</li>
-        <li><strong>Заголовок:</strong> после копирования станет зелёным полем с крупным текстом.</li>
-        <li><strong>Описание:</strong> после копирования станет отдельным блоком текста с заданным форматированием.</li>
-        <li><strong>Маркированный список:</strong> после копирования станет отдельным блоком, в шапке которого будет надпись "Характеристики", а каждая новая строка будет пунктом маркированного списка. 
-         </br>Каждая новая строка <strong>автоматически</strong> при копировании становится пунктом маркированного списка.
-         </br>Чтобы сделать подпункт, нажмите на кнопку <strong>Маркировки списка</strong> в шапке форматирования текста и примените маркировку для строк, которые вы хотите сделать подпунктами.</li>
-          <li>Нажав на кнопку <strong>Показать предпросмотр</strong>, вы увидите готовый вид на странице.</li>
-      <li>Нажмите кнопку <strong>Копировать</strong> - код скопируется в буфер обмена. Вставьте код в описание карточки под режимом <strong>Источник</strong></li>
-      </ul>
-      <h3 class="modal-header"><i class="fas fa-cogs"></i> Дополнительные возможности</h3>
-      <ol>
-        <li><strong>Тёмная тема:</strong> переключатель в правом верхнем углу страницы, выбор темы сохраняется</li>
-        <li><strong>Инструкция:</strong> читаете сейчас, описаны все основные функции</li>
-        <li><strong>Changelog:</strong> описаны все изменения и нововведения</li>
-        <li><strong>Обратная связь:</strong> можно сообщить о баге или высказать пожелания по улучшению сайта</li>
-      </ol>
-    </div>
-  </div>
-</div>
-<!-- Блоки описаний -->
-<div id="descriptionBlocksContainer" style="display:none; max-width: 600px; margin: 20px auto;">
-  <h2>Блоки описаний</h2>
-  <div id="blocksContainer"></div>
-  <div style="margin-top: 10px; display: flex; gap: 10px;">
-    <button id="addBlockBtn"><i class="fas fa-plus"></i> Добавить блок</button>
-    <button id="removeBlockBtn" style="display:none;"><i class="fas fa-trash"></i> Удалить блок</button>
-  </div>
-  </div>
 
-<!-- Новая секция для информационной плашки -->
-<div id="infoBoxContainer" class="">
-  <h2>Настройка информационной плашки</h2>
-  <label>Текст для плашки:
-    <textarea id="infoText" rows="4" placeholder="Введите текст"></textarea>
-  </label>
-  <div id="infoPreview" class="">
-    <div class="warning-text" id="previewText">⚠️ Вводимый текст</div>
-  </div>
-  <!-- Блок подсказок -->
- <div id="styleHints">
-    <h3 style="margin-top:0; font-family: 'Montserrat', sans-serif;font-size: 22px;">Подсказки по стилям текста</h3>
-    <ul style="margin:0; padding-left:20px; list-style-type: disc;">
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Размер шрифта:</span> измените свойство <code>font-size</code> в стиле <code>.warning-text</code>.</li>
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Цвет текста:</span> поменяйте <code>color</code> в стиле <code>.warning-text</code>.</li>
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положение блока:</span> используйте <code>margin</code> для изменения расположения блока <code>.warning</code> относительно страницы: <ul> 
-        <li><code>margin: 0 auto </code>- горизонтальное выравнивание по центру</li> 
-        <li><code>margin-left: 50px; </code> - сдвиг вправо на 50px</li> 
-        <li><code>margin-left: -50px;</code> - сдвиг влево на 50px</li> 
-        <li><code>margin: 10px 20px 30px 40px;</code> - заданные отступы сверху, справа, снизу, слева</li></ul></li>
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положения текста внутри блока:</span> используйте <code>padding</code> в стиле <code>.warning-text</code>, чтобы увеличить или уменьшить отступы относительно краев поля:<ul>
-        <li><code> padding-left: 10px;</code> - отступ слева</li> 
-        <li> <code>padding-right: 10px;</code> - отступ справа</li> 
-      </ul></li>
-        <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Положения текста внутри блока:</span> используйте <code>margin</code> в стиле <code>.warning-text</code>, чтобы сместить текст внутри блока:<ul>
-        <li><code>  margin-left: 20px;</code> - сдвиг вправо на 20px</li> 
-        <li> <code>margin-left: -10px;</code> - сдвиг влево на 10px</li>
-        <li><code>margin-top: 10px</code> - отступ сверху</li>
-        <li><code>margin-bottom: 10px;</code> - отступ снизу</li> </ul> </li>
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Максимальная ширина блока:</span> используйте <code>max-width</code> в <code>.warning</code>, чтобы увеличить или уменьшить максимальную ширину блока</li>
-      <li><span style="color: #4CAF50; font-weight: 700;font-size: 18px;">Толщина шрифта:</span> задавайте через свойство <code>font-weight</code> в стиле <code>.warning-text</code>: значение от 100 до 800, где 800 - самое жирное выделение</li>
-    </ul>
-  </div>
-</div>
+      <h3 style="color: var(--primary); margin-top: 25px;">⚠️ Режим: Плашка</h3>
+      <p>Яркий блок для важных предупреждений. Текст отображается в предпросмотре в реальном времени.</p>
 
-<!-- Интерактивная таблица -->
-<div id="tableContainer" style="display:none; max-width: 800px; margin: 20px auto;">
-  <h2><i class="fas fa-table"></i>Интерактивная таблица</h2>
-  <div style="margin-bottom: 10px; display:flex; gap:10px;">
-    <button id="addRowBtn"><i class="fas fa-plus"></i> Добавить строку</button>
-    <button id="removeRowBtn"><i class="fas fa-minus"></i> Удалить строку</button>
-    <button id="addColBtn"><i class="fas fa-plus"></i> Добавить столбец</button>
-    <button id="removeColBtn"><i class="fas fa-minus"></i> Удалить столбец</button>
-  </div>
-  <div style="overflow-x:auto;">
-    <table id="interactiveTable" style="width:100%; border-collapse:collapse; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
-      <thead>
-        <tr></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
-<!-- Секция для маркированного списка -->
-<div id="listContainer" style="display:none;">
-  <h2><i class="fas fa-list"></i>Описание с маркированным списком</h2>
-  <div id="listBlocksContainer"></div>
-</div>
+      <h3 style="color: var(--primary); margin-top: 25px;">📦 Режим: Блоки</h3>
+      <p>Сворачиваемые секции (аккордеоны). Используйте редактор для форматирования текста внутри.</p>
 
-<!-- Кнопка копировать -->
-<div style="text-align:center; margin-top:50px;">
-  <button id="copyBtn"><i class="fas fa-copy"></i> Копировать</button>
-</div>
+      <h3 style="color: var(--primary); margin-top: 25px;">📝 Режим: Список</h3>
+      <p>Структурированный вывод: Заголовок, Описание и Маркированный список.</p>
 
-<!-- Футер -->
-<div id="footer">
-  <span>Создатель сайта: An_Isu &copy; 2025</span>
-</div>
-
-<!-- Иконка информации -->
-<div id="infoIcon">
-  <i class="fas fa-info-circle"></i>
-</div>
-
-<!-- Всплывающая подсказка -->
-<div id="tooltip"></div>
-
-<!-- Уведомление -->
-<div id="notification"></div>
-<!-- Кнопка для предпросмотра -->
-<div style="text-align:center; margin-top:20px;">
-  <button id="showPreviewBtn"><i class="fas fa-eye"></i> Показать предпросмотр</button>
-</div>
-
-<!-- Блок предпросмотра -->
-<div id="previewContainer" style="display:none; max-width: 700px; margin: 20px auto; padding: 15px; background:#f0f0f0; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-  <h3 style="margin-top:0; color:#333;">Предпросмотр блоков</h3>
-  <div id="previewContent"></div>
-</div>
-<!-- Кнопка обратной связи -->
-<button id="feedbackBtn" style="
-  position: fixed;
-  top: 10px;
-  left: 130px; /* 250px (инструкция) + 60px (расстояние) */
-  z-index: 999;
-  background: #f44336; 
-  color: #fff; 
-  border: none; 
-  border-radius: 50%; 
-  width: 40px; 
-  height: 40px; 
-  cursor: pointer; 
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  text-align: center;
-">
-  <i class="fas fa-comment" style="font-size:24px; margin: 0;"></i>
-</button>
-
-<!-- Всплывающее окно для обратной связи -->
-<div id="feedbackModal" class="modal">
-  <div class="modal-content" style="max-width:500px; padding:20px; position:relative;">
-    <button class="modal-close" id="closeFeedback" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:24px; cursor:pointer;">
-      <i class="fas fa-times"></i>
-    </button>
-    <h3 style="margin-top:0;">Обратная связь</h3>
-    <div style="margin-bottom:15px;">
-      <button id="reportBugBtn" style="background:#f44336; color:#fff; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; margin-right:10px;">Сообщить о баге</button>
-      <button id="wishBtn" style="background:#4CAF50; color:#fff; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;">Пожелание</button>
-    </div>
-    <div id="feedbackForm" style="display:none;">
-      <p id="feedbackPrompt" style="margin-bottom:10px; font-weight:600;">Опишите проблему / что можно улучшить</p>
-      <textarea id="feedbackInput" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); resize:none;" placeholder="Введите текст..."></textarea>
-      <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:10px;">
-        <button id="sendFeedbackBtn" style="background:#2196F3; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отправить</button>
-        <button id="cancelFeedbackBtn" style="background:#ccc; color:#000; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Отмена</button>
+      <div style="background: rgba(74, 124, 89, 0.1); padding: 15px; border-radius: 15px; margin-top: 30px;">
+        <strong>💡 Совет:</strong> Код копируется со стилями. Вставляйте его в режим «Источник» на вашем сайте.
       </div>
     </div>
   </div>
 </div>
 
+<div id="notification">Скопировано в буфер обмена!</div>
+
 <script>
-const select = document.getElementById('formatSelect');
-const sections = {
-  'table': document.getElementById('section-table'),
-  'infoBox': document.getElementById('section-infoBox'),
-  'blocks': document.getElementById('section-blocks'),
-  'list': document.getElementById('section-list')
-};
+  function switchTab(tabName) {
+    document.querySelectorAll('.nav-item').forEach((el, idx) => {
+      el.classList.remove('active');
+      if((tabName === 'table' && idx === 0) || (tabName === 'infoBox' && idx === 1) || 
+         (tabName === 'blocks' && idx === 2) || (tabName === 'list' && idx === 3)) {
+        el.classList.add('active');
+      }
+    });
+    
+    document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
+    document.getElementById('section-' + tabName).classList.add('active');
+    
+    const titles = {
+      'table': 'Интерактивная таблица',
+      'infoBox': 'Информационная плашка',
+      'blocks': 'Блоки описаний',
+      'list': 'Маркированный список'
+    };
+    document.getElementById('pageTitle').innerText = titles[tabName];
 
-const infoBox = document.getElementById('infoBoxContainer');
-const infoTextArea = document.getElementById('infoText');
-const previewText = document.getElementById('previewText');
-
-const descriptionBlocksContainer = document.getElementById('descriptionBlocksContainer');
-const blocksContainer = document.getElementById('blocksContainer');
-const addBlockBtn = document.getElementById('addBlockBtn');
-const removeBlockBtn = document.getElementById('removeBlockBtn');
-
-// Новые переменные для режима маркированного списка
-const listContainer = document.getElementById('listContainer');
-const listBlocksContainer = document.getElementById('listBlocksContainer');
-
-let quillEditors = []; // массив для редакторов блоков
-let listQuillEditors = []; // массив для редакторов маркированного списка
-
-select.addEventListener('change', () => {
-  for (let key in sections) {
-    sections[key].classList.remove('active');
-  }
-  const val = select.value;
-  if (sections[val]) {
-    sections[val].classList.add('active');
-  }
-  
-  // Сначала скрываем все контейнеры
-  document.getElementById('descriptionBlocksContainer').style.display = 'none';
-  document.getElementById('listContainer').style.display = 'none';
-  document.getElementById('tableContainer').style.display = 'none';
-  document.getElementById('infoIcon').style.display = 'none';
-  
-  // Затем показываем только нужный контейнер
-  if (val === 'blocks') {
-    document.getElementById('descriptionBlocksContainer').style.display = 'block';
-    showPreviewBtn.style.display = 'inline-block';
-    previewContainer.style.display = 'none';
-    if (quillEditors.length === 0) {
-      addNewBlock();
-    }
-  } else if (val === 'list') {
-    document.getElementById('listContainer').style.display = 'block';
-    showPreviewBtn.style.display = 'inline-block';
-    previewContainer.style.display = 'none';
-    if (listQuillEditors.length === 0) {
-      initListBlocks();
-    }
-  } else if (val === 'table') {
-    document.getElementById('tableContainer').style.display = 'block';
-    document.getElementById('infoIcon').style.display = 'flex';
-    showPreviewBtn.style.display = 'none';
-    previewContainer.style.display = 'none';
-    if (!table.dataset.initialized) {
+    if(tabName === 'blocks' && quillEditors.length === 0) addNewBlock();
+    if(tabName === 'list' && listQuillEditors.length === 0) initListBlocks();
+    if(tabName === 'table' && !table.dataset.initialized) {
       initTable();
       table.dataset.initialized = 'true';
     }
-  } else {
-      if (val === 'blocks' || val === 'list') {
-    showPreviewBtn.style.display = 'inline-block';
-    previewContainer.style.display = 'none';
-  } else {
-    // Для всех остальных режимов скрываем кнопку и предпросмотр
-    showPreviewBtn.style.display = 'none';
-    previewContainer.style.display = 'none';
   }
-  }
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeText = document.getElementById('themeText');
   
-  // Управление infoBox
-  if (val === 'infoBox') {
-    infoBox.classList.add('active');
-  } else {
-    infoBox.classList.remove('active');
+  function updateThemeUI(isDark) {
+    if(isDark) {
+      document.body.classList.add('dark-theme');
+      themeIcon.className = 'fas fa-sun';
+      themeText.innerText = 'Светлая';
+    } else {
+      document.body.classList.remove('dark-theme');
+      themeIcon.className = 'fas fa-moon';
+      themeText.innerText = 'Тёмная';
+    }
   }
-});
 
-// Обновляем содержимое превью при вводе текста в информационной плашке
-infoTextArea.addEventListener('input', () => {
-  const text = infoTextArea.value;
-  document.getElementById('previewText').innerHTML = `
-    <div class="warning">
-      <div class="warning-text">⚠️ ${text}</div>
-    </div>
-  `;
-});
-
-// Таблица и управление ею
-const tableContainer = document.getElementById('tableContainer');
-const table = document.getElementById('interactiveTable');
-const theadRow = table.querySelector('thead tr');
-const tbody = table.querySelector('tbody');
-
-const addRowBtn = document.getElementById('addRowBtn');
-const removeRowBtn = document.getElementById('removeRowBtn');
-const addColBtn = document.getElementById('addColBtn');
-const removeColBtn = document.getElementById('removeColBtn');
-
-let colCount = 5;
-let rowCount = 3;
-let selectedCell = null;
-
-// Инициализация таблицы
-function initTable() {
-  for (let i = 0; i < colCount; i++) {
-    const th = document.createElement('th');
-    th.contentEditable = true;
-    th.innerText = `Колонка ${i + 1}`;
-    th.onclick = () => selectCell(th);
-    theadRow.appendChild(th);
+  function checkCircadianRhythm() {
+    const hour = new Date().getHours();
+    const isNight = hour >= 22 || hour < 6;
+    updateThemeUI(isNight);
   }
-  for (let i = 0; i < rowCount; i++) {
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = !document.body.classList.contains('dark-theme');
+    updateThemeUI(isDark);
+  });
+
+  checkCircadianRhythm();
+
+  const table = document.getElementById('interactiveTable');
+  const theadRow = table.querySelector('thead tr');
+  const tbody = table.querySelector('tbody');
+  let colCount = 3;
+  let rowCount = 3;
+  let selectedCell = null;
+
+  function initTable() {
+    for(let i=0; i<colCount; i++) {
+      const th = document.createElement('th');
+      th.contentEditable = true;
+      th.innerText = `Заголовок ${i+1}`;
+      th.onclick = () => selectCell(th);
+      theadRow.appendChild(th);
+    }
+    for(let i=0; i<rowCount; i++) addRow();
+  }
+
+  function selectCell(cell) {
+    if (selectedCell) selectedCell.classList.remove('selected');
+    selectedCell = cell;
+    selectedCell.classList.add('selected');
+    selectedCell.focus();
+  }
+
+  function addRow() {
     const tr = document.createElement('tr');
-    for (let j = 0; j < colCount; j++) {
+    for(let i=0; i<colCount; i++) {
       const td = document.createElement('td');
       td.contentEditable = true;
-      td.innerText = `Ячейка ${i + 1}-${j + 1}`;
-      if (j === 0) td.classList.add('product-name');
+      td.innerText = 'Данные';
+      if(i===0) td.classList.add('product-name');
       td.onclick = () => selectCell(td);
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
   }
-}
 
-function selectCell(cell) {
-  if (selectedCell) selectedCell.classList.remove('selected');
-  selectedCell = cell;
-  selectedCell.classList.add('selected');
-  selectedCell.focus();
-}
-
-document.getElementById('addRowBtn').onclick = () => {
-  addRow();
-};
-document.getElementById('addColBtn').onclick = () => {
-  addColumn();
-};
-document.getElementById('removeRowBtn').onclick = () => {
-  removeLastRow();
-};
-document.getElementById('removeColBtn').onclick = () => {
-  removeLastColumn();
-};
-
-function addRow() {
-  const newRow = document.createElement('tr');
-  for (let i = 0; i < colCount; i++) {
-    const td = document.createElement('td');
-    td.contentEditable = true;
-    td.innerText = `Ячейка ${tbody.children.length + 1}-${i + 1}`;
-    if (i === 0) td.classList.add('product-name');
-    td.onclick = () => selectCell(td);
-    newRow.appendChild(td);
-  }
-  tbody.appendChild(newRow);
-  rowCount++;
-}
-function addColumn() {
-  const headerRow = document.querySelector('#interactiveTable thead tr');
-  const colIndex = headerRow.children.length;
-  const newHeader = document.createElement('th');
-  newHeader.contentEditable = true;
-  newHeader.innerText = `Заголовок ${colIndex + 1}`;
-  newHeader.onclick = () => selectCell(newHeader);
-  headerRow.appendChild(newHeader);
-  Array.from(tbody.children).forEach((tr, index) => {
-    const newTd = document.createElement('td');
-    newTd.contentEditable = true;
-    newTd.innerText = `Ячейка ${index + 1}-${colIndex + 1}`;
-    if (0 === 0) newTd.classList.add('product-name');
-    newTd.onclick = () => selectCell(newTd);
-    tr.appendChild(newTd);
-  });
-  colCount++;
-}
-function removeLastRow() {
-  if (tbody.children.length > 0) {
-    tbody.removeChild(tbody.lastElementChild);
-    rowCount--;
-  }
-}
-function removeLastColumn() {
-  const headerRow = document.querySelector('#interactiveTable thead tr');
-  if (headerRow.children.length > 0) {
-    const lastIndex = headerRow.children.length -1;
-    headerRow.removeChild(headerRow.children[lastIndex]);
-    Array.from(tbody.children).forEach((row) => {
-      if (row.children[lastIndex]) row.children[lastIndex].remove();
-    });
-    colCount--;
-  }
-}
-
-document.addEventListener('keydown', (e) => {
-  if (!selectedCell) return;
-  if (e.key === 'Delete' && e.ctrlKey) {
-    deleteRow();
-    e.preventDefault();
-  } else if (e.key === 'Backspace' && e.ctrlKey) {
-    deleteColumn();
-    e.preventDefault();
-  } else if (e.key === 'Enter' && e.ctrlKey) {
-    addRow();
-    e.preventDefault();
-  } else if (e.key === 'i' && e.ctrlKey) {
-    addColumn();
-    e.preventDefault();
-  }
-});
-
-function deleteRow() {
-  if (!selectedCell) return;
-  const row = selectedCell.closest('tr');
-  if (row) {
-    row.remove();
-    selectedCell = null;
-  }
-}
-function deleteColumn() {
-  if (!selectedCell) return;
-  const cellIndex = Array.prototype.indexOf.call(selectedCell.parentElement.children, selectedCell);
-  const table = selectedCell.closest('table');
-  if (table) {
-    Array.from(table.rows).forEach((row) => {
-      if (row.children.length > cellIndex) row.deleteCell(cellIndex);
-    });
-    selectedCell = null;
-  }
-}
-
-// Обработка режима информационной плашки и копирования
-const infoIcon = document.getElementById('infoIcon');
-const tooltip = document.getElementById('tooltip');
-
-infoIcon.addEventListener('mouseenter', (e) => {
-  const rect = infoIcon.getBoundingClientRect();
-  const message = `
-<ul style="margin:0; padding-left:20px; list-style-type: disc; font-family:'Montserrat', sans-serif; font-size:14px;">
-  <li><strong>Ctrl+Enter</strong> — новая строка</li>
-  <li><strong>Ctrl+i</strong> — новый столбец</li>
-  <li><strong>Ctrl+Delete</strong> — удаление строки с выбранной ячейкой</li>
-  <li><strong>Ctrl+Backspace</strong> — удаление столбца с выбранной ячейкой</li>
-  <li><strong>Плюс в ячейке</strong> — преобразуется в "галочку"</li>
-  <li><strong>Минус в ячейке</strong> — преобразуется в "крестик"</li>
-</ul>`;
-  tooltip.innerHTML = message;
-  tooltip.style.display = 'block';
-  tooltip.style.width = '250px'; // чуть больше, чтобы вместить список
-  tooltip.style.height = 'auto';
-  tooltip.style.visibility = 'hidden';
-
-  const tooltipWidth = tooltip.offsetWidth;
-  const tooltipHeight = tooltip.offsetHeight;
-  const scrollX = window.scrollX;
-  const scrollY = window.scrollY;
-
-  let top = rect.top + scrollY - tooltipHeight - 8;
-  if (top < scrollY) top = rect.bottom + scrollY + 8;
-  let left = rect.left + scrollX + (rect.width - tooltipWidth) / 2;
-  if (left < scrollX + 50) left = scrollX + 20;
-  else if (left + tooltipWidth > scrollX + window.innerWidth - 20) left = scrollX + window.innerWidth - tooltipWidth - 20;
-
-  tooltip.style.top = top + 'px';
-  tooltip.style.left = left + 'px';
-  tooltip.style.visibility = 'visible';
-});
-
-document.addEventListener('mousemove', (e) => {
-  const tooltipEl = document.getElementById('tooltip');
-  if (!tooltipEl || tooltipEl.style.display !== 'block') return;
-  const tooltipWidth = tooltipEl.offsetWidth;
-  const tooltipHeight = tooltipEl.offsetHeight;
-  const rect = infoIcon.getBoundingClientRect();
-  const scrollX = window.scrollX;
-  const scrollY = window.scrollY;
-  let top = rect.top + scrollY - tooltipHeight - 8;
-  if (top < scrollY) top = rect.bottom + scrollY + 8;
-  let left = rect.left + scrollX + (rect.width - tooltipWidth) / 2;
-  if (left < scrollX) left = scrollX;
-  if (left + tooltipWidth > scrollX + window.innerWidth) left = scrollX + window.innerWidth - tooltipWidth;
-  tooltip.style.top = top + 'px';
-  tooltip.style.left = left + 'px';
-});
-
-document.querySelector('#infoIcon').addEventListener('mouseleave', () => {
-  document.getElementById('tooltip').style.display = 'none';
-});
-
-// Обработка копирования для режима "информационная плашка" и "таблица"
-const copyBtn = document.getElementById('copyBtn');
-copyBtn.onclick = () => {
-  const mode = document.getElementById('formatSelect').value;
-    if (mode === 'table') {
-    // Клонируем таблицу
-    const table = document.getElementById('interactiveTable');
-    const tableHtml = table.outerHTML;
-
-    const styles = `
-<style type="text/css">
-/* Стили для таблицы с классом .copied-table */
-.my-custom-section .copied-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-  background: #fff;
-  font-family: 'Montserrat', sans-serif;
-}
-.my-custom-section .copied-table thead {
-  background: linear-gradient(135deg, #66bb6a, #43a047);
-  color: #fff;
-}
-.my-custom-section .copied-table thead th {
-  padding: 16px;
-  font-size: 15px;
-  text-align: center;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-.my-custom-section .copied-table tbody tr {
-  transition: all 0.3s ease;
-}
-.my-custom-section .copied-table tbody tr:nth-child(even) {
-  background-color: #f9fafb;
-}
-.my-custom-section .copied-table tbody tr:nth-child(odd) {
-  background-color: #ffffff;
-}
-.my-custom-section .copied-table tbody tr:hover {
-  background-color: #dcedc8;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-  transform: translateY(-2px);
-}
-.my-custom-section .copied-table td, .my-custom-section .copied-table th {
-  padding: 14px 12px;
-  font-size: 15px;
-  border: none;
-  vertical-align: middle;
-}
-.my-custom-section .copied-table td.product-name {
-  text-align: left;
-  font-weight: 600;
-  color: #37474f;
-}
-/* Иконки для ячеек "+" и "-" */
-.my-custom-section .copied-table td.icon-yes {
-  text-align: center;
-}
-.my-custom-section .copied-table td.icon-no {
-  text-align: center;
-}
-.my-custom-section td.icon-yes, .my-custom-section td.icon-no {
-  text-align: center;
-  font-size: 22px;
-}
-.my-custom-section .icon-yes::before {
-  content: "✔";
-  color: #2e7d32;
-  font-size: 22px;
-  display: inline-block;
-}
-.my-custom-section .icon-no::before {
-  content: "✘";
-  color: #c62828;
-  font-size: 22px;
-  display: inline-block;
-}
-</style>
-`;
-
-    // Клонируем таблицу и назначаем класс
-    const tableWithClass = table.cloneNode(true);
-    tableWithClass.className = 'copied-table';
-
-    // Обработка ячеек "+" и "-"
-    Array.from(tableWithClass.querySelectorAll('td')).forEach(td => {
-      const cellText = td.innerText.trim();
-      if (cellText === '+') {
-        td.innerHTML = '<i class="fas fa-check-circle icon-yes"></i>';
-        td.className = '';
-      } else if (cellText === '-') {
-        td.innerHTML = '<i class="fas fa-times-circle icon-no"></i>';
-        td.className = '';
-      }
-    });
-
-    const tableContent = tableWithClass.outerHTML;
-
-    // Обертываем в my-custom-section
-    const fullHtml = styles + `<div class="my-custom-section">${tableContent}</div>`;
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(fullHtml).then(() => {
-        alert('Таблица с стилями скопирована в буфер обмена!');
-      }).catch(() => {
-        fallbackCopy(fullHtml);
-      });
-    } else {
-      fallbackCopy(fullHtml);
-    }
-
-    } else if (mode === 'blocks') {
-      // Собираем все блоки редакторов
-      const blocks = quillEditors;
-      let resultHtml = '';
-
-      resultHtml += `<div class="my-custom-section">`;
-
-      blocks.forEach((quill, index) => {
-        const content = quill.quill ? quill.quill.root.innerHTML : 'Нет текста';
-        resultHtml += `
-        <div class="card">
-          <input type="checkbox" id="toggle-${index}" />
-          <label for="toggle-${index}" class="toggle-label">Блок ${index + 1}</label>
-          <div class="toggle-content">
-            <div class="special-paragraph">${content}</div>
-          </div>
-        </div>`;
-      });
-
-      resultHtml += `</div>`;
-
-      const styles = `
-<style type="text/css">/* Стиль для блока .card */
-  .my-custom-section {
-    padding: 10px 10px;
-    max-width: 950px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-
-  /* Заголовки секций */
-  .my-custom-section .section-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 8px;
-    color: #2d7f1b;
-  }
-
-  .my-custom-section .section-title::after {
-    content: "";
-    display: block;
-    width: 60px;
-    height: 4px;
-    margin: 8px auto 0;
-    border-radius: 2px;
-    background: linear-gradient(90deg, #2d7f1b, #2575fc);
-  }
-
-    .my-custom-section .special-paragraph {
-    font-size: 16px;
-    text-align: start;
-  }
-
-  /* Карточки */
-  .my-custom-section .card {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    padding: 5px 30px;
-    margin: 10px auto;
-    max-width: 1000px;
-    transition:
-      box-shadow 0.3s,
-      transform 0.3s;
-  }
-
-  .my-custom-section .card:hover {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-    transform: translateY(-4px);
-  }
-
-  /* Стиль для заголовка-активатора */
-  .my-custom-section .toggle-label {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 1px;
-    position: relative;
-    display: block;
-    padding-bottom: 5px;
-    color: #2d7f1b;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .my-custom-section .toggle-label::after {
-    content: "";
-    display: block;
-    width: 65px;
-    height: 4px;
-    margin: 10px auto 0;
-    border-radius: 20px;
-    background: #2d7f1b;
-  }
-
-  /* Скрытый чекбокс */
-  .my-custom-section input[type="checkbox"] {
-    display: none;
-  }
-
-  /* Контейнер для содержимого, скрытого по умолчанию */
-  .my-custom-section .toggle-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-    padding-right: 25px;
-  }
-
-  /* Раскрытие содержимого при выбранном чекбоксе */
-  .my-custom-section input[type="checkbox"]:checked + .toggle-label + .toggle-content {
-    max-height: 2000px; /* достаточно большое значение */
-    transition: max-height 0.5s ease-in;
-  }
-
-  .my-custom-section ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-  .my-custom-section li {
-    position: relative;
-    padding-left: 15px;
-    margin-bottom: 16px;
-    font-size: 16px;
-    line-height: 1.2;
-    color: #555;
-    text-align: start;
-  }
-
-  .my-custom-section li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    color: #2d7f1b;
-  }
-
-  .my-custom-section .special-paragraph {
-    font-size: 16px;
-  }
-
-  /* Адаптация для мобильных устройств */
-  @media (max-width: 600px) {
-    /* Уменьшаем размеры шрифтов */
-    .my-custom-section .section-title {
-      font-size: 18px;
-    }
-    .my-custom-section .info-block strong {
-      font-size: 16px;
-    }
-    .my-custom-section .special-paragraph {
-      font-size: 12px;
-    }
-    .my-custom-section .section-title {
-      font-size: 18px;
-    }
-    .my-custom-section li {
-      font-size: 12px;
-    }
-    .my-custom-section li::before {
-      font-size: 16px;
-    }
-    /* Стиль для заголовка-активатора */
-    .my-custom-section .toggle-label {
-      font-size: 18px;
-    }
-  }
-</style>
-`;
-
-      // Объединяем и копируем
-      const fullHtml = styles + resultHtml;
-
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(fullHtml).then(() => {
-          alert('Блоки описаний скопированы в буфер обмена! Можете редактировать заголовки и содержимое.');
-        }).catch(() => {
-          fallbackCopy(fullHtml);
-        });
-      } else {
-        fallbackCopy(fullHtml);
-      }
-      
-      } else if (mode === 'list') {
-    // Копирование для режима маркированного списка
-    const headerContent = listQuillEditors.find(item => item.type === 'Заголовок')?.quill.root.innerHTML || '';
-    const descriptionContent = listQuillEditors.find(item => item.type === 'Описание')?.quill.root.innerHTML || '';
-    const listContent = listQuillEditors.find(item => item.type === 'Маркированный список')?.quill.root.innerHTML || '';
-
-    // Формируем полный HTML для копирования с нужной структурой
-    const contentHtml = `
-<div class="warning">
-  <div class="warning-text" style="text-align: center;">${headerContent}</div>
-</div>
-
-<div class="section">
-  <p>${descriptionContent}</p>
-</div>
-
-<div class="section">
-  <h3>Характеристики</h3>
-  <ul>
-    ${listContent.replace(/<p>(.*?)<\/p>/g, '<li>$1</li>')}
-  </ul>
-</div>
-    `;
-
-    const styles = `
-<style type="text/css">
-/* Общие стили */
-.warning {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #3b8340, #3b8331);
-  padding: 20px 10px;
-  margin-bottom: 10px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  transition: box-shadow 1s ease, background 1s ease;
-}
-
-.warning:hover {
-  box-shadow: 0 6px 25px rgba(0,0,0,0.02);
-  background: linear-gradient(135deg, #3b8331, #3b8340);
-  transform: translateY(3px);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.warning-text {
-  font-size: 28px;
-  font-weight: 700;
-  color: #fff;
-}
-
-/* Остальные стили */
-.section {
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  max-width: 950px;
-  margin: 0 auto 10px auto;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 15px;
-  border-radius: 30px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-}
-
-.section h3 {
-  font-size: 22px;
-  margin-top: 3px;
-  margin-bottom: 8px;
-  color: #34495e;
-  border-bottom: 2px solid #bdc3c7;
-  padding-bottom: 15px;
-}
-
-.section ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-/* Стили для вложенных списков */
-.section ul ul {
-  list-style: none;
-  padding-left: 20px;
-  margin-top: 10px;
-}
-
-.section ul li {
-  position: relative;
-  font-size: 16px;
-  padding-left: 4px;
-  margin-bottom: -10px;
-  color: #050505;
-}
-
-.section ul li::before {
-  content: "•";
-  font-weight: 900;
-  position: relative;
-  left: -3px;
-  top: 3.5px;
-  transform: translateY(-50%);
-  font-size: 26px;
-  color: #27ae60;
-}
-
-.section ul ul li {
-  position: relative;
-  padding-left: 20px;
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #050505;
-}
-
-/* Можно добавить свои маркеры для подпунктов */
-.section ul ul li::before {
-  content: "*";
-  position: relative;
-  left: -5px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #27ae60;
-}
-
-.section p {
-  font-size: 16px;
-  line-height: 1.2;
-  color: #050505;
-  padding-left: 13px;
-}
-
-.section:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
-}
-
-/* Медиазапрос для мобильных устройств */
-@media (max-width:600px) {
-  /* Уменьшение шрифтов для мобильных */
-  .warning-text {
-    font-size: 16px !important;
-  }
-
-  .section h3 {
-    font-size: 18px !important;
-  }
-
-  .section ul li {
-    font-size: 12px !important;
-    padding-right: 5px;
-  }
-
-  .section p {
-    font-size: 13px !important;
-    text-align: start;
-  }
-
-  .section ul li::before {
-    content: "•";
-    left: -2%;
-    padding-right: -15px;
-    top: 5px;
-  }
-}
-</style>
- `;
-   const fullHtml = styles + `<div class="my-custom-section">${contentHtml}</div>`;
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(fullHtml).then(() => {
-        alert('Маркированный список с стилями скопирован в буфер обмена!');
-      }).catch(() => {
-        fallbackCopy(fullHtml);
-      });
-    } else {
-      fallbackCopy(fullHtml);
-    }
+  function addColumn() {
+    const th = document.createElement('th');
+    th.contentEditable = true;
+    th.innerText = `Новый столбец`;
+    th.onclick = () => selectCell(th);
+    theadRow.appendChild(th);
     
-  } else {
-      // остальные режимы
-      const htmlContent = document.querySelector('#previewText').innerHTML;
+    Array.from(tbody.children).forEach(tr => {
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.innerText = 'Данные';
+      td.onclick = () => selectCell(td);
+      tr.appendChild(td);
+    });
+    colCount++;
+  }
 
-      const styles = `
-<style>
-/* Стили для warning блока, без конфликтов с таблицей */
-.custom-section .warning {
-  display: flex;
-  align-items: flex-start; 
-  justify-content: center;
-  background: linear-gradient(135deg, #fff0f5, #ffe0ec);
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  max-width: 100%; 
-  box-sizing: border-box; 
-  margin: 0 auto;
-}
-.custom-section .warning:hover {
-  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
-  background: linear-gradient(135deg, #ffe0ec, #fff0f5);
-}
-.warning-text {
-  font-size: 25px;
-  font-weight: 700;
-  color: #d84315;
-}
-</style>
-`;
-
-      const fullHtml = `
-<section class="custom-section">
-  ${styles}
-  ${htmlContent}
-</section>
-`;
-
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(fullHtml).then(() => {
-          alert('Код скопирован в буфер обмена!');
-        }).catch(() => {
-          fallbackCopy(fullHtml);
-        });
-      } else {
-        fallbackCopy(fullHtml);
-      }
+  function removeLastRow() { if(tbody.lastChild) tbody.removeChild(tbody.lastChild); }
+  function removeLastColumn() {
+    if(theadRow.lastChild) {
+      theadRow.removeChild(theadRow.lastChild);
+      Array.from(tbody.children).forEach(tr => {
+        if(tr.lastChild) tr.removeChild(tr.lastChild);
+      });
     }
+  }
 
-    function fallbackCopy(text) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        alert('Копировано в буфер обмена!');
-      } catch (err) {
-        alert('Ошибка копирования.');
-      }
-      document.body.removeChild(textarea);
+  document.addEventListener('keydown', (e) => {
+    if (!selectedCell) return;
+    if (e.key === 'Delete' && e.ctrlKey) { removeLastRow(); e.preventDefault(); }
+    else if (e.key === 'Backspace' && e.ctrlKey) { removeLastColumn(); e.preventDefault(); }
+    else if (e.key === 'Enter' && e.ctrlKey) { addRow(); e.preventDefault(); }
+    else if (e.key === 'i' && e.ctrlKey) { addColumn(); e.preventDefault(); }
+    if (e.key === 'Escape') {
+        document.getElementById('instructionModal').classList.remove('active');
+    }
+  });
+
+  let quillEditors = [];
+  const blocksContainer = document.getElementById('blocksContainer');
+  
+  function addNewBlock() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'editor-block';
+    wrapper.innerHTML = `<label>Блок ${quillEditors.length + 1}</label><div class="quill-holder"></div>`;
+    blocksContainer.appendChild(wrapper);
+    
+    const editorDiv = wrapper.querySelector('.quill-holder');
+    const quill = new Quill(editorDiv, { theme: 'snow' });
+    quillEditors.push({ quill, wrapper });
+    
+    document.getElementById('removeBlockBtn').style.display = 'inline-flex';
+  }
+
+  document.getElementById('addBlockBtn').onclick = addNewBlock;
+  document.getElementById('removeBlockBtn').onclick = () => {
+    if(quillEditors.length > 1) {
+      const last = quillEditors.pop();
+      last.wrapper.remove();
+      if(quillEditors.length === 1) document.getElementById('removeBlockBtn').style.display = 'none';
     }
   };
+
+  let listQuillEditors = [];
+  const listBlocksContainer = document.getElementById('listBlocksContainer');
   
-  // Обработка для блока "Блоки описаний"
-function addNewBlock() {
-  // создаем обертку
-  const wrapperDiv = document.createElement('div');
-  wrapperDiv.className = 'editor-block'; // можно добавить стили, если нужно
-
-  // создаем заголовок
-  const header = document.createElement('div');
-  header.innerText = `Блок ${quillEditors.length + 1}`;
-  header.style.fontWeight = 'bold';
-  header.style.marginBottom = '5px';
-
-  // создаем контейнер редактора
-  const editorDiv = document.createElement('div');
-  editorDiv.style.width = '100%';
-  editorDiv.style.height = '120px';
-  editorDiv.style.border = '1px solid var(--border-color)';
-  editorDiv.style.borderRadius = '12px';
-  editorDiv.style.padding = '10px';
-
-  // добавляем все внутрь обертки
-  wrapperDiv.appendChild(header);
-  wrapperDiv.appendChild(editorDiv);
-  blocksContainer.appendChild(wrapperDiv);
-
-  // создаем редактор
-  const quill = new Quill(editorDiv, {
-    theme: 'snow',
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote', 'code-block'],
-        [{ 'header': 1 }, { 'header': 2 }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'direction': 'rtl' }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-        ['clean']
-      ]
-    }
-  });
-
-  // сохраняем редактор и обертку
-  quillEditors.push({ quill: quill, wrapper: wrapperDiv });
-  updateRemoveButtonVisibility();
-}
-
-// Обновляем видимость кнопки удаления
-function updateRemoveButtonVisibility() {
-   if (quillEditors.length > 1) {
-    removeBlockBtn.style.display = 'inline-block';
-  } else {
-    removeBlockBtn.style.display = 'none';
-  }
-}
-
-// Обработчик для кнопки добавления блока
-addBlockBtn.onclick = () => {
-  addNewBlock();
-};
-// Обработчик для кнопки удаления блока
-removeBlockBtn.onclick = () => {
-  if (quillEditors.length > 1) {
-    const { quill, wrapper } = quillEditors.pop();
-    // удаляем весь обертку со всем содержимым
-    if (wrapper && wrapper.parentNode) {
-      wrapper.parentNode.removeChild(wrapper);
-    }
-    updateRemoveButtonVisibility();
-  }
-};
-
-// Изначально при смене режима, если блоки активны, создаем первый редактор
-select.addEventListener('change', () => {
-  if (val === 'blocks') {
-    if (quillEditors.length === 0) {
-      addNewBlock();
-    }
-    // Обновить видимость
-    updateRemoveButtonVisibility();
-  }
-});
-const showPreviewBtn = document.getElementById('showPreviewBtn');
-const previewContainer = document.getElementById('previewContainer');
-const previewContent = document.getElementById('previewContent');
-
-showPreviewBtn.onclick = () => {
-  const mode = document.getElementById('formatSelect').value;
-  
-  if (mode === 'blocks') {
-    updateBlocksPreview();
-  } else if (mode === 'list') {
-    updateListPreview();
-  }
-  
-  // Показываем контейнер
-  if (previewContainer.style.display === 'none') {
-    previewContainer.style.display = 'block';
-  } else {
-    previewContainer.style.display = 'none';
-  }
-};
-
-// Функция обновления содержимого предпросмотра
-function updateBlocksPreview() {
-  let html = '';
-
-  // Вставляем стили для предпросмотра
-  const style = `
-  <style>
-  /* Весь CSS для блока .card и др., который копируется */
-   .my-custom-section {
-    padding: 10px 10px;
-    max-width: 950px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-
-  /* Заголовки секций */
-  .my-custom-section .section-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 8px;
-    color: #2d7f1b;
-  }
-
-  .my-custom-section .section-title::after {
-    content: "";
-    display: block;
-    width: 60px;
-    height: 4px;
-    margin: 8px auto 0;
-    border-radius: 2px;
-    background: linear-gradient(90deg, #2d7f1b, #2575fc);
-  }
-
-    .my-custom-section .special-paragraph {
-    font-size: 16px;
-    text-align: start;
-  }
-
-  /* Карточки */
-  .my-custom-section .card {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    padding: 5px 30px;
-    margin: 10px auto;
-    max-width: 1000px;
-    transition:
-      box-shadow 0.3s,
-      transform 0.3s;
-  }
-
-  .my-custom-section .card:hover {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-    transform: translateY(-4px);
-  }
-
-  /* Стиль для заголовка-активатора */
-  .my-custom-section .toggle-label {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 1px;
-    position: relative;
-    display: block;
-    padding-bottom: 5px;
-    color: #2d7f1b;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .my-custom-section .toggle-label::after {
-    content: "";
-    display: block;
-    width: 65px;
-    height: 4px;
-    margin: 10px auto 0;
-    border-radius: 20px;
-    background: #2d7f1b;
-  }
-
-  /* Скрытый чекбокс */
-  .my-custom-section input[type="checkbox"] {
-    display: none;
-  }
-
-  /* Контейнер для содержимого, скрытого по умолчанию */
-  .my-custom-section .toggle-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-    padding-right: 25px;
-  }
-
-  /* Раскрытие содержимого при выбранном чекбоксе */
-  .my-custom-section input[type="checkbox"]:checked + .toggle-label + .toggle-content {
-    max-height: 2000px; /* достаточно большое значение */
-    transition: max-height 0.5s ease-in;
-  }
-
-  .my-custom-section ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-  .my-custom-section li {
-    position: relative;
-    padding-left: 15px;
-    margin-bottom: 16px;
-    font-size: 16px;
-    line-height: 1.2;
-    color: #555;
-    text-align: start;
-  }
-
-  .my-custom-section li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    color: #2d7f1b;
-  }
-
-  .my-custom-section .special-paragraph {
-    font-size: 16px;
-  }
-
-  /* Адаптация для мобильных устройств */
-  @media (max-width: 600px) {
-    /* Уменьшаем размеры шрифтов */
-    .my-custom-section .section-title {
-      font-size: 18px;
-    }
-    .my-custom-section .info-block strong {
-      font-size: 16px;
-    }
-    .my-custom-section .special-paragraph {
-      font-size: 12px;
-    }
-    .my-custom-section .section-title {
-      font-size: 18px;
-    }
-    .my-custom-section li {
-      font-size: 12px;
-    }
-    .my-custom-section li::before {
-      font-size: 16px;
-    }
-    /* Стиль для заголовка-активатора */
-    .my-custom-section .toggle-label {
-      font-size: 18px;
-    }
-  }
-  </style>
-  `;
-
-    // Обрабатываем каждый блок редактора
-  quillEditors.forEach((item, index) => {
-    const content = item.quill.root.innerHTML;
-    html += `
-      <div class="card">
-          <input type="checkbox" id="toggle-${index}" />
-          <label for="toggle-${index}" class="toggle-label">Блок ${index + 1}</label>
-          <div class="toggle-content">
-            <div class="special-paragraph">${content}</div>
-          </div>
-        </div>`;
-  });
-
-  // Объединяем стили и содержимое
-  previewContent.innerHTML = style + `<div class="my-custom-section">${html}</div>`;
-}
-//отображение в нудном режиме
-// Функционал для режима маркированного списка
-function initListBlocks() {
-  // Очищаем контейнер
-  listBlocksContainer.innerHTML = '';
-  listQuillEditors = [];
-
-  // Создаем три блока с редакторами
-  const blockTypes = ['Заголовок', 'Описание', 'Маркированный список'];
-  
-  blockTypes.forEach((type, index) => {
-    const blockDiv = document.createElement('div');
-    blockDiv.className = 'list-block';
-    
-    const header = document.createElement('div');
-    header.className = 'list-block-header';
-    header.innerText = `${type}:`;
-    
-    const editorDiv = document.createElement('div');
-    editorDiv.style.width = '100%';
-    editorDiv.style.height = '120px';
-    editorDiv.style.border = '1px solid var(--border-color)';
-    editorDiv.style.borderRadius = '12px';
-    editorDiv.style.padding = '10px';
-    
-    blockDiv.appendChild(header);
-    blockDiv.appendChild(editorDiv);
-    listBlocksContainer.appendChild(blockDiv);
-    
-    // Создаем редактор
-    const quill = new Quill(editorDiv, {
-      theme: 'snow',
-      modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline', 'strike'],
-          ['blockquote', 'code-block'],
-          [{ 'header': 1 }, { 'header': 2 }],
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          [{ 'script': 'sub'}, { 'script': 'super' }],
-          [{ 'indent': '-1'}, { 'indent': '+1' }],
-          [{ 'direction': 'rtl' }],
-          [{ 'size': ['small', false, 'large', 'huge'] }],
-          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-          [{ 'color': [] }, { 'background': [] }],
-          [{ 'font': [] }],
-          [{ 'align': [] }],
-          ['clean']
-        ]
-      }
+  function initListBlocks() {
+    const types = ['Заголовок', 'Описание', 'Список'];
+    types.forEach(type => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'editor-block';
+      wrapper.innerHTML = `<label>${type}</label><div class="quill-holder"></div>`;
+      listBlocksContainer.appendChild(wrapper);
+      
+      const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+      listQuillEditors.push({ quill, type });
     });
+  }
+
+  document.getElementById('showPreviewBtnBlocks').onclick = () => {
+    const container = document.getElementById('previewContainerBlocks');
+    container.style.display = 'block';
+    let html = '<div class="my-custom-section">';
+    quillEditors.forEach((item, index) => {
+      html += `<details style="margin-bottom:10px; border:1px solid #eee; border-radius:10px; padding:10px;"><summary style="font-weight:bold; cursor:pointer;">Блок ${index+1}</summary><div style="padding-top:10px;">${item.quill.root.innerHTML}</div></details>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  };
+
+  document.getElementById('showPreviewBtnList').onclick = () => {
+    const container = document.getElementById('previewContainerList');
+    container.style.display = 'block';
+    const h = listQuillEditors.find(i => i.type === 'Заголовок')?.quill.root.innerHTML || '';
+    const d = listQuillEditors.find(i => i.type === 'Описание')?.quill.root.innerHTML || '';
+    const l = listQuillEditors.find(i => i.type === 'Список')?.quill.root.innerHTML || '';
+    container.innerHTML = `<div class="my-custom-section"><h3>${h}</h3><p>${d}</p><ul>${l.replace(/<p>/g, '<li>').replace(/<\/p>/g, '</li>')}</ul></div>`;
+  };
+
+  document.getElementById('infoText').addEventListener('input', (e) => {
+    const val = e.target.value;
+    document.getElementById('previewText').innerHTML = val ? `⚠️ ${val}` : '⚠️ Ваш текст появится здесь';
+  });
+
+  function copyContent(btnElement) {
+    const mode = document.querySelector('.tool-section.active').id.replace('section-', '');
+    let fullHtml = '';
     
-    listQuillEditors.push({ quill: quill, type: type });
-  }); 
-}
-function updateListPreview() {
-  let html = '';
+    if (mode === 'table') {
+      const tableClone = table.cloneNode(true);
+      const styles = `
+<style type="text/css">
+.my-custom-section .copied-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); background: #fff; font-family: 'Montserrat', sans-serif; }
+.my-custom-section .copied-table thead { background: linear-gradient(135deg, #66bb6a, #43a047); color: #fff; }
+.my-custom-section .copied-table thead th { padding: 16px; font-size: 15px; text-align: center; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+.my-custom-section .copied-table tbody tr { transition: all 0.3s ease; }
+.my-custom-section .copied-table tbody tr:hover { background-color: #dcedc8; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transform: translateY(-2px); }
+.my-custom-section .copied-table td, .my-custom-section .copied-table th { padding: 14px 12px; font-size: 15px; border: none; vertical-align: middle; }
+.my-custom-section .copied-table td.product-name { text-align: left; font-weight: 600; color: #37474f; }
+.my-custom-section .copied-table td.icon-yes { text-align: center; }
+.my-custom-section .copied-table td.icon-no { text-align: center; }
+.my-custom-section td.icon-yes, .my-custom-section td.icon-no { text-align: center; font-size: 22px; }
+.my-custom-section .icon-yes::before { content: "✔"; color: #2e7d32; font-size: 22px; display: inline-block; }
+.my-custom-section .icon-no::before { content: "✘"; color: #c62828; font-size: 22px; display: inline-block; }
+</style>`;
 
-  // Собираем содержимое из всех редакторов
-  const headerContent = listQuillEditors.find(item => item.type === 'Заголовок')?.quill.root.innerHTML || '';
-  const descriptionContent = listQuillEditors.find(item => item.type === 'Описание')?.quill.root.innerHTML || '';
-  const listContent = listQuillEditors.find(item => item.type === 'Маркированный список')?.quill.root.innerHTML || '';
-
-  // Обработка заголовка - добавляем стиль text-align: center
-  const headerHtml = `
-<div class="warning">
-  <div class="warning-text" style="text-align: center;">${headerContent}</div>
-</div>
-  `;
-
-  // Обработка описания - оборачиваем в <p> и <div class="section">
-  const descriptionHtml = `
-<div class="section">
-  <p>${descriptionContent}</p>
-</div>
-  `;
-
-  // Обработка маркированного списка - добавляем структуру с h3 и ul
-  const listHtml = `
-<div class="section">
-  <h3>Характеристики</h3>
-  <ul>
-    ${listContent.replace(/<p>(.*?)<\/p>/g, '<li>$1</li>')}
-</ul>
-</div>
-  `;
-
-  // Объединяем все блоки
-  html = headerHtml + descriptionHtml + listHtml;
-
-  // Стили для предпросмотра маркированного списка
-  const style = `
-  <style type="text/css">/* Общие стили */
-
-.warning {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #3b8340, #3b8331);
-  padding: 20px 10px;
-  margin-bottom: 10px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  transition: box-shadow 1s ease, background 1s ease;
-}
-
-.warning:hover {
-  box-shadow: 0 6px 25px rgba(0,0,0,0.02);
-  background: linear-gradient(135deg, #3b8331, #3b8340);
-  transform: translateY(3px);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.warning-text {
-  font-size: 28px;
-  font-weight: 700;
-  color: #fff;
-}
-
-/* Остальные стили */
-.section {
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  max-width: 950px;
-  margin: 0 auto 10px auto;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 15px;
-  border-radius: 30px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-}
-
-.section h3 {
-  font-size: 22px;
-  margin-top: 3px;
-  margin-bottom: 8px;
-  color: #34495e;
-  border-bottom: 2px solid #bdc3c7;
-  padding-bottom: 15px;
-}
-
-.section ul {
-  list-style: none;
-  padding-left: 0;
-}
-/* Стили для вложенных списков */
-.section ul ul {
-  list-style: none; /* отключить стандартные маркеры */
-  padding-left: 20px;
-  margin-top: 10px;
-}
-.section ul li {
-  position: relative;
-  font-size: 16px;
-  padding-left: 4px;
-  margin-bottom: -10px;
-  color: #050505;
-}
-.section ul li::before {
-  content: "•";
-  font-weight: 900;
-  position: relative;
-  left: -3px;
-  top: 3.5px;
-  transform: translateY(-50%);
-  font-size: 26px;
-  color: #27ae60;
-}
-.section ul ul li {
-  position: relative;
-  padding-left: 20px;
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #050505;
-}
-
-/* Можно добавить свои маркеры для подпунктов */
-.section ul ul li::before {
-  content: "*"; /* или любой другой символ */
-  position: relative;
-  left: -5px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #27ae60;
-}
-
-.section p {
-  font-size: 16px;
-  line-height: 1.2;
-  color: #050505;
-  padding-left: 13px;
-}
-
-.section:hover {
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-      transform: translateY(-4px);
-   }
-/* Медиазапрос для мобильных устройств */
-@media (max-width:600px) {
-  /* Уменьшение шрифтов для мобильных */
-  .warning-text {
-    font-size: 16px !important;
-  }
-
-  .section h3 {
-    font-size: 18px !important;
-  }
-
-  .section ul li {
-    font-size: 12px !important;
-    padding-right: 5px
-  }
-
-  .section p {
-    font-size: 13px !important;
-    text-align: start
-  }
-  .section ul li::before {
-  content: "•";
-  left: -2%;
-  padding-right: -15px;
-  top: 5px;
-}
-}
-  </style>
-  `;
-
-  // Объединяем стили и содержимое
-  previewContent.innerHTML = style + `<div class="list-preview-container">${html}</div>`;
-}
-// Переключатель темы
-const customToggle = document.getElementById('custom-theme-toggle');
-const knob = customToggle.querySelector('.knob');
-
-// Функция для загрузки сохраненной темы
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  // По умолчанию светлая тема
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-    customToggle.style.background = '#555';
-    knob.style.transform = 'translateX(30px)';
-  } else {
-    // Светлая тема по умолчанию
-    document.body.classList.remove('dark-theme');
-    customToggle.style.background = '#FFA500';
-    knob.style.transform = 'translateX(0)';
-  }
-}
-
-// Функция для сохранения темы
-function saveTheme(isDark) {
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-// Инициализация темы при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-  loadTheme();
-});
-
-customToggle.addEventListener('click', () => {
-  const isDark = !document.body.classList.contains('dark-theme');
-  document.body.classList.toggle('dark-theme');
-
-  // Обновляем внешний вид переключателя
-  if (isDark) {
-    customToggle.style.background = '#555';
-    knob.style.transform = 'translateX(30px)';
-  } else {
-    customToggle.style.background = '#FFA500';
-    knob.style.transform = 'translateX(0)';
-  }
-  
-  // Сохраняем выбор пользователя
-  saveTheme(isDark);
-});
-
-// Убедитесь, что переключатель правильно отображает текущее состояние
-// Добавьте этот код в DOMContentLoaded для синхронизации
-document.addEventListener('DOMContentLoaded', () => {
-  // Проверяем начальное состояние
-  if (document.body.classList.contains('dark-theme')) {
-    customToggle.style.background = '#555';
-    knob.style.transform = 'translateX(30px)';
-  } else {
-    customToggle.style.background = '#FFA500';
-    knob.style.transform = 'translateX(0)';
-  }
-});
-// Обработчики для модального окна инструкции
-const instructionBtn = document.getElementById('instructionBtn');
-const instructionModal = document.getElementById('instructionModal');
-const closeModal = document.getElementById('closeModal');
-
-instructionBtn.onclick = () => {
-  instructionModal.classList.add('active');
-};
-
-closeModal.onclick = () => {
-  instructionModal.classList.remove('active');
-};
-
-// Закрытие модального окна при клике вне его
-instructionModal.addEventListener('click', (e) => {
-  if (e.target === instructionModal) {
-    instructionModal.classList.remove('active');
-  }
-});
-
-// Закрытие модального окна по клавише Escape
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && instructionModal.classList.contains('active')) {
-    instructionModal.classList.remove('active');
-  }
-});
-//скрипт баг-баг-репорта
-const feedbackBtn = document.getElementById('feedbackBtn');
-const feedbackModal = document.getElementById('feedbackModal');
-const closeFeedback = document.getElementById('closeFeedback');
-const reportBugBtn = document.getElementById('reportBugBtn');
-const wishBtn = document.getElementById('wishBtn');
-const feedbackForm = document.getElementById('feedbackForm');
-const feedbackPrompt = document.getElementById('feedbackPrompt');
-const feedbackInput = document.getElementById('feedbackInput');
-const sendBtn = document.getElementById('sendFeedbackBtn');
-const cancelBtn = document.getElementById('cancelFeedbackBtn');
-
-feedbackBtn.onclick = () => {
-  feedbackModal.classList.add('active');
-  // Сброс формы
-  feedbackForm.style.display = 'none';
-  feedbackInput.value = '';
-};
-
-closeFeedback.onclick = () => {
-  feedbackModal.classList.remove('active');
-};
-
-feedbackModal.addEventListener('click', (e) => {
-  if (e.target === feedbackModal) {
-    feedbackModal.classList.remove('active');
-  }
-});
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && feedbackModal.classList.contains('active')) {
-    feedbackModal.classList.remove('active');
-  }
-});
-
-// Выбор типа сообщения
-reportBugBtn.onclick = () => {
-  feedbackForm.style.display = 'block';
-  feedbackPrompt.innerText = 'Опишите проблему';
-  feedbackInput.placeholder = 'Опишите проблему или баг';
-};
-
-wishBtn.onclick = () => {
-  feedbackForm.style.display = 'block';
-  feedbackPrompt.innerText = 'Что можно улучшить';
-  feedbackInput.placeholder = 'Введите пожелание или предложение';
-};
-
-// Отправка формы
-sendBtn.onclick = () => {
-  const text = feedbackInput.value.trim();
-  if (!text) {
-    alert('Пожалуйста, введите текст.');
-    return;
-  }
-  // Тут можно отправить данные на сервер или сохранить
-  alert('Ваше сообщение отправлено! Благодарим за отзыв.');
-  feedbackModal.classList.remove('active');
-};
-
-// Отмена
-cancelBtn.onclick = () => {
-  feedbackModal.classList.remove('active');
-};
-// Обработка отправки бага
-const BUG_REPORT_URL = 'https://script.google.com/macros/s/AKfycbyMukNiNzcTtsmydQQJZeJJpVL3lsI17Oy8h_kDliY4WJybvSDZxM6-MS8GFzniKbuu/exec';
-document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
-  const description = document.getElementById('feedbackInput').value.trim();
-  if (description === '') {
-    alert('Пожалуйста, опишите проблему.');
-    return;
-  }
-  // Отправляем POST-запрос
-  fetch(BUG_REPORT_URL, {
-    method: 'POST',
-    contentType: 'application/json',
-    body: JSON.stringify({description: description})
-  })
-  .then(response => response.json())
-  .then(data => {
-    clearTimeout(spinnerTimeout);
-      spinner.style.display = 'none';
-    if (data.result === 'success') {
-      showNotification('Сообщение успешно отправлено!');
-    } else {
-      showNotification('Ошибка при отправке сообщения.');
-    }
-  })
-    // Очистка поля
-  document.getElementById('bugDescription').value = '';
-  
-});
-// Функция для загрузки changelog из Google Sheets
-// Обработчик для кнопки "Changelog"
-const changelogBtn = document.getElementById('changelogToggle');
-const changelogContainer = document.getElementById('changelogContainer');
-
-changelogBtn.addEventListener('click', () => {
-  if (changelogContainer.classList.contains('show')) {
-    changelogContainer.classList.remove('show');
-  } else {
-    loadChangelogFromSheet();
-    changelogContainer.classList.add('show');
-  }
-});
-
-// Функция для загрузки changelog из Google Sheets
-// Функция для загрузки changelog из Google Sheets
-function loadChangelogFromSheet() {
-  const sheetUrl = 'https://docs.google.com/spreadsheets/d/11i0Nwwbw09aJQFNkztrAUfx0G8PXzUfg1sZyjeIKjxQ/gviz/tq?sheet=Лист5';
-
-  fetch(sheetUrl)
-    .then(response => response.text())
-    .then(text => {
-      const jsonData = JSON.parse(text.substring(47).slice(0, -2));
-      const rows = jsonData.table.rows;
-      let entriesHtml = '';
-
-      function formatDateToDDMMYY(dateStr) {
-        const dateMatch = /Date\((\d+),\s*(\d+),\s*(\d+)\)/.exec(dateStr);
-        if (dateMatch) {
-          let year = parseInt(dateMatch[1], 10);
-          let month = parseInt(dateMatch[2], 10);
-          let day = parseInt(dateMatch[3], 10);
-
-          month += 1;
-
-          const dd = day.toString().padStart(2, '0');
-        const mm = month.toString().padStart(2, '0');
-        const yy = (year % 100).toString().padStart(2, '0');
-
-          return `${dd}.${mm}.${yy}`;
-        }
-        return dateStr;
-      }
-
-      rows.forEach(row => {
-        const version = row.c[0].v;
-        const rawDate = row.c[1].v;
-        const date = formatDateToDDMMYY(rawDate);
-        const type = row.c[2].v.trim();
-        let description = row.c[3].v;
-
-        // Обработка описания - каждая новая строка становится пунктом списка
-        const descriptionHtml = description
-          .split('\n')
-          .map(line => line.trim().startsWith('•') ? `<li>${line.trim()}</li>` : `<li>${line.trim()}</li>`)
-          .join('');
-
-        entriesHtml += `
-          <div class="changelog-entry">
-            <div class="changelog-header">
-              <span class="changelog-version">Версия ${version}</span>
-              <span class="changelog-date">${date}</span>
-              <span class="changelog-type ${type}">${type}</span>
-            </div>
-            <ul class="changelog-description">${descriptionHtml}</ul>
-          </div>`;
+      tableClone.className = 'copied-table';
+      Array.from(tableClone.querySelectorAll('td')).forEach(td => {
+        const cellText = td.innerText.trim();
+        if (cellText === '+') { td.innerHTML = '<i></i>'; td.className = 'icon-yes'; }
+        else if (cellText === '-') { td.innerHTML = '<i></i>'; td.className = 'icon-no'; }
       });
 
-      document.getElementById('changelogContent').innerHTML = entriesHtml;
-    })
-    .catch(() => {
-      document.getElementById('changelogContent').innerHTML = 'Не удалось загрузить историю изменений.';
-    });
-}
-// Инициализация при загрузке страницы - скрыть кнопку предпросмотра
-document.addEventListener('DOMContentLoaded', () => {
-  showPreviewBtn.style.display = 'none';
-  previewContainer.style.display = 'none';
-});
+      fullHtml = styles + `<div class="my-custom-section">${tableClone.outerHTML}</div>`;
+
+    } else if (mode === 'blocks') {
+      let resultHtml = '<div class="my-custom-section">';
+      quillEditors.forEach((quillObj, index) => {
+        resultHtml += `<div class="card"><h3>Блок ${index+1}</h3><p>${quillObj.quill.root.innerHTML}</p></div>`;
+      });
+      resultHtml += '</div>';
+      const styles = `<style>.my-custom-section .card { background: #fff; padding: 20px; margin: 10px 0; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }</style>`;
+      fullHtml = styles + resultHtml;
+
+    } else if (mode === 'list') {
+       const h = listQuillEditors.find(i => i.type === 'Заголовок')?.quill.root.innerHTML || '';
+       const d = listQuillEditors.find(i => i.type === 'Описание')?.quill.root.innerHTML || '';
+       const l = listQuillEditors.find(i => i.type === 'Список')?.quill.root.innerHTML || '';
+       const styles = `<style>.section { max-width: 950px; margin: 0 auto 10px; background: rgba(255,255,255,0.85); padding: 15px; border-radius: 30px; box-shadow: 0 12px 40px rgba(0,0,0,0.1); } .warning { background: linear-gradient(135deg, #3b8340, #3b8331); padding: 20px; border-radius: 20px; text-align: center; color: white; font-weight: bold; font-size: 28px; }</style>`;
+       fullHtml = styles + `<div class="my-custom-section"><div class="warning">${h}</div><div class="section"><p>${d}</p><h3>Характеристики</h3><ul>${l.replace(/<p>/g, '<li>').replace(/<\/p>/g, '</li>')}</ul></div></div>`;
+
+    } else if (mode === 'infoBox') {
+       const text = document.getElementById('infoText').value;
+       const styles = `<style>.custom-warning { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff0f5, #ffe0ec); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); } .warning-text { font-size: 25px; font-weight: 700; color: #d84315; }</style>`;
+       fullHtml = styles + `<div class="custom-warning"><div class="warning-text">⚠️ ${text}</div></div>`;
+    }
+
+    if(fullHtml) {
+        navigator.clipboard.writeText(fullHtml).then(() => showNotification(btnElement)).catch(() => fallbackCopy(fullHtml, btnElement));
+    }
+  }
+
+  function fallbackCopy(text, btnElement) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try { document.execCommand('copy'); showNotification(btnElement); } catch (err) { alert('Ошибка копирования.'); }
+    document.body.removeChild(textarea);
+  }
+
+  function showNotification(btnElement = null) {
+    const notif = document.getElementById('notification');
+    notif.classList.add('show');
+    
+    if (btnElement) {
+        btnElement.classList.add('copy-btn-animate', 'copied');
+        setTimeout(() => {
+            btnElement.classList.remove('copied');
+        }, 2000);
+    }
+
+    setTimeout(() => notif.classList.remove('show'), 3000);
+  }
+
+  const instrModal = document.getElementById('instructionModal');
+  document.getElementById('instructionBtnNav').onclick = () => instrModal.classList.add('active');
+  document.getElementById('closeModal').onclick = () => instrModal.classList.remove('active');
+  
+  window.onclick = (e) => {
+    if(e.target == instrModal) instrModal.classList.remove('active');
+  }
+
+  initTable();
+  table.dataset.initialized = 'true';
+
 </script>
 </body>
 </html>
