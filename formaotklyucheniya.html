@@ -5,540 +5,399 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <title>Форма добавления данных</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      --container-bg: rgba(255, 255, 255, 0.85);
-      --text-primary: #2d3748;
-      --text-secondary: #718096;
-      --text-label: #4a5568;
-      --border-color: rgba(102, 126, 234, 0.2);
-      --input-bg: rgba(255, 255, 255, 0.9);
-      --hint-color: #a0aec0;
-      --code-tag-bg: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-      --code-tag-border: rgba(102, 126, 234, 0.3);
-      --code-tag-color: #5a67d8;
-      --success-bg: rgba(72, 187, 120, 0.15);
-      --success-color: #276749;
-      --success-border: rgba(72, 187, 120, 0.3);
-      --error-bg: rgba(245, 101, 101, 0.15);
-      --error-color: #c53030;
-      --error-border: rgba(245, 101, 101, 0.3);
-      --loading-bg: rgba(236, 201, 75, 0.15);
-      --loading-color: #975a16;
-      --loading-border: rgba(236, 201, 75, 0.3);
-      --shadow: 0 25px 80px rgba(102, 126, 234, 0.25), 0 10px 30px rgba(0, 0, 0, 0.1);
-      --tooltip-bg: rgba(45, 55, 72, 0.95);
-      --tooltip-color: #fff;
-      --glass-blur: blur(20px);
-      --glow-color: rgba(102, 126, 234, 0.4);
+      --bg: #fafaf7;
+      --bg-soft: #ffffff;
+      --bg-softer: #f5f5f0;
+      --border: #e5e5e0;
+      --border-strong: #d4d4cf;
+      --text: #1a1a1a;
+      --text-soft: #666666;
+      --text-mute: #999999;
+      --accent: #1a1a1a;
+      --accent-soft: #f0f0ec;
+      --success: #10b981;
+      --danger: #dc2626;
+      --warning: #f59e0b;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
     }
 
     [data-theme="dark"] {
-      --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-      --container-bg: rgba(30, 30, 46, 0.85);
-      --text-primary: #e2e8f0;
-      --text-secondary: #a0aec0;
-      --text-label: #cbd5e0;
-      --border-color: rgba(102, 126, 234, 0.25);
-      --input-bg: rgba(42, 42, 58, 0.8);
-      --hint-color: #718096;
-      --code-tag-bg: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-      --code-tag-border: rgba(102, 126, 234, 0.4);
-      --code-tag-color: #a0b0ff;
-      --success-bg: rgba(72, 187, 120, 0.2);
-      --success-color: #9ae6b4;
-      --success-border: rgba(72, 187, 120, 0.4);
-      --error-bg: rgba(245, 101, 101, 0.2);
-      --error-color: #feb2b2;
-      --error-border: rgba(245, 101, 101, 0.4);
-      --loading-bg: rgba(236, 201, 75, 0.2);
-      --loading-color: #fefcbf;
-      --loading-border: rgba(236, 201, 75, 0.4);
-      --shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(102, 126, 234, 0.15);
-      --tooltip-bg: rgba(58, 58, 74, 0.95);
-      --tooltip-color: #e2e8f0;
-      --glass-blur: blur(20px);
-      --glow-color: rgba(102, 126, 234, 0.3);
+      --bg: #0f0f0f;
+      --bg-soft: #1a1a1a;
+      --bg-softer: #141414;
+      --border: #262626;
+      --border-strong: #333333;
+      --text: #f5f5f0;
+      --text-soft: #a0a0a0;
+      --text-mute: #666666;
+      --accent: #f5f5f0;
+      --accent-soft: #1f1f1f;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-gradient);
-      background-attachment: fixed;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      transition: background 0.5s ease;
-      position: relative;
-      overflow-x: hidden;
+      padding: 24px;
+      color: var(--text);
+      transition: background 0.3s ease, color 0.3s ease;
     }
-    body::before {
-      content: '';
-      position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 70%, rgba(102, 126, 234, 0.15) 0%, transparent 50%);
-      animation: float 20s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(30px, -30px) rotate(120deg); }
-      66% { transform: translate(-20px, 20px) rotate(240deg); }
-    }
+
     .container {
-      background: var(--container-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border-radius: 24px;
-      padding: 48px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
       width: 100%;
-      max-width: 580px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      max-width: 600px;
       position: relative;
-      z-index: 1;
-      overflow: hidden;
+      transition: all 0.3s ease;
     }
-    .container::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
-      animation: rotate 30s linear infinite;
-      pointer-events: none;
-      z-index: -1;
-    }
-    
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+
     .header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       gap: 16px;
     }
+
     h1 {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 600;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 12px;
-      color: var(--text-primary);
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      transition: color 0.3s ease;
-      text-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+      gap: 10px;
     }
+
     h1 svg { 
       flex-shrink: 0;
-      filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3));
-      transition: transform 0.3s ease;
+      color: var(--text);
     }
-    h1:hover svg {
-      transform: scale(1.1) rotate(-5deg);
-    }
+
     .theme-toggle {
-      background: rgba(102, 126, 234, 0.1);
-      border: 2px solid var(--border-color);
+      background: transparent;
+      border: 1px solid var(--border);
       cursor: pointer;
-      padding: 10px;
-      border-radius: 12px;
+      padding: 8px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      width: 44px;
-      height: 44px;
-      position: relative;
-      overflow: hidden;
+      transition: all 0.2s;
+      width: 36px;
+      height: 36px;
+      color: var(--text-soft);
     }
-    .theme-toggle::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+
     .theme-toggle:hover {
-      border-color: rgba(102, 126, 234, 0.5);
-      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-      transform: scale(1.05);
+      background: var(--accent-soft);
+      color: var(--text);
+      border-color: var(--border-strong);
     }
-    .theme-toggle:hover::before {
-      opacity: 1;
-    }
-    .theme-toggle svg { 
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      z-index: 1;
-    }
-    .theme-toggle:hover svg { 
-      transform: rotate(180deg) scale(1.1);
-    }
+
     .sun-icon { display: block; }
     .moon-icon { display: none; }
     [data-theme="dark"] .sun-icon { display: none; }
     [data-theme="dark"] .moon-icon { display: block; }
+
     .subtitle { 
-      text-align: center; 
-      color: var(--text-secondary); 
+      text-align: left; 
+      color: var(--text-soft); 
       margin-bottom: 32px; 
-      font-size: 15px;
-      font-weight: 400;
-      opacity: 0.9;
-      transition: color 0.3s ease;
+      font-size: 14px;
       line-height: 1.5;
     }
+
     .form-group { 
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       position: relative;
     }
+
     label {
       display: flex;
       align-items: center;
       margin-bottom: 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-mute);
       font-weight: 600;
-      color: var(--text-label);
-      font-size: 14px;
-      transition: all 0.3s ease;
-      letter-spacing: 0.3px;
+      gap: 6px;
     }
+
     label svg { 
-      margin-right: 8px; 
       flex-shrink: 0;
-      transition: all 0.3s ease;
+      color: var(--text-mute);
     }
-    label:hover svg {
-      transform: scale(1.15);
-      filter: drop-shadow(0 2px 6px rgba(102, 126, 234, 0.4));
-    }
+
     label .required { 
-      color: #e53e3e; 
-      margin-left: 3px;
-      font-weight: 700;
+      color: var(--danger); 
+      margin-left: 2px;
     }
+
+    .input-wrapper {
+      position: relative;
+    }
+
     textarea, input[type="text"], input[type="date"] {
       width: 100%;
-      padding: 14px 18px;
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      font-size: 15px;
-      font-family: inherit;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
       outline: none;
-      background: var(--input-bg);
-      color: var(--text-primary);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: var(--bg-soft);
+      color: var(--text);
+      cursor: pointer;
     }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      display: none;
+    }
+
     textarea:focus, input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 4px 20px rgba(102, 126, 234, 0.2);
-      background: rgba(255, 255, 255, 0.95);
-      transform: translateY(-1px);
+      border-color: var(--text);
     }
-    [data-theme="dark"] textarea:focus, 
-    [data-theme="dark"] input:focus {
-      background: rgba(42, 42, 58, 0.95);
-    }
+
     textarea { 
       resize: vertical; 
-      min-height: 130px;
-      line-height: 1.6;
+      min-height: 120px;
+      line-height: 1.5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
     }
+
     .hint {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: var(--hint-color);
+      color: var(--text-mute);
       margin-top: 6px;
-      transition: color 0.3s ease;
-      opacity: 0.8;
     }
-    .hint svg { 
-      flex-shrink: 0;
-      opacity: 0.7;
-    }
+
+    .hint svg { flex-shrink: 0; }
+
     .step-number {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      width: 24px;
-      height: 24px;
-      border-radius: 8px;
-      font-size: 12px;
+      background: var(--accent-soft);
+      color: var(--text);
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      font-size: 11px;
       font-weight: 700;
-      margin-right: 8px;
+      font-family: 'JetBrains Mono', monospace;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s ease;
     }
-    label:hover .step-number {
-      transform: scale(1.1) rotate(-5deg);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
+
     .codes-preview {
       margin-top: 10px;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       min-height: 0;
     }
+
     .codes-preview:empty { display: none; }
+
     .code-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: var(--code-tag-bg);
-      border: 1.5px solid var(--code-tag-border);
-      color: var(--code-tag-color);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      animation: tagAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      cursor: default;
+      background: var(--bg-softer);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+      animation: tagAppear 0.2s ease;
     }
+
     .code-tag:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      border-color: rgba(102, 126, 234, 0.5);
+      border-color: var(--border-strong);
     }
+
     .code-tag.duplicate {
-      background: linear-gradient(135deg, rgba(229, 62, 62, 0.15) 0%, rgba(192, 57, 43, 0.15) 100%);
-      border-color: rgba(229, 62, 62, 0.4);
-      color: #e53e3e;
-      animation: shake 0.5s ease;
+      background: rgba(220, 38, 38, 0.05);
+      border-color: var(--danger);
+      color: var(--danger);
+      animation: shake 0.4s ease;
     }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-3px); }
       75% { transform: translateX(3px); }
     }
-    .code-tag svg { 
-      flex-shrink: 0;
-      transition: transform 0.3s ease;
-    }
-    .code-tag:hover svg {
-      transform: scale(1.2);
-    }
-    .codes-ellipsis {
-      color: var(--hint-color);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 8px;
-      transition: color 0.3s ease;
-      opacity: 0.7;
-    }
+
     @keyframes tagAppear {
-      from { 
-        opacity: 0; 
-        transform: scale(0.8) translateY(10px); 
-      }
-      to { 
-        opacity: 1; 
-        transform: scale(1) translateY(0); 
-      }
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
+
+    .codes-ellipsis {
+      color: var(--text-mute);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 8px;
+    }
+
     .duplicate-warning {
       margin-top: 10px;
       padding: 10px 14px;
-      background: rgba(236, 201, 75, 0.15);
-      border: 1.5px solid rgba(236, 201, 75, 0.3);
-      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-sm);
       font-size: 13px;
-      color: #975a16;
+      color: var(--warning);
       display: flex;
       align-items: center;
       gap: 8px;
-      animation: warningSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      animation: warningSlide 0.3s ease;
     }
-    [data-theme="dark"] .duplicate-warning {
-      background: rgba(236, 201, 75, 0.2);
-      border-color: rgba(236, 201, 75, 0.4);
-      color: #fefcbf;
-    }
+
     @keyframes warningSlide {
-      from { 
-        opacity: 0; 
-        transform: translateY(-10px); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      }
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
+
     .button-row {
       display: flex;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 32px;
     }
+
     button {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 16px 24px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-soft);
+      color: var(--text);
     }
-    button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    button:active::before {
-      width: 300px;
-      height: 300px;
-    }
-    button svg { 
-      flex-shrink: 0;
-      transition: transform 0.3s ease;
-    }
-    button:hover svg {
-      transform: scale(1.15);
-    }
+
+    button svg { flex-shrink: 0; }
+
     #submitBtn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
       flex: 1;
     }
+
     #submitBtn:hover { 
-      transform: translateY(-3px); 
-      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5), 0 4px 15px rgba(118, 75, 162, 0.4);
+      opacity: 0.85;
     }
-    #submitBtn:active { 
-      transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
+
     #submitBtn:disabled { 
-      opacity: 0.6; 
+      opacity: 0.4; 
       cursor: not-allowed; 
-      transform: none; 
-      box-shadow: none; 
     }
+
     #clearBtn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 2px solid var(--border-color);
-      flex: 0 0 auto;
-      padding: 16px 24px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--text-soft);
     }
+
     #clearBtn:hover { 
-      background: rgba(229, 62, 62, 0.1); 
-      border-color: #e53e3e; 
-      color: #e53e3e;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(229, 62, 62, 0.2);
+      background: var(--accent-soft); 
+      color: var(--text);
+      border-color: var(--border-strong);
     }
-    #clearBtn:active {
-      transform: translateY(0);
-    }
+
     .status {
       margin-top: 20px;
-      padding: 16px 20px;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 14px;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      text-align: left;
+      font-size: 13px;
       display: none;
       opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transform: translateY(-5px);
+      transition: all 0.3s ease;
       font-weight: 500;
+      border: 1px solid transparent;
     }
+
     .status.show {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 10px;
       opacity: 1;
       transform: translateY(0);
     }
+
     .status.success { 
-      background: var(--success-bg); 
-      color: var(--success-color); 
-      border: 1.5px solid var(--success-border);
-      box-shadow: 0 4px 20px rgba(72, 187, 120, 0.2);
+      background: rgba(16, 185, 129, 0.1); 
+      color: var(--success); 
+      border-color: rgba(16, 185, 129, 0.2);
     }
+
     .status.error { 
-      background: var(--error-bg); 
-      color: var(--error-color); 
-      border: 1.5px solid var(--error-border);
-      box-shadow: 0 4px 20px rgba(245, 101, 101, 0.2);
+      background: rgba(220, 38, 38, 0.1); 
+      color: var(--danger); 
+      border-color: rgba(220, 38, 38, 0.2);
     }
+
     .status.loading { 
-      background: var(--loading-bg); 
-      color: var(--loading-color); 
-      border: 1.5px solid var(--loading-border); 
+      background: var(--bg-softer); 
+      color: var(--text-soft); 
+      border-color: var(--border);
       flex-wrap: wrap;
-      box-shadow: 0 4px 20px rgba(236, 201, 75, 0.2);
     }
+
     .progress-bar {
       width: 100%;
-      height: 4px;
-      background: rgba(102, 126, 234, 0.2);
+      height: 2px;
+      background: var(--border);
       border-radius: 2px;
       overflow: hidden;
       margin-top: 10px;
-      transition: background 0.3s ease;
     }
+
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-      background-size: 200% 100%;
-      animation: loading 2s ease-in-out infinite;
-      border-radius: 2px;
+      background: var(--text);
+      animation: loading 1.5s ease-in-out infinite;
     }
+
     @keyframes loading { 
-      0% { width: 0%; background-position: 0% 50%; } 
-      50% { width: 70%; background-position: 100% 50%; } 
-      100% { width: 100%; background-position: 200% 50%; } 
+      0% { width: 0%; opacity: 0.5; } 
+      50% { width: 70%; opacity: 1; } 
+      100% { width: 100%; opacity: 0.5; } 
     }
+
     .network-status {
       position: absolute;
       top: 16px;
@@ -546,76 +405,265 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
-      border-radius: 16px;
+      padding: 4px 10px;
+      border-radius: 100px;
       font-size: 11px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1.5px solid transparent;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid transparent;
+      color: var(--text-mute);
     }
+
     .network-status.online {
-      background: rgba(72, 187, 120, 0.15);
-      color: var(--success-color);
-      border-color: rgba(72, 187, 120, 0.3);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.2);
     }
+
     .network-status.offline {
-      background: rgba(245, 101, 101, 0.15);
-      color: var(--error-color);
-      border-color: rgba(245, 101, 101, 0.3);
+      background: rgba(220, 38, 38, 0.1);
+      color: var(--danger);
+      border-color: rgba(220, 38, 38, 0.2);
     }
-    .network-status svg { 
-      flex-shrink: 0;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
+
     .tooltip-container {
       position: relative;
       display: inline-flex;
       align-items: center;
       cursor: help;
     }
+
     .tooltip-text {
       visibility: hidden;
       opacity: 0;
       position: absolute;
-      bottom: calc(100% + 10px);
+      bottom: calc(100% + 8px);
       left: 50%;
-      transform: translateX(-50%) translateY(5px);
-      background: var(--tooltip-bg);
-      color: var(--tooltip-color);
-      padding: 10px 14px;
-      border-radius: 10px;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--bg-soft);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 400;
       white-space: nowrap;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       z-index: 100;
       pointer-events: none;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      font-family: 'JetBrains Mono', monospace;
     }
+
     .tooltip-text::after {
       content: '';
       position: absolute;
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: var(--tooltip-bg);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
     }
+
     .tooltip-container:hover .tooltip-text {
       visibility: visible;
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
-    
+
+    /* Calendar Styles */
+    .calendar-container {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .calendar-container.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .calendar {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      padding: 20px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-month-year {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    .calendar-nav-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: var(--text-soft);
+    }
+
+    .calendar-nav-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .calendar-nav-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-mute);
+      padding: 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+      position: relative;
+    }
+
+    .calendar-day:hover:not(.empty):not(.disabled) {
+      background: var(--accent-soft);
+    }
+
+    .calendar-day.empty {
+      cursor: default;
+    }
+
+    .calendar-day.disabled {
+      color: var(--text-mute);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .calendar-day.today {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .calendar-day.today::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: var(--text);
+      border-radius: 50%;
+    }
+
+    .calendar-day.selected {
+      background: var(--text);
+      color: var(--bg);
+      font-weight: 600;
+    }
+
+    .calendar-day.selected:hover {
+      background: var(--text);
+      opacity: 0.9;
+    }
+
+    .calendar-footer {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-footer button {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .calendar-footer .today-btn {
+      background: var(--bg-softer);
+      border-color: var(--border);
+    }
+
+    .calendar-footer .today-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    .calendar-footer .clear-btn {
+      color: var(--text-soft);
+    }
+
+    .calendar-footer .clear-btn:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px; }
+      h1 { font-size: 18px; }
+      .button-row { flex-direction: column; }
+      button { width: 100%; }
+      .calendar { max-width: 100%; }
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -632,17 +680,17 @@
 
     <div class="header-row">
       <h1>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
           <line x1="16" y1="13" x2="8" y2="13"/>
           <line x1="16" y1="17" x2="8" y2="17"/>
           <polyline points="10 9 9 9 8 9"/>
         </svg>
-        Форма добавления данных
+        Добавление данных
       </h1>
       <button type="button" id="themeToggle" class="theme-toggle" title="Переключить тему">
-        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
           <line x1="12" y1="21" x2="12" y2="23"/>
@@ -653,27 +701,28 @@
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
-        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
     </div>
-    <p class="subtitle">Заполните все поля для добавления записей в таблицу</p>
+    <p class="subtitle">Заполните поля для добавления записей в таблицу. Данные сохраняются автоматически.</p>
 
     <form id="dataForm">
       <div class="form-group">
         <label>
           <span class="step-number">1</span>
           <span class="tooltip-container">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
             <span class="tooltip-text">Пример: Н154106, Н153928 или Н1578001 Н1578002</span>
           </span>
           Коды 1С <span class="required">*</span>
         </label>
-        <textarea id="codes1C" name="codes1C" placeholder="Н154106, Н153928, Н153929&#10;или&#10;Н1578001 Н1578002&#10;или&#10;Н145175; Н138337" required></textarea>
+        <textarea id="codes1C" name="codes1C" placeholder="Н154106, Н153928, Н153929&#10;или&#10;Н1578001 Н1578002" required></textarea>
         <div id="codesPreview" class="codes-preview"></div>
         <div id="duplicateWarning" class="duplicate-warning" style="display: none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -684,7 +733,7 @@
           <span id="duplicateText">Найдены дубликаты</span>
         </div>
         <p class="hint">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="16" x2="12" y2="12"/>
             <line x1="12" y1="8" x2="12.01" y2="8"/>
@@ -696,21 +745,57 @@
       <div class="form-group">
         <label>
           <span class="step-number">2</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          Планируемая дата отключения <span class="required">*</span>
+          Планируемая дата <span class="required">*</span>
         </label>
-        <input type="date" id="date" name="date" required>
+        <div class="input-wrapper">
+          <input type="text" id="dateDisplay" name="dateDisplay" placeholder="Выберите дату" readonly>
+          <input type="hidden" id="date" name="date">
+          <div class="calendar-container" id="calendarContainer">
+            <div class="calendar">
+              <div class="calendar-header">
+                <div class="calendar-month-year" id="calendarMonthYear"></div>
+                <div class="calendar-nav">
+                  <button type="button" class="calendar-nav-btn" id="prevMonth">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="calendar-nav-btn" id="nextMonth">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="calendar-weekdays">
+                <div class="calendar-weekday">Пн</div>
+                <div class="calendar-weekday">Вт</div>
+                <div class="calendar-weekday">Ср</div>
+                <div class="calendar-weekday">Чт</div>
+                <div class="calendar-weekday">Пт</div>
+                <div class="calendar-weekday">Сб</div>
+                <div class="calendar-weekday">Вс</div>
+              </div>
+              <div class="calendar-days" id="calendarDays"></div>
+              <div class="calendar-footer">
+                <button type="button" class="today-btn" id="todayBtn">Сегодня</button>
+                <button type="button" class="clear-btn" id="clearDateBtn">Очистить</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
         <label>
           <span class="step-number">3</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
             <line x1="3" y1="6" x2="21" y2="6"/>
             <path d="M16 10a4 4 0 0 1-8 0"/>
@@ -724,25 +809,25 @@
       <div class="form-group">
         <label>
           <span class="step-number">4</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 11 12 14 22 4"/>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
           </svg>
           Задача <span class="required">*</span>
         </label>
-        <input type="text" id="task" name="task" placeholder="Номер задачи, ссылка или описание" required>
+        <input type="text" id="task" name="task" placeholder="Номер задачи или описание" required>
       </div>
 
       <div class="button-row">
         <button type="submit" id="submitBtn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"/>
             <polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
           Отправить
         </button>
         <button type="button" id="clearBtn" title="Очистить форму">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           </svg>
@@ -761,6 +846,8 @@
       var saved = localStorage.getItem('theme');
       if (saved) {
         document.documentElement.setAttribute('data-theme', saved);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
       }
     }
     initTheme();
@@ -781,14 +868,14 @@
     var MAX_VISIBLE = 6;
 
     function parseCodes(raw) {
-  var matches = raw.match(/[A-Za-zА-Яа-яЁё]+\d*(?:-[A-Za-z]+)?/g);
-  if (!matches) return [];
-  return matches
-    .filter(function(code) {
-      if (/\d/.test(code)) return true;
-      return code.length >= 7;
-    });
-}
+      var matches = raw.match(/[A-Za-zА-Яа-яЁё]+\d*(?:-[A-Za-z]+)?/g);
+      if (!matches) return [];
+      return matches
+        .filter(function(code) {
+          if (/\d/.test(code)) return true;
+          return code.length >= 7;
+        });
+    }
 
     function findDuplicates(codes) {
       var seen = {};
@@ -831,7 +918,7 @@
         if (duplicates.indexOf(code) !== -1) {
           tag.classList.add('duplicate');
         }
-        tag.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + code;
+        tag.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + code;
         codesPreview.appendChild(tag);
       });
 
@@ -862,7 +949,7 @@
       }, 500);
     }
 
-    ['date', 'supplier', 'task'].forEach(function(id) {
+    ['supplier', 'task'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', autoSave);
     });
 
@@ -872,7 +959,10 @@
         try {
           var data = JSON.parse(saved);
           if (data.codes1C) codesTextarea.value = data.codes1C;
-          if (data.date) document.getElementById('date').value = data.date;
+          if (data.date) {
+            document.getElementById('date').value = data.date;
+            updateDateDisplay(data.date);
+          }
           if (data.supplier) document.getElementById('supplier').value = data.supplier;
           if (data.task) document.getElementById('task').value = data.task;
           updateCodesPreview();
@@ -910,6 +1000,7 @@
       }
       
       document.getElementById('dataForm').reset();
+      document.getElementById('dateDisplay').value = '';
       codesPreview.innerHTML = '';
       duplicateWarning.style.display = 'none';
       clearDraft();
@@ -1000,7 +1091,7 @@
       var task = document.getElementById('task').value.trim();
       
       if (!codes1CRaw || !date || !supplier || !task) {
-        showStatus('error', 'Заполните все поля!',
+        showStatus('error', 'Заполните все обязательные поля',
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>');
         return;
       }
@@ -1037,24 +1128,24 @@
       }
       
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Отправка ' + codes.length + ' кодов...';
+      submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Отправка...';
       showStatus('loading', 'Отправка данных, подождите...',
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>');
       
       sendPayload(payload, function(success) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Отправить';
+        submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Отправить';
         
         if (success) {
           saveSupplierTemplate(supplier);
-          showStatus('success', '✅ Данные отправлены!',
+          showStatus('success', 'Данные успешно отправлены',
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>');
           document.getElementById('dataForm').reset();
           codesPreview.innerHTML = '';
           duplicateWarning.style.display = 'none';
           clearDraft();
         } else {
-          showStatus('error', '❌ Ошибка соединения. Попробуйте ещё раз.',
+          showStatus('error', 'Ошибка соединения. Попробуйте ещё раз.',
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>');
         }
       });
@@ -1073,6 +1164,174 @@
         statusDiv.classList.add('show', type);
       }, 10);
     }
+
+    // Calendar functionality
+    var calendarContainer = document.getElementById('calendarContainer');
+    var dateInput = document.getElementById('date');
+    var dateDisplay = document.getElementById('dateDisplay');
+    var calendarMonthYear = document.getElementById('calendarMonthYear');
+    var calendarDays = document.getElementById('calendarDays');
+    var prevMonthBtn = document.getElementById('prevMonth');
+    var nextMonthBtn = document.getElementById('nextMonth');
+    var todayBtn = document.getElementById('todayBtn');
+    var clearDateBtn = document.getElementById('clearDateBtn');
+
+    var currentDate = new Date();
+    var selectedDate = null;
+    var calendarMonth = currentDate.getMonth();
+    var calendarYear = currentDate.getFullYear();
+
+    var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+    function updateDateDisplay(dateStr) {
+      if (!dateStr) {
+        dateDisplay.value = '';
+        return;
+      }
+      var parts = dateStr.split('-');
+      if (parts.length === 3) {
+        dateDisplay.value = parts[2] + '.' + parts[1] + '.' + parts[0];
+      }
+    }
+
+    function formatDate(date) {
+      var year = date.getFullYear();
+      var month = String(date.getMonth() + 1).padStart(2, '0');
+      var day = String(date.getDate()).padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+
+    function renderCalendar() {
+      calendarMonthYear.textContent = monthNames[calendarMonth] + ' ' + calendarYear;
+      
+      var firstDay = new Date(calendarYear, calendarMonth, 1);
+      var lastDay = new Date(calendarYear, calendarMonth + 1, 0);
+      var startDay = firstDay.getDay() || 7;
+      var totalDays = lastDay.getDate();
+      
+      calendarDays.innerHTML = '';
+      
+      var today = new Date();
+      var minDate = new Date();
+      minDate.setDate(minDate.getDate());
+      
+      for (var i = 1; i < startDay; i++) {
+        var emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day empty';
+        calendarDays.appendChild(emptyDay);
+      }
+      
+      for (var day = 1; day <= totalDays; day++) {
+        var dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        dayEl.textContent = day;
+        
+        var currentDateObj = new Date(calendarYear, calendarMonth, day);
+        
+        if (currentDateObj < minDate) {
+          dayEl.classList.add('disabled');
+        } else {
+          dayEl.addEventListener('click', function() {
+            selectDate(this);
+          });
+        }
+        
+        if (currentDateObj.toDateString() === today.toDateString()) {
+          dayEl.classList.add('today');
+        }
+        
+        if (selectedDate && currentDateObj.toDateString() === selectedDate.toDateString()) {
+          dayEl.classList.add('selected');
+        }
+        
+        calendarDays.appendChild(dayEl);
+      }
+    }
+
+    function selectDate(dayEl) {
+      var day = parseInt(dayEl.textContent);
+      selectedDate = new Date(calendarYear, calendarMonth, day);
+      dateInput.value = formatDate(selectedDate);
+      updateDateDisplay(dateInput.value);
+      autoSave();
+      hideCalendar();
+      renderCalendar();
+    }
+
+    function showCalendar() {
+      if (dateInput.value) {
+        var parts = dateInput.value.split('-');
+        if (parts.length === 3) {
+          calendarMonth = parseInt(parts[1]) - 1;
+          calendarYear = parseInt(parts[0]);
+          selectedDate = new Date(calendarYear, calendarMonth, parseInt(parts[2]));
+        }
+      }
+      calendarContainer.classList.add('show');
+      renderCalendar();
+    }
+
+    function hideCalendar() {
+      calendarContainer.classList.remove('show');
+    }
+
+    dateDisplay.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (calendarContainer.classList.contains('show')) {
+        hideCalendar();
+      } else {
+        showCalendar();
+      }
+    });
+
+    prevMonthBtn.addEventListener('click', function() {
+      calendarMonth--;
+      if (calendarMonth < 0) {
+        calendarMonth = 11;
+        calendarYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', function() {
+      calendarMonth++;
+      if (calendarMonth > 11) {
+        calendarMonth = 0;
+        calendarYear++;
+      }
+      renderCalendar();
+    });
+
+    todayBtn.addEventListener('click', function() {
+      var today = new Date();
+      selectedDate = today;
+      dateInput.value = formatDate(today);
+      updateDateDisplay(dateInput.value);
+      calendarMonth = today.getMonth();
+      calendarYear = today.getFullYear();
+      autoSave();
+      hideCalendar();
+      renderCalendar();
+    });
+
+    clearDateBtn.addEventListener('click', function() {
+      dateInput.value = '';
+      selectedDate = null;
+      updateDateDisplay('');
+      hideCalendar();
+      renderCalendar();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!calendarContainer.contains(e.target) && e.target !== dateDisplay) {
+        hideCalendar();
+      }
+    });
+
+    calendarContainer.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
 
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('date').setAttribute('min', today);
