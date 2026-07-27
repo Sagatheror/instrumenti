@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Центр инструментов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,51 +15,65 @@
         }
 
         :root {
-            --bg-primary: #05050F;
-            --text-primary: #EFF6FF;
-            --text-secondary: #CBD5E1;
-            --accent-1: #2DD4BF;
-            --border-color: rgba(45, 212, 191, 0.25);
-            --window-bg: rgba(10, 15, 30, 0.75);
-            --dock-bg: rgba(15, 25, 45, 0.65);
-            --glow-color: rgba(45, 212, 191, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.5);
-            --noise-opacity: 0.03;
+            --bg-primary: #fafaf7;
+            --bg-soft: #ffffff;
+            --bg-softer: #f5f5f0;
+            --border: #e5e5e0;
+            --border-strong: #d4d4cf;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-mute: #999999;
+            --accent: #1a1a1a;
+            --accent-soft: #f0f0ec;
+            --success: #10b981;
+            --danger: #dc2626;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.08);
+            --noise-opacity: 0.02;
         }
 
-        [data-theme="light"] {
-            --bg-primary: #F0F4FF;
-            --text-primary: #0A0A1A;
-            --text-secondary: #475569;
-            --window-bg: rgba(255, 255, 255, 0.75);
-            --dock-bg: rgba(255, 255, 255, 0.65);
-            --border-color: rgba(45, 212, 191, 0.35);
-            --shadow-color: rgba(0, 0, 0, 0.15);
-            --noise-opacity: 0.02;
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-soft: #222222;
+            --bg-softer: #2a2a2a;
+            --border: #333333;
+            --border-strong: #444444;
+            --text-primary: #f4f4f4;
+            --text-secondary: #a0a0a0;
+            --text-mute: #666666;
+            --accent: #f4f4f4;
+            --accent-soft: #333333;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.4);
         }
 
         body {
             background: var(--bg-primary);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             color: var(--text-primary);
-            transition: background 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.6s ease;
+            transition: background 0.4s ease, color 0.4s ease;
             position: relative;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        /* Background Layer */
         .background-layer {
             position: fixed;
             inset: 0;
             z-index: -1;
             background-size: cover;
             background-position: center;
-            transition: opacity 0.6s ease, filter 0.6s ease;
+            transition: opacity 0.4s ease;
         }
 
-        /* Noise Texture Overlay */
         .noise-overlay {
             position: fixed;
             inset: 0;
@@ -73,15 +88,7 @@
             inset: 0;
             z-index: 0;
             pointer-events: none;
-        }
-
-        .ambient-glow {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at 50% 50%, rgba(45,212,191,0.08) 0%, transparent 70%);
-            transition: opacity 0.6s ease;
+            opacity: 0.4;
         }
 
         /* --- Top Bar --- */
@@ -91,68 +98,63 @@
             left: 0;
             right: 0;
             height: 48px;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(20px) saturate(180%);
+            background: var(--bg-soft);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 1.5rem;
-            font-size: 0.95rem;
-            color: var(--text-primary);
             z-index: 5000;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-            transition: all 0.4s ease;
-        }
-
-        .top-bar-left { display: flex; align-items: center; gap: 1.5rem; }
-        
-        .active-app-title {
-            opacity: 0.8;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: opacity 0.3s;
-        }
-
-        .top-bar-right { display: flex; align-items: center; gap: 1.2rem; }
-
-        .clock-display {
-            font-variant-numeric: tabular-nums;
-            font-weight: 600;
-            color: var(--text-secondary);
-            background: rgba(255,255,255,0.05);
-            padding: 4px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
         }
 
-        .top-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.05);
+        .top-bar-left { display: flex; align-items: center; gap: 1rem; }
+        
+        .active-app-title {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             color: var(--text-primary);
+        }
+
+        .top-bar-right { display: flex; align-items: center; gap: 0.8rem; }
+
+        .clock-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-softer);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .top-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
             cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: all 0.2s;
         }
 
         .top-btn:hover {
-            background: var(--accent-1);
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--glow-color);
-            border-color: var(--accent-1);
+            background: var(--accent-soft);
+            color: var(--text-primary);
+            border-color: var(--border);
         }
 
-        .top-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .top-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
         /* --- Desktop & Windows --- */
         .desktop {
@@ -160,7 +162,7 @@
             top: 48px;
             left: 0;
             right: 0;
-            bottom: 100px;
+            bottom: 90px;
             z-index: 10;
             overflow: hidden;
         }
@@ -173,97 +175,102 @@
             text-align: center;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.4;
-            transition: opacity 0.5s;
+            opacity: 0.5;
+            transition: opacity 0.4s;
+        }
+
+        .welcome-widget h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-widget p {
+            color: var(--text-secondary);
+            font-size: 1rem;
         }
 
         .desktop.has-windows .welcome-widget { opacity: 0; }
 
         .os-window {
             position: absolute;
-            background: var(--window-bg);
-            backdrop-filter: blur(30px) saturate(150%);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            box-shadow: 
-                0 20px 50px var(--shadow-color),
-                inset 0 0 0 1px rgba(255,255,255,0.05);
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             min-width: 400px;
             min-height: 300px;
-            transition: 
-                opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
-                transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
-                width 0.1s, 
-                height 0.1s,
-                box-shadow 0.3s ease,
-                border-color 0.4s ease;
-            animation: windowPop 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), width 0.1s, height 0.1s, box-shadow 0.3s ease;
+            animation: windowPop 0.3s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         @keyframes windowPop {
-            from { opacity: 0; transform: scale(0.92) translateY(20px); }
+            from { opacity: 0; transform: scale(0.96) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .os-window.focused {
-            box-shadow: 
-                0 30px 70px var(--shadow-color),
-                0 0 0 1px var(--accent-1),
-                inset 0 0 20px rgba(45, 212, 191, 0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px var(--border-strong);
             z-index: 9999 !important;
         }
 
         .window-header {
-            height: 44px;
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            height: 40px;
+            background: var(--bg-softer);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 16px;
             cursor: grab;
-            transition: background 0.3s;
+            transition: background 0.2s;
         }
 
         .window-header:active { cursor: grabbing; }
-        .window-header:hover { background: rgba(255,255,255,0.04); }
+        .window-header:hover { background: var(--bg-primary); }
 
         .window-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
+            gap: 8px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
+            letter-spacing: -0.3px;
         }
 
-        .window-title svg { width: 16px; height: 16px; fill: var(--accent-1); }
+        .window-title svg { width: 14px; height: 14px; fill: var(--text-secondary); }
 
-        .window-controls { display: flex; gap: 8px; }
+        .window-controls { display: flex; gap: 6px; }
 
         .win-btn {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             cursor: pointer;
             position: relative;
-            transition: transform 0.2s;
+            transition: transform 0.2s, filter 0.2s;
+            border: 1px solid rgba(0,0,0,0.1);
         }
 
-        .win-btn:hover { transform: scale(1.15); filter: brightness(1.2); }
-        .win-close { background: #FF5F56; }
-        .win-min { background: #FFBD2E; }
-        .win-max { background: #27C93F; }
+        .win-btn:hover { transform: scale(1.1); filter: brightness(0.9); }
+        .win-close { background: #ff5f57; border-color: #e0443e; }
+        .win-min { background: #febc2e; border-color: #d89e24; }
+        .win-max { background: #28c840; border-color: #1aab29; }
 
         .window-content {
             flex: 1;
             position: relative;
             background: var(--bg-primary);
             overflow: hidden;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
         }
 
         iframe {
@@ -274,10 +281,7 @@
             pointer-events: auto;
             background: var(--bg-primary);
         }
-.os-window.maximized .window-content,
-.os-window:not(.maximized) .window-content {
-    min-height: 200px;
-}
+
         /* --- Resizing Handles --- */
         .resize-handle { position: absolute; z-index: 100; }
         .rh-r { top: 0; right: 0; bottom: 0; width: 6px; cursor: e-resize; }
@@ -295,223 +299,317 @@
             z-index: 6000;
             display: flex;
             align-items: flex-end;
-            padding: 12px;
-            background: var(--dock-bg);
-            backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            box-shadow: 
-                0 15px 40px var(--shadow-color),
-                inset 0 0 0 1px rgba(255,255,255,0.05);
-            gap: 12px;
-            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            padding: 10px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         .dock-item {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.05);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            background: var(--bg-softer);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             position: relative;
-            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
             color: var(--text-secondary);
             border: 1px solid transparent;
         }
 
         .dock-item svg {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             fill: currentColor;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.2s;
         }
 
         .dock-item:hover {
-            transform: translateY(-12px) scale(1.15);
-            background: rgba(45,212,191,0.15);
-            border-color: var(--border-color);
-            color: var(--accent-1);
-            box-shadow: 0 10px 25px var(--glow-color);
+            transform: translateY(-8px) scale(1.1);
+            background: var(--bg-primary);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
         }
 
-        .dock-item:hover svg {
-            transform: scale(1.1) rotate(5deg);
+        .dock-item.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
         }
-
-        .dock-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            width: 6px;
-            height: 6px;
-            background: var(--accent-1);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-1);
-            transition: all 0.3s ease;
+        
+        .dock-item.active:hover {
+            color: var(--bg-primary);
         }
 
         .dock-tooltip {
             position: absolute;
-            top: -45px;
-            background: var(--window-bg);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: var(--text-primary);
+            top: -40px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s;
             white-space: nowrap;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            font-weight: 600;
-            backdrop-filter: blur(10px);
+            font-family: 'Inter', sans-serif;
         }
 
         .dock-item:hover .dock-tooltip { opacity: 1; }
 
-        /* --- Settings & Tutorial --- */
+        /* --- Settings Panel --- */
         .settings-panel {
             position: fixed;
             top: 60px;
             right: -420px;
-            width: 400px;
-            height: calc(100vh - 160px);
-            background: var(--window-bg);
-            backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            width: 380px;
+            height: calc(100vh - 140px);
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             z-index: 5500;
-            transition: right 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            padding: 2rem;
+            transition: right 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            padding: 24px;
             overflow-y: auto;
-            box-shadow: -20px 0 60px var(--shadow-color);
+            box-shadow: var(--shadow-lg);
         }
 
-        .settings-panel.open { right: 2rem; }
+        .settings-panel.open { right: 1.5rem; }
 
-        .settings-group { margin-bottom: 2rem; }
-        .settings-group label { display: block; margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-        
-        .options { display: flex; gap: 0.8rem; flex-wrap: wrap; }
-        .options button {
-            padding: 0.6rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-primary);
+        .settings-panel h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: -0.3px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .control-section { margin-bottom: 28px; }
+        .control-section:last-child { margin-bottom: 0; }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-mute);
+            font-weight: 600;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-selector { display: flex; gap: 4px; flex-wrap: wrap; }
+
+        .grid-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-soft);
             cursor: pointer;
-            transition: 0.3s;
             font-weight: 500;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace;
         }
-        .options button.active { background: var(--accent-1); color: #000; border-color: var(--accent-1); }
-        
-        .color-picker-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.8rem; }
-        .color-option { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.active { border-color: #fff; box-shadow: 0 0 15px var(--glow-color); }
 
+        .grid-btn:hover { background: var(--accent-soft); border-color: var(--border-strong); }
+        .grid-btn.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .setting-item label {
+            min-width: 80px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .setting-item input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            height: 2px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .setting-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid var(--bg-soft);
+        }
+
+        .setting-item input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .setting-item .value-display {
+            min-width: 40px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+        }
+
+        .color-picker-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; 
+        }
+        
+        .color-option { 
+            width: 100%; 
+            aspect-ratio: 1; 
+            border-radius: var(--radius-sm); 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            transition: all 0.2s; 
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { border-color: var(--text-primary); box-shadow: 0 0 0 2px var(--bg-soft), 0 0 0 4px var(--text-primary); }
+
+        .btn-primary { 
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        
+        .btn-primary:hover { opacity: 0.85; }
+
+        /* --- Tutorial --- */
         .tutorial-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
             z-index: 9000;
             display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(8px);
         }
-        .tutorial-overlay.show { display: flex; }
+        .tutorial-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
         
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
         .tutorial-card {
-            background: var(--window-bg);
-            border: 1px solid var(--border-color);
-            padding: 2.5rem;
-            border-radius: 24px;
-            max-width: 500px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            padding: 28px;
+            border-radius: var(--radius-lg);
+            max-width: 480px;
             color: var(--text-primary);
-            text-align: center;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tutorial-card h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tutorial-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-size: 13px;
         }
         
-        .btn-primary { 
-            background: var(--accent-1); 
-            color: #000; 
-            padding: 1rem 2.5rem; 
-            border-radius: 14px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 1rem;
-            margin-top: 1rem;
-            transition: 0.2s;
+        .tutorial-card kbd {
+            background: var(--bg-softer);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
         }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--glow-color); }
 
         /* --- Quote Card --- */
         .quote-card {
             position: fixed;
-            bottom: 120px;
+            bottom: 110px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 2rem;
-            background: var(--window-bg);
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            gap: 12px;
+            padding: 10px 20px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 100px;
             color: var(--text-secondary);
             font-style: italic;
-            font-size: 0.95rem;
+            font-size: 13px;
             z-index: 5;
-            opacity: 0.6;
-            transition: opacity 0.3s, transform 0.3s, border-color 0.4s;
+            transition: all 0.3s;
             pointer-events: none;
-            box-shadow: 0 10px 30px var(--shadow-color);
+            box-shadow: var(--shadow-sm);
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .quote-card:hover { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+        .quote-card:hover { 
+            opacity: 1; 
+            transform: translateX(-50%) translateY(-4px); 
+            border-color: var(--border-strong);
+        }
 
         .quote-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--accent-1);
-            opacity: 0.7;
+            width: 16px;
+            height: 16px;
+            color: var(--text-mute);
             flex-shrink: 0;
             fill: currentColor;
-            transition: color 0.4s ease;
-        }
-
-        .quote-text {
-            position: relative;
-        }
-
-        .quote-text::after {
-            content: '|';
-            animation: blink 1s infinite;
-            margin-left: 2px;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
         }
 
         /* --- Context Menu --- */
         .context-menu {
             position: fixed;
-            background: var(--window-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 8px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 6px;
             z-index: 8000;
-            box-shadow: 0 10px 30px var(--shadow-color);
+            box-shadow: var(--shadow-md);
             display: none;
             min-width: 200px;
         }
@@ -519,11 +617,11 @@
         .context-menu.show { display: block; }
 
         .context-item {
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 13px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
@@ -531,39 +629,29 @@
         }
 
         .context-item:hover {
-            background: rgba(45, 212, 191, 0.15);
-            color: var(--accent-1);
+            background: var(--accent-soft);
+            color: var(--text-primary);
         }
 
-        .context-item svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .context-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 8px 0;
-        }
+        .context-item svg { width: 14px; height: 14px; fill: currentColor; }
+        .context-divider { height: 1px; background: var(--border); margin: 6px 0; }
 
         /* --- Wallpaper Selector --- */
         .wallpaper-selector {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: var(--window-bg);
-            backdrop-filter: blur(40px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2rem;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
             z-index: 8500;
-            box-shadow: 0 20px 60px var(--shadow-color);
+            box-shadow: var(--shadow-lg);
             display: none;
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-            max-width: 800px;
+            max-width: 700px;
             width: 90%;
         }
 
@@ -573,16 +661,51 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
+        .wallpaper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wallpaper-header h3 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-wallpaper {
+            background: transparent;
+            border: none;
+            color: var(--text-mute);
+            cursor: pointer;
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-wallpaper:hover {
+            background: var(--accent-soft);
+            color: var(--text-primary);
+        }
+
         .wallpaper-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
         }
 
         .wallpaper-option {
             aspect-ratio: 16/9;
-            border-radius: 12px;
+            border-radius: var(--radius);
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.2s;
@@ -590,249 +713,191 @@
             background-position: center;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
         .wallpaper-option:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-1);
+            transform: translateY(-2px);
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-md);
         }
 
         .wallpaper-option.active {
-            border-color: var(--accent-1);
-            box-shadow: 0 0 20px var(--glow-color);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--bg-soft), 0 0 0 4px var(--accent);
         }
 
         .wallpaper-option.custom {
-            background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(45,212,191,0.05));
+            background: var(--bg-softer);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 2px dashed var(--border-color);
+            gap: 8px;
+            border: 2px dashed var(--border);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .wallpaper-option.custom:hover {
-            border-color: var(--accent-1);
-            background: linear-gradient(135deg, rgba(45,212,191,0.3), rgba(45,212,191,0.1));
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: var(--accent-soft);
         }
 
-        .custom-upload-input {
-            display: none;
-        }
+        .custom-upload-input { display: none; }
 
-        .wallpaper-header {
+        /* --- Login System Styles --- */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: var(--bg-primary);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s cubic-bezier(0.2, 1, 0.3, 1), visibility 0.5s;
         }
 
-        .wallpaper-header h3 {
+        .login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 360px;
+            padding: 32px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            position: relative;
+        }
+
+        .login-header h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
             color: var(--text-primary);
-            font-size: 1.2rem;
+            margin-bottom: 8px;
         }
 
-        .close-wallpaper {
-            background: none;
-            border: none;
+        .login-header p {
             color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.5rem;
-            padding: 0.5rem;
-            transition: color 0.2s;
+            font-size: 13px;
+            margin-bottom: 28px;
         }
 
-        .close-wallpaper:hover {
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
+        .login-input:focus {
+            border-color: var(--accent);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover { opacity: 0.85; }
+        .login-btn:active { transform: translateY(1px); }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 12px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-error.show {
+            opacity: 1;
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--bg-softer);
+            border: 1px solid var(--border);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
 
         @media (max-width: 768px) {
-            .dock-container { bottom: 0; padding: 10px; border-radius: 16px 16px 0 0; border-bottom: none; width: 100%; justify-content: center; }
-            .dock-item { width: 48px; height: 48px; }
-            .dock-item svg { width: 24px; height: 24px; }
+            .dock-container { bottom: 0; padding: 8px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none; width: 100%; justify-content: center; }
+            .dock-item { width: 44px; height: 44px; }
             .settings-panel { width: 100%; right: -100%; border-radius: 0; height: 100vh; top: 0; }
             .settings-panel.open { right: 0; }
             .top-bar { padding: 0 1rem; }
-            .quote-card { bottom: 100px; padding: 0.8rem 1.5rem; font-size: 0.85rem; }
-            .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .quote-card { bottom: 90px; padding: 8px 16px; font-size: 12px; }
+            .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
-        /* --- Login System Styles --- */
-.login-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: rgba(5, 5, 15, 0.85); /* Темный фон для фокуса */
-    backdrop-filter: blur(40px) saturate(180%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 1;
-    transition: opacity 0.6s cubic-bezier(0.2, 1, 0.3, 1), visibility 0.6s;
-}
-
-.login-overlay.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-[data-theme="light"] .login-overlay {
-    background: rgba(240, 244, 255, 0.85);
-}
-
-.login-card {
-    width: 380px;
-    padding: 2.5rem;
-    background: var(--window-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 24px;
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    text-align: center;
-    transform: scale(1);
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.login-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
-    opacity: 0.1;
-    pointer-events: none;
-    animation: rotateGlow 10s linear infinite;
-}
-
-@keyframes rotateGlow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.login-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-.login-header p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-}
-
-.input-group {
-    position: relative;
-    margin-bottom: 1.5rem;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-
-.login-input {
-    width: 100%;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-    font-family: 'Inter', sans-serif;
-}
-
-.login-input:focus {
-    border-color: var(--accent-1);
-    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.login-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent-1);
-    color: #000;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px var(--glow-color);
-}
-
-.login-btn:active {
-    transform: scale(0.98);
-}
-
-.login-error {
-    color: #FF5F56;
-    font-size: 0.85rem;
-    margin-top: 1rem;
-    min-height: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.login-error.show {
-    opacity: 1;
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-@keyframes shake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-
-.user-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-1), #2a9d8f);
-    margin: 0 auto 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: #000;
-    box-shadow: 0 0 20px var(--glow-color);
-}
     </style>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
     <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-card">
             <div class="user-avatar">
-                <svg viewBox="0 0 24 24" style="width: 40px; height: 40px; fill: currentColor;">
+                <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: currentColor;">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
             </div>
@@ -844,7 +909,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <label>Идентификатор</label>
-                    <input type="text" class="login-input" id="usernameInput" placeholder="Введие логин" autocomplete="off">
+                    <input type="text" class="login-input" id="usernameInput" placeholder="Введите логин" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Ключ доступа</label>
@@ -857,10 +922,10 @@
             </form>
         </div>
     </div>
+
     <div class="background-layer" id="backgroundLayer"></div>
     <div class="noise-overlay"></div>
     <canvas id="particle-canvas"></canvas>
-    <div class="ambient-glow"></div>
 
     <div class="top-bar">
         <div class="top-bar-left">
@@ -871,7 +936,7 @@
         <div class="top-bar-right">
             <div class="clock-display" id="clock">00:00</div>
             <button class="top-btn" onclick="toggleTutorial()" title="Обучение">
-                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
             </button>
             <button class="top-btn" onclick="toggleSettings()" title="Настройки">
                 <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -884,8 +949,8 @@
 
     <div class="desktop" id="desktop">
         <div class="welcome-widget" id="welcomeWidget">
-            <h1 style="font-size: 4rem; background: linear-gradient(135deg, var(--accent-1), #fff); -webkit-background-clip: text; color: transparent; margin-bottom: 1rem;">Центр Инструментов</h1>
-            <p style="color: var(--text-secondary); font-size: 1.2rem;">Выберите приложение в нижней панели</p>
+            <h1>Центр Инструментов</h1>
+            <p>Выберите приложение в нижней панели</p>
         </div>
         <div class="quote-card">
             <svg class="quote-icon" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
@@ -922,57 +987,69 @@
             <h3>Выберите фон</h3>
             <button class="close-wallpaper" onclick="hideWallpaperSelector()">×</button>
         </div>
-        <div class="wallpaper-grid" id="wallpaperGrid">
-            <!-- Wallpapers will be generated by JS -->
-        </div>
+        <div class="wallpaper-grid" id="wallpaperGrid"></div>
         <input type="file" class="custom-upload-input" id="customWallpaperInput" accept="image/*" onchange="handleCustomWallpaper(event)">
     </div>
 
     <div class="settings-panel" id="settingsPanel">
-        <h2 style="margin-bottom: 2rem; color: var(--text-primary);">Настройки системы</h2>
-        <div class="settings-group">
-            <label>Тема оформления</label>
-            <div class="options" id="themeOptions">
-                <button class="active" onclick="applyTheme('dark')">🌙 Тёмная</button>
-                <button onclick="applyTheme('light')">☀️ Светлая</button>
+        <h2>Настройки системы</h2>
+        
+        <div class="control-section">
+            <div class="section-title">Тема оформления</div>
+            <div class="grid-selector" id="themeOptions">
+                <button class="grid-btn active" onclick="applyTheme('light')">☀️ Светлая</button>
+                <button class="grid-btn" onclick="applyTheme('dark')">🌙 Тёмная</button>
             </div>
         </div>
-        <div class="settings-group">
-            <label>Акцентный цвет</label>
+
+        <div class="control-section">
+            <div class="section-title">Цвет акцента</div>
             <div class="color-picker-grid">
-                <div class="color-option active" style="background: #2DD4BF;" onclick="changeColor('#2DD4BF')"></div>
-                <div class="color-option" style="background: #38BDF8;" onclick="changeColor('#38BDF8')"></div>
-                <div class="color-option" style="background: #818CF8;" onclick="changeColor('#818CF8')"></div>
-                <div class="color-option" style="background: #EC4899;" onclick="changeColor('#EC4899')"></div>
-                <div class="color-option" style="background: #F59E0B;" onclick="changeColor('#F59E0B')"></div>
+                <div class="color-option active" style="background: #1a1a1a;" onclick="changeColor('#1a1a1a')"></div>
+                <div class="color-option" style="background: #2563eb;" onclick="changeColor('#2563eb')"></div>
+                <div class="color-option" style="background: #059669;" onclick="changeColor('#059669')"></div>
+                <div class="color-option" style="background: #d97706;" onclick="changeColor('#d97706')"></div>
+                <div class="color-option" style="background: #dc2626;" onclick="changeColor('#dc2626')"></div>
+                <div class="color-option" style="background: #7c3aed;" onclick="changeColor('#7c3aed')"></div>
+                <div class="color-option" style="background: #db2777;" onclick="changeColor('#db2777')"></div>
+                <div class="color-option" style="background: #0891b2;" onclick="changeColor('#0891b2')"></div>
+                <div class="color-option" style="background: #4f46e5;" onclick="changeColor('#4f46e5')"></div>
+                <div class="color-option" style="background: #65a30d;" onclick="changeColor('#65a30d')"></div>
             </div>
         </div>
-        <div class="settings-group">
-            <label>Эффекты</label>
-            <div class="options">
-                <button onclick="toggleSound()" id="soundBtn">🔊 Звук: Вкл</button>
-                <button onclick="toggleParticles()" id="particleBtn">✨ Частицы: Вкл</button>
+
+        <div class="control-section">
+            <div class="section-title">Эффекты</div>
+            <div class="setting-item">
+                <label>Звук</label>
+                <input type="range" id="soundToggle" min="0" max="1" value="1" step="1" oninput="toggleSound(this.value)">
+                <span class="value-display" id="soundValue">Вкл</span>
+            </div>
+            <div class="setting-item">
+                <label>Частицы</label>
+                <input type="range" id="particleToggle" min="0" max="1" value="1" step="1" oninput="toggleParticles(this.value)">
+                <span class="value-display" id="particleValue">Вкл</span>
             </div>
         </div>
-        <button class="btn-primary" style="width: 100%; margin-top: 1rem; background: rgba(255,255,255,0.1); color: var(--text-primary);" onclick="toggleSettings()">Закрыть настройки</button>
+
+        <button class="btn-primary" onclick="toggleSettings()">Закрыть настройки</button>
     </div>
 
     <div class="tutorial-overlay" id="tutorialOverlay">
         <div class="tutorial-card">
             <h2>🎓 Добро пожаловать</h2>
-            <p style="margin: 1.5rem 0; color: var(--text-secondary); line-height: 1.6;">
+            <p>
                 Интерфейс работает как полноценный рабочий стол.<br><br>
                 1. Окна можно <b>перетаскивать</b> за заголовок.<br>
                 2. Потяните за <b>любой край</b>, чтобы изменить размер.<br>
-                3. Желтая кнопка сворачивает окно с анимацией в док.<br>
-                4. Правый клик открывает контекстное меню.<br>
+                3. Правый клик открывает контекстное меню.<br>
+                4. Используйте <kbd>Ctrl</kbd> + <kbd>Tab</kbd> для переключения окон.
             </p>
             <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
         </div>
     </div>
 
     <script>
-        // SVG Icons Map
         const ICONS = {
             chart: '<path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-7h-2v7zm4 0h2v-10h-2v10z"/>',
             file: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>',
@@ -991,7 +1068,7 @@
             { id: "page5", title: "1С КОД", icon: ICONS.code, url: "https://sagatheror.github.io/instrumenti/zapyatie.html" },
             { id: "page6", title: "CSV", icon: ICONS.table, url: "https://sagatheror.github.io/instrumenti/csvchecked.html" },
             { id: "page7", title: "ФОРМА", icon: ICONS.pen, url: "https://sagatheror.github.io/instrumenti/formaotklyucheniya.html" },
-            { id: "page8", title: "ОФОРМЛЕНИЕ ОПИСАНИЯ", icon: ICONS.textFormat, url: "https://sagatheror.github.io/instrumenti/formalization.html" },
+            { id: "page8", title: "ОФОРМЛЕНИЕ", icon: ICONS.textFormat, url: "https://sagatheror.github.io/instrumenti/formalization.html" },
             { id: "page9", title: "ПАЛИТРЫ", icon: ICONS.palette, url: "https://sagatheror.github.io/instrumenti/constructorpalitr.html" }
         ];
 
@@ -1018,16 +1095,13 @@
     "На всё есть своё место — в мусоре"
 ];
 
-        // Wallpaper options with gradient backgrounds
         const WALLPAPERS = [
-            { name: "Default Dark", value: "linear-gradient(135deg, #05050F 0%, #0A0A1A 100%)", type: 'dark' },
-            { name: "Deep Space", value: "linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%)", type: 'dark' },
-            { name: "Ocean Blue", value: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", type: 'dark' },
-            { name: "Sunset Purple", value: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", type: 'dark' },
-            { name: "Forest Green", value: "linear-gradient(135deg, #134e5e 0%, #71b280 100%)", type: 'dark' },
-            { name: "Light Default", value: "linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%)", type: 'light' },
-            { name: "Soft Pink", value: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", type: 'light' },
-            { name: "Mint Fresh", value: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)", type: 'light' }
+            { name: "Default Light", value: "linear-gradient(135deg, #fafaf7 0%, #f5f5f0 100%)", type: 'light' },
+            { name: "Soft Gray", value: "linear-gradient(135deg, #e5e5e0 0%, #d4d4cf 100%)", type: 'light' },
+            { name: "Default Dark", value: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)", type: 'dark' },
+            { name: "Deep Space", value: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", type: 'dark' },
+            { name: "Ocean Blue", value: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)", type: 'dark' },
+            { name: "Forest", value: "linear-gradient(135deg, #14532d 0%, #166534 100%)", type: 'dark' }
         ];
 
         let zIndexCounter = 100;
@@ -1052,28 +1126,20 @@
             loadWindowPositions();
             loadWallpaper();
             
-            // Context menu
             document.getElementById('desktop').addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 showContextMenu(e.clientX, e.clientY);
             });
             
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.context-menu')) {
-                    hideContextMenu();
-                }
-                if (!e.target.closest('.wallpaper-selector') && !e.target.closest('.context-item')) {
-                    hideWallpaperSelector();
-                }
+                if (!e.target.closest('.context-menu')) hideContextMenu();
+                if (!e.target.closest('.wallpaper-selector') && !e.target.closest('.context-item')) hideWallpaperSelector();
             });
             
-            // Keyboard shortcuts
             document.addEventListener('keydown', handleKeyboard);
         });
 
-        function getSvg(iconPath) {
-            return `<svg viewBox="0 0 24 24">${iconPath}</svg>`;
-        }
+        function getSvg(iconPath) { return `<svg viewBox="0 0 24 24">${iconPath}</svg>`; }
 
         function buildDock() {
             const dock = document.getElementById('dock');
@@ -1101,85 +1167,64 @@
         }
 
         function createWindow(mod) {
-    const win = document.createElement('div');
-    win.className = 'os-window';
-    win.id = `win-${mod.id}`;
-    
-    // Адаптивные размеры относительно экрана
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight - 148; // минус top-bar и dock
-    
-    const savedPos = getWindowPosition(mod.id);
-    const offset = Object.keys(windows).length * 30;
-    
-    // Рассчитываем оптимальные размеры
-    let winWidth, winHeight;
-    
-    if (savedPos) {
-        // Используем сохраненные размеры, но проверяем чтобы они влезали в экран
-        winWidth = Math.min(savedPos.width, screenWidth * 0.95);
-        winHeight = Math.min(savedPos.height, screenHeight * 0.9);
-    } else {
-        // Новые окна: 80% ширины экрана или максимум 1200px, минимум 600px
-        winWidth = Math.max(600, Math.min(screenWidth * 0.8, 1200));
-        // Высота: 75% доступного пространства или максимум 800px, минимум 500px
-        winHeight = Math.max(500, Math.min(screenHeight * 0.75, 800));
-    }
-    
-    // Позиция с учетом границ экрана
-    let posX = savedPos?.x || (50 + offset);
-    let posY = savedPos?.y || (60 + offset);
-    
-    // Проверяем чтобы окно не выходило за пределы экрана
-    if (posX + winWidth > screenWidth) posX = screenWidth - winWidth - 20;
-    if (posY + winHeight > screenHeight + 48) posY = screenHeight + 48 - winHeight - 20;
-    if (posX < 0) posX = 20;
-    if (posY < 48) posY = 60;
-    
-    win.style.left = posX + 'px';
-    win.style.top = posY + 'px';
-    win.style.width = winWidth + 'px';
-    win.style.height = winHeight + 'px';
-    win.style.zIndex = ++zIndexCounter;
+            const win = document.createElement('div');
+            win.className = 'os-window';
+            win.id = `win-${mod.id}`;
+            
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight - 148;
+            const savedPos = getWindowPosition(mod.id);
+            const offset = Object.keys(windows).length * 30;
+            
+            let winWidth = savedPos?.width || Math.max(600, Math.min(screenWidth * 0.8, 1200));
+            let winHeight = savedPos?.height || Math.max(500, Math.min(screenHeight * 0.75, 800));
+            
+            let posX = savedPos?.x || (50 + offset);
+            let posY = savedPos?.y || (60 + offset);
+            
+            if (posX + winWidth > screenWidth) posX = screenWidth - winWidth - 20;
+            if (posY + winHeight > screenHeight + 48) posY = screenHeight + 48 - winHeight - 20;
+            
+            win.style.left = posX + 'px';
+            win.style.top = posY + 'px';
+            win.style.width = winWidth + 'px';
+            win.style.height = winHeight + 'px';
+            win.style.zIndex = ++zIndexCounter;
 
-    win.innerHTML = `
-        <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
-            <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
-            <div class="window-controls">
-                <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
-                <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
-                <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
-            </div>
-        </div>
-        <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
-        <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
-        <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
-        <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
-        <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
-        <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
-    `;
+            win.innerHTML = `
+                <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
+                    <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
+                    <div class="window-controls">
+                        <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
+                        <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
+                        <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
+                    </div>
+                </div>
+                <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
+                <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
+                <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
+                <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
+                <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
+                <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
+            `;
 
-    win.onmousedown = () => focusWindow(win);
-    document.getElementById('desktop').appendChild(win);
-    windows[mod.id] = win;
-    
-    updateActiveAppTitle(mod.title, mod.icon);
-    document.getElementById(`dock-${mod.id}`).classList.add('active');
-    document.getElementById('desktop').classList.add('has-windows');
-    
-    playSound('open');
-}
+            win.onmousedown = () => focusWindow(win);
+            document.getElementById('desktop').appendChild(win);
+            windows[mod.id] = win;
+            
+            updateActiveAppTitle(mod.title, mod.icon);
+            document.getElementById(`dock-${mod.id}`).classList.add('active');
+            document.getElementById('desktop').classList.add('has-windows');
+            playSound('open');
+        }
 
         function minimizeWindow(id) {
             const win = windows[id];
             const dockItem = document.getElementById(`dock-${id}`);
-            
             if (win && dockItem) {
                 win.dataset.state = 'minimized';
-                
                 const winRect = win.getBoundingClientRect();
                 const dockRect = dockItem.getBoundingClientRect();
-                
                 const scaleX = dockRect.width / winRect.width;
                 const scaleY = dockRect.height / winRect.height;
                 const translateX = dockRect.left - winRect.left + (dockRect.width - winRect.width) / 2;
@@ -1207,13 +1252,11 @@
                 win.style.display = 'flex';
                 win.dataset.state = 'normal';
                 win.style.pointerEvents = 'auto';
-                
                 requestAnimationFrame(() => {
                     win.style.transition = 'all 0.4s cubic-bezier(0.2, 1, 0.3, 1)';
                     win.style.opacity = '1';
                     win.style.transform = 'scale(1)';
                 });
-                
                 focusWindow(win);
                 const mod = MODULES.find(m => m.id === id);
                 updateActiveAppTitle(mod.title, mod.icon);
@@ -1245,41 +1288,34 @@
         }
 
         function maximizeWindow(id) {
-    const win = windows[id];
-    if (win) {
-        if (win.dataset.maximized === 'true') {
-            // Восстанавливаем размеры
-            win.style.top = win.dataset.prevTop || '80px';
-            win.style.left = win.dataset.prevLeft || '150px';
-            win.style.width = win.dataset.prevWidth || '850px';
-            win.style.height = win.dataset.prevHeight || '650px';
-            win.classList.remove('maximized');
-            win.dataset.maximized = 'false';
-        } else {
-            // Сохраняем текущие размеры
-            win.dataset.prevTop = win.style.top;
-            win.dataset.prevLeft = win.style.left;
-            win.dataset.prevWidth = win.style.width;
-            win.dataset.prevHeight = win.style.height;
-            
-            // Разворачиваем на весь экран (учитывая top-bar и dock)
-            win.style.top = '48px';
-            win.style.left = '0';
-            win.style.width = '100%';
-            win.style.height = 'calc(100vh - 148px)';
-            win.classList.add('maximized');
-            win.dataset.maximized = 'true';
+            const win = windows[id];
+            if (win) {
+                if (win.dataset.maximized === 'true') {
+                    win.style.top = win.dataset.prevTop || '80px';
+                    win.style.left = win.dataset.prevLeft || '150px';
+                    win.style.width = win.dataset.prevWidth || '850px';
+                    win.style.height = win.dataset.prevHeight || '650px';
+                    win.dataset.maximized = 'false';
+                } else {
+                    win.dataset.prevTop = win.style.top;
+                    win.dataset.prevLeft = win.style.left;
+                    win.dataset.prevWidth = win.style.width;
+                    win.dataset.prevHeight = win.style.height;
+                    win.style.top = '48px';
+                    win.style.left = '0';
+                    win.style.width = '100%';
+                    win.style.height = 'calc(100vh - 148px)';
+                    win.dataset.maximized = 'true';
+                }
+                playSound('maximize');
+            }
         }
-        playSound('maximize');
-    }
-}
 
         function updateActiveAppTitle(title, iconSvg) {
             const el = document.getElementById('activeAppTitle');
-            el.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--accent-1)">${iconSvg}</svg> ${title}`;
+            el.innerHTML = `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--text-secondary)">${iconSvg}</svg> ${title}`;
         }
 
-        // Dragging with Snap-to-Grid
         let isDragging = false, currentWin = null, dragOffsetX = 0, dragOffsetY = 0;
         function startDrag(e, id) {
             if (e.target.closest('.window-controls')) return;
@@ -1299,11 +1335,8 @@
             if (!isDragging || !currentWin) return;
             let x = e.clientX - dragOffsetX;
             let y = Math.max(48, e.clientY - dragOffsetY);
-            
-            // Snap to edges
             const snapThreshold = 20;
             const winWidth = parseInt(currentWin.offsetWidth);
-            const winHeight = parseInt(currentWin.offsetHeight);
             
             if (x < snapThreshold) x = 0;
             if (x > window.innerWidth - winWidth - snapThreshold) x = window.innerWidth - winWidth;
@@ -1321,7 +1354,6 @@
             saveWindowPosition(currentWin?.id.replace('win-', ''));
         }
 
-        // Resizing Logic
         let isResizing = false, resizeWin = null, resizeDir = '', startX, startY, startW, startH, startL, startT;
         function initResize(e, id, dir) {
             e.preventDefault(); e.stopPropagation();
@@ -1336,23 +1368,23 @@
         }
         
         function doResize(e) {
-    if (!isResizing || !resizeWin) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
+            if (!isResizing || !resizeWin) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
 
-    if (resizeDir.includes('r')) resizeWin.style.width = Math.max(400, startW + dx) + 'px';
-    if (resizeDir.includes('b')) resizeWin.style.height = Math.max(300, startH + dy) + 'px';
-    if (resizeDir.includes('l')) {
-        const newW = Math.max(400, startW - dx);
-        resizeWin.style.width = newW + 'px';
-        resizeWin.style.left = (startL + dx) + 'px';
-    }
-    if (resizeDir.includes('t')) {
-        const newH = Math.max(300, startH - dy);
-        resizeWin.style.height = newH + 'px';
-        resizeWin.style.top = Math.max(48, startT + dy) + 'px';
-    }
-}
+            if (resizeDir.includes('r')) resizeWin.style.width = Math.max(400, startW + dx) + 'px';
+            if (resizeDir.includes('b')) resizeWin.style.height = Math.max(300, startH + dy) + 'px';
+            if (resizeDir.includes('l')) {
+                const newW = Math.max(400, startW - dx);
+                resizeWin.style.width = newW + 'px';
+                resizeWin.style.left = (startL + dx) + 'px';
+            }
+            if (resizeDir.includes('t')) {
+                const newH = Math.max(300, startH - dy);
+                resizeWin.style.height = newH + 'px';
+                resizeWin.style.top = Math.max(48, startT + dy) + 'px';
+            }
+        }
         
         function stopResize() {
             isResizing = false; resizeWin = null;
@@ -1374,7 +1406,6 @@
             }, 300);
         }
 
-        // Context Menu
         function showContextMenu(x, y) {
             const menu = document.getElementById('contextMenu');
             menu.style.left = x + 'px';
@@ -1396,32 +1427,25 @@
             Object.keys(windows).forEach(id => minimizeWindow(id));
         }
 
-        // Wallpaper Functions
+        // --- Wallpaper Functions ---
         function initWallpaperSelector() {
             const grid = document.getElementById('wallpaperGrid');
             grid.innerHTML = '';
-            
-            // Filter wallpapers based on current theme
             const currentTheme = document.body.getAttribute('data-theme');
             const filteredWallpapers = WALLPAPERS.filter(wp => wp.type === currentTheme);
             
-            filteredWallpapers.forEach((wp, index) => {
+            filteredWallpapers.forEach(wp => {
                 const option = document.createElement('div');
                 option.className = 'wallpaper-option';
                 option.style.background = wp.value;
-                option.onclick = () => applyWallpaper(wp.value, wp.type);
-                
-                if (currentWallpaper === wp.value) {
-                    option.classList.add('active');
-                }
-                
+                option.onclick = () => applyWallpaper(wp.value);
+                if (currentWallpaper === wp.value) option.classList.add('active');
                 grid.appendChild(option);
             });
             
-            // Add custom upload option
             const customOption = document.createElement('div');
             customOption.className = 'wallpaper-option custom';
-            customOption.innerHTML = '<svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: var(--text-secondary);"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
+            customOption.innerHTML = `<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Загрузить</span>`;
             customOption.onclick = () => document.getElementById('customWallpaperInput').click();
             grid.appendChild(customOption);
         }
@@ -1437,31 +1461,20 @@
             document.getElementById('wallpaperSelector').classList.remove('show');
         }
 
-        function applyWallpaper(value, type = null) {
+        function applyWallpaper(value) {
             const bgLayer = document.getElementById('backgroundLayer');
             bgLayer.style.background = value;
             bgLayer.style.opacity = '1';
-            
-            // Reset filter for gradients
-            bgLayer.style.filter = 'none';
-            
-            // If it's a custom image (starts with url), add darkening filter in dark mode
-            if (value.startsWith('url(') && document.body.getAttribute('data-theme') === 'dark') {
-                bgLayer.style.filter = 'brightness(0.7)';
-            }
-            
+            bgLayer.style.filter = value.startsWith('url(') && document.body.getAttribute('data-theme') === 'dark' ? 'brightness(0.7)' : 'none';
             currentWallpaper = value;
+            localStorage.setItem(`os_wallpaper_${document.body.getAttribute('data-theme')}`, value);
             
-            // Save separately for dark and light themes
-            const theme = document.body.getAttribute('data-theme');
-            localStorage.setItem(`os_wallpaper_${theme}`, value);
-            
-            // Update active state in selector
             document.querySelectorAll('.wallpaper-option').forEach(opt => {
                 opt.classList.remove('active');
-                // Note: simple check, might need refinement for custom uploads
+                if (opt.style.background === value || (value.startsWith('url') && opt.classList.contains('custom'))) {
+                    // simple active state handling
+                }
             });
-            
             playSound('click');
         }
 
@@ -1470,8 +1483,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const imageUrl = `url(${e.target.result})`;
-                    applyWallpaper(imageUrl);
+                    applyWallpaper(`url(${e.target.result})`);
                     hideWallpaperSelector();
                 };
                 reader.readAsDataURL(file);
@@ -1481,17 +1493,15 @@
         function loadWallpaper() {
             const theme = document.body.getAttribute('data-theme');
             const savedWallpaper = localStorage.getItem(`os_wallpaper_${theme}`);
-            
+            const bgLayer = document.getElementById('backgroundLayer');
             if (savedWallpaper) {
                 applyWallpaper(savedWallpaper);
             } else {
-                // Set default based on theme
                 const defaultWp = WALLPAPERS.find(wp => wp.type === theme);
-                if (defaultWp) applyWallpaper(defaultWp.value, theme);
+                if (defaultWp) applyWallpaper(defaultWp.value);
             }
         }
 
-        // Keyboard Shortcuts
         function handleKeyboard(e) {
             if (e.ctrlKey && e.key === 'Tab') {
                 e.preventDefault();
@@ -1502,90 +1512,56 @@
                     focusWindow(windows[winIds[nextIndex]]);
                 }
             }
-            
-            if (e.metaKey && e.key === 'd') {
-                e.preventDefault();
-                minimizeAllWindows();
-            }
-            
             if (e.key === 'Escape') {
                 hideWallpaperSelector();
                 hideContextMenu();
             }
         }
 
-        // Sound Effects
         function playSound(type) {
             if (!soundEnabled) return;
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
             switch(type) {
-                case 'click':
-                    oscillator.frequency.value = 800;
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                    break;
-                case 'open':
-                    oscillator.frequency.value = 600;
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                    break;
-                case 'close':
-                    oscillator.frequency.value = 400;
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-                    break;
-                case 'minimize':
-                    oscillator.frequency.value = 500;
-                    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                    break;
+                case 'click': oscillator.frequency.value = 800; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1); break;
+                case 'open': oscillator.frequency.value = 600; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2); break;
+                case 'close': oscillator.frequency.value = 400; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15); break;
             }
-            
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.2);
         }
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+        function toggleSound(val) {
+            soundEnabled = val === "1";
+            document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
             localStorage.setItem('os_sound', soundEnabled);
         }
 
-        function toggleParticles() {
-            particlesEnabled = !particlesEnabled;
-            document.getElementById('particleBtn').textContent = particlesEnabled ? '✨ Частицы: Вкл' : '❌ Частицы: Выкл';
+        function toggleParticles(val) {
+            particlesEnabled = val === "1";
+            document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
             document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
             localStorage.setItem('os_particles', particlesEnabled);
         }
 
-        // Window Position Persistence
         function saveWindowPosition(id) {
             if (!id || !windows[id]) return;
             const win = windows[id];
             const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
-            positions[id] = {
-                x: parseInt(win.style.left),
-                y: parseInt(win.style.top),
-                width: parseInt(win.style.width),
-                height: parseInt(win.style.height)
-            };
+            positions[id] = { x: parseInt(win.style.left), y: parseInt(win.style.top), width: parseInt(win.style.width), height: parseInt(win.style.height) };
             localStorage.setItem('os_window_positions', JSON.stringify(positions));
-        }
-
-        function loadWindowPositions() {
-            // Positions will be loaded when windows are created
         }
 
         function getWindowPosition(id) {
             const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
             return positions[id];
         }
+
+        function loadWindowPositions() {}
 
         function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
         function toggleTutorial() { document.getElementById('tutorialOverlay').classList.add('show'); }
@@ -1599,11 +1575,9 @@
             const icon = document.getElementById('themeIcon');
             icon.innerHTML = theme === 'light' ? ICONS.sun : ICONS.moon;
             localStorage.setItem('os_theme', theme);
-            
-            // Smart wallpaper switching
             loadWallpaper();
             
-            document.querySelectorAll('#themeOptions button').forEach(b => {
+            document.querySelectorAll('#themeOptions .grid-btn').forEach(b => {
                 b.classList.remove('active');
                 if(b.innerText.toLowerCase().includes(theme === 'light' ? 'светлая' : 'тёмная')) b.classList.add('active');
             });
@@ -1615,30 +1589,41 @@
         }
 
         function changeColor(color) {
-            document.documentElement.style.setProperty('--accent-1', color);
-            document.documentElement.style.setProperty('--glow-color', color + '66');
-            document.documentElement.style.setProperty('--border-color', color + '40');
+            document.documentElement.style.setProperty('--accent', color);
+            // For dark theme, ensure text contrast remains good if accent is used for text
+            if (document.body.getAttribute('data-theme') === 'dark' && color === '#1a1a1a') {
+                document.documentElement.style.setProperty('--accent', '#f4f4f4');
+            }
             localStorage.setItem('os_color', color);
             document.querySelectorAll('.color-option').forEach(el => {
                 el.classList.remove('active');
-                if (el.getAttribute('onclick').includes(color)) el.classList.add('active');
+                // Normalize color for comparison
+                const elColor = el.style.backgroundColor;
+                const targetColor = color;
+                if (elColor === targetColor || el.onclick.toString().includes(color)) {
+                    el.classList.add('active');
+                }
             });
         }
 
         function loadSettings() {
-            const theme = localStorage.getItem('os_theme');
-            if (theme) applyTheme(theme);
+            const theme = localStorage.getItem('os_theme') || 'light';
+            applyTheme(theme);
+            
             const color = localStorage.getItem('os_color');
             if (color) changeColor(color);
+            
             const sound = localStorage.getItem('os_sound');
             if (sound !== null) {
                 soundEnabled = sound === 'true';
-                document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+                document.getElementById('soundToggle').value = soundEnabled ? 1 : 0;
+                document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
             }
             const particles = localStorage.getItem('os_particles');
             if (particles !== null) {
                 particlesEnabled = particles === 'true';
-                document.getElementById('particleBtn').textContent = particlesEnabled ? '✨ Частицы: Вкл' : '❌ Частицы: Выкл';
+                document.getElementById('particleToggle').value = particlesEnabled ? 1 : 0;
+                document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
                 document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
             }
         }
@@ -1652,10 +1637,7 @@
             function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
             window.addEventListener('resize', resize); resize();
             
-            document.addEventListener('mousemove', (e) => {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-            });
+            document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
             class P {
                 constructor() {
@@ -1663,7 +1645,7 @@
                     this.y = Math.random() * canvas.height;
                     this.vx = (Math.random() - 0.5) * 0.5;
                     this.vy = (Math.random() - 0.5) * 0.5;
-                    this.size = Math.random() * 2;
+                    this.size = Math.random() * 1.5;
                     this.baseX = this.x;
                     this.baseY = this.y;
                 }
@@ -1673,52 +1655,43 @@
                         const dy = mouse.y - this.y;
                         const distance = Math.sqrt(dx*dx + dy*dy);
                         if (distance < 100) {
-                            const forceDirectionX = dx / distance;
-                            const forceDirectionY = dy / distance;
-                            const force = (100 - distance) / 100;
-                            this.vx -= forceDirectionX * force * 0.5;
-                            this.vy -= forceDirectionY * force * 0.5;
+                            this.vx -= (dx / distance) * ((100 - distance) / 100) * 0.5;
+                            this.vy -= (dy / distance) * ((100 - distance) / 100) * 0.5;
                         }
                     }
-                    
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    
+                    this.x += this.vx; this.y += this.vy;
                     this.vx += (this.baseX - this.x) * 0.01;
                     this.vy += (this.baseY - this.y) * 0.01;
-                    
                     if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
                     if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
                 }
                 draw() {
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent-1');
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-mute');
                     ctx.globalAlpha = 0.3;
                     ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
                 }
             }
             
-            for(let i=0; i<80; i++) particles.push(new P());
+            for(let i=0; i<60; i++) particles.push(new P());
             
             function animate() {
-                if (!particlesEnabled) {
-                    requestAnimationFrame(animate);
-                    return;
-                }
+                if (!particlesEnabled) { requestAnimationFrame(animate); return; }
                 ctx.clearRect(0,0,canvas.width, canvas.height);
                 particles.forEach(p => { p.update(); p.draw(); });
                 requestAnimationFrame(animate);
             }
             animate();
         }
+
         async function hashString(str) {
             const msgBuffer = new TextEncoder().encode(str);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
+        
         const VALID_USER_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
         const VALID_PASS_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
-
         let loginAttempts = 0;
         let isLocked = false;
 
@@ -1732,13 +1705,11 @@
             const hour = new Date().getHours();
             const greetingEl = document.getElementById('greetingText');
             if (!greetingEl) return;
-            
             let text = "Добро пожаловать";
             if (hour >= 5 && hour < 12) text = "Доброе утро";
             else if (hour >= 12 && hour < 18) text = "Добрый день";
             else if (hour >= 18 && hour < 23) text = "Добрый вечер";
             else text = "Доброй ночи";
-            
             greetingEl.textContent = text;
         }
 
@@ -1746,12 +1717,8 @@
             const session = localStorage.getItem('os_session');
             if (session) {
                 const data = JSON.parse(session);
-                const now = new Date().getTime();
-                if (now - data.timestamp < 86400000) {
-                    unlockSystem();
-                } else {
-                    localStorage.removeItem('os_session');
-                }
+                if (new Date().getTime() - data.timestamp < 86400000) unlockSystem();
+                else localStorage.removeItem('os_session');
             }
         }
 
@@ -1767,7 +1734,6 @@
 
             btnText.textContent = "Проверка...";
             btn.style.opacity = "0.7";
-            
             await new Promise(r => setTimeout(r, 600));
 
             const userHash = await hashString(userIn);
@@ -1775,7 +1741,7 @@
 
             if (userHash === VALID_USER_HASH && passHash === VALID_PASS_HASH) {
                 playSound('open');
-                createSession();
+                localStorage.setItem('os_session', JSON.stringify({ user: 'Assortea', timestamp: new Date().getTime(), token: Math.random().toString(36).substring(2) }));
                 unlockSystem();
             } else {
                 loginAttempts++;
@@ -1789,34 +1755,16 @@
                     btnText.textContent = "Система заблокирована (30с)";
                     btn.disabled = true;
                     setTimeout(() => {
-                        isLocked = false;
-                        btn.disabled = false;
-                        btnText.textContent = "Разблокировать систему";
-                        loginAttempts = 0;
+                        isLocked = false; btn.disabled = false; btnText.textContent = "Разблокировать систему"; loginAttempts = 0;
                     }, 30000);
                 }
-                
                 setTimeout(() => errorEl.classList.remove('show'), 3000);
             }
         }
 
-        function createSession() {
-            const sessionData = {
-                user: 'Assortea',
-                timestamp: new Date().getTime(),
-                token: Math.random().toString(36).substring(2)
-            };
-            localStorage.setItem('os_session', JSON.stringify(sessionData));
-        }
-
         function unlockSystem() {
-            const overlay = document.getElementById('loginOverlay');
-            overlay.classList.add('hidden');
+            document.getElementById('loginOverlay').classList.add('hidden');
             if (particlesEnabled) initParticles();
-        }
-        function logout() {
-            localStorage.removeItem('os_session');
-            location.reload();
         }
     </script>
 </body>
