@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <meta name="theme-color" content="#1a1a1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Слова · игра v0.6</title>
+<title>Слова · игра v0.7</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -13,7 +13,7 @@
 <link rel="icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%231a1a1a"/%3E%3Ctext x="50" y="70" font-size="60" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold"%3E%D0%A1%3C/text%3E%3C/svg%3E'>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-:root { --bg: #fafaf7; --bg-soft: #ffffff; --bg-softer: #f5f5f0; --border: #e5e5e0; --border-strong: #d4d4cf; --text: #1a1a1a; --text-soft: #666666; --text-mute: #999999; --accent: #1a1a1a; --accent-soft: #f0f0ec; --success: #10b981; --danger: #dc2626; --warning: #f59e0b; --info: #3b82f6; --purple: #8b5cf6; --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; }
+:root { --bg: #fafaf7; --bg-soft: #ffffff; --bg-softer: #f5f5f0; --border: #e5e5e0; --border-strong: #d4d4cf; --text: #1a1a1a; --text-soft: #666666; --text-mute: #999999; --accent: #1a1a1a; --accent-soft: #f0f0ec; --success: #10b981; --danger: #dc2626; --warning: #f59e0b; --info: #3b82f6; --purple: #8b5cf6; --pink: #ec4899; --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; }
 body.dark-theme { --bg: #0f0f0f; --bg-soft: #1a1a1a; --bg-softer: #141414; --border: #262626; --border-strong: #333333; --text: #f5f5f0; --text-soft: #a0a0a0; --text-mute: #666666; --accent: #f5f5f0; --accent-soft: #1f1f1f; }
 body.theme-ocean { --accent: #0ea5e9; --accent-soft: rgba(14, 165, 233, 0.1); --purple: #0ea5e9; --info: #06b6d4; }
 body.theme-forest { --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.1); --purple: #10b981; --info: #22c55e; }
@@ -62,6 +62,8 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .btn-success:hover { background: var(--success); color: white; }
 .btn-purple { color: var(--purple); border-color: var(--purple); }
 .btn-purple:hover { background: var(--purple); color: white; }
+.btn-pink { color: var(--pink); border-color: var(--pink); }
+.btn-pink:hover { background: var(--pink); color: white; }
 .connection-status { font-size: 12px; color: var(--text-soft); padding: 6px 12px; background: var(--bg-softer); border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
 .letter-display { text-align: center; padding: 40px 0 60px; position: relative; }
 .letter-huge { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 280px; line-height: 0.85; letter-spacing: -15px; color: var(--text); display: inline-block; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -75,6 +77,16 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .turn-timer-bar.warning { background: var(--warning); }
 .turn-timer-bar.danger { background: var(--danger); }
 .turn-timer-text { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px; }
+
+/* v0.7: Word Streak Indicator */
+.streak-bar-container { display: flex; align-items: center; gap: 8px; margin: 12px auto 0; max-width: 300px; opacity: 0; transition: opacity 0.3s; }
+.streak-bar-container.show { opacity: 1; }
+.streak-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.streak-bar-fill { height: 100%; background: linear-gradient(90deg, var(--warning), var(--danger)); width: 0%; transition: width 0.3s ease; }
+.streak-bar-text { font-size: 11px; color: var(--warning); font-family: 'JetBrains Mono', monospace; font-weight: 600; white-space: nowrap; }
+.streak-bar-container.bonus .streak-bar-fill { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+.streak-bar-container.bonus .streak-bar-text { color: var(--purple); }
+
 .input-area { display: flex; gap: 12px; align-items: center; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 .word-input { flex: 1; background: transparent; border: none; outline: none; font-size: 22px; font-weight: 500; font-family: inherit; color: var(--text); padding: 10px 0; letter-spacing: -0.3px; }
 .word-input::placeholder { color: var(--text-mute); font-weight: 400; }
@@ -98,6 +110,8 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .player-row.active .player-row-avatar { background: rgba(255,255,255,0.15); }
 .player-row-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .player-row-name { flex: 1; font-size: 14px; font-weight: 500; }
+.player-title { font-size: 10px; color: var(--purple); font-style: italic; margin-left: 4px; font-weight: 400; }
+.player-row.active .player-title { color: rgba(255,255,255,0.7); }
 .player-score { font-size: 13px; color: var(--text-mute); font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
 .score-pop { animation: scorePop 0.5s ease; color: var(--success) !important; font-weight: 700; }
 @keyframes scorePop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
@@ -110,6 +124,24 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .vote-buttons { display: flex; gap: 8px; }
 .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-mute); margin-bottom: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
 .section-title .count { background: var(--accent-soft); color: var(--text-soft); padding: 2px 8px; border-radius: 100px; font-size: 10px; letter-spacing: 0; text-transform: none; }
+
+/* v0.7: Word Chain Visualization */
+.word-chain { display: flex; gap: 8px; overflow-x: auto; padding: 8px 4px; margin-bottom: 8px; scroll-behavior: smooth; }
+.word-chain::-webkit-scrollbar { height: 4px; }
+.word-chain::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+.word-chain-empty { text-align: center; color: var(--text-mute); font-style: italic; padding: 20px 12px; }
+.word-capsule { display: flex; align-items: center; gap: 0; animation: capsuleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; }
+@keyframes capsuleIn { 0% { transform: scale(0) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+.word-capsule-word { padding: 6px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; transition: all 0.2s; }
+.word-capsule-word:hover { border-color: var(--text); transform: translateY(-2px); }
+.word-capsule-word.player-0 { border-left: 3px solid var(--info); }
+.word-capsule-word.player-1 { border-left: 3px solid var(--success); }
+.word-capsule-word.player-2 { border-left: 3px solid var(--warning); }
+.word-capsule-word.player-3 { border-left: 3px solid var(--pink); }
+.word-capsule-word.player-bot { border-left: 3px solid var(--text-mute); }
+.word-capsule-link { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--purple); color: white; border-radius: 50%; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 11px; text-transform: uppercase; flex-shrink: 0; box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3); }
+.word-capsule.bonus .word-capsule-word { background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border-color: var(--purple); font-weight: 700; }
+
 .history-list { list-style: none; display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow-y: auto; }
 .history-list li { padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); border-left: 2px solid var(--border); transition: all 0.2s; }
 .history-list li:hover { border-left-color: var(--text); padding-left: 16px; }
@@ -153,16 +185,6 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .media-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-mute); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 .media-controls { display: flex; gap: 8px; margin-bottom: 8px; }
 .media-status { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
-.sounds-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
-.sound-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--radius-sm); transition: background 0.15s; cursor: pointer; touch-action: manipulation; }
-.sound-item:hover, .sound-item.active { background: var(--accent-soft); }
-.sound-icon { font-size: 16px; width: 24px; text-align: center; }
-.sound-info { flex: 1; }
-.sound-name { font-size: 12px; font-weight: 500; color: var(--text); }
-.sound-volume { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-.sound-volume input { width: 60px; height: 2px; -webkit-appearance: none; background: var(--border); border-radius: 2px; outline: none; }
-.sound-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--text); border-radius: 50%; cursor: pointer; }
-.sound-volume span { font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; min-width: 28px; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
 .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
 .modal { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; }
@@ -226,16 +248,6 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .quest-name { font-size: 13px; font-weight: 600; }
 .quest-progress { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
 .quest-reward { padding: 4px 10px; background: var(--purple); color: white; border-radius: 100px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-.theme-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
-.theme-swatch { aspect-ratio: 1; border-radius: var(--radius); cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
-.theme-swatch:hover { transform: scale(1.05); }
-.theme-swatch.selected { border-color: var(--text); }
-.theme-swatch.selected::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-.theme-swatch[data-theme="default"] { background: linear-gradient(135deg, #1a1a1a, #f5f5f0); }
-.theme-swatch[data-theme="ocean"] { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
-.theme-swatch[data-theme="forest"] { background: linear-gradient(135deg, #065f46, #10b981); }
-.theme-swatch[data-theme="sunset"] { background: linear-gradient(135deg, #c2410c, #f97316); }
-.theme-swatch[data-theme="violet"] { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
 .leaderboard-list { display: flex; flex-direction: column; gap: 4px; }
 .leaderboard-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .leaderboard-item.me { background: rgba(139, 92, 246, 0.08); border-color: var(--purple); }
@@ -254,6 +266,36 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .player-id-box { padding: 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
 .player-id-box code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-soft); word-break: break-all; }
 .player-id-box button { padding: 6px 12px; font-size: 11px; }
+
+/* v0.7: Titles Section */
+.titles-section { margin-bottom: 24px; padding: 16px; background: var(--bg-softer); border-radius: var(--radius); }
+.titles-section h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); margin-bottom: 12px; font-weight: 600; }
+.titles-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.title-chip { padding: 6px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 100px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+.title-chip:hover { border-color: var(--border-strong); }
+.title-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+.title-chip.locked { opacity: 0.4; cursor: not-allowed; }
+
+/* v0.7: Letter Heatmap */
+.heatmap-section { margin-bottom: 24px; padding: 16px; background: var(--bg-softer); border-radius: var(--radius); }
+.heatmap-section h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); margin-bottom: 12px; font-weight: 600; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(11, 1fr); gap: 3px; }
+.heatmap-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: white; cursor: default; transition: transform 0.15s; position: relative; }
+.heatmap-cell:hover { transform: scale(1.15); z-index: 1; }
+.heatmap-cell .heatmap-count { position: absolute; bottom: -2px; right: -2px; font-size: 8px; background: var(--text); color: var(--bg); border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
+
+/* v0.7: Fortune Wheel */
+.fortune-wheel-container { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px 0; }
+.fortune-wheel { position: relative; width: 280px; height: 280px; }
+.fortune-wheel-inner { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); border: 4px solid var(--text); box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.fortune-wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid var(--text); z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.fortune-segment { position: absolute; width: 50%; height: 50%; top: 0; left: 50%; transform-origin: 0% 100%; display: flex; align-items: center; justify-content: center; padding-right: 20px; }
+.fortune-segment-text { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transform: rotate(22.5deg); white-space: nowrap; }
+.fortune-spin-btn { padding: 12px 32px; font-size: 15px; font-weight: 600; }
+.fortune-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fortune-result { text-align: center; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 20px; color: var(--purple); min-height: 28px; }
+.fortune-info { font-size: 12px; color: var(--text-mute); text-align: center; font-family: 'JetBrains Mono', monospace; }
+
 .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 999; }
 .admin-overlay.show { display: block; }
 .admin-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; max-height: 85vh; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 1000; display: none; overflow: hidden; flex-direction: column; }
@@ -303,6 +345,7 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .toast.warning { border-left: 3px solid var(--warning); }
 .toast.achievement { border-left: 3px solid var(--purple); background: rgba(139, 92, 246, 0.05); }
 .toast.quest { border-left: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); }
+.toast.bonus { border-left: 3px solid var(--pink); background: rgba(236, 72, 153, 0.05); }
 @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 .mode-selector { display: flex; gap: 8px; margin-bottom: 12px; }
@@ -313,303 +356,386 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .mode-option-name { font-size: 13px; font-weight: 600; }
 .mode-option-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
 @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .main { padding: 40px 24px; border-right: none; border-bottom: 1px solid var(--border); } .sidebar { padding: 32px 24px; max-height: none; position: static; } .letter-huge { font-size: 180px; } .nav { display: none; } .header { padding: 16px 20px; } }
-@media (max-width: 640px) { .letter-huge { font-size: 140px; letter-spacing: -8px; } .word-input { font-size: 18px; } .connection-panel { flex-direction: column; align-items: stretch; } .room-input { width: 100%; } .toast-container { left: 20px; right: 20px; top: 70px; } .toast { max-width: 100%; } .achievements-grid { grid-template-columns: repeat(2, 1fr); } .theme-picker { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 640px) { .letter-huge { font-size: 140px; letter-spacing: -8px; } .word-input { font-size: 18px; } .connection-panel { flex-direction: column; align-items: stretch; } .room-input { width: 100%; } .toast-container { left: 20px; right: 20px; top: 70px; } .toast { max-width: 100%; } .achievements-grid { grid-template-columns: repeat(2, 1fr); } .heatmap-grid { grid-template-columns: repeat(8, 1fr); } .fortune-wheel { width: 240px; height: 240px; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .pulse { animation: pulse 2s ease-in-out infinite; }
+/* v0.7.1: Theme Picker */
+.theme-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+.theme-swatch { aspect-ratio: 1; border-radius: var(--radius); cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
+.theme-swatch:hover { transform: scale(1.05); }
+.theme-swatch.selected { border-color: var(--text); }
+.theme-swatch.selected::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.theme-swatch[data-theme="default"] { background: linear-gradient(135deg, #1a1a1a, #f5f5f0); }
+.theme-swatch[data-theme="ocean"] { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
+.theme-swatch[data-theme="forest"] { background: linear-gradient(135deg, #065f46, #10b981); }
+.theme-swatch[data-theme="sunset"] { background: linear-gradient(135deg, #c2410c, #f97316); }
+.theme-swatch[data-theme="violet"] { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+
+/* v0.7.1: Fortune Button States */
+.btn-pink { color: var(--pink); border-color: var(--pink); }
+.btn-pink:hover { background: var(--pink); color: white; }
+.btn-pink.ready { animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+.btn-pink:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
 </style>
 </head>
 <body class="light-theme">
 <div class="toast-container" id="toastContainer"></div>
 <header class="header">
-  <div class="logo"><div class="logo-mark">С</div><span><b>Слова</b> · v0.6</span></div>
-  <nav class="nav">
-    <button id="questsNavBtn" style="display:none;"><i class="fas fa-scroll"></i> Задания</button>
-    <button id="leaderboardNavBtn"><i class="fas fa-trophy"></i> Топ</button>
-    <button id="historyNavBtn" style="display:none;"><i class="fas fa-clock-rotate-left"></i> История</button>
-    <button id="achievementsNavBtn" style="display:none;"><i class="fas fa-medal"></i> Достижения</button>
-    <a href="#" id="adminNavBtn" onclick="toggleAdmin(); return false;" style="display:none;">Админ</a>
-  </nav>
-  <div class="header-actions">
-    <div class="sync-indicator" id="syncIndicator" title="Статус синхронизации">
-      <i class="fas fa-circle" style="font-size:6px;"></i> <span id="syncStatus">offline</span>
-    </div>
-    <button class="icon-btn" id="themeTopBtn" title="Сменить тему"><i class="fas fa-moon"></i></button>
-    <div class="profile-pill" id="profileTopBtn">
-      <div class="profile-avatar" id="headerAvatar">😎</div>
-      <div>
-        <div class="profile-name" id="headerName">МастерСлова</div>
-        <div class="profile-level" id="headerLevel">Ур. 1 · Новичок</div>
-      </div>
-    </div>
-  </div>
+<div class="logo"><div class="logo-mark">С</div><span><b>Слова</b> · v0.7</span></div>
+<nav class="nav">
+<button id="questsNavBtn" style="display:none;"><i class="fas fa-scroll"></i> Задания</button>
+<button id="leaderboardNavBtn"><i class="fas fa-trophy"></i> Топ</button>
+<button id="historyNavBtn" style="display:none;"><i class="fas fa-clock-rotate-left"></i> История</button>
+<button id="achievementsNavBtn" style="display:none;"><i class="fas fa-medal"></i> Достижения</button>
+<a href="#" id="adminNavBtn" onclick="toggleAdmin(); return false;" style="display:none;">Админ</a>
+</nav>
+<div class="header-actions">
+<div class="sync-indicator" id="syncIndicator" title="Статус синхронизации">
+<i class="fas fa-circle" style="font-size:6px;"></i> <span id="syncStatus">offline</span>
+</div>
+<button class="icon-btn" id="themeTopBtn" title="Сменить тему"><i class="fas fa-moon"></i></button>
+<div class="profile-pill" id="profileTopBtn">
+<div class="profile-avatar" id="headerAvatar">😎</div>
+<div>
+<div class="profile-name" id="headerName">МастерСлова</div>
+<div class="profile-level" id="headerLevel">Ур. 1 · Новичок</div>
+</div>
+</div>
+</div>
 </header>
 <div class="layout">
-  <main class="main">
-    <div class="connection-panel">
-      <input type="text" id="roomInput" class="room-input" placeholder="код комнаты" value="assortea">
-      <button id="createRoomBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Создать</button>
-      <button id="playWithBotBtn" class="btn btn-purple"><i class="fas fa-robot"></i> Играть с ботом</button>
-      <button id="joinRoomBtn" class="btn"><i class="fas fa-arrow-right-to-bracket"></i> Войти</button>
-      <button id="copyLinkBtn" class="btn" title="Скопировать ссылку"><i class="fas fa-link"></i></button>
-      <div class="connection-status" id="connectionStatus"><i class="fas fa-circle" style="font-size:6px; color: var(--success);"></i> ожидание</div>
-      <button id="reconnectBtn" class="btn"><i class="fas fa-rotate"></i> Переподключить</button>
-    </div>
-    <div class="game-meta">
-      <div class="turn-label">Сейчас ход: <b id="turnDisplay">—</b><span id="gameModeBadge" class="game-mode-badge" style="display:none;"></span></div>
-      <div class="progress-label" id="progressLabel">Слово 0 · 0 игроков</div>
-    </div>
-    <div class="letter-display">
-      <div class="letter-huge" id="letterHuge">?</div>
-      <div class="letter-caption" id="letterCaption">Введите слово, начинающееся с этой буквы</div>
-      <div class="last-word-display" id="lastWordDisplay">последнее слово: —</div>
-      <div class="turn-timer-container" id="turnTimerContainer">
-        <div class="turn-timer-bar" id="turnTimerBar"></div>
-      </div>
-      <div class="turn-timer-text" id="turnTimerText">45</div>
-    </div>
-    <div class="input-area">
-      <input type="text" id="wordInput" class="word-input" placeholder="ваше слово..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
-      <button id="submitWordBtn" class="send-btn" title="Ответить"><i class="fas fa-arrow-right"></i></button>
-    </div>
-    <div class="typing-indicator" id="typingIndicator">соперник печатает...</div>
-    <div class="sub-actions">
-      <button class="link-btn" id="skipBtn"><i class="fas fa-forward"></i> Пропустить ход</button>
-      <button class="link-btn" id="complaintBtn"><i class="fas fa-flag"></i> Пожаловаться</button>
-    </div>
-    <div class="vote-panel" id="votePanel" style="display:none;">
-      <div class="vote-title"><i class="fas fa-scale-balanced"></i><span id="voteTitle">Голосование</span></div>
-      <div class="vote-counters">
-        <div class="vote-counter yes">за: <span id="voteYesCount">0</span></div>
-        <div class="vote-counter no">против: <span id="voteNoCount">0</span></div>
-      </div>
-      <div class="vote-buttons" id="voteButtons" style="display:none;">
-        <button class="btn btn-primary" id="voteYesBtn" style="background: var(--success); border-color: var(--success);"><i class="fas fa-check"></i> За</button>
-        <button class="btn btn-danger" id="voteNoBtn"><i class="fas fa-xmark"></i> Против</button>
-      </div>
-      <div style="margin-top:10px; font-size:11px; color:var(--text-mute); font-family:'JetBrains Mono',monospace;"><span id="complaintCount">0</span> / <span id="complaintMax">0</span> голосов</div>
-    </div>
-    <div class="message-box" id="messageBox"><i class="fas fa-info-circle"></i> Готов к битве слов. Создайте или войдите в комнату.</div>
-    <div class="section-title"><span>Игроки</span><span class="count" id="onlineCountNumber">0</span></div>
-    <div class="players-panel" id="playersPanel"></div>
-  </main>
-  <aside class="sidebar">
-    <div>
-      <div class="section-title"><span>История слов</span><span class="count" id="wordsCount">0</span></div>
-      <ul class="history-list" id="wordsHistory"><li class="empty">пока пусто</li></ul>
-    </div>
-    <div>
-      <div class="section-title"><span>Чат</span><span class="count" id="chatCount">0</span></div>
-      <div class="chat-box">
-        <div class="chat-messages" id="chatMessages"></div>
-        <div style="position:relative;">
-          <div class="chat-msg-input-row">
-            <button type="button" id="emojiBtn" class="chat-send" title="Эмодзи"><i class="far fa-face-smile"></i></button>
-            <button type="button" id="giftBtn" class="chat-send" title="Подарок"><i class="fas fa-gift"></i></button>
-            <input type="text" id="chatInput" class="chat-input" placeholder="сообщение..." autocomplete="off">
-            <button id="chatSendBtn" class="chat-send"><i class="fas fa-paper-plane"></i></button>
-          </div>
-          <div id="emojiPanel" class="emoji-panel">
-            <div id="emojiCategories" class="emoji-categories"></div>
-            <div id="emojiGrid" class="emoji-grid"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="media-block">
-      <div class="media-title"><span><i class="fas fa-headphones"></i> Lo-Fi Radio</span></div>
-      <div class="media-controls">
-        <button id="playPauseBtn" class="btn"><i class="fas fa-play"></i> Play</button>
-        <button id="stopBtn" class="btn"><i class="fas fa-stop"></i> Stop</button>
-      </div>
-      <div class="media-status" id="playerStatus"><i class="fas fa-circle" style="font-size:6px;"></i> готово</div>
-    </div>
-  </aside>
+<main class="main">
+<div class="connection-panel">
+<input type="text" id="roomInput" class="room-input" placeholder="код комнаты" value="assortea">
+<button id="createRoomBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Создать</button>
+<button id="playWithBotBtn" class="btn btn-purple"><i class="fas fa-robot"></i> Играть с ботом</button>
+<button id="joinRoomBtn" class="btn"><i class="fas fa-arrow-right-to-bracket"></i> Войти</button>
+<button id="copyLinkBtn" class="btn" title="Скопировать ссылку"><i class="fas fa-link"></i></button>
+<div class="connection-status" id="connectionStatus"><i class="fas fa-circle" style="font-size:6px; color: var(--success);"></i> ожидание</div>
+<button id="reconnectBtn" class="btn"><i class="fas fa-rotate"></i> Переподключить</button>
+</div>
+<div class="game-meta">
+<div class="turn-label">Сейчас ход: <b id="turnDisplay">—</b><span id="gameModeBadge" class="game-mode-badge" style="display:none;"></span></div>
+<div class="progress-label" id="progressLabel">Слово 0 · 0 игроков</div>
+</div>
+<div class="letter-display">
+<div class="letter-huge" id="letterHuge">?</div>
+<div class="letter-caption" id="letterCaption">Введите слово, начинающееся с этой буквы</div>
+<div class="last-word-display" id="lastWordDisplay">последнее слово: —</div>
+<div class="turn-timer-container" id="turnTimerContainer">
+<div class="turn-timer-bar" id="turnTimerBar"></div>
+</div>
+<div class="turn-timer-text" id="turnTimerText">45</div>
+<!-- v0.7: Word Streak Bar -->
+<div class="streak-bar-container" id="streakBarContainer">
+<div class="streak-bar"><div class="streak-bar-fill" id="streakBarFill"></div></div>
+<div class="streak-bar-text" id="streakBarText">🔥 x1.0</div>
+</div>
+</div>
+<div class="input-area">
+<input type="text" id="wordInput" class="word-input" placeholder="ваше слово..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
+<button id="submitWordBtn" class="send-btn" title="Ответить"><i class="fas fa-arrow-right"></i></button>
+</div>
+<div class="typing-indicator" id="typingIndicator">соперник печатает...</div>
+<div class="sub-actions">
+<button class="link-btn" id="skipBtn"><i class="fas fa-forward"></i> Пропустить ход</button>
+<button class="link-btn" id="complaintBtn"><i class="fas fa-flag"></i> Пожаловаться</button>
+</div>
+<div class="vote-panel" id="votePanel" style="display:none;">
+<div class="vote-title"><i class="fas fa-scale-balanced"></i><span id="voteTitle">Голосование</span></div>
+<div class="vote-counters">
+<div class="vote-counter yes">за: <span id="voteYesCount">0</span></div>
+<div class="vote-counter no">против: <span id="voteNoCount">0</span></div>
+</div>
+<div class="vote-buttons" id="voteButtons" style="display:none;">
+<button class="btn btn-primary" id="voteYesBtn" style="background: var(--success); border-color: var(--success);"><i class="fas fa-check"></i> За</button>
+<button class="btn btn-danger" id="voteNoBtn"><i class="fas fa-xmark"></i> Против</button>
+</div>
+<div style="margin-top:10px; font-size:11px; color:var(--text-mute); font-family:'JetBrains Mono',monospace;"><span id="complaintCount">0</span> / <span id="complaintMax">0</span> голосов</div>
+</div>
+<div class="message-box" id="messageBox"><i class="fas fa-info-circle"></i> Готов к битве слов. Создайте или войдите в комнату.</div>
+<div class="section-title"><span>Игроки</span><span class="count" id="onlineCountNumber">0</span></div>
+<div class="players-panel" id="playersPanel"></div>
+</main>
+<aside class="sidebar">
+<div>
+<div class="section-title"><span>Цепочка слов</span><span class="count" id="wordsCount">0</span></div>
+<!-- v0.7: Word Chain Visualization -->
+<div class="word-chain" id="wordChain">
+<div class="word-chain-empty">пока пусто</div>
+</div>
+</div>
+<div>
+<div class="section-title"><span>Чат</span><span class="count" id="chatCount">0</span></div>
+<div class="chat-box">
+<div class="chat-messages" id="chatMessages"></div>
+<div style="position:relative;">
+<div class="chat-msg-input-row">
+<button type="button" id="emojiBtn" class="chat-send" title="Эмодзи"><i class="far fa-face-smile"></i></button>
+<button type="button" id="giftBtn" class="chat-send" title="Подарок"><i class="fas fa-gift"></i></button>
+<input type="text" id="chatInput" class="chat-input" placeholder="сообщение..." autocomplete="off">
+<button id="chatSendBtn" class="chat-send"><i class="fas fa-paper-plane"></i></button>
+</div>
+<div id="emojiPanel" class="emoji-panel">
+<div id="emojiCategories" class="emoji-categories"></div>
+<div id="emojiGrid" class="emoji-grid"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="media-block">
+<div class="media-title"><span><i class="fas fa-headphones"></i> Lo-Fi Radio</span></div>
+<div class="media-controls">
+<button id="playPauseBtn" class="btn"><i class="fas fa-play"></i> Play</button>
+<button id="stopBtn" class="btn"><i class="fas fa-stop"></i> Stop</button>
+</div>
+<div class="media-status" id="playerStatus"><i class="fas fa-circle" style="font-size:6px;"></i> готово</div>
+</div>
+</aside>
 </div>
 
 <!-- Profile Modal -->
 <div class="modal-overlay" id="profileModal">
-  <div class="modal">
-    <div class="modal-header"><h2>Мой профиль</h2><button class="modal-close" id="profileCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <div class="profile-avatar-big" id="profileAvatarPreview">😎</div>
-      <div class="avatar-input-group">
-        <input type="text" id="gifUrlInput" placeholder="URL GIF-аватара...">
-        <button id="setGifBtn" class="btn btn-primary"><i class="fas fa-link"></i> Загрузить</button>
-      </div>
-      <div class="avatar-presets">
-        <h4>Или выберите эмодзи</h4>
-        <div class="avatar-presets-grid" id="avatarPresetsGrid"></div>
-      </div>
-      <div class="form-group"><label>Ваше имя</label><input type="text" id="profileNameInput" placeholder="Введите имя" maxlength="20"></div>
-      
-      <!-- v0.6: Player ID Box -->
-      <div class="player-id-box">
-        <i class="fas fa-fingerprint" style="font-size: 20px; color: var(--purple);"></i>
-        <code id="playerIdDisplay">—</code>
-        <button class="btn btn-sm" id="copyPlayerIdBtn" title="Скопировать ID"><i class="fas fa-copy"></i></button>
-      </div>
-      
-      <div class="xp-section">
-        <div class="xp-header">
-          <div class="xp-level" id="profileLevel">Уровень 1 · Новичок</div>
-          <div class="xp-progress-text" id="profileXpText">0 / 100 XP</div>
-        </div>
-        <div class="xp-bar"><div class="xp-bar-fill" id="profileXpBar" style="width: 0%;"></div></div>
-        <div class="streak-badge" id="profileStreak" style="display:none;"><i class="fas fa-fire"></i> <span id="profileStreakCount">0</span> дней подряд</div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-item"><div class="stat-value" id="statGamesPlayed">0</div><div class="stat-label">Игр</div></div>
-        <div class="stat-item"><div class="stat-value" id="statWordsTotal">0</div><div class="stat-label">Слов</div></div>
-        <div class="stat-item"><div class="stat-value" id="statWins">0</div><div class="stat-label">Побед</div></div>
-        <div class="stat-item"><div class="stat-value" id="statRating">1000</div><div class="stat-label">Рейтинг</div></div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn" id="profileCancelBtn">Отмена</button>
-        <button class="btn btn-primary" id="profileSaveBtn"><i class="fas fa-check"></i> Сохранить</button>
-      </div>
-    </div>
-  </div>
+<div class="modal">
+<div class="modal-header"><h2>Мой профиль</h2><button class="modal-close" id="profileCloseBtn">&times;</button></div>
+<div class="modal-body">
+<div class="profile-avatar-big" id="profileAvatarPreview">😎</div>
+<div class="avatar-input-group">
+<input type="text" id="gifUrlInput" placeholder="URL GIF-аватара...">
+<button id="setGifBtn" class="btn btn-primary"><i class="fas fa-link"></i> Загрузить</button>
+</div>
+<div class="avatar-presets">
+<h4>Или выберите эмодзи</h4>
+<div class="avatar-presets-grid" id="avatarPresetsGrid"></div>
+</div>
+<div class="form-group"><label>Ваше имя</label><input type="text" id="profileNameInput" placeholder="Введите имя" maxlength="20"></div>
+
+<!-- v0.6: Player ID Box -->
+<div class="player-id-box">
+<i class="fas fa-fingerprint" style="font-size: 20px; color: var(--purple);"></i>
+<code id="playerIdDisplay">—</code>
+<button class="btn btn-sm" id="copyPlayerIdBtn" title="Скопировать ID"><i class="fas fa-copy"></i></button>
+</div>
+
+<!-- v0.7.1: Daily Bonus & Fortune Wheel -->
+<div class="xp-section" style="margin-bottom: 16px;">
+<div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+<button id="fortuneWheelBtn" class="btn btn-pink" style="flex: 1; min-width: 140px; justify-content: center;"> <span id="fortuneBtnText">🎰 Крутить колесо</span>
+</button>
+</div>
+<div id="fortuneStatusInfo" style="font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; text-align: center; margin-bottom: 8px;"></div>
+<div id="activeBonusesDisplay" style="display: none; padding: 8px; background: rgba(236, 72, 153, 0.08); border: 1px solid var(--pink); border-radius: var(--radius-sm); font-size: 12px; color: var(--pink); text-align: center;"></div>
+</div>
+
+<!-- XP Section -->
+<div class="xp-section">
+<div class="xp-header">
+<div class="xp-level" id="profileLevel">Уровень 1 · Новичок</div>
+<div class="xp-progress-text" id="profileXpText">0 / 100 XP</div>
+</div>
+<div class="xp-bar"><div class="xp-bar-fill" id="profileXpBar" style="width: 0%;"></div></div>
+<div class="streak-badge" id="profileStreak" style="display:none;"><i class="fas fa-fire"></i> <span id="profileStreakCount">0</span> дней подряд</div>
+</div>
+
+<!-- v0.7.1: Titles Section -->
+<div class="titles-section">
+<h4><i class="fas fa-crown"></i> Мои титулы</h4>
+<div class="titles-grid" id="titlesGrid"></div>
+</div>
+
+<!-- v0.7.1: Letter Heatmap -->
+<div class="heatmap-section">
+<h4><i class="fas fa-fire-flame-curved"></i> Использование букв</h4>
+<div class="heatmap-grid" id="heatmapGrid"></div>
+</div>
+
+<!-- v0.7.1: Extended Stats -->
+<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+<div class="stat-item"><div class="stat-value" id="statGamesPlayed">0</div><div class="stat-label">Игр</div></div>
+<div class="stat-item"><div class="stat-value" id="statWordsTotal">0</div><div class="stat-label">Слов</div></div>
+<div class="stat-item"><div class="stat-value" id="statWins">0</div><div class="stat-label">Побед</div></div>
+<div class="stat-item"><div class="stat-value" id="statBestStreak">0</div><div class="stat-label">🔥 Streak</div></div>
+<div class="stat-item"><div class="stat-value" id="statLongestWord">0</div><div class="stat-label">📏 Слово</div></div>
+<div class="stat-item"><div class="stat-value" id="statNightGames">0</div><div class="stat-label">🦉 Ночных</div></div>
+</div>
+
+<!-- v0.7.1: Theme Picker -->
+<div class="xp-section">
+<h4 style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); margin-bottom: 12px; font-weight: 600;"><i class="fas fa-palette"></i> Цветовая тема</h4>
+<div class="theme-picker" id="themePicker">
+<div class="theme-swatch" data-theme="default" title="По умолчанию"></div>
+<div class="theme-swatch" data-theme="ocean" title="Океан"></div>
+<div class="theme-swatch" data-theme="forest" title="Лес"></div>
+<div class="theme-swatch" data-theme="sunset" title="Закат"></div>
+<div class="theme-swatch" data-theme="violet" title="Фиолет"></div>
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="btn" id="profileCancelBtn">Отмена</button>
+<button class="btn btn-primary" id="profileSaveBtn"><i class="fas fa-check"></i> Сохранить</button>
+</div>
+</div>
+</div>
 </div>
 
 <!-- Create Room Modal -->
 <div class="modal-overlay" id="createRoomModal">
-  <div class="modal" style="max-width: 400px;">
-    <div class="modal-header"><h2>Создать комнату</h2><button class="modal-close" id="createRoomCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Код комнаты</label>
-        <input type="text" id="newRoomCodeInput" placeholder="например, myroom123" maxlength="20">
-      </div>
-      <div class="form-group">
-        <label>Режим игры</label>
-        <div class="mode-selector">
-          <div class="mode-option selected" data-mode="classic">
-            <div class="mode-option-icon">🎯</div>
-            <div class="mode-option-name">Классика</div>
-            <div class="mode-option-desc">45 сек · x1 очки</div>
-          </div>
-          <div class="mode-option" data-mode="blitz">
-            <div class="mode-option-icon">⚡</div>
-            <div class="mode-option-name">Блиц</div>
-            <div class="mode-option-desc">15 сек · x2 очки</div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn" id="createRoomCancelBtn">Отмена</button>
-        <button class="btn btn-primary" id="createRoomConfirmBtn"><i class="fas fa-plus"></i> Создать</button>
-      </div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 400px;">
+<div class="modal-header"><h2>Создать комнату</h2><button class="modal-close" id="createRoomCloseBtn">&times;</button></div>
+<div class="modal-body">
+<div class="form-group">
+<label>Код комнаты</label>
+<input type="text" id="newRoomCodeInput" placeholder="например, myroom123" maxlength="20">
+</div>
+<div class="form-group">
+<label>Режим игры</label>
+<div class="mode-selector">
+<div class="mode-option selected" data-mode="classic">
+<div class="mode-option-icon">🎯</div>
+<div class="mode-option-name">Классика</div>
+<div class="mode-option-desc">45 сек · x1 очки</div>
+</div>
+<div class="mode-option" data-mode="blitz">
+<div class="mode-option-icon">⚡</div>
+<div class="mode-option-name">Блиц</div>
+<div class="mode-option-desc">15 сек · x2 очки</div>
+</div>
+</div>
+</div>
+<div class="modal-actions">
+<button class="btn" id="createRoomCancelBtn">Отмена</button>
+<button class="btn btn-primary" id="createRoomConfirmBtn"><i class="fas fa-plus"></i> Создать</button>
+</div>
+</div>
+</div>
 </div>
 
 <!-- Achievements Modal -->
 <div class="modal-overlay" id="achievementsModal">
-  <div class="modal" style="max-width: 600px;">
-    <div class="modal-header"><h2><i class="fas fa-medal" style="color: var(--warning);"></i> Достижения</h2><button class="modal-close" id="achievementsCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <p style="color: var(--text-soft); margin-bottom: 16px;">Разблокировано: <b id="achievementsUnlockedCount">0</b> / <b id="achievementsTotalCount">10</b></p>
-      <div class="achievements-grid" id="achievementsGrid"></div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 600px;">
+<div class="modal-header"><h2><i class="fas fa-medal" style="color: var(--warning);"></i> Достижения</h2><button class="modal-close" id="achievementsCloseBtn">&times;</button></div>
+<div class="modal-body">
+<p style="color: var(--text-soft); margin-bottom: 16px;">Разблокировано: <b id="achievementsUnlockedCount">0</b> / <b id="achievementsTotalCount">10</b></p>
+<div class="achievements-grid" id="achievementsGrid"></div>
+</div>
+</div>
 </div>
 
 <!-- Match History Modal -->
 <div class="modal-overlay" id="historyModal">
-  <div class="modal" style="max-width: 500px;">
-    <div class="modal-header"><h2><i class="fas fa-clock-rotate-left"></i> История матчей</h2><button class="modal-close" id="historyCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <div class="match-history-list" id="matchHistoryList"></div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 500px;">
+<div class="modal-header"><h2><i class="fas fa-clock-rotate-left"></i> История матчей</h2><button class="modal-close" id="historyCloseBtn">&times;</button></div>
+<div class="modal-body">
+<div class="match-history-list" id="matchHistoryList"></div>
+</div>
+</div>
 </div>
 
 <!-- Leaderboard Modal -->
 <div class="modal-overlay" id="leaderboardModal">
-  <div class="modal" style="max-width: 500px;">
-    <div class="modal-header"><h2><i class="fas fa-trophy" style="color: var(--warning);"></i> Топ игроков</h2><button class="modal-close" id="leaderboardCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <div class="leaderboard-list" id="leaderboardList">
-        <div style="text-align:center;padding:20px;color:var(--text-mute);"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>
-      </div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 500px;">
+<div class="modal-header"><h2><i class="fas fa-trophy" style="color: var(--warning);"></i> Топ игроков</h2><button class="modal-close" id="leaderboardCloseBtn">&times;</button></div>
+<div class="modal-body">
+<div class="leaderboard-list" id="leaderboardList">
+<div style="text-align:center;padding:20px;color:var(--text-mute);"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>
+</div>
+</div>
+</div>
 </div>
 
 <!-- Daily Quests Modal -->
 <div class="modal-overlay" id="questsModal">
-  <div class="modal" style="max-width: 500px;">
-    <div class="modal-header"><h2><i class="fas fa-scroll" style="color: var(--warning);"></i> Ежедневные задания</h2><button class="modal-close" id="questsCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <p style="color: var(--text-soft); margin-bottom: 16px; font-size: 12px;">Обновляются каждый день в полночь</p>
-      <div class="quests-list" id="questsList"></div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 500px;">
+<div class="modal-header"><h2><i class="fas fa-scroll" style="color: var(--warning);"></i> Ежедневные задания</h2><button class="modal-close" id="questsCloseBtn">&times;</button></div>
+<div class="modal-body">
+<p style="color: var(--text-soft); margin-bottom: 16px; font-size: 12px;">Обновляются каждый день в полночь</p>
+<div class="quests-list" id="questsList"></div>
+</div>
+</div>
 </div>
 
 <!-- Gift Picker Modal -->
 <div class="modal-overlay" id="giftModal">
-  <div class="modal" style="max-width: 400px;">
-    <div class="modal-header"><h2><i class="fas fa-gift" style="color: var(--purple);"></i> Отправить подарок</h2><button class="modal-close" id="giftCloseBtn">&times;</button></div>
-    <div class="modal-body">
-      <p style="color: var(--text-soft); margin-bottom: 16px;">Выберите подарок для всех в комнате:</p>
-      <div class="gift-picker" id="giftPicker"></div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 400px;">
+<div class="modal-header"><h2><i class="fas fa-gift" style="color: var(--purple);"></i> Отправить подарок</h2><button class="modal-close" id="giftCloseBtn">&times;</button></div>
+<div class="modal-body">
+<p style="color: var(--text-soft); margin-bottom: 16px;">Выберите подарок для всех в комнате:</p>
+<div class="gift-picker" id="giftPicker"></div>
+</div>
+</div>
+</div>
+
+<!-- v0.7: Fortune Wheel Modal -->
+<div class="modal-overlay" id="fortuneModal">
+<div class="modal" style="max-width: 450px;">
+<div class="modal-header"><h2>Колесо фортуны</h2><button class="modal-close" id="fortuneCloseBtn">&times;</button></div>
+<div class="modal-body">
+<div class="fortune-wheel-container">
+<div class="fortune-wheel">
+<div class="fortune-wheel-pointer"></div>
+<div class="fortune-wheel-inner" id="fortuneWheelInner"></div>
+</div>
+<div class="fortune-result" id="fortuneResult"></div>
+<button id="fortuneSpinBtn" class="btn btn-primary fortune-spin-btn"><i class="fas fa-dharmachakra"></i> Крутить!</button>
+<div class="fortune-info" id="fortuneInfo">Следующее вращение доступно через 24 часа</div>
+</div>
+</div>
+</div>
 </div>
 
 <!-- End Game Modal -->
 <div class="modal-overlay" id="endGameModal">
-  <div class="modal" style="max-width: 400px; text-align: center;">
-    <div class="modal-body">
-      <h2 style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 8px;">🏆 Игра окончена!</h2>
-      <p style="color: var(--text-mute); margin-bottom: 24px;" id="endGameSubtitle">Победитель определен</p>
-      <div class="endgame-podium" id="endGamePodium"></div>
-      <div id="endGameXpReward" style="margin: 16px 0; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--purple); display:none;"></div>
-      <div class="modal-actions" style="justify-content: center; gap: 12px; margin-top: 24px;">
-        <button class="btn" id="endGameCloseBtn">Закрыть</button>
-        <button class="btn btn-primary" id="rematchBtn" style="display:none;"><i class="fas fa-rotate-right"></i> Реванш</button>
-      </div>
-    </div>
-  </div>
+<div class="modal" style="max-width: 400px; text-align: center;">
+<div class="modal-body">
+<h2 style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 8px;">🏆 Игра окончена!</h2>
+<p style="color: var(--text-mute); margin-bottom: 24px;" id="endGameSubtitle">Победитель определен</p>
+<div class="endgame-podium" id="endGamePodium"></div>
+<div id="endGameXpReward" style="margin: 16px 0; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--purple); display:none;"></div>
+<div class="modal-actions" style="justify-content: center; gap: 12px; margin-top: 24px;">
+<button class="btn" id="endGameCloseBtn">Закрыть</button>
+<button class="btn btn-primary" id="rematchBtn" style="display:none;"><i class="fas fa-rotate-right"></i> Реванш</button>
+</div>
+</div>
+</div>
 </div>
 
 <!-- Admin Panel -->
 <div class="admin-overlay" id="adminOverlay"></div>
 <div class="admin-panel" id="adminPanel">
-  <div class="admin-header"><h2><i class="fas fa-crown"></i> Админ-панель</h2><button class="modal-close" id="adminCloseBtn">&times;</button></div>
-  <div class="admin-tabs">
-    <button class="admin-tab active" data-tab="main">Главная</button>
-    <button class="admin-tab" data-tab="players">Игроки</button>
-    <button class="admin-tab" data-tab="game">Игра</button>
-  </div>
-  <div class="admin-content">
-    <div class="tab-content" data-tab="main">
-      <div class="admin-stats">
-        <div class="admin-stat-card"><div class="admin-stat-value" id="statPlayers">0</div><div class="admin-stat-label">Онлайн</div></div>
-        <div class="admin-stat-card"><div class="admin-stat-value" id="statWords">0</div><div class="admin-stat-label">Слов</div></div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-bolt"></i> Быстрые действия</h3>
-        <div class="admin-input-group">
-          <button id="quickResetGame" class="admin-btn admin-btn-warning"><i class="fas fa-rotate"></i> Сбросить</button>
-          <button id="quickEndGame" class="admin-btn btn-primary"><i class="fas fa-trophy"></i> Завершить</button>
-        </div>
-      </div>
-    </div>
-    <div class="tab-content" data-tab="players" style="display:none;">
-      <div class="admin-section"><h3><i class="fas fa-list"></i> Игроки</h3><div id="adminPlayersList" class="player-list"></div></div>
-    </div>
-    <div class="tab-content" data-tab="game" style="display:none;">
-      <div class="admin-section">
-        <h3><i class="fas fa-forward"></i> Передать ход</h3>
-        <div class="admin-input-group">
-          <select id="adminPlayerSelect"><option value="">Выберите игрока</option></select>
-          <button id="adminTransferTurnBtn" class="admin-btn">Передать</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="admin-header"><h2><i class="fas fa-crown"></i> Админ-панель</h2><button class="modal-close" id="adminCloseBtn">&times;</button></div>
+<div class="admin-tabs">
+<button class="admin-tab active" data-tab="main">Главная</button>
+<button class="admin-tab" data-tab="players">Игроки</button>
+<button class="admin-tab" data-tab="game">Игра</button>
+</div>
+<div class="admin-content">
+<div class="tab-content" data-tab="main">
+<div class="admin-stats">
+<div class="admin-stat-card"><div class="admin-stat-value" id="statPlayers">0</div><div class="admin-stat-label">Онлайн</div></div>
+<div class="admin-stat-card"><div class="admin-stat-value" id="statWords">0</div><div class="admin-stat-label">Слов</div></div>
+</div>
+<div class="admin-section">
+<h3><i class="fas fa-bolt"></i> Быстрые действия</h3>
+<div class="admin-input-group">
+<button id="quickResetGame" class="admin-btn admin-btn-warning"><i class="fas fa-rotate"></i> Сбросить</button>
+<button id="quickEndGame" class="admin-btn btn-primary"><i class="fas fa-trophy"></i> Завершить</button>
+</div>
+</div>
+</div>
+<div class="tab-content" data-tab="players" style="display:none;">
+<div class="admin-section"><h3><i class="fas fa-list"></i> Игроки</h3><div id="adminPlayersList" class="player-list"></div></div>
+</div>
+<div class="tab-content" data-tab="game" style="display:none;">
+<div class="admin-section">
+<h3><i class="fas fa-forward"></i> Передать ход</h3>
+<div class="admin-input-group">
+<select id="adminPlayerSelect"><option value="">Выберите игрока</option></select>
+<button id="adminTransferTurnBtn" class="admin-btn">Передать</button>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="youtube-player" style="display:none;"></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -625,7 +751,6 @@ function getOrCreatePersistentId() {
   if (!persistentId) {
     persistentId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('persistentPlayerId', persistentId);
-    console.log('✅ Создан новый постоянный ID:', persistentId);
   }
   return persistentId;
 }
@@ -650,6 +775,26 @@ function getLevelInfo(xp) {
   }
   return { currentLevel, nextLevel, xpInLevel: nextLevel ? xp - currentLevel.xpRequired : 0, xpToNext: nextLevel ? nextLevel.xpRequired - currentLevel.xpRequired : 0 };
 }
+
+// --- v0.7: Titles System ---
+const TITLES = [
+  { id: 'novice', name: 'Новичок', icon: '🌱', check: (s) => s.level >= 1, auto: true },
+  { id: 'apprentice', name: 'Ученик', icon: '📚', check: (s) => s.level >= 2, auto: true },
+  { id: 'knower', name: 'Знаток', icon: '🎓', check: (s) => s.level >= 3, auto: true },
+  { id: 'erudite', name: 'Эрудит', icon: '🧠', check: (s) => s.level >= 4, auto: true },
+  { id: 'master', name: 'Мастер', icon: '⚔️', check: (s) => s.level >= 5, auto: true },
+  { id: 'guru', name: 'Гуру', icon: '🧘', check: (s) => s.level >= 6, auto: true },
+  { id: 'magister', name: 'Магистр', icon: '👑', check: (s) => s.level >= 7, auto: true },
+  { id: 'virtuoso', name: 'Виртуоз', icon: '🎭', check: (s) => s.level >= 8, auto: true },
+  { id: 'legend', name: 'Легенда', icon: '🏆', check: (s) => s.level >= 9, auto: true },
+  { id: 'god', name: 'Бог Слов', icon: '⚡', check: (s) => s.level >= 10, auto: true },
+  { id: 'lightning', name: 'Молния', icon: '⚡', check: (s) => s.blitzWins >= 5, auto: false },
+  { id: 'marathoner', name: 'Марафонец', icon: '🏃', check: (s) => s.longestWord >= 12, auto: false },
+  { id: 'polyglot', name: 'Полиглот', icon: '🌐', check: (s) => s.uniqueLettersUsed >= 25, auto: false },
+  { id: 'social', name: 'Душа компании', icon: '💬', check: (s) => s.messagesSent >= 100, auto: false },
+  { id: 'unstoppable', name: 'Непобедимый', icon: '🔥', check: (s) => s.winStreak >= 5, auto: false },
+  { id: 'night_owl', name: 'Ночная сова', icon: '🦉', check: (s) => s.nightGames >= 10, auto: false }
+];
 
 // --- Achievements ---
 const ACHIEVEMENTS = [
@@ -676,6 +821,18 @@ const DAILY_QUESTS_POOL = [
   { id: 'score_30', name: 'Набери 30 очков за день', icon: '⭐', target: 30, stat: 'scoreToday', reward: 35 }
 ];
 
+// --- v0.7: Fortune Wheel Rewards ---
+const FORTUNE_REWARDS = [
+  { label: '+5 XP', value: 5, color: '#3b82f6', type: 'xp' },
+  { label: '+15 XP', value: 15, color: '#8b5cf6', type: 'xp' },
+  { label: '+30 XP', value: 30, color: '#ec4899', type: 'xp' },
+  { label: '+50 XP', value: 50, color: '#f59e0b', type: 'xp' },
+  { label: 'x2 на игру', value: 1, color: '#10b981', type: 'multiplier' },
+  { label: 'Подсказка', value: 1, color: '#06b6d4', type: 'hint' },
+  { label: '+10 XP', value: 10, color: '#6366f1', type: 'xp' },
+  { label: 'Пусто', value: 0, color: '#64748b', type: 'empty' }
+];
+
 let playerStats = {
   xp: 0, gamesPlayed: 0, wordsTotal: 0, wins: 0, winStreak: 0, longestWord: 0,
   messagesSent: 0, achievementsUnlocked: 0, streak: 0, lastPlayDate: null,
@@ -683,7 +840,17 @@ let playerStats = {
   dailyDate: null, gamesToday: 0, wordsToday: 0, messagesToday: 0,
   winsToday: 0, longWordsToday: 0, giftsToday: 0, scoreToday: 0,
   dailyQuests: [], questsClaimed: [],
-  matchHistory: []
+  matchHistory: [],
+  // v0.7: New fields
+  activeTitle: 'novice',
+  letterUsage: {},
+  uniqueLettersUsed: 0,
+  nightGames: 0,
+  wordStreak: 0,
+  bestWordStreak: 0,
+  fortuneLastSpin: 0,
+  fortuneActiveBonus: null,
+  dailyBonusClaimed: null
 };
 
 // --- v0.6: Firebase Profile Sync ---
@@ -693,68 +860,51 @@ let profileSyncListener = null;
 async function loadPlayerProfile() {
   persistentPlayerId = getOrCreatePersistentId();
   updateSyncIndicator('syncing', 'загрузка...');
-  
   try {
     const snap = await db.ref(`players/${persistentPlayerId}`).once('value');
     const data = snap.val();
-    
     if (data) {
-      // Profile exists in Firebase - load it
       playerStats = { ...playerStats, ...data };
-      console.log('✅ Профиль загружен из Firebase');
       updateSyncIndicator('synced', 'синхронизировано');
-      
-      // Migrate localStorage data if needed
       const localStats = localStorage.getItem('playerStats_v5');
       if (localStats) {
         try {
           const local = JSON.parse(localStats);
           if (local.xp > playerStats.xp) {
-            // Local has more XP - migrate
             playerStats = { ...playerStats, ...local };
             await savePlayerProfile();
-            console.log('✅ Данные мигрированы из localStorage в Firebase');
           }
           localStorage.removeItem('playerStats_v5');
         } catch (e) {}
       }
     } else {
-      // No profile in Firebase - create new one
-      console.log('📝 Создаём новый профиль в Firebase');
       await savePlayerProfile();
       updateSyncIndicator('synced', 'синхронизировано');
     }
-    
-    // Listen for profile changes from other devices
     if (profileSyncListener) profileSyncListener();
     profileSyncListener = db.ref(`players/${persistentPlayerId}`).on('value', (snap) => {
       const data = snap.val();
       if (data && data.lastSeen && Date.now() - data.lastSeen > 5000) {
-        // Update from another device
         playerStats = { ...playerStats, ...data };
         savePlayerStats();
         updateProfileUI();
       }
     });
-    
   } catch (error) {
     console.error('❌ Ошибка загрузки профиля:', error);
     updateSyncIndicator('error', 'ошибка');
-    
-    // Fallback to localStorage
     const localStats = localStorage.getItem('playerStats_v5');
     if (localStats) {
       try { playerStats = { ...playerStats, ...JSON.parse(localStats) }; } catch(e) {}
     }
   }
-  
   updateStreak();
   checkDailyReset();
+  checkDailyBonus();
 }
 
 async function savePlayerProfile() {
   if (!persistentPlayerId) return;
-  
   try {
     playerStats.lastSeen = Date.now();
     await db.ref(`players/${persistentPlayerId}`).set(playerStats);
@@ -769,26 +919,17 @@ function updateSyncIndicator(status, text) {
   const indicator = document.getElementById('syncIndicator');
   const statusSpan = document.getElementById('syncStatus');
   if (!indicator || !statusSpan) return;
-  
   indicator.className = 'sync-indicator ' + status;
   statusSpan.textContent = text;
-  
   const icon = indicator.querySelector('i');
   if (status === 'syncing') icon.className = 'fas fa-circle-notch fa-spin';
   else if (status === 'synced') icon.className = 'fas fa-circle';
   else if (status === 'error') icon.className = 'fas fa-exclamation-circle';
 }
 
-function loadPlayerStats() {
-  // v0.6: Now loads from Firebase via loadPlayerProfile()
-  // This function is kept for compatibility
-  const saved = localStorage.getItem('playerStats_v6');
-  if (saved) { try { playerStats = { ...playerStats, ...JSON.parse(saved) }; } catch(e) {} }
-}
-
 function savePlayerStats() {
   localStorage.setItem('playerStats_v6', JSON.stringify(playerStats));
-  savePlayerProfile(); // v0.6: Also save to Firebase
+  savePlayerProfile();
 }
 
 function updateStreak() {
@@ -817,6 +958,20 @@ function checkDailyReset() {
     const shuffled = [...DAILY_QUESTS_POOL].sort(() => Math.random() - 0.5);
     playerStats.dailyQuests = shuffled.slice(0, 3).map(q => q.id);
     savePlayerStats();
+  }
+}
+
+// v0.7: Daily Bonus
+function checkDailyBonus() {
+  const today = new Date().toDateString();
+  if (playerStats.dailyBonusClaimed !== today) {
+    playerStats.dailyBonusClaimed = today;
+    addXP(10);
+    savePlayerStats();
+    setTimeout(() => {
+      showToast('🎁 Ежедневный бонус: +10 XP!', 'bonus');
+      playSound('achievement');
+    }, 1500);
   }
 }
 
@@ -854,6 +1009,7 @@ function addXP(amount) {
   if (newLevel > oldLevel) {
     showToast(`🎉 Новый уровень: ${LEVELS[newLevel - 1].name}!`, 'achievement');
     playSound('achievement');
+    checkTitles();
   }
 }
 
@@ -877,17 +1033,198 @@ function checkAchievements(gameWords = 0) {
       }, 500);
     });
     updateProfileUI();
+    checkTitles();
   }
+}
+
+// v0.7: Check titles
+function checkTitles() {
+  const levelInfo = getLevelInfo(playerStats.xp);
+  playerStats.level = levelInfo.currentLevel.level;
+  let newTitleUnlocked = false;
+  TITLES.forEach(title => {
+    if (title.check(playerStats)) {
+      if (!playerStats.unlockedTitles) playerStats.unlockedTitles = [];
+      if (!playerStats.unlockedTitles.includes(title.id)) {
+        playerStats.unlockedTitles.push(title.id);
+        newTitleUnlocked = true;
+      }
+    }
+  });
+  if (newTitleUnlocked) {
+    savePlayerStats();
+    renderTitles();
+  }
+}
+
+function getActiveTitle() {
+  const title = TITLES.find(t => t.id === playerStats.activeTitle);
+  return title || TITLES[0];
+}
+
+function setActiveTitle(titleId) {
+  const title = TITLES.find(t => t.id === titleId);
+  if (!title) return;
+  if (!title.check(playerStats)) {
+    showToast('🔒 Титул ещё не разблокирован', 'warning');
+    return;
+  }
+  playerStats.activeTitle = titleId;
+  savePlayerStats();
+  renderTitles();
+  renderPlayers();
+  showToast(`${title.icon} Титул установлен: ${title.name}`, 'success');
+}
+
+function renderTitles() {
+  const grid = document.getElementById('titlesGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!playerStats.unlockedTitles) playerStats.unlockedTitles = ['novice'];
+  TITLES.forEach(title => {
+    const unlocked = playerStats.unlockedTitles.includes(title.id);
+    const active = playerStats.activeTitle === title.id;
+    const chip = document.createElement('div');
+    chip.className = `title-chip ${active ? 'active' : ''} ${!unlocked ? 'locked' : ''}`;
+    chip.innerHTML = `${title.icon} ${title.name}`;
+    if (unlocked) {
+      chip.onclick = () => setActiveTitle(title.id);
+    }
+    grid.appendChild(chip);
+  });
+}
+
+// v0.7: Letter Heatmap
+function trackLetterUsage(word) {
+  const clean = word.toLowerCase().replace(/[^а-яё]/g, '');
+  const uniqueLetters = new Set();
+  [...clean].forEach(letter => {
+    if (!playerStats.letterUsage) playerStats.letterUsage = {};
+    playerStats.letterUsage[letter] = (playerStats.letterUsage[letter] || 0) + 1;
+    uniqueLetters.add(letter);
+  });
+  playerStats.uniqueLettersUsed = Object.keys(playerStats.letterUsage).length;
+  savePlayerStats();
+}
+
+function renderHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'.split('');
+  const usage = playerStats.letterUsage || {};
+  const maxCount = Math.max(1, ...Object.values(usage));
+  alphabet.forEach(letter => {
+    const count = usage[letter] || 0;
+    const intensity = count / maxCount;
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell';
+    cell.textContent = letter.toUpperCase();
+    cell.title = `${letter.toUpperCase()}: ${count} раз`;
+    if (count > 0) {
+      const r = Math.round(139 - intensity * 100);
+      const g = Math.round(92 - intensity * 50);
+      const b = Math.round(246);
+      cell.style.background = `rgba(${r}, ${g}, ${b}, ${0.3 + intensity * 0.7})`;
+      if (count > 0) {
+        const badge = document.createElement('span');
+        badge.className = 'heatmap-count';
+        badge.textContent = count > 99 ? '99+' : count;
+        cell.appendChild(badge);
+      }
+    } else {
+      cell.style.background = 'var(--border)';
+      cell.style.color = 'var(--text-mute)';
+    }
+    grid.appendChild(cell);
+  });
+}
+
+// v0.7: Fortune Wheel
+function initFortuneWheel() {
+  const inner = document.getElementById('fortuneWheelInner');
+  if (!inner) return;
+  inner.innerHTML = '';
+  const segmentAngle = 360 / FORTUNE_REWARDS.length;
+  FORTUNE_REWARDS.forEach((reward, idx) => {
+    const segment = document.createElement('div');
+    segment.className = 'fortune-segment';
+    segment.style.transform = `rotate(${idx * segmentAngle}deg) skewY(-${90 - segmentAngle}deg)`;
+    segment.style.background = reward.color;
+    const text = document.createElement('div');
+    text.className = 'fortune-segment-text';
+    text.textContent = reward.label;
+    text.style.transform = `skewY(${90 - segmentAngle}deg) rotate(${segmentAngle / 2}deg)`;
+    segment.appendChild(text);
+    inner.appendChild(segment);
+  });
+}
+
+function canSpinFortune() {
+  const now = Date.now();
+  const lastSpin = playerStats.fortuneLastSpin || 0;
+  return now - lastSpin >= 24 * 60 * 60 * 1000;
+}
+
+function getTimeUntilNextSpin() {
+  const now = Date.now();
+  const lastSpin = playerStats.fortuneLastSpin || 0;
+  const nextSpin = lastSpin + 24 * 60 * 60 * 1000;
+  const diff = nextSpin - now;
+  if (diff <= 0) return 'Доступно сейчас!';
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+  return `Через ${hours}ч ${minutes}мин`;
+}
+
+function spinFortune() {
+  if (!canSpinFortune()) {
+    showToast(`⏰ ${getTimeUntilNextSpin()}`, 'warning');
+    return;
+  }
+  const inner = document.getElementById('fortuneWheelInner');
+  const spinBtn = document.getElementById('fortuneSpinBtn');
+  const result = document.getElementById('fortuneResult');
+  const info = document.getElementById('fortuneInfo');
+  spinBtn.disabled = true;
+  result.textContent = '';
+  const winningIndex = Math.floor(Math.random() * FORTUNE_REWARDS.length);
+  const segmentAngle = 360 / FORTUNE_REWARDS.length;
+  const targetAngle = 360 * 5 + (360 - winningIndex * segmentAngle - segmentAngle / 2);
+  inner.style.transform = `rotate(${targetAngle}deg)`;
+  setTimeout(() => {
+    const reward = FORTUNE_REWARDS[winningIndex];
+    playerStats.fortuneLastSpin = Date.now();
+    if (reward.type === 'xp') {
+      addXP(reward.value);
+      result.textContent = `🎉 +${reward.value} XP!`;
+      showToast(`🎰 Выигрыш: +${reward.value} XP!`, 'bonus');
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+    } else if (reward.type === 'multiplier') {
+      playerStats.fortuneActiveBonus = { type: 'multiplier', value: 2, expiresAt: Date.now() + 24 * 60 * 60 * 1000 };
+      result.textContent = '⚡ x2 на следующую игру!';
+      showToast('⚡ Бонус x2 активирован на следующую игру!', 'bonus');
+    } else if (reward.type === 'hint') {
+      playerStats.fortuneActiveBonus = { type: 'hint', value: 1 };
+      result.textContent = '💡 Подсказка получена!';
+      showToast('💡 Подсказка добавлена в инвентарь!', 'bonus');
+    } else {
+      result.textContent = '😔 В следующий раз повезёт!';
+    }
+    info.textContent = getTimeUntilNextSpin();
+    savePlayerStats();
+    playSound('gift');
+    setTimeout(() => { spinBtn.disabled = false; }, 1000);
+  }, 4100);
 }
 
 // --- Match History ---
 let matchHistory = [];
 function loadMatchHistory() {
-  // v0.6: Load from playerStats (which comes from Firebase)
   matchHistory = playerStats.matchHistory || [];
 }
 function saveMatchToHistory(players, winnerId, mode) {
-  const match = { date: Date.now(), players: players.map(p => ({ name: p.name, score: p.score || 0, id: p.id })), winnerId, mode, myScore: players.find(p => p.id === myId)?.score || 0 };
+  const match = { date: Date.now(), players: players.map(p => ({ name: p.name, score: p.score || 0, id: p.id })), winnerId, mode };
   matchHistory.unshift(match);
   if (matchHistory.length > 10) matchHistory = matchHistory.slice(0, 10);
   playerStats.matchHistory = matchHistory;
@@ -930,6 +1267,9 @@ function playSound(type) {
   } else if (type === 'gift') {
     osc.type = 'sine'; osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
     gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3);
+  } else if (type === 'streak') {
+    osc.type = 'square'; osc.frequency.setValueAtTime(440, now); osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+    gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(); osc.stop(now + 0.2);
   }
 }
 
@@ -945,7 +1285,7 @@ function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle', achievement: 'fa-trophy', quest: 'fa-scroll' };
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle', achievement: 'fa-trophy', quest: 'fa-scroll', bonus: 'fa-gift' };
   toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
   container.appendChild(toast);
   setTimeout(() => {
@@ -954,7 +1294,8 @@ function showToast(message, type = 'info') {
   }, 3500);
 }
 
-function calculateScore(word, gameMode) {
+// v0.7: Calculate score with streak and bonuses
+function calculateScore(word, gameMode, isBonusRound = false) {
   let score = 1;
   const clean = word.toLowerCase().replace(/[^а-яё]/g, '');
   if (clean.length >= 5 && clean.length <= 7) score += 1;
@@ -962,6 +1303,14 @@ function calculateScore(word, gameMode) {
   const rareLetters = ['ё', 'щ', 'ъ', 'ы', 'э', 'ю', 'я'];
   if ([...clean].some(char => rareLetters.includes(char))) score += 1;
   if (gameMode === 'blitz') score *= 2;
+  // v0.7: Word streak multiplier
+  if (playerStats.wordStreak >= 3) score = Math.ceil(score * 1.5);
+  // v0.7: Bonus round (every 10th word)
+  if (isBonusRound) score *= 3;
+  // v0.7: Fortune bonus
+  if (playerStats.fortuneActiveBonus && playerStats.fortuneActiveBonus.type === 'multiplier') {
+    score *= playerStats.fortuneActiveBonus.value;
+  }
   return score;
 }
 
@@ -1046,12 +1395,7 @@ async function isValidWordWithDictionary(word) {
 }
 
 // --- AI Bot ---
-const BOT = {
-  id: 'bot_archie',
-  name: 'Арчи 🤖',
-  avatar: '🤖',
-  isBot: true
-};
+const BOT = { id: 'bot_archie', name: 'Арчи 🤖', avatar: '🤖', isBot: true };
 
 function botPickWord(lastWord, usedWords) {
   if (!dictionaryLoaded) return null;
@@ -1086,11 +1430,9 @@ async function botPlay(roomId) {
   db.ref(`rooms/${roomId}/typing/${BOT.id}`).set(true);
   await new Promise(r => setTimeout(r, thinkTime));
   db.ref(`rooms/${roomId}/typing/${BOT.id}`).remove();
-  
   const snap = await db.ref(`rooms/${roomId}`).once('value');
   const game = snap.val();
   if (!game || game.currentPlayerId !== BOT.id || game.gameEnded) return;
-  
   const word = botPickWord(game.lastWord, game.usedWords || []);
   if (!word) {
     const playersArr = Object.keys(game.players || {});
@@ -1099,13 +1441,11 @@ async function botPlay(roomId) {
     await db.ref(`rooms/${roomId}`).update({ currentPlayerId: nextId, turnStartTime: Date.now() });
     return;
   }
-  
-  const points = calculateScore(word, game.gameMode || 'classic');
+  const points = calculateScore(word, game.gameMode || 'classic', (game.usedWords?.length + 1) % 10 === 0);
   const playersArr = Object.keys(game.players || {});
   const idx = playersArr.indexOf(BOT.id);
   const nextId = playersArr[(idx + 1) % playersArr.length];
   const currentScore = game.players[BOT.id]?.score || 0;
-  
   await db.ref(`rooms/${roomId}`).update({
     [`players/${BOT.id}/score`]: currentScore + points,
     currentPlayerId: nextId,
@@ -1148,8 +1488,8 @@ const voteYesSpan = document.getElementById('voteYesCount');
 const voteNoSpan = document.getElementById('voteNoCount');
 const complaintCountSpan = document.getElementById('complaintCount');
 const complaintMaxSpan = document.getElementById('complaintMax');
-const wordsHistoryUl = document.getElementById('wordsHistory');
 const wordsCountSpan = document.getElementById('wordsCount');
+const wordsHistoryUl = document.getElementById('wordsHistory');
 const voteButtons = document.getElementById('voteButtons');
 const voteYesBtn = document.getElementById('voteYesBtn');
 const voteNoBtn = document.getElementById('voteNoBtn');
@@ -1161,6 +1501,10 @@ const chatCountSpan = document.getElementById('chatCount');
 const onlineCountSpan = document.getElementById('onlineCountNumber');
 const typingIndicator = document.getElementById('typingIndicator');
 const gameModeBadge = document.getElementById('gameModeBadge');
+const wordChain = document.getElementById('wordChain');
+const streakBarContainer = document.getElementById('streakBarContainer');
+const streakBarFill = document.getElementById('streakBarFill');
+const streakBarText = document.getElementById('streakBarText');
 
 const emojiLibrary = {
   "😀 Смайлы": ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤯','😳','🥵','🥶','😱','😨','😰','🤗','🤔','🤭','🤫','😶','😐','😬','🙄','😯','😮','😲','🥱','😴','🤤','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','👽','👾','🤖','🎃'],
@@ -1212,7 +1556,6 @@ function getFirstLetter(word) {
   return '';
 }
 function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
-function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
 
 function updateTimerUI(startTime, duration, isMyTurn) {
   const container = document.getElementById('turnTimerContainer');
@@ -1243,6 +1586,68 @@ function updateTimerUI(startTime, duration, isMyTurn) {
       else bar.className = 'turn-timer-bar';
     }
   }, 100);
+}
+
+// v0.7: Update Word Streak UI
+function updateStreakUI() {
+  const streak = playerStats.wordStreak || 0;
+  if (streak >= 3) {
+    streakBarContainer.classList.add('show');
+    const fillPct = Math.min(100, (streak / 10) * 100);
+    streakBarFill.style.width = fillPct + '%';
+    const multiplier = streak >= 3 ? 1.5 : 1.0;
+    streakBarText.textContent = `🔥 x${multiplier} · ${streak} подряд`;
+    if (streak >= 7) {
+      streakBarContainer.classList.add('bonus');
+      streakBarText.textContent = `⚡ x${multiplier} · ${streak} подряд!`;
+    } else {
+      streakBarContainer.classList.remove('bonus');
+    }
+  } else {
+    streakBarContainer.classList.remove('show');
+  }
+}
+
+// v0.7: Render Word Chain
+function renderWordChain() {
+  if (!wordChain) return;
+  if (usedWords.length === 0) {
+    wordChain.innerHTML = '<div class="word-chain-empty">пока пусто</div>';
+    return;
+  }
+  wordChain.innerHTML = '';
+  usedWords.forEach((word, idx) => {
+    const capsule = document.createElement('div');
+    capsule.className = 'word-capsule';
+    // v0.7: Bonus round highlight
+    if ((idx + 1) % 10 === 0) capsule.classList.add('bonus');
+    // Find author
+    const authorPlayer = players.find(p => p.id === (word._author || null));
+    if (authorPlayer) {
+      const playerIdx = players.filter(p => !p.isBot).indexOf(authorPlayer);
+      if (authorPlayer.isBot) {
+        capsule.innerHTML = `<div class="word-capsule-word player-bot">${word}</div>`;
+      } else if (playerIdx >= 0) {
+        capsule.innerHTML = `<div class="word-capsule-word player-${playerIdx % 4}">${word}</div>`;
+      } else {
+        capsule.innerHTML = `<div class="word-capsule-word">${word}</div>`;
+      }
+    } else {
+      capsule.innerHTML = `<div class="word-capsule-word">${word}</div>`;
+    }
+    wordChain.appendChild(capsule);
+    if (idx < usedWords.length - 1) {
+      const linkLetter = getLastLetter(word);
+      if (linkLetter) {
+        const link = document.createElement('div');
+        link.className = 'word-capsule-link';
+        link.textContent = linkLetter.toUpperCase();
+        wordChain.appendChild(link);
+      }
+    }
+  });
+  // Auto-scroll to end
+  setTimeout(() => { wordChain.scrollLeft = wordChain.scrollWidth; }, 50);
 }
 
 let selectedGameMode = 'classic';
@@ -1278,7 +1683,7 @@ async function createRoomWithMode(room, mode, withBot) {
   myName = localStorage.getItem('playerName') || "Воин";
   myAvatar = localStorage.getItem('playerAvatar') || '😎';
   myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
-  myId = persistentPlayerId; // v0.6: Use persistent ID
+  myId = persistentPlayerId;
   roomId = room;
   currentGameMode = mode;
   hasBot = withBot;
@@ -1308,7 +1713,7 @@ async function joinRoom() {
   myName = localStorage.getItem('playerName') || "Воин";
   myAvatar = localStorage.getItem('playerAvatar') || '😎';
   myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
-  myId = persistentPlayerId; // v0.6: Use persistent ID
+  myId = persistentPlayerId;
   const roomRef = db.ref(`rooms/${room}`);
   const snap = await roomRef.once('value');
   if (!snap.exists()) { showToast('Комната не найдена', 'error'); return; }
@@ -1325,7 +1730,7 @@ async function joinRoom() {
     await roomRef.child(`players/${myId}`).update({ connected: true, lastSeen: Date.now(), avatar: myAvatar, name: myName });
     showToast('Переподключение...', 'info');
   } else {
-    myId = persistentPlayerId; // v0.6: Use persistent ID
+    myId = persistentPlayerId;
     await roomRef.child(`players/${myId}`).set({ id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() });
     if (!data.currentPlayerId) await roomRef.child('currentPlayerId').set(myId);
     showToast('Вы в игре!', 'success');
@@ -1364,7 +1769,6 @@ function setupListeners(room) {
     updateControls();
   });
   roomRef.child('messages').on('value', (snap) => renderChat(snap.val() || []));
-  
   roomRef.child('typing').on('value', (snap) => {
     const typingData = snap.val() || {};
     const othersTyping = Object.keys(typingData).filter(id => id !== myId && typingData[id]);
@@ -1376,16 +1780,13 @@ function setupListeners(room) {
       typingIndicator.classList.remove('show');
     }
   });
-
   roomRef.on('value', async (snap) => {
     const game = snap.val();
     if (!game) { resetGameState(); return; }
-    
     if (game.gameEnded && !window.gameEndedShown) {
       window.gameEndedShown = true;
       showEndGameModal(game);
     }
-
     if (game.creatorId && game.players) {
       const isActive = game.players[game.creatorId] && (game.players[game.creatorId].connected || (Date.now() - game.players[game.creatorId].lastSeen < 50000));
       if (!isActive) {
@@ -1408,7 +1809,6 @@ function setupListeners(room) {
     usedWords = game.usedWords || [];
     currentGameMode = game.gameMode || 'classic';
     hasBot = game.hasBot || false;
-    
     if (currentGameMode === 'blitz') {
       gameModeBadge.textContent = '⚡ БЛИЦ';
       gameModeBadge.style.display = 'inline-block';
@@ -1418,20 +1818,16 @@ function setupListeners(room) {
     } else {
       gameModeBadge.style.display = 'none';
     }
-    
     if (game.complaint) {
       complaintActive = true;
       complaintData = { word: game.complaint.word, authorId: game.complaint.authorId, votesYes: game.complaint.votesYes || [], votesNo: game.complaint.votesNo || [] };
     } else { complaintActive = false; complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] }; }
-    
     const startTime = game.turnStartTime || Date.now();
     const duration = game.turnDuration || (currentGameMode === 'blitz' ? 15000 : 45000);
     updateTimerUI(startTime, duration, currentPlayerId === myId);
-    
     renderGameUI();
     updateControls();
     notifyMyTurn();
-    
     if (currentPlayerId === BOT.id && hasBot && !game.gameEnded) {
       if (!window.botTriggered) {
         window.botTriggered = true;
@@ -1459,7 +1855,13 @@ function renderPlayers() {
     let avatarHtml = '';
     if (p.avatarUrl && p.avatarUrl.startsWith('http')) avatarHtml = `<img src="${p.avatarUrl}" alt="">`;
     else avatarHtml = p.avatar || '😎';
-    html += `<div class="player-row ${isActiveTurn ? 'active' : ''}"><div class="player-row-avatar">${avatarHtml}</div><div class="player-row-name">${p.name} ${isMe ? '(вы)' : ''}${p.isBot ? ' 🤖' : ''}</div><div class="player-score" id="score-${p.id}">${p.score || 0}</div></div>`;
+    // v0.7: Show title for me
+    let titleHtml = '';
+    if (isMe) {
+      const title = getActiveTitle();
+      titleHtml = `<span class="player-title">${title.icon} ${title.name}</span>`;
+    }
+    html += `<div class="player-row ${isActiveTurn ? 'active' : ''}"><div class="player-row-avatar">${avatarHtml}</div><div class="player-row-name">${p.name} ${isMe ? '(вы)' : ''}${p.isBot ? ' 🤖' : ''}${titleHtml}</div><div class="player-score" id="score-${p.id}">${p.score || 0}</div></div>`;
   });
   playersPanelDiv.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--text-mute);font-style:italic;">пока никого</div>';
 }
@@ -1500,10 +1902,9 @@ function renderGameUI() {
       lastWordSpan.textContent = 'последнее слово: —';
     }
   }
-  let historyHtml = '';
-  if (usedWords.length === 0) historyHtml = '<li class="empty">пока пусто</li>';
-  else [...usedWords].reverse().slice(0, 20).forEach(w => { historyHtml += `<li>${w}</li>`; });
-  wordsHistoryUl.innerHTML = historyHtml;
+  // v0.7: Render word chain
+  renderWordChain();
+  updateStreakUI();
 }
 
 let prevLetter = '';
@@ -1572,60 +1973,74 @@ async function submitWordAction() {
   submitBtn.disabled = true;
   try {
     const validation = await isValidWordWithDictionary(raw);
-    if (!validation.valid) { 
-      showToast(validation.message, 'error'); 
+    if (!validation.valid) {
+      showToast(validation.message, 'error');
       triggerHaptic('error');
-      wordInput.value = ''; 
+      wordInput.value = '';
       isSubmitting = false;
-      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
-      submitBtn.disabled = false; 
-      return; 
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+      submitBtn.disabled = false;
+      return;
     }
     const norm = normalize(raw);
-    if (usedWords.some(w => normalize(w) === norm)) { 
-      showToast('Это слово уже было', 'error'); 
+    if (usedWords.some(w => normalize(w) === norm)) {
+      showToast('Это слово уже было', 'error');
       triggerHaptic('error');
-      wordInput.value = ''; 
+      wordInput.value = '';
       isSubmitting = false;
-      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
-      submitBtn.disabled = false; 
-      return; 
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+      submitBtn.disabled = false;
+      return;
     }
     if (lastWord) {
       const needed = getLastLetter(lastWord);
       const first = getFirstLetter(raw);
-      if (!needed || first !== needed) { 
-        showToast(`Слово должно начинаться на «${needed.toUpperCase()}»`, 'error'); 
+      if (!needed || first !== needed) {
+        showToast(`Слово должно начинаться на «${needed.toUpperCase()}»`, 'error');
         triggerHaptic('error');
-        wordInput.value = ''; 
+        wordInput.value = '';
         isSubmitting = false;
-        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
-        submitBtn.disabled = false; 
-        return; 
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+        submitBtn.disabled = false;
+        return;
       }
     }
-    
-    const points = calculateScore(raw, currentGameMode);
+    // v0.7: Bonus round check (every 10th word)
+    const isBonusRound = (usedWords.length + 1) % 10 === 0;
+    const points = calculateScore(raw, currentGameMode, isBonusRound);
     const roomRef = db.ref(`rooms/${roomId}`);
     const playersArr = players.map(p => p.id);
     const idx = playersArr.indexOf(myId);
     const nextId = playersArr[(idx + 1) % playersArr.length];
     const currentScore = players.find(p => p.id === myId)?.score || 0;
-    
-    const updates = { 
-      [`players/${myId}/score`]: currentScore + points, 
-      currentPlayerId: nextId, 
-      lastWord: raw, 
-      lastWordAuthor: myId, 
+    const updates = {
+      [`players/${myId}/score`]: currentScore + points,
+      currentPlayerId: nextId,
+      lastWord: raw,
+      lastWordAuthor: myId,
       usedWords: [...usedWords, raw],
       turnStartTime: Date.now()
     };
     await roomRef.update(updates);
-    
     wordInput.value = '';
     triggerHaptic('success');
     playSound('success');
     triggerLetterAnimation(getLastLetter(raw) || '?');
+    
+    // v0.7: Update streak
+    playerStats.wordStreak = (playerStats.wordStreak || 0) + 1;
+    playerStats.bestWordStreak = Math.max(playerStats.bestWordStreak || 0, playerStats.wordStreak);
+    if (playerStats.wordStreak === 3) {
+      showToast('🔥 Streak x1.5 активирован!', 'bonus');
+      playSound('streak');
+    }
+    if (isBonusRound) {
+      showToast('🎉 Бонусный раунд! x3 очки!', 'bonus');
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+    }
+    
+    // v0.7: Track letter usage
+    trackLetterUsage(raw);
     
     playerStats.wordsTotal++;
     playerStats.longestWord = Math.max(playerStats.longestWord, raw.length);
@@ -1635,7 +2050,8 @@ async function submitWordAction() {
     if (raw.length >= 8) updateQuestProgress('longWordsToday');
     
     let scoreMsg = `«${raw}» принято · +${points} очк.`;
-    if (points > 1) scoreMsg += ' (бонус!)';
+    if (isBonusRound) scoreMsg += ' 🎉 x3!';
+    else if (points > 1) scoreMsg += ' (бонус!)';
     showToast(scoreMsg, 'success');
     
     setTimeout(() => {
@@ -1647,7 +2063,6 @@ async function submitWordAction() {
     }, 100);
     
     checkAchievements(usedWords.length + 1);
-    
   } catch (error) {
     console.error(error);
     showToast('Ошибка проверки слова', 'error');
@@ -1663,10 +2078,14 @@ async function submitWordAction() {
 
 async function skipTurnAction() {
   if (!roomId || myId !== currentPlayerId || complaintActive) return;
+  // v0.7: Reset streak on skip
+  playerStats.wordStreak = 0;
+  savePlayerStats();
+  updateStreakUI();
   const playersArr = players.map(p => p.id);
   const idx = playersArr.indexOf(myId);
   const nextId = playersArr[(idx + 1) % playersArr.length];
-  await db.ref(`rooms/${roomId}`).update({ 
+  await db.ref(`rooms/${roomId}`).update({
     currentPlayerId: nextId,
     turnStartTime: Date.now(),
     turnDuration: currentGameMode === 'blitz' ? 15000 : 45000
@@ -1707,7 +2126,7 @@ async function sendChat() {
   if (!roomId || !myId) return;
   const text = chatInput.value.trim();
   if (!text) return;
-  const msg = { 
+  const msg = {
     id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
     sender: myName, senderId: myId, text, timestamp: Date.now(), reactions: {}
   };
@@ -1752,13 +2171,7 @@ async function sendGift(emoji) {
   if (!roomId) return;
   const msg = {
     id: 'gift_' + Date.now(),
-    sender: myName,
-    senderId: myId,
-    text: '',
-    gift: emoji,
-    timestamp: Date.now(),
-    reactions: {},
-    isGift: true
+    sender: myName, senderId: myId, text: '', gift: emoji, timestamp: Date.now(), reactions: {}, isGift: true
   };
   const msgsRef = db.ref(`rooms/${roomId}/messages`);
   const snap = await msgsRef.once('value');
@@ -1803,7 +2216,6 @@ function renderChat(messages) {
   chatMessagesDiv.innerHTML = html;
   chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
   chatCountSpan.textContent = messages.length;
-  
   document.querySelectorAll('.chat-msg').forEach(msgEl => {
     if (msgEl.classList.contains('gift') || msgEl.classList.contains('system')) return;
     let clickTimer = null;
@@ -1819,7 +2231,6 @@ function renderChat(messages) {
       }
     });
   });
-  
   document.querySelectorAll('.reaction-picker-item').forEach(item => {
     item.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -1829,7 +2240,6 @@ function renderChat(messages) {
       item.closest('.reaction-picker').classList.remove('show');
     });
   });
-  
   document.querySelectorAll('.chat-reaction').forEach(reactionEl => {
     reactionEl.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -1911,24 +2321,23 @@ function initTheme() {
   if (savedTheme === 'dark') { document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; }
   else { document.body.classList.add('light-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; }
 }
-function toggleTheme() {
-  if (document.body.classList.contains('dark-theme')) { 
-    document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); 
-    localStorage.setItem('gameTheme_v5', 'light'); 
-    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; 
-  } else { 
-    document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); 
-    localStorage.setItem('gameTheme_v5', 'dark'); 
-    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; 
-  }
-}
-document.getElementById('themeTopBtn').onclick = toggleTheme;
-
 function applyColorTheme(theme) {
   THEMES.forEach(t => document.body.classList.remove('theme-' + t));
   if (theme !== 'default') document.body.classList.add('theme-' + theme);
   localStorage.setItem('gameColor_v5', theme);
 }
+function toggleTheme() {
+  if (document.body.classList.contains('dark-theme')) {
+    document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme');
+    localStorage.setItem('gameTheme_v5', 'light');
+    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>';
+  } else {
+    document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme');
+    localStorage.setItem('gameTheme_v5', 'dark');
+    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>';
+  }
+}
+document.getElementById('themeTopBtn').onclick = toggleTheme;
 
 function showTurnNotification(playerName) {
   if (!("Notification" in window)) return;
@@ -1944,36 +2353,54 @@ function sendNotification(playerName) {
 let profileModal = null;
 function updateProfileUI() {
   const levelInfo = getLevelInfo(playerStats.xp);
+  playerStats.level = levelInfo.currentLevel.level;
+  
   const headerLevel = document.getElementById('headerLevel');
   if (headerLevel) headerLevel.textContent = `Ур. ${levelInfo.currentLevel.level} · ${levelInfo.currentLevel.name}`;
+  
   const profileLevel = document.getElementById('profileLevel');
   if (profileLevel) profileLevel.textContent = `Уровень ${levelInfo.currentLevel.level} · ${levelInfo.currentLevel.name}`;
+  
   const profileXpText = document.getElementById('profileXpText');
   if (profileXpText) {
     if (levelInfo.nextLevel) profileXpText.textContent = `${levelInfo.xpInLevel} / ${levelInfo.xpToNext} XP`;
     else profileXpText.textContent = `MAX LEVEL`;
   }
+  
   const profileXpBar = document.getElementById('profileXpBar');
   if (profileXpBar) {
     const pct = levelInfo.nextLevel ? (levelInfo.xpInLevel / levelInfo.xpToNext) * 100 : 100;
     profileXpBar.style.width = pct + '%';
   }
+  
   const profileStreak = document.getElementById('profileStreak');
   const profileStreakCount = document.getElementById('profileStreakCount');
   if (profileStreak && profileStreakCount) {
     if (playerStats.streak > 0) { profileStreak.style.display = 'inline-flex'; profileStreakCount.textContent = playerStats.streak; }
     else profileStreak.style.display = 'none';
   }
+  
+  // v0.7.1: Extended stats
   document.getElementById('statGamesPlayed').textContent = playerStats.gamesPlayed;
   document.getElementById('statWordsTotal').textContent = playerStats.wordsTotal;
   document.getElementById('statWins').textContent = playerStats.wins;
-  document.getElementById('statRating').textContent = playerStats.rating;
+  document.getElementById('statBestStreak').textContent = playerStats.bestWordStreak || 0;
+  document.getElementById('statLongestWord').textContent = playerStats.longestWord || 0;
+  document.getElementById('statNightGames').textContent = playerStats.nightGames || 0;
   
-  // v0.6: Update player ID display
   const playerIdDisplay = document.getElementById('playerIdDisplay');
   if (playerIdDisplay && persistentPlayerId) {
     playerIdDisplay.textContent = persistentPlayerId;
   }
+  
+  // v0.7.1: Fortune wheel status
+  updateFortuneWheelStatus();
+  
+  // v0.7.1: Active bonuses
+  updateActiveBonusesDisplay();
+  
+  // v0.7.1: Theme picker selection
+  updateThemePickerSelection();
 }
 
 function openProfileModal() {
@@ -1983,6 +2410,8 @@ function openProfileModal() {
   if (myAvatarUrl && myAvatarUrl.startsWith('http')) previewDiv.innerHTML = `<img src="${myAvatarUrl}" alt="">`;
   else previewDiv.innerHTML = myAvatar || '😎';
   updateProfileUI();
+  renderTitles();
+  renderHeatmap();
   profileModal.classList.add('show');
 }
 function closeProfileModal() { profileModal.classList.remove('show'); }
@@ -1999,7 +2428,7 @@ async function saveProfile() {
   updateHeaderProfile();
   renderPlayers();
   updateLeaderboardEntry();
-  savePlayerProfile(); // v0.6: Save to Firebase
+  savePlayerProfile();
   closeProfileModal();
 }
 async function setGifAvatar(url) {
@@ -2014,7 +2443,7 @@ async function setGifAvatar(url) {
     localStorage.setItem('playerAvatarUrl', myAvatarUrl);
     localStorage.setItem('playerAvatar', '');
     renderPlayers();
-    savePlayerProfile(); // v0.6: Save to Firebase
+    savePlayerProfile();
   };
   img.onerror = () => { showToast('Неверный URL', 'error'); };
   img.src = url.trim();
@@ -2030,7 +2459,7 @@ function selectEmojiAvatar(emoji) {
   event.target.classList.add('selected');
   showToast(`Аватар: ${emoji}`, 'success');
   renderPlayers();
-  savePlayerProfile(); // v0.6: Save to Firebase
+  savePlayerProfile();
 }
 function initAvatarPresets() {
   const presets = ['😀','😂','😎','🤓','😍','🥶','🤯','🥳','🦸','🦹','🧙','🐉','👾','🤖','👻','🎃','🐺','🦊','🐱','🐼','🦁','🐧','🐨','🦄','🍕','🍔','🌮','🍣','🎮','⚽','🎸','🎧','🌟','⭐','🔥','👑','💎','💰','⚙️','💡'];
@@ -2072,8 +2501,6 @@ function initProfileModal() {
   document.getElementById('profileCancelBtn').onclick = closeProfileModal;
   document.getElementById('profileSaveBtn').onclick = saveProfile;
   document.getElementById('setGifBtn').onclick = () => { setGifAvatar(document.getElementById('gifUrlInput').value); document.getElementById('gifUrlInput').value = ''; };
-  
-  // v0.6: Copy Player ID button
   document.getElementById('copyPlayerIdBtn').onclick = () => {
     if (persistentPlayerId) {
       navigator.clipboard.writeText(persistentPlayerId).then(() => {
@@ -2081,9 +2508,12 @@ function initProfileModal() {
       }).catch(() => showToast('Не удалось скопировать', 'error'));
     }
   };
-  
   profileModal.onclick = (e) => { if (e.target === profileModal) closeProfileModal(); };
   initAvatarPresets();
+  
+  // v0.7.1: Initialize new UI elements
+  initThemePicker();
+  initFortuneButton();
 }
 
 function openAchievementsModal() {
@@ -2171,10 +2601,7 @@ async function updateLeaderboardEntry() {
   if (!myId) return;
   try {
     await db.ref(`leaderboard/${myId}`).set({
-      name: myName,
-      avatar: myAvatar,
-      xp: playerStats.xp,
-      lastSeen: Date.now()
+      name: myName, avatar: myAvatar, xp: playerStats.xp, lastSeen: Date.now()
     });
   } catch (e) { console.warn('Leaderboard update failed', e); }
 }
@@ -2205,17 +2632,34 @@ function openQuestsModal() {
 document.getElementById('questsNavBtn').onclick = openQuestsModal;
 document.getElementById('questsCloseBtn').onclick = () => document.getElementById('questsModal').classList.remove('show');
 
+// v0.7: Fortune Wheel Modal
+function openFortuneModal() {
+  initFortuneWheel();
+  const info = document.getElementById('fortuneInfo');
+  const spinBtn = document.getElementById('fortuneSpinBtn');
+  const result = document.getElementById('fortuneResult');
+  result.textContent = '';
+  if (canSpinFortune()) {
+    info.textContent = '🎉 Вращение доступно!';
+    spinBtn.disabled = false;
+  } else {
+    info.textContent = getTimeUntilNextSpin();
+    spinBtn.disabled = true;
+  }
+  document.getElementById('fortuneModal').classList.add('show');
+}
+document.getElementById('fortuneCloseBtn').onclick = () => document.getElementById('fortuneModal').classList.remove('show');
+document.getElementById('fortuneSpinBtn').onclick = spinFortune;
+document.getElementById('fortuneModal').onclick = (e) => { if (e.target.id === 'fortuneModal') document.getElementById('fortuneModal').classList.remove('show'); };
+
 function showEndGameModal(game) {
   const modal = document.getElementById('endGameModal');
   const podium = document.getElementById('endGamePodium');
   const rematchBtn = document.getElementById('rematchBtn');
   const xpRewardDiv = document.getElementById('endGameXpReward');
-  
   const sortedPlayers = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
   const winner = sortedPlayers[0];
-  
   document.getElementById('endGameSubtitle').textContent = winner ? `Победитель: ${winner.name}` : 'Игра завершена';
-  
   podium.innerHTML = '';
   sortedPlayers.slice(0, 3).forEach((p, index) => {
     const medals = ['🥇', '🥈', '🥉'];
@@ -2224,7 +2668,6 @@ function showEndGameModal(game) {
     div.innerHTML = `<div class="podium-rank">${medals[index]}</div><div class="podium-name">${p.name} ${p.id === myId ? '(вы)' : ''}${p.isBot ? ' 🤖' : ''}</div><div class="podium-score">${p.score || 0} очк.</div>`;
     podium.appendChild(div);
   });
-  
   let xpEarned = 0;
   if (winner && winner.id === myId) {
     xpEarned = 50;
@@ -2234,6 +2677,10 @@ function showEndGameModal(game) {
     playerStats.lastPlayDate = new Date().toDateString();
     playerStats.streak++;
     if (currentGameMode === 'blitz') playerStats.blitzWins++;
+    // v0.7: Night owl tracking
+    if (new Date().getHours() >= 23 || new Date().getHours() < 5) {
+      playerStats.nightGames = (playerStats.nightGames || 0) + 1;
+    }
     updateQuestProgress('winsToday');
     if (xpEarned > 0) { xpRewardDiv.style.display = 'block'; xpRewardDiv.innerHTML = `🎉 +${xpEarned} XP за победу!`; }
   } else {
@@ -2242,17 +2689,21 @@ function showEndGameModal(game) {
     playerStats.lastPlayDate = new Date().toDateString();
     playerStats.streak = Math.max(1, playerStats.streak);
   }
+  // v0.7: Reset word streak after game
+  playerStats.wordStreak = 0;
+  // v0.7: Clear fortune multiplier bonus after game
+  if (playerStats.fortuneActiveBonus && playerStats.fortuneActiveBonus.type === 'multiplier') {
+    playerStats.fortuneActiveBonus = null;
+  }
   updateQuestProgress('gamesToday');
   addXP(xpEarned);
   savePlayerStats();
   saveMatchToHistory(players, winner?.id || null, currentGameMode);
   checkAchievements();
-  
+  checkTitles();
   if (myId === currentCreatorId) rematchBtn.style.display = 'inline-flex';
   else rematchBtn.style.display = 'none';
-  
   modal.classList.add('show');
-  
   if (winner && myId === winner.id) {
     triggerHaptic('success');
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
@@ -2365,10 +2816,10 @@ async function sendWelcomeMessage() {
   if (!roomId) return;
   setTimeout(async () => {
     const modeText = hasBot ? '🤖 Режим: Игра с ботом' : currentGameMode === 'blitz' ? '⚡ Режим БЛИЦ: 15 сек, x2 очки!' : '🎯 Режим Классика: 45 сек.';
-    const welcomeMsg = { 
+    const welcomeMsg = {
       id: 'msg_' + Date.now(),
-      sender: '🔔 СИСТЕМА', senderId: 'system', 
-      text: `👋 Добро пожаловать, ${myName}! ${modeText}. Удачи!`, 
+      sender: '🔔 СИСТЕМА', senderId: 'system',
+      text: `👋 Добро пожаловать, ${myName}! ${modeText}. Каждое 10-е слово = x3 очки! Удачи!`,
       timestamp: Date.now(), reactions: {}
     };
     const msgsRef = db.ref(`rooms/${roomId}/messages`);
@@ -2386,26 +2837,108 @@ if ('serviceWorker' in navigator) {
   const swUrl = URL.createObjectURL(swBlob);
   navigator.serviceWorker.register(swUrl).catch(() => {});
 }
+// v0.7.1: Fortune Wheel Status
+function updateFortuneWheelStatus() {
+  const btn = document.getElementById('fortuneWheelBtn');
+  const btnText = document.getElementById('fortuneBtnText');
+  const statusInfo = document.getElementById('fortuneStatusInfo');
+  if (!btn || !btnText || !statusInfo) return;
+  
+  if (canSpinFortune()) {
+    btn.disabled = false;
+    btn.classList.add('ready');
+    btnText.textContent = '🎰 Крутить колесо';
+    statusInfo.textContent = '✨ Вращение доступно!';
+    statusInfo.style.color = 'var(--success)';
+  } else {
+    btn.disabled = true;
+    btn.classList.remove('ready');
+    btnText.textContent = '🎰 Колесо фортуны';
+    statusInfo.textContent = `⏰ ${getTimeUntilNextSpin()}`;
+    statusInfo.style.color = 'var(--text-mute)';
+  }
+}
 
-// v0.6: Initialize with persistent profile
+// v0.7.1: Active Bonuses Display
+function updateActiveBonusesDisplay() {
+  const display = document.getElementById('activeBonusesDisplay');
+  if (!display) return;
+  
+  const bonuses = [];
+  
+  if (playerStats.fortuneActiveBonus) {
+    if (playerStats.fortuneActiveBonus.type === 'multiplier') {
+      bonuses.push('⚡ x2 очки активны');
+    } else if (playerStats.fortuneActiveBonus.type === 'hint') {
+      bonuses.push(`💡 Подсказок: ${playerStats.fortuneActiveBonus.value}`);
+    }
+  }
+  
+  if (playerStats.wordStreak >= 3) {
+    bonuses.push(`🔥 Streak x1.5 (${playerStats.wordStreak} слов)`);
+  }
+  
+  if (bonuses.length > 0) {
+    display.style.display = 'block';
+    display.innerHTML = bonuses.join(' · ');
+  } else {
+    display.style.display = 'none';
+  }
+}
+
+// v0.7.1: Theme Picker Selection
+function updateThemePickerSelection() {
+  const savedColor = localStorage.getItem('gameColor_v5') || 'default';
+  document.querySelectorAll('.theme-swatch').forEach(swatch => {
+    swatch.classList.toggle('selected', swatch.dataset.theme === savedColor);
+  });
+}
+
+// v0.7.1: Initialize Theme Picker
+function initThemePicker() {
+  const picker = document.getElementById('themePicker');
+  if (!picker) return;
+  
+  picker.addEventListener('click', (e) => {
+    const swatch = e.target.closest('.theme-swatch');
+    if (!swatch) return;
+    
+    const theme = swatch.dataset.theme;
+    applyColorTheme(theme);
+    
+    // Update selection
+    picker.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('selected'));
+    swatch.classList.add('selected');
+    
+    showToast(`🎨 Тема: ${theme === 'default' ? 'По умолчанию' : theme}`, 'success');
+  });
+}
+
+// v0.7.1: Fortune Wheel Button Handler
+function initFortuneButton() {
+  const btn = document.getElementById('fortuneWheelBtn');
+  if (!btn) return;
+  
+  btn.addEventListener('click', () => {
+    closeProfileModal();
+    openFortuneModal();
+  });
+}
+// v0.7: Initialize with persistent profile
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
   initProfileModal();
   loadSavedProfile();
   updateHeaderProfile();
-  
-  // v0.6: Load profile from Firebase
   await loadPlayerProfile();
   loadMatchHistory();
   updateProfileUI();
-  
   if (playerStats.gamesPlayed > 0) document.getElementById('historyNavBtn').style.display = 'inline-block';
   if (playerStats.unlockedAchievements.length > 0 || playerStats.xp > 0) document.getElementById('achievementsNavBtn').style.display = 'inline-block';
   document.getElementById('questsNavBtn').style.display = 'inline-block';
-  
   messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка словаря...';
-  loadRussianDictionary().then(() => { 
-    if (messageBoxDiv.innerHTML.includes('Загрузка')) messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Готов к битве слов. Создайте комнату или играйте с ботом!'; 
+  loadRussianDictionary().then(() => {
+    if (messageBoxDiv.innerHTML.includes('Загрузка')) messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Готов к битве слов. Создайте комнату или играйте с ботом!';
   }).catch(console.warn);
 });
 connectionStatusSpan.innerHTML = '<i class="fas fa-circle" style="font-size:6px;color:var(--text-mute);"></i> ожидание';
