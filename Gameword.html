@@ -2,30 +2,44 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Слова · игра</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Слова · игра v0.6</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Слова · игра","short_name":"Слова","start_url":".","display":"standalone","background_color":"%23fafaf7","theme_color":"%231a1a1a","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22%3E%D0%A1%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<link rel="icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%231a1a1a"/%3E%3Ctext x="50" y="70" font-size="60" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold"%3E%D0%A1%3C/text%3E%3C/svg%3E'>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --bg: #fafaf7; --bg-soft: #ffffff; --bg-softer: #f5f5f0; --border: #e5e5e0; --border-strong: #d4d4cf; --text: #1a1a1a; --text-soft: #666666; --text-mute: #999999; --accent: #1a1a1a; --accent-soft: #f0f0ec; --success: #10b981; --danger: #dc2626; --warning: #f59e0b; --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root { --bg: #fafaf7; --bg-soft: #ffffff; --bg-softer: #f5f5f0; --border: #e5e5e0; --border-strong: #d4d4cf; --text: #1a1a1a; --text-soft: #666666; --text-mute: #999999; --accent: #1a1a1a; --accent-soft: #f0f0ec; --success: #10b981; --danger: #dc2626; --warning: #f59e0b; --info: #3b82f6; --purple: #8b5cf6; --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; }
 body.dark-theme { --bg: #0f0f0f; --bg-soft: #1a1a1a; --bg-softer: #141414; --border: #262626; --border-strong: #333333; --text: #f5f5f0; --text-soft: #a0a0a0; --text-mute: #666666; --accent: #f5f5f0; --accent-soft: #1f1f1f; }
+body.theme-ocean { --accent: #0ea5e9; --accent-soft: rgba(14, 165, 233, 0.1); --purple: #0ea5e9; --info: #06b6d4; }
+body.theme-forest { --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.1); --purple: #10b981; --info: #22c55e; }
+body.theme-sunset { --accent: #f97316; --accent-soft: rgba(249, 115, 22, 0.1); --purple: #f97316; --info: #ef4444; }
+body.theme-violet { --accent: #8b5cf6; --accent-soft: rgba(139, 92, 246, 0.1); --purple: #8b5cf6; --info: #a855f7; }
 body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.5; transition: background 0.3s ease, color 0.3s ease; }
 .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
 .logo { font-family: 'Unbounded', sans-serif; font-weight: 300; font-size: 20px; letter-spacing: -0.5px; color: var(--text); display: flex; align-items: center; gap: 10px; }
 .logo-mark { width: 28px; height: 28px; background: var(--text); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; border-radius: 6px; font-family: 'Unbounded', sans-serif; }
 .logo b { font-weight: 700; }
-.nav { display: flex; gap: 32px; align-items: center; }
-.nav a { color: var(--text-soft); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
-.nav a:hover { color: var(--text); }
+.nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.nav a, .nav button { color: var(--text-soft); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; background: transparent; border: none; cursor: pointer; font-family: inherit; padding: 6px 12px; border-radius: var(--radius-sm); }
+.nav a:hover, .nav button:hover { color: var(--text); background: var(--accent-soft); }
 .header-actions { display: flex; gap: 8px; align-items: center; }
-.icon-btn { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: 1px solid var(--border); color: var(--text-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; }
+.icon-btn { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: 1px solid var(--border); color: var(--text-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; touch-action: manipulation; }
 .icon-btn:hover { background: var(--accent-soft); color: var(--text); border-color: var(--border-strong); }
-.profile-pill { display: flex; align-items: center; gap: 10px; padding: 4px 14px 4px 4px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 100px; cursor: pointer; transition: all 0.2s; }
+.profile-pill { display: flex; align-items: center; gap: 10px; padding: 4px 14px 4px 4px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 100px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
 .profile-pill:hover { border-color: var(--border-strong); }
 .profile-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 14px; overflow: hidden; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.profile-level { font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
+.sync-indicator { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; padding: 2px 6px; background: var(--bg-softer); border-radius: 100px; }
+.sync-indicator.syncing { color: var(--warning); }
+.sync-indicator.synced { color: var(--success); }
+.sync-indicator.error { color: var(--danger); }
 .layout { display: grid; grid-template-columns: 1fr 380px; gap: 0; min-height: calc(100vh - 77px); }
 .main { padding: 60px 80px; display: flex; flex-direction: column; border-right: 1px solid var(--border); max-width: 100%; overflow: hidden; }
 .sidebar { padding: 40px 32px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto; max-height: calc(100vh - 77px); position: sticky; top: 77px; }
@@ -33,31 +47,45 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .turn-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-mute); font-weight: 500; }
 .turn-label b { color: var(--text); font-weight: 600; text-transform: none; letter-spacing: 0; }
 .progress-label { font-size: 12px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+.game-mode-badge { display: inline-block; padding: 2px 8px; background: var(--purple); color: white; font-size: 10px; font-weight: 600; border-radius: 100px; margin-left: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 .connection-panel { display: flex; gap: 12px; align-items: center; padding: 16px 20px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 32px; flex-wrap: wrap; }
 .room-input { background: transparent; border: 1px solid var(--border); padding: 8px 14px; border-radius: var(--radius-sm); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 160px; outline: none; transition: border-color 0.2s; }
 .room-input:focus { border-color: var(--text); }
-.btn { padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn { padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
 .btn:hover { background: var(--accent-soft); border-color: var(--border-strong); }
 .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
-.btn-primary:hover { opacity: 0.85; background: var(--text); color: var(--bg); }
+.btn-primary:hover { opacity: 0.85; }
 .btn-danger { color: var(--danger); border-color: var(--danger); }
 .btn-danger:hover { background: var(--danger); color: white; }
 .btn-warning { color: var(--warning); border-color: var(--warning); }
+.btn-success { color: var(--success); border-color: var(--success); }
+.btn-success:hover { background: var(--success); color: white; }
+.btn-purple { color: var(--purple); border-color: var(--purple); }
+.btn-purple:hover { background: var(--purple); color: white; }
 .connection-status { font-size: 12px; color: var(--text-soft); padding: 6px 12px; background: var(--bg-softer); border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
 .letter-display { text-align: center; padding: 40px 0 60px; position: relative; }
-.letter-huge { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 280px; line-height: 0.85; letter-spacing: -15px; color: var(--text); display: inline-block; position: relative; transition: all 0.3s ease; }
+.letter-huge { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 280px; line-height: 0.85; letter-spacing: -15px; color: var(--text); display: inline-block; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.letter-huge.pop { animation: letterPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes letterPop { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
 .letter-huge::after { content: ''; position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 60px; height: 2px; background: var(--text); }
 .letter-caption { margin-top: 48px; font-size: 13px; color: var(--text-mute); letter-spacing: 0.5px; }
 .last-word-display { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-soft); margin-top: 12px; letter-spacing: 1px; }
-.input-area { display: flex; gap: 12px; align-items: center; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.turn-timer-container { position: relative; width: 200px; height: 6px; background: var(--border); border-radius: 3px; margin: 24px auto 0; overflow: hidden; display: none; }
+.turn-timer-bar { height: 100%; background: var(--success); width: 100%; transition: width 0.1s linear, background 0.3s; }
+.turn-timer-bar.warning { background: var(--warning); }
+.turn-timer-bar.danger { background: var(--danger); }
+.turn-timer-text { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px; }
+.input-area { display: flex; gap: 12px; align-items: center; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 .word-input { flex: 1; background: transparent; border: none; outline: none; font-size: 22px; font-weight: 500; font-family: inherit; color: var(--text); padding: 10px 0; letter-spacing: -0.3px; }
 .word-input::placeholder { color: var(--text-mute); font-weight: 400; }
 .word-input:disabled { opacity: 0.4; cursor: not-allowed; }
-.send-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--text); color: var(--bg); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; flex-shrink: 0; }
+.send-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--text); color: var(--bg); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; flex-shrink: 0; touch-action: manipulation; }
 .send-btn:hover { transform: scale(1.05); }
 .send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
-.sub-actions { display: flex; gap: 24px; margin-bottom: 24px; }
-.link-btn { background: transparent; border: none; color: var(--text-soft); font-size: 13px; cursor: pointer; font-family: inherit; padding: 6px 0; border-bottom: 1px solid transparent; transition: all 0.2s; }
+.typing-indicator { font-size: 12px; color: var(--text-mute); font-style: italic; height: 20px; margin-bottom: 16px; padding-left: 4px; opacity: 0; transition: opacity 0.3s; }
+.typing-indicator.show { opacity: 1; }
+.sub-actions { display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+.link-btn { background: transparent; border: none; color: var(--text-soft); font-size: 13px; cursor: pointer; font-family: inherit; padding: 6px 0; border-bottom: 1px solid transparent; transition: all 0.2s; touch-action: manipulation; }
 .link-btn:hover { color: var(--text); border-bottom-color: var(--text); }
 .link-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .message-box { padding: 14px 18px; background: var(--bg-softer); border-left: 2px solid var(--text); color: var(--text-soft); font-size: 13px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: 24px; }
@@ -71,6 +99,8 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .player-row-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .player-row-name { flex: 1; font-size: 14px; font-weight: 500; }
 .player-score { font-size: 13px; color: var(--text-mute); font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
+.score-pop { animation: scorePop 0.5s ease; color: var(--success) !important; font-weight: 700; }
+@keyframes scorePop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 .vote-panel { padding: 16px 20px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; }
 .vote-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .vote-counters { display: flex; gap: 12px; margin-bottom: 12px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
@@ -84,37 +114,47 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .history-list li { padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); border-left: 2px solid var(--border); transition: all 0.2s; }
 .history-list li:hover { border-left-color: var(--text); padding-left: 16px; }
 .history-list .empty { text-align: center; color: var(--text-mute); font-style: italic; padding: 20px 12px; border-left: none; }
-.rules-list { display: flex; flex-direction: column; gap: 8px; }
-.rule-item { padding: 10px 14px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-soft); display: flex; gap: 10px; align-items: flex-start; }
-.rule-item i { color: var(--text-mute); font-size: 11px; margin-top: 2px; flex-shrink: 0; }
 .chat-box { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; }
 .chat-messages { max-height: 240px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
-.chat-msg { padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+.chat-msg { padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--border); position: relative; }
 .chat-msg:last-child { border-bottom: none; }
 .chat-msg b { font-weight: 600; margin-right: 6px; color: var(--text); }
 .chat-msg .time { float: right; font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
 .chat-msg.system { background: var(--bg-softer); padding: 8px 12px; border-radius: var(--radius-sm); border-left: 2px solid var(--text); font-style: italic; color: var(--text-soft); border-bottom: none; }
 .chat-msg.mine b { color: var(--text); }
-.chat-input-row { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+.chat-msg.gift { background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.08)); border: 1px solid var(--purple); border-radius: var(--radius); padding: 10px; text-align: center; border-bottom: none; }
+.chat-msg.gift .gift-emoji { font-size: 32px; display: block; margin: 4px 0; animation: giftBounce 0.6s ease; }
+@keyframes giftBounce { 0% { transform: scale(0) rotate(-180deg); } 60% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.chat-msg-input-row { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
 .chat-input { flex: 1; border: none; outline: none; font-size: 13px; font-family: inherit; background: transparent; color: var(--text); padding: 6px 0; }
 .chat-input::placeholder { color: var(--text-mute); }
-.chat-send { background: transparent; border: none; color: var(--text-mute); cursor: pointer; padding: 4px 8px; transition: color 0.2s; }
+.chat-send { background: transparent; border: none; color: var(--text-mute); cursor: pointer; padding: 4px 8px; transition: color 0.2s; touch-action: manipulation; }
 .chat-send:hover { color: var(--text); }
+.chat-reactions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.chat-reaction { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: 100px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.chat-reaction:hover { background: var(--accent-soft); border-color: var(--border-strong); }
+.chat-reaction.mine { background: var(--accent-soft); border-color: var(--text); }
+.chat-reaction-emoji { font-size: 13px; }
+.chat-reaction-count { font-family: 'JetBrains Mono', monospace; color: var(--text-soft); }
+.reaction-picker { position: absolute; bottom: 100%; left: 0; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 8px; display: none; gap: 4px; z-index: 100; }
+.reaction-picker.show { display: flex; animation: fadeIn 0.2s ease; }
+.reaction-picker-item { font-size: 20px; cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: background 0.15s; }
+.reaction-picker-item:hover { background: var(--accent-soft); transform: scale(1.2); }
 .emoji-panel { display: none; position: absolute; bottom: 50px; left: 0; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 320px; z-index: 200; padding: 12px; }
 .emoji-panel.show { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 .emoji-categories { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-.emoji-cat-btn { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 4px 10px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--text-soft); transition: all 0.2s; }
+.emoji-cat-btn { background: transparent; border: 1px solid var(--border); border-radius: 100px; padding: 4px 10px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--text-soft); transition: all 0.2s; touch-action: manipulation; }
 .emoji-cat-btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
 .emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; max-height: 220px; overflow-y: auto; }
-.emoji-item { font-size: 20px; text-align: center; cursor: pointer; padding: 4px; border-radius: 6px; transition: background 0.15s; }
+.emoji-item { font-size: 20px; text-align: center; cursor: pointer; padding: 4px; border-radius: 6px; transition: background 0.15s; touch-action: manipulation; }
 .emoji-item:hover { background: var(--accent-soft); }
 .media-block { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .media-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-mute); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 .media-controls { display: flex; gap: 8px; margin-bottom: 8px; }
 .media-status { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
 .sounds-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
-.sound-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--radius-sm); transition: background 0.15s; cursor: pointer; }
+.sound-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--radius-sm); transition: background 0.15s; cursor: pointer; touch-action: manipulation; }
 .sound-item:hover, .sound-item.active { background: var(--accent-soft); }
 .sound-icon { font-size: 16px; width: 24px; text-align: center; }
 .sound-info { flex: 1; }
@@ -128,7 +168,7 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .modal { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; }
 .modal-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .modal-header h2 { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.3px; }
-.modal-close { background: transparent; border: none; font-size: 24px; cursor: pointer; color: var(--text-mute); width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; }
+.modal-close { background: transparent; border: none; font-size: 24px; cursor: pointer; color: var(--text-mute); width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; touch-action: manipulation; }
 .modal-close:hover { background: var(--accent-soft); color: var(--text); }
 .modal-body { padding: 24px 28px; }
 .profile-avatar-big { width: 100px; height: 100px; margin: 0 auto 20px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; overflow: hidden; }
@@ -138,18 +178,82 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .avatar-input-group input:focus { border-color: var(--text); }
 .avatar-presets h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); margin-bottom: 10px; font-weight: 600; }
 .avatar-presets-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; max-height: 140px; overflow-y: auto; margin-bottom: 20px; }
-.avatar-preset { font-size: 22px; cursor: pointer; text-align: center; padding: 6px; border-radius: 8px; transition: all 0.15s; border: 1px solid transparent; }
+.avatar-preset { font-size: 22px; cursor: pointer; text-align: center; padding: 6px; border-radius: 8px; transition: all 0.15s; border: 1px solid transparent; touch-action: manipulation; }
 .avatar-preset:hover { background: var(--accent-soft); }
 .avatar-preset.selected { background: var(--text); border-color: var(--text); }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); margin-bottom: 8px; font-weight: 600; }
-.form-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text); font-family: inherit; font-size: 14px; outline: none; }
-.form-group input:focus { border-color: var(--text); }
+.form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text); font-family: inherit; font-size: 14px; outline: none; }
+.form-group input:focus, .form-group select:focus { border-color: var(--text); }
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px; background: var(--bg-softer); border-radius: var(--radius); margin-bottom: 24px; }
 .stat-item { text-align: center; }
 .stat-value { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 22px; color: var(--text); letter-spacing: -0.5px; }
 .stat-label { font-size: 11px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.xp-section { margin-bottom: 24px; padding: 16px; background: var(--bg-softer); border-radius: var(--radius); }
+.xp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.xp-level { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; color: var(--purple); }
+.xp-progress-text { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
+.xp-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--info)); transition: width 0.5s ease; }
+.streak-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(245, 158, 11, 0.1); color: var(--warning); border-radius: 100px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+.achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 16px; }
+.achievement-card { padding: 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); text-align: center; transition: all 0.2s; }
+.achievement-card.unlocked { background: rgba(139, 92, 246, 0.08); border-color: var(--purple); }
+.achievement-card.locked { opacity: 0.5; }
+.achievement-icon { font-size: 28px; margin-bottom: 6px; }
+.achievement-name { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.achievement-desc { font-size: 10px; color: var(--text-mute); }
+.match-history-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
+.match-item { padding: 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; }
+.match-info { flex: 1; }
+.match-date { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
+.match-players { font-size: 13px; font-weight: 500; margin-top: 2px; }
+.match-result { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; }
+.match-result.win { color: var(--success); }
+.match-result.loss { color: var(--danger); }
+.endgame-podium { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+.podium-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-softer); border-radius: var(--radius); border: 1px solid var(--border); }
+.podium-item.first { background: rgba(245, 158, 11, 0.1); border-color: var(--warning); }
+.podium-rank { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 20px; width: 32px; text-align: center; }
+.podium-name { flex: 1; font-weight: 600; font-size: 15px; }
+.podium-score { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-soft); }
+.quests-list { display: flex; flex-direction: column; gap: 8px; }
+.quest-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); }
+.quest-item.completed { opacity: 0.6; background: rgba(16, 185, 129, 0.05); border-color: var(--success); }
+.quest-icon { font-size: 24px; }
+.quest-info { flex: 1; }
+.quest-name { font-size: 13px; font-weight: 600; }
+.quest-progress { font-size: 11px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.quest-reward { padding: 4px 10px; background: var(--purple); color: white; border-radius: 100px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.theme-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+.theme-swatch { aspect-ratio: 1; border-radius: var(--radius); cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
+.theme-swatch:hover { transform: scale(1.05); }
+.theme-swatch.selected { border-color: var(--text); }
+.theme-swatch.selected::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.theme-swatch[data-theme="default"] { background: linear-gradient(135deg, #1a1a1a, #f5f5f0); }
+.theme-swatch[data-theme="ocean"] { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
+.theme-swatch[data-theme="forest"] { background: linear-gradient(135deg, #065f46, #10b981); }
+.theme-swatch[data-theme="sunset"] { background: linear-gradient(135deg, #c2410c, #f97316); }
+.theme-swatch[data-theme="violet"] { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+.leaderboard-list { display: flex; flex-direction: column; gap: 4px; }
+.leaderboard-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.leaderboard-item.me { background: rgba(139, 92, 246, 0.08); border-color: var(--purple); }
+.leaderboard-rank { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 16px; width: 28px; text-align: center; color: var(--text-mute); }
+.leaderboard-item:nth-child(1) .leaderboard-rank { color: #fbbf24; }
+.leaderboard-item:nth-child(2) .leaderboard-rank { color: #9ca3af; }
+.leaderboard-item:nth-child(3) .leaderboard-rank { color: #cd7c2f; }
+.leaderboard-avatar { font-size: 20px; }
+.leaderboard-info { flex: 1; }
+.leaderboard-name { font-size: 13px; font-weight: 600; }
+.leaderboard-level { font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; }
+.leaderboard-xp { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--purple); font-size: 13px; }
+.gift-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 12px; }
+.gift-option { aspect-ratio: 1; font-size: 28px; display: flex; align-items: center; justify-content: center; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
+.gift-option:hover { background: var(--accent-soft); transform: scale(1.1); border-color: var(--purple); }
+.player-id-box { padding: 12px; background: var(--bg-softer); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.player-id-box code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-soft); word-break: break-all; }
+.player-id-box button { padding: 6px 12px; font-size: 11px; }
 .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 999; }
 .admin-overlay.show { display: block; }
 .admin-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; max-height: 85vh; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 1000; display: none; overflow: hidden; flex-direction: column; }
@@ -157,7 +261,7 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .admin-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .admin-header h2 { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 16px; }
 .admin-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; gap: 4px; overflow-x: auto; }
-.admin-tab { padding: 12px 16px; background: transparent; border: none; cursor: pointer; font-weight: 500; color: var(--text-mute); transition: all 0.2s; border-bottom: 2px solid transparent; font-family: inherit; font-size: 13px; white-space: nowrap; }
+.admin-tab { padding: 12px 16px; background: transparent; border: none; cursor: pointer; font-weight: 500; color: var(--text-mute); transition: all 0.2s; border-bottom: 2px solid transparent; font-family: inherit; font-size: 13px; white-space: nowrap; touch-action: manipulation; }
 .admin-tab:hover { color: var(--text); }
 .admin-tab.active { color: var(--text); border-bottom-color: var(--text); }
 .admin-content { padding: 24px; overflow-y: auto; flex: 1; }
@@ -169,19 +273,18 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .admin-section h3 { font-size: 13px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 .admin-input-group { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 .admin-input-group input, .admin-input-group select, .admin-input-group textarea { flex: 1; min-width: 120px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); color: var(--text); font-family: inherit; font-size: 13px; outline: none; }
-.admin-input-group input:focus, .admin-input-group select:focus, .admin-input-group textarea:focus { border-color: var(--text); }
 .admin-input-group textarea { resize: vertical; min-height: 60px; }
-.admin-btn { padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); cursor: pointer; font-size: 12px; font-weight: 500; font-family: inherit; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.admin-btn { padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); cursor: pointer; font-size: 12px; font-weight: 500; font-family: inherit; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; }
 .admin-btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
 .admin-btn-sm { padding: 4px 10px; font-size: 11px; }
 .admin-btn-danger { color: var(--danger); border-color: var(--danger); }
-.admin-btn-danger:hover { background: var(--danger); color: white; border-color: var(--danger); }
+.admin-btn-danger:hover { background: var(--danger); color: white; }
 .admin-btn-success { color: var(--success); border-color: var(--success); }
-.admin-btn-success:hover { background: var(--success); color: white; border-color: var(--success); }
+.admin-btn-success:hover { background: var(--success); color: white; }
 .admin-btn-warning { color: var(--warning); border-color: var(--warning); }
-.admin-btn-warning:hover { background: var(--warning); color: white; border-color: var(--warning); }
+.admin-btn-warning:hover { background: var(--warning); color: white; }
 .player-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 10px; }
-.player-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.player-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .player-list-item:hover { background: var(--accent-soft); }
 .player-list-item:last-child { border-bottom: none; }
 .player-list-info { display: flex; align-items: center; gap: 10px; }
@@ -192,34 +295,51 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 .word-list { max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .word-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
 .word-item:last-child { border-bottom: none; }
-.word-delete { background: transparent; border: none; color: var(--danger); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
-.word-delete:hover { background: var(--danger); color: white; }
-.banned-word { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.settings-row:last-child { border-bottom: none; }
-.settings-label { font-size: 13px; font-weight: 500; }
-.settings-control input[type="range"] { width: 160px; -webkit-appearance: none; height: 2px; background: var(--border); border-radius: 2px; outline: none; }
-.settings-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--text); border-radius: 50%; cursor: pointer; }
-.settings-control input[type="checkbox"] { accent-color: var(--text); }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
+.toast-container { position: fixed; top: 80px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { pointer-events: auto; padding: 12px 20px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(0,0,0,0.12); font-size: 13px; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); max-width: 320px; color: var(--text); }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.info { border-left: 3px solid var(--text); }
+.toast.warning { border-left: 3px solid var(--warning); }
+.toast.achievement { border-left: 3px solid var(--purple); background: rgba(139, 92, 246, 0.05); }
+.toast.quest { border-left: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); }
+@keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+.mode-selector { display: flex; gap: 8px; margin-bottom: 12px; }
+.mode-option { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: center; transition: all 0.2s; }
+.mode-option:hover { border-color: var(--border-strong); }
+.mode-option.selected { border-color: var(--text); background: var(--accent-soft); }
+.mode-option-icon { font-size: 24px; margin-bottom: 4px; }
+.mode-option-name { font-size: 13px; font-weight: 600; }
+.mode-option-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
 @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .main { padding: 40px 24px; border-right: none; border-bottom: 1px solid var(--border); } .sidebar { padding: 32px 24px; max-height: none; position: static; } .letter-huge { font-size: 180px; } .nav { display: none; } .header { padding: 16px 20px; } }
-@media (max-width: 640px) { .letter-huge { font-size: 140px; letter-spacing: -8px; } .word-input { font-size: 18px; } .connection-panel { flex-direction: column; align-items: stretch; } .room-input { width: 100%; } }
+@media (max-width: 640px) { .letter-huge { font-size: 140px; letter-spacing: -8px; } .word-input { font-size: 18px; } .connection-panel { flex-direction: column; align-items: stretch; } .room-input { width: 100%; } .toast-container { left: 20px; right: 20px; top: 70px; } .toast { max-width: 100%; } .achievements-grid { grid-template-columns: repeat(2, 1fr); } .theme-picker { grid-template-columns: repeat(5, 1fr); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .pulse { animation: pulse 2s ease-in-out infinite; }
 </style>
 </head>
 <body class="light-theme">
+<div class="toast-container" id="toastContainer"></div>
 <header class="header">
-  <div class="logo"><div class="logo-mark">С</div><span><b>Слова</b> · игра</span></div>
-  <nav class="nav"><a href="#" id="adminNavBtn" onclick="toggleAdmin(); return false;" style="display:none;">Админ</a></nav>
+  <div class="logo"><div class="logo-mark">С</div><span><b>Слова</b> · v0.6</span></div>
+  <nav class="nav">
+    <button id="questsNavBtn" style="display:none;"><i class="fas fa-scroll"></i> Задания</button>
+    <button id="leaderboardNavBtn"><i class="fas fa-trophy"></i> Топ</button>
+    <button id="historyNavBtn" style="display:none;"><i class="fas fa-clock-rotate-left"></i> История</button>
+    <button id="achievementsNavBtn" style="display:none;"><i class="fas fa-medal"></i> Достижения</button>
+    <a href="#" id="adminNavBtn" onclick="toggleAdmin(); return false;" style="display:none;">Админ</a>
+  </nav>
   <div class="header-actions">
+    <div class="sync-indicator" id="syncIndicator" title="Статус синхронизации">
+      <i class="fas fa-circle" style="font-size:6px;"></i> <span id="syncStatus">offline</span>
+    </div>
     <button class="icon-btn" id="themeTopBtn" title="Сменить тему"><i class="fas fa-moon"></i></button>
     <div class="profile-pill" id="profileTopBtn">
       <div class="profile-avatar" id="headerAvatar">😎</div>
-      <span class="profile-name" id="headerName">МастерСлова</span>
+      <div>
+        <div class="profile-name" id="headerName">МастерСлова</div>
+        <div class="profile-level" id="headerLevel">Ур. 1 · Новичок</div>
+      </div>
     </div>
   </div>
 </header>
@@ -228,28 +348,33 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
     <div class="connection-panel">
       <input type="text" id="roomInput" class="room-input" placeholder="код комнаты" value="assortea">
       <button id="createRoomBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Создать</button>
+      <button id="playWithBotBtn" class="btn btn-purple"><i class="fas fa-robot"></i> Играть с ботом</button>
       <button id="joinRoomBtn" class="btn"><i class="fas fa-arrow-right-to-bracket"></i> Войти</button>
+      <button id="copyLinkBtn" class="btn" title="Скопировать ссылку"><i class="fas fa-link"></i></button>
       <div class="connection-status" id="connectionStatus"><i class="fas fa-circle" style="font-size:6px; color: var(--success);"></i> ожидание</div>
       <button id="reconnectBtn" class="btn"><i class="fas fa-rotate"></i> Переподключить</button>
-      <button id="enableNotificationsBtn" class="btn"><i class="fas fa-bell"></i> Уведомления</button>
     </div>
     <div class="game-meta">
-      <div class="turn-label">Сейчас ход: <b id="turnDisplay">—</b></div>
+      <div class="turn-label">Сейчас ход: <b id="turnDisplay">—</b><span id="gameModeBadge" class="game-mode-badge" style="display:none;"></span></div>
       <div class="progress-label" id="progressLabel">Слово 0 · 0 игроков</div>
     </div>
     <div class="letter-display">
       <div class="letter-huge" id="letterHuge">?</div>
       <div class="letter-caption" id="letterCaption">Введите слово, начинающееся с этой буквы</div>
       <div class="last-word-display" id="lastWordDisplay">последнее слово: —</div>
+      <div class="turn-timer-container" id="turnTimerContainer">
+        <div class="turn-timer-bar" id="turnTimerBar"></div>
+      </div>
+      <div class="turn-timer-text" id="turnTimerText">45</div>
     </div>
     <div class="input-area">
-      <input type="text" id="wordInput" class="word-input" placeholder="ваше слово..." autocomplete="off">
+      <input type="text" id="wordInput" class="word-input" placeholder="ваше слово..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
       <button id="submitWordBtn" class="send-btn" title="Ответить"><i class="fas fa-arrow-right"></i></button>
     </div>
+    <div class="typing-indicator" id="typingIndicator">соперник печатает...</div>
     <div class="sub-actions">
       <button class="link-btn" id="skipBtn"><i class="fas fa-forward"></i> Пропустить ход</button>
       <button class="link-btn" id="complaintBtn"><i class="fas fa-flag"></i> Пожаловаться</button>
-      <button class="link-btn" id="suggestLetterBtn" style="display:none;"><i class="fas fa-shuffle"></i> Предложить букву</button>
     </div>
     <div class="vote-panel" id="votePanel" style="display:none;">
       <div class="vote-title"><i class="fas fa-scale-balanced"></i><span id="voteTitle">Голосование</span></div>
@@ -277,9 +402,10 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
       <div class="chat-box">
         <div class="chat-messages" id="chatMessages"></div>
         <div style="position:relative;">
-          <div class="chat-input-row">
+          <div class="chat-msg-input-row">
             <button type="button" id="emojiBtn" class="chat-send" title="Эмодзи"><i class="far fa-face-smile"></i></button>
-            <input type="text" id="chatInput" class="chat-input" placeholder="сообщение...">
+            <button type="button" id="giftBtn" class="chat-send" title="Подарок"><i class="fas fa-gift"></i></button>
+            <input type="text" id="chatInput" class="chat-input" placeholder="сообщение..." autocomplete="off">
             <button id="chatSendBtn" class="chat-send"><i class="fas fa-paper-plane"></i></button>
           </div>
           <div id="emojiPanel" class="emoji-panel">
@@ -297,12 +423,10 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
       </div>
       <div class="media-status" id="playerStatus"><i class="fas fa-circle" style="font-size:6px;"></i> готово</div>
     </div>
-    <div class="media-block">
-      <div class="media-title"><span><i class="fas fa-tree"></i> Звуки природы</span><button id="toggleSoundsPanel" class="icon-btn" style="width:24px;height:24px;font-size:10px;"><i class="fas fa-chevron-down"></i></button></div>
-      <div id="soundsPanel" style="display:none;"><div id="soundsList" class="sounds-list"></div></div>
-    </div>
   </aside>
 </div>
+
+<!-- Profile Modal -->
 <div class="modal-overlay" id="profileModal">
   <div class="modal">
     <div class="modal-header"><h2>Мой профиль</h2><button class="modal-close" id="profileCloseBtn">&times;</button></div>
@@ -317,6 +441,22 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
         <div class="avatar-presets-grid" id="avatarPresetsGrid"></div>
       </div>
       <div class="form-group"><label>Ваше имя</label><input type="text" id="profileNameInput" placeholder="Введите имя" maxlength="20"></div>
+      
+      <!-- v0.6: Player ID Box -->
+      <div class="player-id-box">
+        <i class="fas fa-fingerprint" style="font-size: 20px; color: var(--purple);"></i>
+        <code id="playerIdDisplay">—</code>
+        <button class="btn btn-sm" id="copyPlayerIdBtn" title="Скопировать ID"><i class="fas fa-copy"></i></button>
+      </div>
+      
+      <div class="xp-section">
+        <div class="xp-header">
+          <div class="xp-level" id="profileLevel">Уровень 1 · Новичок</div>
+          <div class="xp-progress-text" id="profileXpText">0 / 100 XP</div>
+        </div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="profileXpBar" style="width: 0%;"></div></div>
+        <div class="streak-badge" id="profileStreak" style="display:none;"><i class="fas fa-fire"></i> <span id="profileStreakCount">0</span> дней подряд</div>
+      </div>
       <div class="stats-grid">
         <div class="stat-item"><div class="stat-value" id="statGamesPlayed">0</div><div class="stat-label">Игр</div></div>
         <div class="stat-item"><div class="stat-value" id="statWordsTotal">0</div><div class="stat-label">Слов</div></div>
@@ -330,6 +470,111 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
     </div>
   </div>
 </div>
+
+<!-- Create Room Modal -->
+<div class="modal-overlay" id="createRoomModal">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header"><h2>Создать комнату</h2><button class="modal-close" id="createRoomCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Код комнаты</label>
+        <input type="text" id="newRoomCodeInput" placeholder="например, myroom123" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label>Режим игры</label>
+        <div class="mode-selector">
+          <div class="mode-option selected" data-mode="classic">
+            <div class="mode-option-icon">🎯</div>
+            <div class="mode-option-name">Классика</div>
+            <div class="mode-option-desc">45 сек · x1 очки</div>
+          </div>
+          <div class="mode-option" data-mode="blitz">
+            <div class="mode-option-icon">⚡</div>
+            <div class="mode-option-name">Блиц</div>
+            <div class="mode-option-desc">15 сек · x2 очки</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="createRoomCancelBtn">Отмена</button>
+        <button class="btn btn-primary" id="createRoomConfirmBtn"><i class="fas fa-plus"></i> Создать</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Achievements Modal -->
+<div class="modal-overlay" id="achievementsModal">
+  <div class="modal" style="max-width: 600px;">
+    <div class="modal-header"><h2><i class="fas fa-medal" style="color: var(--warning);"></i> Достижения</h2><button class="modal-close" id="achievementsCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <p style="color: var(--text-soft); margin-bottom: 16px;">Разблокировано: <b id="achievementsUnlockedCount">0</b> / <b id="achievementsTotalCount">10</b></p>
+      <div class="achievements-grid" id="achievementsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Match History Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header"><h2><i class="fas fa-clock-rotate-left"></i> История матчей</h2><button class="modal-close" id="historyCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <div class="match-history-list" id="matchHistoryList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard Modal -->
+<div class="modal-overlay" id="leaderboardModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header"><h2><i class="fas fa-trophy" style="color: var(--warning);"></i> Топ игроков</h2><button class="modal-close" id="leaderboardCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <div class="leaderboard-list" id="leaderboardList">
+        <div style="text-align:center;padding:20px;color:var(--text-mute);"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Quests Modal -->
+<div class="modal-overlay" id="questsModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header"><h2><i class="fas fa-scroll" style="color: var(--warning);"></i> Ежедневные задания</h2><button class="modal-close" id="questsCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <p style="color: var(--text-soft); margin-bottom: 16px; font-size: 12px;">Обновляются каждый день в полночь</p>
+      <div class="quests-list" id="questsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Gift Picker Modal -->
+<div class="modal-overlay" id="giftModal">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header"><h2><i class="fas fa-gift" style="color: var(--purple);"></i> Отправить подарок</h2><button class="modal-close" id="giftCloseBtn">&times;</button></div>
+    <div class="modal-body">
+      <p style="color: var(--text-soft); margin-bottom: 16px;">Выберите подарок для всех в комнате:</p>
+      <div class="gift-picker" id="giftPicker"></div>
+    </div>
+  </div>
+</div>
+
+<!-- End Game Modal -->
+<div class="modal-overlay" id="endGameModal">
+  <div class="modal" style="max-width: 400px; text-align: center;">
+    <div class="modal-body">
+      <h2 style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 8px;">🏆 Игра окончена!</h2>
+      <p style="color: var(--text-mute); margin-bottom: 24px;" id="endGameSubtitle">Победитель определен</p>
+      <div class="endgame-podium" id="endGamePodium"></div>
+      <div id="endGameXpReward" style="margin: 16px 0; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--purple); display:none;"></div>
+      <div class="modal-actions" style="justify-content: center; gap: 12px; margin-top: 24px;">
+        <button class="btn" id="endGameCloseBtn">Закрыть</button>
+        <button class="btn btn-primary" id="rematchBtn" style="display:none;"><i class="fas fa-rotate-right"></i> Реванш</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
 <div class="admin-overlay" id="adminOverlay"></div>
 <div class="admin-panel" id="adminPanel">
   <div class="admin-header"><h2><i class="fas fa-crown"></i> Админ-панель</h2><button class="modal-close" id="adminCloseBtn">&times;</button></div>
@@ -337,30 +582,22 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
     <button class="admin-tab active" data-tab="main">Главная</button>
     <button class="admin-tab" data-tab="players">Игроки</button>
     <button class="admin-tab" data-tab="game">Игра</button>
-    <button class="admin-tab" data-tab="words">Слова</button>
-    <button class="admin-tab" data-tab="settings">Настройки</button>
-    <button class="admin-tab" data-tab="actions">Действия</button>
   </div>
   <div class="admin-content">
     <div class="tab-content" data-tab="main">
       <div class="admin-stats">
         <div class="admin-stat-card"><div class="admin-stat-value" id="statPlayers">0</div><div class="admin-stat-label">Онлайн</div></div>
         <div class="admin-stat-card"><div class="admin-stat-value" id="statWords">0</div><div class="admin-stat-label">Слов</div></div>
-        <div class="admin-stat-card"><div class="admin-stat-value" id="statComplaints">0</div><div class="admin-stat-label">Жалоб</div></div>
-        <div class="admin-stat-card"><div class="admin-stat-value" id="statTurn">—</div><div class="admin-stat-label">Ход</div></div>
       </div>
       <div class="admin-section">
         <h3><i class="fas fa-bolt"></i> Быстрые действия</h3>
         <div class="admin-input-group">
-          <button id="quickResetGame" class="admin-btn admin-btn-warning"><i class="fas fa-rotate"></i> Сбросить игру</button>
-          <button id="quickClearChat" class="admin-btn"><i class="fas fa-trash"></i> Очистить чат</button>
-          <button id="quickClearHistory" class="admin-btn"><i class="fas fa-eraser"></i> Очистить историю</button>
+          <button id="quickResetGame" class="admin-btn admin-btn-warning"><i class="fas fa-rotate"></i> Сбросить</button>
+          <button id="quickEndGame" class="admin-btn btn-primary"><i class="fas fa-trophy"></i> Завершить</button>
         </div>
       </div>
-      <div class="admin-section"><h3><i class="fas fa-chart-line"></i> Активность</h3><div id="playerActivity" class="player-list"></div></div>
     </div>
     <div class="tab-content" data-tab="players" style="display:none;">
-      <div class="admin-section"><h3><i class="fas fa-search"></i> Поиск</h3><div class="admin-input-group"><input type="text" id="searchPlayer" placeholder="Имя игрока..."></div></div>
       <div class="admin-section"><h3><i class="fas fa-list"></i> Игроки</h3><div id="adminPlayersList" class="player-list"></div></div>
     </div>
     <div class="tab-content" data-tab="game" style="display:none;">
@@ -369,92 +606,6 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
         <div class="admin-input-group">
           <select id="adminPlayerSelect"><option value="">Выберите игрока</option></select>
           <button id="adminTransferTurnBtn" class="admin-btn">Передать</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-font"></i> Изменить букву</h3>
-        <div class="admin-input-group">
-          <input type="text" id="adminRequiredLetter" maxlength="1" placeholder="Буква">
-          <button id="adminChangeLetterBtn" class="admin-btn">Применить</button>
-          <button id="adminRandomLetterBtn" class="admin-btn">Случайная</button>
-        </div>
-        <div class="admin-input-group">
-          <input type="text" id="adminSetLastWord" placeholder="Последнее слово">
-          <button id="adminSetWordBtn" class="admin-btn">Установить</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-clock"></i> Таймер хода</h3>
-        <div class="settings-row">
-          <span class="settings-label">Время (сек)</span>
-          <div class="settings-control"><input type="range" id="turnTimer" min="30" max="120" value="60"><span id="turnTimerValue">60</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="tab-content" data-tab="words" style="display:none;">
-      <div class="admin-section"><h3><i class="fas fa-history"></i> История</h3><div id="adminWordsList" class="word-list"></div></div>
-      <div class="admin-section">
-        <h3><i class="fas fa-ban"></i> Забаненные слова</h3>
-        <div class="admin-input-group">
-          <input type="text" id="banWordInput" placeholder="Слово для бана">
-          <button id="addBanWordBtn" class="admin-btn admin-btn-danger">Забанить</button>
-        </div>
-        <div id="bannedWordsList" style="margin-top:10px;"></div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-plus"></i> Добавить в словарь</h3>
-        <div class="admin-input-group">
-          <input type="text" id="addWordInput" placeholder="Новое слово">
-          <button id="addWordToDictBtn" class="admin-btn admin-btn-success">Добавить</button>
-        </div>
-      </div>
-    </div>
-    <div class="tab-content" data-tab="settings" style="display:none;">
-      <div class="admin-section">
-        <h3><i class="fas fa-volume-high"></i> Звук</h3>
-        <div class="settings-row">
-          <span class="settings-label">Громкость музыки</span>
-          <div class="settings-control"><input type="range" id="musicVolume" min="0" max="100" value="50"><span id="musicVolumeValue">50</span>%</div>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Громкость звуков</span>
-          <div class="settings-control"><input type="range" id="soundsVolume" min="0" max="100" value="50"><span id="soundsVolumeValue">50</span>%</div>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-bell"></i> Уведомления</h3>
-        <div class="settings-row"><span class="settings-label">О ходе</span><label class="settings-control"><input type="checkbox" id="notifyTurn" checked></label></div>
-        <div class="settings-row"><span class="settings-label">О жалобах</span><label class="settings-control"><input type="checkbox" id="notifyComplaint" checked></label></div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-palette"></i> Тема</h3>
-        <div class="admin-input-group">
-          <button id="setLightTheme" class="admin-btn">Светлая</button>
-          <button id="setDarkTheme" class="admin-btn">Тёмная</button>
-          <button id="setAutoTheme" class="admin-btn">Авто</button>
-        </div>
-      </div>
-    </div>
-    <div class="tab-content" data-tab="actions" style="display:none;">
-      <div class="admin-section">
-        <h3><i class="fas fa-users"></i> Массовые действия</h3>
-        <div class="admin-input-group">
-          <button id="massAddPoints" class="admin-btn admin-btn-success">+5 всем</button>
-          <button id="massRemovePoints" class="admin-btn admin-btn-danger">-3 всем</button>
-          <button id="massKickAll" class="admin-btn admin-btn-danger">Кикнуть всех</button>
-          <button id="massResetScores" class="admin-btn admin-btn-warning">Сброс очков</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-bullhorn"></i> Системные сообщения</h3>
-        <div class="admin-input-group"><textarea id="systemMessage" rows="3" placeholder="Сообщение для всех..."></textarea></div>
-        <div class="admin-input-group"><button id="sendSystemMessage" class="admin-btn">Отправить всем</button></div>
-      </div>
-      <div class="admin-section">
-        <h3><i class="fas fa-database"></i> Бэкап</h3>
-        <div class="admin-input-group">
-          <button id="backupGame" class="admin-btn admin-btn-success">Сохранить</button>
-          <button id="restoreBackup" class="admin-btn admin-btn-warning">Восстановить</button>
         </div>
       </div>
     </div>
@@ -467,9 +618,353 @@ body { min-height: 100vh; background: var(--bg); color: var(--text); font-family
 const firebaseConfig = { apiKey: "AIzaSyDdfezqe41CAyoI_SvP4fnbPmhYVjBkB9E", authDomain: "word-game-multiplayer-43c82.firebaseapp.com", databaseURL: "https://word-game-multiplayer-43c82-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "word-game-multiplayer-43c82", storageBucket: "word-game-multiplayer-43c82.firebasestorage.app" };
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+// --- v0.6: Persistent Player ID ---
+function getOrCreatePersistentId() {
+  let persistentId = localStorage.getItem('persistentPlayerId');
+  if (!persistentId) {
+    persistentId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('persistentPlayerId', persistentId);
+    console.log('✅ Создан новый постоянный ID:', persistentId);
+  }
+  return persistentId;
+}
+
+// --- Level System ---
+const LEVELS = [
+  { level: 1, name: 'Новичок', xpRequired: 0 },
+  { level: 2, name: 'Ученик', xpRequired: 100 },
+  { level: 3, name: 'Знаток', xpRequired: 300 },
+  { level: 4, name: 'Эрудит', xpRequired: 600 },
+  { level: 5, name: 'Мастер', xpRequired: 1000 },
+  { level: 6, name: 'Гуру', xpRequired: 1500 },
+  { level: 7, name: 'Магистр', xpRequired: 2200 },
+  { level: 8, name: 'Виртуоз', xpRequired: 3000 },
+  { level: 9, name: 'Легенда', xpRequired: 4000 },
+  { level: 10, name: 'Бог Слов', xpRequired: 5500 }
+];
+function getLevelInfo(xp) {
+  let currentLevel = LEVELS[0], nextLevel = LEVELS[1];
+  for (let i = 0; i < LEVELS.length; i++) {
+    if (xp >= LEVELS[i].xpRequired) { currentLevel = LEVELS[i]; nextLevel = LEVELS[i + 1] || null; }
+  }
+  return { currentLevel, nextLevel, xpInLevel: nextLevel ? xp - currentLevel.xpRequired : 0, xpToNext: nextLevel ? nextLevel.xpRequired - currentLevel.xpRequired : 0 };
+}
+
+// --- Achievements ---
+const ACHIEVEMENTS = [
+  { id: 'first_word', name: 'Первая кровь', desc: 'Сказать первое слово', icon: '🗡️', check: (s) => s.wordsTotal >= 1 },
+  { id: 'marathoner', name: 'Марафонец', desc: '10 слов за одну игру', icon: '🏃', check: (s, gw) => gw >= 10 },
+  { id: 'erudite', name: 'Эрудит', desc: 'Слово из 10+ букв', icon: '🧠', check: (s) => s.longestWord >= 10 },
+  { id: 'winner', name: 'Победитель', desc: 'Выиграть 5 игр', icon: '🏆', check: (s) => s.wins >= 5 },
+  { id: 'unstoppable', name: 'Непобедимый', desc: '3 победы подряд', icon: '⚡', check: (s) => s.winStreak >= 3 },
+  { id: 'night_owl', name: 'Ночной игрок', desc: 'Играть после 23:00', icon: '🦉', check: () => new Date().getHours() >= 23 },
+  { id: 'social', name: 'Душа компании', desc: 'Отправить 50 сообщений', icon: '💬', check: (s) => s.messagesSent >= 50 },
+  { id: 'collector', name: 'Коллекционер', desc: 'Разблокировать 5 достижений', icon: '🎖️', check: (s) => s.achievementsUnlocked >= 5 },
+  { id: 'streak_3', name: 'Постоянство', desc: 'Серия 3 дня', icon: '🔥', check: (s) => s.streak >= 3 },
+  { id: 'blitz_master', name: 'Мастер блица', desc: 'Выиграть в режиме Блиц', icon: '⚡', check: (s) => s.blitzWins >= 1 }
+];
+
+// --- Daily Quests ---
+const DAILY_QUESTS_POOL = [
+  { id: 'play_3', name: 'Сыграй 3 игры', icon: '🎮', target: 3, stat: 'gamesToday', reward: 30 },
+  { id: 'words_20', name: 'Скажи 20 слов', icon: '📝', target: 20, stat: 'wordsToday', reward: 40 },
+  { id: 'messages_10', name: 'Отправь 10 сообщений', icon: '💬', target: 10, stat: 'messagesToday', reward: 20 },
+  { id: 'win_1', name: 'Победи в 1 игре', icon: '🏆', target: 1, stat: 'winsToday', reward: 50 },
+  { id: 'long_word', name: 'Скажи слово из 8+ букв', icon: '🧠', target: 1, stat: 'longWordsToday', reward: 25 },
+  { id: 'gift_1', name: 'Отправь подарок', icon: '🎁', target: 1, stat: 'giftsToday', reward: 15 },
+  { id: 'score_30', name: 'Набери 30 очков за день', icon: '⭐', target: 30, stat: 'scoreToday', reward: 35 }
+];
+
+let playerStats = {
+  xp: 0, gamesPlayed: 0, wordsTotal: 0, wins: 0, winStreak: 0, longestWord: 0,
+  messagesSent: 0, achievementsUnlocked: 0, streak: 0, lastPlayDate: null,
+  blitzWins: 0, rating: 1000, unlockedAchievements: [],
+  dailyDate: null, gamesToday: 0, wordsToday: 0, messagesToday: 0,
+  winsToday: 0, longWordsToday: 0, giftsToday: 0, scoreToday: 0,
+  dailyQuests: [], questsClaimed: [],
+  matchHistory: []
+};
+
+// --- v0.6: Firebase Profile Sync ---
+let persistentPlayerId = null;
+let profileSyncListener = null;
+
+async function loadPlayerProfile() {
+  persistentPlayerId = getOrCreatePersistentId();
+  updateSyncIndicator('syncing', 'загрузка...');
+  
+  try {
+    const snap = await db.ref(`players/${persistentPlayerId}`).once('value');
+    const data = snap.val();
+    
+    if (data) {
+      // Profile exists in Firebase - load it
+      playerStats = { ...playerStats, ...data };
+      console.log('✅ Профиль загружен из Firebase');
+      updateSyncIndicator('synced', 'синхронизировано');
+      
+      // Migrate localStorage data if needed
+      const localStats = localStorage.getItem('playerStats_v5');
+      if (localStats) {
+        try {
+          const local = JSON.parse(localStats);
+          if (local.xp > playerStats.xp) {
+            // Local has more XP - migrate
+            playerStats = { ...playerStats, ...local };
+            await savePlayerProfile();
+            console.log('✅ Данные мигрированы из localStorage в Firebase');
+          }
+          localStorage.removeItem('playerStats_v5');
+        } catch (e) {}
+      }
+    } else {
+      // No profile in Firebase - create new one
+      console.log('📝 Создаём новый профиль в Firebase');
+      await savePlayerProfile();
+      updateSyncIndicator('synced', 'синхронизировано');
+    }
+    
+    // Listen for profile changes from other devices
+    if (profileSyncListener) profileSyncListener();
+    profileSyncListener = db.ref(`players/${persistentPlayerId}`).on('value', (snap) => {
+      const data = snap.val();
+      if (data && data.lastSeen && Date.now() - data.lastSeen > 5000) {
+        // Update from another device
+        playerStats = { ...playerStats, ...data };
+        savePlayerStats();
+        updateProfileUI();
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Ошибка загрузки профиля:', error);
+    updateSyncIndicator('error', 'ошибка');
+    
+    // Fallback to localStorage
+    const localStats = localStorage.getItem('playerStats_v5');
+    if (localStats) {
+      try { playerStats = { ...playerStats, ...JSON.parse(localStats) }; } catch(e) {}
+    }
+  }
+  
+  updateStreak();
+  checkDailyReset();
+}
+
+async function savePlayerProfile() {
+  if (!persistentPlayerId) return;
+  
+  try {
+    playerStats.lastSeen = Date.now();
+    await db.ref(`players/${persistentPlayerId}`).set(playerStats);
+    updateSyncIndicator('synced', 'синхронизировано');
+  } catch (error) {
+    console.error('❌ Ошибка сохранения профиля:', error);
+    updateSyncIndicator('error', 'ошибка');
+  }
+}
+
+function updateSyncIndicator(status, text) {
+  const indicator = document.getElementById('syncIndicator');
+  const statusSpan = document.getElementById('syncStatus');
+  if (!indicator || !statusSpan) return;
+  
+  indicator.className = 'sync-indicator ' + status;
+  statusSpan.textContent = text;
+  
+  const icon = indicator.querySelector('i');
+  if (status === 'syncing') icon.className = 'fas fa-circle-notch fa-spin';
+  else if (status === 'synced') icon.className = 'fas fa-circle';
+  else if (status === 'error') icon.className = 'fas fa-exclamation-circle';
+}
+
+function loadPlayerStats() {
+  // v0.6: Now loads from Firebase via loadPlayerProfile()
+  // This function is kept for compatibility
+  const saved = localStorage.getItem('playerStats_v6');
+  if (saved) { try { playerStats = { ...playerStats, ...JSON.parse(saved) }; } catch(e) {} }
+}
+
+function savePlayerStats() {
+  localStorage.setItem('playerStats_v6', JSON.stringify(playerStats));
+  savePlayerProfile(); // v0.6: Also save to Firebase
+}
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (playerStats.lastPlayDate) {
+    const lastDate = new Date(playerStats.lastPlayDate);
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    if (lastDate.toDateString() !== yesterday.toDateString() && lastDate.toDateString() !== today) {
+      playerStats.streak = 0;
+    }
+  }
+}
+
+function checkDailyReset() {
+  const today = new Date().toDateString();
+  if (playerStats.dailyDate !== today) {
+    playerStats.dailyDate = today;
+    playerStats.gamesToday = 0;
+    playerStats.wordsToday = 0;
+    playerStats.messagesToday = 0;
+    playerStats.winsToday = 0;
+    playerStats.longWordsToday = 0;
+    playerStats.giftsToday = 0;
+    playerStats.scoreToday = 0;
+    playerStats.questsClaimed = [];
+    const shuffled = [...DAILY_QUESTS_POOL].sort(() => Math.random() - 0.5);
+    playerStats.dailyQuests = shuffled.slice(0, 3).map(q => q.id);
+    savePlayerStats();
+  }
+}
+
+function updateQuestProgress(statKey, amount = 1) {
+  playerStats[statKey] = (playerStats[statKey] || 0) + amount;
+  savePlayerStats();
+  checkQuestCompletion();
+}
+
+function checkQuestCompletion() {
+  playerStats.dailyQuests.forEach(questId => {
+    const quest = DAILY_QUESTS_POOL.find(q => q.id === questId);
+    if (!quest) return;
+    if (playerStats.questsClaimed.includes(questId)) return;
+    const current = playerStats[quest.stat] || 0;
+    if (current >= quest.target) {
+      playerStats.questsClaimed.push(questId);
+      addXP(quest.reward);
+      savePlayerStats();
+      setTimeout(() => {
+        showToast(`✅ Задание "${quest.name}" выполнено! +${quest.reward} XP`, 'quest');
+        playSound('achievement');
+      }, 500);
+    }
+  });
+}
+
+function addXP(amount) {
+  const oldLevel = getLevelInfo(playerStats.xp).currentLevel.level;
+  playerStats.xp += amount;
+  const newLevel = getLevelInfo(playerStats.xp).currentLevel.level;
+  savePlayerStats();
+  updateProfileUI();
+  updateLeaderboardEntry();
+  if (newLevel > oldLevel) {
+    showToast(`🎉 Новый уровень: ${LEVELS[newLevel - 1].name}!`, 'achievement');
+    playSound('achievement');
+  }
+}
+
+function checkAchievements(gameWords = 0) {
+  let newUnlocks = [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (!playerStats.unlockedAchievements.includes(ach.id)) {
+      if (ach.check(playerStats, gameWords)) {
+        playerStats.unlockedAchievements.push(ach.id);
+        playerStats.achievementsUnlocked = playerStats.unlockedAchievements.length;
+        newUnlocks.push(ach);
+      }
+    }
+  });
+  if (newUnlocks.length > 0) {
+    savePlayerStats();
+    newUnlocks.forEach(ach => {
+      setTimeout(() => {
+        showToast(`🏆 Достижение: ${ach.name}`, 'achievement');
+        playSound('achievement');
+      }, 500);
+    });
+    updateProfileUI();
+  }
+}
+
+// --- Match History ---
+let matchHistory = [];
+function loadMatchHistory() {
+  // v0.6: Load from playerStats (which comes from Firebase)
+  matchHistory = playerStats.matchHistory || [];
+}
+function saveMatchToHistory(players, winnerId, mode) {
+  const match = { date: Date.now(), players: players.map(p => ({ name: p.name, score: p.score || 0, id: p.id })), winnerId, mode, myScore: players.find(p => p.id === myId)?.score || 0 };
+  matchHistory.unshift(match);
+  if (matchHistory.length > 10) matchHistory = matchHistory.slice(0, 10);
+  playerStats.matchHistory = matchHistory;
+  savePlayerStats();
+}
+
+// --- Dictionary ---
 let russianDictionary = new Set();
 let dictionaryLoaded = false;
 let dictionaryLoadPromise = null;
+
+// --- Audio & Haptics ---
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+document.body.addEventListener('click', initAudio, { once: true });
+document.body.addEventListener('keydown', initAudio, { once: true });
+
+function playSound(type) {
+  if (!audioCtx) initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  const now = audioCtx.currentTime;
+  if (type === 'success') {
+    osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now); osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.1);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3);
+  } else if (type === 'error') {
+    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(); osc.stop(now + 0.2);
+  } else if (type === 'turn') {
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(440, now);
+    gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(); osc.stop(now + 0.15);
+  } else if (type === 'achievement') {
+    osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now); osc.frequency.setValueAtTime(659.25, now + 0.1); osc.frequency.setValueAtTime(783.99, now + 0.2);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4); osc.start(); osc.stop(now + 0.4);
+  } else if (type === 'gift') {
+    osc.type = 'sine'; osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+    gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3);
+  }
+}
+
+function triggerHaptic(type) {
+  if ('vibrate' in navigator) {
+    if (type === 'error') navigator.vibrate([50, 50, 50]);
+    else if (type === 'success') navigator.vibrate(30);
+    else if (type === 'turn') navigator.vibrate(20);
+  }
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle', achievement: 'fa-trophy', quest: 'fa-scroll' };
+  toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'fadeOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+function calculateScore(word, gameMode) {
+  let score = 1;
+  const clean = word.toLowerCase().replace(/[^а-яё]/g, '');
+  if (clean.length >= 5 && clean.length <= 7) score += 1;
+  if (clean.length >= 8) score += 2;
+  const rareLetters = ['ё', 'щ', 'ъ', 'ы', 'э', 'ю', 'я'];
+  if ([...clean].some(char => rareLetters.includes(char))) score += 1;
+  if (gameMode === 'blitz') score *= 2;
+  return score;
+}
+
 function latinToCyrillic(word) {
   const map = { 'A':'А','B':'В','C':'С','E':'Е','H':'Н','K':'К','M':'М','O':'О','P':'Р','T':'Т','X':'Х','Y':'У','a':'а','b':'в','c':'с','e':'е','h':'н','k':'к','m':'м','o':'о','p':'р','t':'т','x':'х','y':'у' };
   let result = '';
@@ -482,8 +977,19 @@ function normalizeWordForDict(word) {
   cleaned = cleaned.replace(/^-+|-+$/g, '');
   return cleaned;
 }
+
 async function loadRussianDictionary() {
+  if (dictionaryLoaded) return true;
   if (dictionaryLoadPromise) return dictionaryLoadPromise;
+  const cached = localStorage.getItem('cachedDictionary_v2');
+  if (cached) {
+    try {
+      const words = JSON.parse(cached);
+      words.forEach(w => russianDictionary.add(w));
+      dictionaryLoaded = true;
+      return true;
+    } catch (e) { localStorage.removeItem('cachedDictionary_v2'); }
+  }
   dictionaryLoadPromise = (async () => {
     try {
       const url = 'https://raw.githubusercontent.com/Sagatheror/instrumenti/main/%D0%A1%D0%BB%D0%BE%D0%B2%D0%B0%D1%80%D1%8C%20%D0%9E%D0%B6%D0%B5%D0%B3%D0%BE%D0%B2%D0%B0.txt';
@@ -508,28 +1014,24 @@ async function loadRussianDictionary() {
           const rawWord = match[1];
           const word = normalizeWordForDict(rawWord);
           if (word.length >= 2 && /^[а-яё]+(-[а-яё]+)?$/.test(word)) {
-            russianDictionary.add(word);
-            wordCount++;
+            russianDictionary.add(word); wordCount++;
             if (word.includes('ё')) russianDictionary.add(word.replace(/ё/g, 'е'));
           }
         }
       }
-      console.log(`✅ Загружено ${wordCount} слов`);
       dictionaryLoaded = true;
-      const messageBoxDiv = document.getElementById('messageBox');
-      if (messageBoxDiv && messageBoxDiv.innerHTML.includes('Загрузка')) messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Готов к игре! Загружено ${wordCount} слов`;
-      if (wordCount === 0) throw new Error('Словарь пуст');
+      localStorage.setItem('cachedDictionary_v2', JSON.stringify([...russianDictionary]));
+      showToast(`Словарь загружен (${wordCount} слов)`, 'success');
     } catch (error) {
-      console.error('❌ Ошибка загрузки словаря:', error);
-      const fallbackWords = ['дом','лес','мост','город','река','гора','поле','море','окно','дверь','стол','стул','кровать','лампа','книга','ручка','карандаш','тетрадь','машина','поезд','самолет','корабль','велосипед','автобус','собака','кошка','корова','лошадь','птица','рыба','волк','лиса','медведь','яблоко','груша','апельсин','банан','лимон','вишня','клубника','арбуз','хлеб','молоко','масло','сыр','мясо','суп','каша','пирог','торт','конфета','мама','папа','брат','сестра','дедушка','бабушка','друг','подруга','учитель','врач','инженер','строитель','художник','музыкант','певец','небо','солнце','луна','звезда','облако','дождь','снег','ветер','гроза','утро','день','вечер','ночь','понедельник','вторник','среда','нога','рука','голова','глаз','ухо','нос','рот','зуб','волос','кожа','сердце','печень','автор','работа','завод','трактор','компьютер','зебра','слон','жираф','носорог','абажур','банан','вампир','гитара','динозавр','ежевика','жираф','зебра','иглу'];
+      const fallbackWords = ['дом','лес','мост','город','река','гора','поле','море','окно','дверь','стол','стул','кровать','лампа','книга','машина','собака','кошка','яблоко','банан','хлеб','молоко','мама','папа','небо','солнце','луна','звезда','дождь','снег','утро','день','ночь','рука','голова','глаз','сердце','компьютер','зебра','гитара'];
       fallbackWords.forEach(w => russianDictionary.add(w));
       dictionaryLoaded = true;
-      const msgDiv = document.getElementById('messageBox');
-      if (msgDiv) msgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Словарь не загружен, используется базовый набор';
+      showToast('Используется базовый набор слов', 'warning');
     }
   })();
   return dictionaryLoadPromise;
 }
+
 async function isValidWordWithDictionary(word) {
   if (!dictionaryLoaded) await loadRussianDictionary();
   if (!/^[а-яё\s-]+$/i.test(word)) return { valid: false, message: '❌ Только русские буквы!' };
@@ -542,11 +1044,87 @@ async function isValidWordWithDictionary(word) {
   if (!found) return { valid: false, message: `❌ Слово "${word}" не найдено в словаре.` };
   return { valid: true, message: '' };
 }
+
+// --- AI Bot ---
+const BOT = {
+  id: 'bot_archie',
+  name: 'Арчи 🤖',
+  avatar: '🤖',
+  isBot: true
+};
+
+function botPickWord(lastWord, usedWords) {
+  if (!dictionaryLoaded) return null;
+  let neededLetter = '';
+  if (lastWord) {
+    const clean = lastWord.toLowerCase().replace(/[ъьы]/g, '');
+    for (let i = clean.length - 1; i >= 0; i--) {
+      if (/[а-яё]/.test(clean[i])) { neededLetter = clean[i]; break; }
+    }
+  }
+  const usedSet = new Set(usedWords.map(w => w.toLowerCase().replace(/[-\s]/g, '')));
+  const candidates = [];
+  russianDictionary.forEach(word => {
+    if (word.length < 2) return;
+    if (usedSet.has(word)) return;
+    if (neededLetter && word[0] !== neededLetter) return;
+    candidates.push(word);
+  });
+  if (candidates.length === 0) return null;
+  const weighted = candidates.map(w => ({ word: w, weight: w.length >= 4 && w.length <= 8 ? 3 : 1 }));
+  const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0);
+  let r = Math.random() * totalWeight;
+  for (const w of weighted) {
+    r -= w.weight;
+    if (r <= 0) return w.word;
+  }
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+async function botPlay(roomId) {
+  const thinkTime = 2000 + Math.random() * 3000;
+  db.ref(`rooms/${roomId}/typing/${BOT.id}`).set(true);
+  await new Promise(r => setTimeout(r, thinkTime));
+  db.ref(`rooms/${roomId}/typing/${BOT.id}`).remove();
+  
+  const snap = await db.ref(`rooms/${roomId}`).once('value');
+  const game = snap.val();
+  if (!game || game.currentPlayerId !== BOT.id || game.gameEnded) return;
+  
+  const word = botPickWord(game.lastWord, game.usedWords || []);
+  if (!word) {
+    const playersArr = Object.keys(game.players || {});
+    const idx = playersArr.indexOf(BOT.id);
+    const nextId = playersArr[(idx + 1) % playersArr.length];
+    await db.ref(`rooms/${roomId}`).update({ currentPlayerId: nextId, turnStartTime: Date.now() });
+    return;
+  }
+  
+  const points = calculateScore(word, game.gameMode || 'classic');
+  const playersArr = Object.keys(game.players || {});
+  const idx = playersArr.indexOf(BOT.id);
+  const nextId = playersArr[(idx + 1) % playersArr.length];
+  const currentScore = game.players[BOT.id]?.score || 0;
+  
+  await db.ref(`rooms/${roomId}`).update({
+    [`players/${BOT.id}/score`]: currentScore + points,
+    currentPlayerId: nextId,
+    lastWord: word,
+    lastWordAuthor: BOT.id,
+    usedWords: [...(game.usedWords || []), word],
+    turnStartTime: Date.now()
+  });
+}
+
 let myId = null, roomId = null, myName = "МастерСлова", myAvatar = "😎", myAvatarUrl = null;
 let players = [], currentPlayerId = null, currentCreatorId = null, lastWord = "", lastWordAuthor = null, usedWords = [];
 let complaintActive = false, complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] };
-let heartbeatInterval = null;
+let heartbeatInterval = null, timerInterval = null, typingTimeout = null;
+let isSubmitting = false;
+let currentGameMode = 'classic';
+let hasBot = false;
 const TIMEOUT_MS = 50000;
+
 const playersPanelDiv = document.getElementById('playersPanel');
 const turnDisplaySpan = document.getElementById('turnDisplay');
 const lastWordSpan = document.getElementById('lastWordDisplay');
@@ -561,8 +1139,10 @@ const messageBoxDiv = document.getElementById('messageBox');
 const connectionStatusSpan = document.getElementById('connectionStatus');
 const roomInputEl = document.getElementById('roomInput');
 const createBtn = document.getElementById('createRoomBtn');
+const playWithBotBtn = document.getElementById('playWithBotBtn');
 const joinBtn = document.getElementById('joinRoomBtn');
 const reconnectBtn = document.getElementById('reconnectBtn');
+const copyLinkBtn = document.getElementById('copyLinkBtn');
 const votePanel = document.getElementById('votePanel');
 const voteYesSpan = document.getElementById('voteYesCount');
 const voteNoSpan = document.getElementById('voteNoCount');
@@ -579,19 +1159,17 @@ const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSendBtn');
 const chatCountSpan = document.getElementById('chatCount');
 const onlineCountSpan = document.getElementById('onlineCountNumber');
-const emojiBtn = document.getElementById('emojiBtn');
-const emojiPanel = document.getElementById('emojiPanel');
-const emojiCategories = document.getElementById('emojiCategories');
-const emojiGrid = document.getElementById('emojiGrid');
+const typingIndicator = document.getElementById('typingIndicator');
+const gameModeBadge = document.getElementById('gameModeBadge');
+
 const emojiLibrary = {
-  "😀 Смайлы": ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃'],
-  "🐶 Животные": ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🕷️','🦂','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🐠','🐟','🐡','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🐇','🦝','🦨','🦡','🦔','🐿️'],
-  "🍕 Еда": ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🌽','🥕','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🥪','🥙','🧆','🌮','🌯','🥗','🥘','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🍵','🧃','🥤','🧋','🧊','🍶','🍺','🍻','🥂','🥃','🥄','🔪','🍽️','🏺'],
-  "🚗 Транспорт": ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🚚','🚛','🚜','🏍️','🛵','🚲','🛴','🛹','🚏','🛣️','🛤️','✈️','🛩️','🚀','🛸','🚁','🚂','🚆','🚇','🚉','🚊','🚝','🚈','🚞','🚋','🚃','🚄','🚅','🚈','🚝','🚲','🛥️','🚤','⛵','🛶','🚢','⚓','🚡','🚠','🚟','🪂','🚦','🚥'],
-  "⚽ Спорт": ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','🤺','⛹️','🤾','🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴'],
-  "🎵 Музыка": ['🎵','🎶','🎤','🎧','📯','🎷','🎺','🎸','🪕','🎻','🥁','🎹','🪘','🎙️','📻','🎛️','🎚️','📀','💿','📼','🎬','🎞️','📽️','🎥','📹','📸','📷','🖥️','💻','🖨️','⌨️','🖱️','🖲️','📡','🔊','🔉','🔈','📢','📣','🔔','🔕','🎼','🎹']
+  "😀 Смайлы": ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤯','😳','🥵','🥶','😱','😨','😰','🤗','🤔','🤭','🤫','😶','😐','😬','🙄','😯','😮','😲','🥱','😴','🤤','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','👽','👾','🤖','🎃'],
+  "🐶 Животные": ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🕷️','🦂','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🐠','🐟','🐡','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🐇','🦝','🦨','🦡','🦔','🐿️'],
+  "🍕 Еда": ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🌽','🥕','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🧆','🌮','🌯','🥗','🥘','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🍵','🧃','🥤','🧋','🧊','🍶','🍺','🍻','🥂','🥃','🥄','🔪','🍽️','🏺']
 };
+
 function buildEmojiPanel() {
+  const emojiCategories = document.getElementById('emojiCategories');
   emojiCategories.innerHTML = '';
   for (let catName of Object.keys(emojiLibrary)) {
     const btn = document.createElement('button');
@@ -604,21 +1182,25 @@ function buildEmojiPanel() {
 }
 function showCategory(category) {
   const emojis = emojiLibrary[category];
+  const emojiGrid = document.getElementById('emojiGrid');
   if (!emojis) return;
   emojiGrid.innerHTML = '';
   emojis.forEach(emo => {
     const span = document.createElement('span');
     span.textContent = emo;
     span.classList.add('emoji-item');
-    span.addEventListener('click', () => { chatInput.value += emo; emojiPanel.classList.remove('show'); chatInput.focus(); });
+    span.addEventListener('click', () => { chatInput.value += emo; document.getElementById('emojiPanel').classList.remove('show'); chatInput.focus(); });
     emojiGrid.appendChild(span);
   });
 }
+const emojiBtn = document.getElementById('emojiBtn');
+const emojiPanel = document.getElementById('emojiPanel');
 if (emojiBtn && emojiPanel) {
   emojiBtn.addEventListener('click', (e) => { e.stopPropagation(); emojiPanel.classList.toggle('show'); });
   document.addEventListener('click', (e) => { if (!emojiPanel.contains(e.target) && e.target !== emojiBtn) emojiPanel.classList.remove('show'); });
 }
 buildEmojiPanel();
+
 function getLastLetter(word) {
   if (!word) return '';
   const clean = word.toLowerCase().replace(/[ъьы]/g, '');
@@ -631,49 +1213,122 @@ function getFirstLetter(word) {
 }
 function normalize(w) { return w.toLowerCase().replace(/[-\s]/g, ''); }
 function generateId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
-async function createRoom() {
-  const room = roomInputEl.value.trim();
-  if (!room) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Введите код комнаты'; return; }
-  myName = document.getElementById('profileNameInput')?.value?.trim() || localStorage.getItem('playerName') || "Воин";
-  myId = generateId();
-  roomId = room;
-  const roomRef = db.ref(`rooms/${room}`);
-  const snapshot = await roomRef.once('value');
-  if (snapshot.exists()) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Комната уже существует'; return; }
-  const initState = {
-    players: { [myId]: { id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() } },
-    currentPlayerId: myId, creatorId: myId, lastWord: '', lastWordAuthor: null, usedWords: [], complaint: null, messages: [], createdAt: Date.now()
-  };
-  await roomRef.set(initState);
-  connectionStatusSpan.innerHTML = `<i class="fas fa-circle" style="font-size:6px;color:var(--success);"></i> ${room}`;
-  messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> Комната создана';
-  setupListeners(room);
-  startHeartbeat(room);
+
+function updateTimerUI(startTime, duration, isMyTurn) {
+  const container = document.getElementById('turnTimerContainer');
+  const bar = document.getElementById('turnTimerBar');
+  const text = document.getElementById('turnTimerText');
+  if (!isMyTurn || complaintActive || !roomId) {
+    container.style.display = 'none';
+    if (timerInterval) clearInterval(timerInterval);
+    return;
+  }
+  container.style.display = 'block';
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const remaining = duration - (Date.now() - startTime);
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      bar.style.width = '0%';
+      text.textContent = '0';
+      showToast('Время вышло! Ход пропущен.', 'error');
+      triggerHaptic('error');
+      skipTurnAction();
+    } else {
+      const pct = (remaining / duration) * 100;
+      bar.style.width = pct + '%';
+      text.textContent = Math.ceil(remaining / 1000);
+      if (pct < 20) bar.className = 'turn-timer-bar danger';
+      else if (pct < 50) bar.className = 'turn-timer-bar warning';
+      else bar.className = 'turn-timer-bar';
+    }
+  }, 100);
 }
-async function joinRoom() {
-  const room = roomInputEl.value.trim();
-  if (!room) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Введите код комнаты'; return; }
+
+let selectedGameMode = 'classic';
+document.querySelectorAll('.mode-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mode-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedGameMode = opt.dataset.mode;
+  });
+});
+
+createBtn.onclick = () => {
+  document.getElementById('newRoomCodeInput').value = roomInputEl.value.trim() || '';
+  document.getElementById('createRoomModal').classList.add('show');
+};
+document.getElementById('createRoomCloseBtn').onclick = () => document.getElementById('createRoomModal').classList.remove('show');
+document.getElementById('createRoomCancelBtn').onclick = () => document.getElementById('createRoomModal').classList.remove('show');
+document.getElementById('createRoomConfirmBtn').onclick = async () => {
+  const room = document.getElementById('newRoomCodeInput').value.trim();
+  if (!room) { showToast('Введите код комнаты', 'error'); return; }
+  roomInputEl.value = room;
+  document.getElementById('createRoomModal').classList.remove('show');
+  await createRoomWithMode(room, selectedGameMode, false);
+};
+
+playWithBotBtn.onclick = async () => {
+  const room = 'bot_' + Math.random().toString(36).substr(2, 6);
+  roomInputEl.value = room;
+  await createRoomWithMode(room, 'classic', true);
+};
+
+async function createRoomWithMode(room, mode, withBot) {
   myName = localStorage.getItem('playerName') || "Воин";
   myAvatar = localStorage.getItem('playerAvatar') || '😎';
   myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
+  myId = persistentPlayerId; // v0.6: Use persistent ID
+  roomId = room;
+  currentGameMode = mode;
+  hasBot = withBot;
+  const roomRef = db.ref(`rooms/${room}`);
+  const snapshot = await roomRef.once('value');
+  if (snapshot.exists()) { showToast('Комната уже существует', 'error'); return; }
+  const turnDuration = mode === 'blitz' ? 15000 : 45000;
+  const playersObj = { [myId]: { id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() } };
+  if (withBot) {
+    playersObj[BOT.id] = { id: BOT.id, name: BOT.name, avatar: BOT.avatar, avatarUrl: null, score: 0, connected: true, lastSeen: Date.now(), isBot: true };
+  }
+  const initState = {
+    players: playersObj,
+    currentPlayerId: myId, creatorId: myId, lastWord: '', lastWordAuthor: null, usedWords: [], complaint: null, messages: [], createdAt: Date.now(),
+    turnStartTime: Date.now(), turnDuration, gameEnded: false, gameMode: mode, hasBot: withBot
+  };
+  await roomRef.set(initState);
+  connectionStatusSpan.innerHTML = `<i class="fas fa-circle" style="font-size:6px;color:var(--success);"></i> ${room}`;
+  showToast(`Комната создана (${withBot ? '🤖 Бот' : mode === 'blitz' ? '⚡ Блиц' : '🎯 Классика'})`, 'success');
+  setupListeners(room);
+  startHeartbeat(room);
+}
+
+async function joinRoom() {
+  const room = roomInputEl.value.trim();
+  if (!room) { showToast('Введите код комнаты', 'error'); return; }
+  myName = localStorage.getItem('playerName') || "Воин";
+  myAvatar = localStorage.getItem('playerAvatar') || '😎';
+  myAvatarUrl = localStorage.getItem('playerAvatarUrl') || null;
+  myId = persistentPlayerId; // v0.6: Use persistent ID
   const roomRef = db.ref(`rooms/${room}`);
   const snap = await roomRef.once('value');
-  if (!snap.exists()) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Комната не найдена'; return; }
+  if (!snap.exists()) { showToast('Комната не найдена', 'error'); return; }
   const data = snap.val();
+  currentGameMode = data.gameMode || 'classic';
+  hasBot = data.hasBot || false;
   const existingPlayers = data.players || {};
   let existingId = null;
   for (let [pid, p] of Object.entries(existingPlayers)) {
-    if (p.name === myName && (p.connected || (Date.now() - (p.lastSeen||0) < 30000))) { existingId = pid; break; }
+    if (p.id === myId || (p.name === myName && (p.connected || (Date.now() - (p.lastSeen||0) < 30000)))) { existingId = pid; break; }
   }
   if (existingId) {
     myId = existingId;
     await roomRef.child(`players/${myId}`).update({ connected: true, lastSeen: Date.now(), avatar: myAvatar, name: myName });
-    messageBoxDiv.innerHTML = '<i class="fas fa-rotate"></i> Переподключение';
+    showToast('Переподключение...', 'info');
   } else {
-    myId = generateId();
+    myId = persistentPlayerId; // v0.6: Use persistent ID
     await roomRef.child(`players/${myId}`).set({ id: myId, name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl, score: 0, connected: true, lastSeen: Date.now() });
     if (!data.currentPlayerId) await roomRef.child('currentPlayerId').set(myId);
-    messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> Вы в игре';
+    showToast('Вы в игре!', 'success');
   }
   roomId = room;
   connectionStatusSpan.innerHTML = `<i class="fas fa-circle" style="font-size:6px;color:var(--success);"></i> ${room}`;
@@ -681,6 +1336,7 @@ async function joinRoom() {
   startHeartbeat(room);
   sendWelcomeMessage();
 }
+
 function startHeartbeat(room) {
   if (heartbeatInterval) clearInterval(heartbeatInterval);
   const playerRef = db.ref(`rooms/${room}/players/${myId}`);
@@ -689,6 +1345,7 @@ function startHeartbeat(room) {
   heartbeatInterval = setInterval(beat, 10000);
   window.addEventListener('beforeunload', () => { playerRef.update({ connected: false, lastSeen: Date.now() }); });
 }
+
 function setupListeners(room) {
   const roomRef = db.ref(`rooms/${room}`);
   roomRef.child('players').on('value', (snap) => {
@@ -696,20 +1353,39 @@ function setupListeners(room) {
     const now = Date.now();
     let active = [];
     for (let [id, p] of Object.entries(data)) {
-      if (p.connected || (now - (p.lastSeen||0) < TIMEOUT_MS)) active.push({ ...p, id });
-      else db.ref(`rooms/${room}/players/${id}`).remove();
+      if (p.isBot || p.connected || (now - (p.lastSeen||0) < TIMEOUT_MS)) active.push({ ...p, id });
+      else if (!p.isBot) db.ref(`rooms/${room}/players/${id}`).remove();
     }
     players = active;
-    if (onlineCountSpan) onlineCountSpan.textContent = players.length;
-    if (players.length === 0 && roomId) db.ref(`rooms/${room}`).remove();
+    if (onlineCountSpan) onlineCountSpan.textContent = players.filter(p => !p.isBot).length;
+    if (players.filter(p => !p.isBot).length === 0 && roomId) db.ref(`rooms/${room}`).remove();
     if (currentPlayerId && !players.find(p => p.id === currentPlayerId) && players.length) roomRef.child('currentPlayerId').set(players[0].id);
     renderPlayers();
     updateControls();
   });
   roomRef.child('messages').on('value', (snap) => renderChat(snap.val() || []));
+  
+  roomRef.child('typing').on('value', (snap) => {
+    const typingData = snap.val() || {};
+    const othersTyping = Object.keys(typingData).filter(id => id !== myId && typingData[id]);
+    if (othersTyping.length > 0) {
+      const typers = players.filter(p => othersTyping.includes(p.id)).map(p => p.name);
+      typingIndicator.textContent = typers.length === 1 ? `${typers[0]} печатает...` : `Несколько игроков печатают...`;
+      typingIndicator.classList.add('show');
+    } else {
+      typingIndicator.classList.remove('show');
+    }
+  });
+
   roomRef.on('value', async (snap) => {
     const game = snap.val();
     if (!game) { resetGameState(); return; }
+    
+    if (game.gameEnded && !window.gameEndedShown) {
+      window.gameEndedShown = true;
+      showEndGameModal(game);
+    }
+
     if (game.creatorId && game.players) {
       const isActive = game.players[game.creatorId] && (game.players[game.creatorId].connected || (Date.now() - game.players[game.creatorId].lastSeen < 50000));
       if (!isActive) {
@@ -730,23 +1406,51 @@ function setupListeners(room) {
     lastWord = game.lastWord || '';
     lastWordAuthor = game.lastWordAuthor;
     usedWords = game.usedWords || [];
+    currentGameMode = game.gameMode || 'classic';
+    hasBot = game.hasBot || false;
+    
+    if (currentGameMode === 'blitz') {
+      gameModeBadge.textContent = '⚡ БЛИЦ';
+      gameModeBadge.style.display = 'inline-block';
+    } else if (hasBot) {
+      gameModeBadge.textContent = '🤖 БОТ';
+      gameModeBadge.style.display = 'inline-block';
+    } else {
+      gameModeBadge.style.display = 'none';
+    }
+    
     if (game.complaint) {
       complaintActive = true;
       complaintData = { word: game.complaint.word, authorId: game.complaint.authorId, votesYes: game.complaint.votesYes || [], votesNo: game.complaint.votesNo || [] };
     } else { complaintActive = false; complaintData = { word: "", authorId: "", votesYes: [], votesNo: [] }; }
+    
+    const startTime = game.turnStartTime || Date.now();
+    const duration = game.turnDuration || (currentGameMode === 'blitz' ? 15000 : 45000);
+    updateTimerUI(startTime, duration, currentPlayerId === myId);
+    
     renderGameUI();
     updateControls();
     notifyMyTurn();
+    
+    if (currentPlayerId === BOT.id && hasBot && !game.gameEnded) {
+      if (!window.botTriggered) {
+        window.botTriggered = true;
+        setTimeout(() => { window.botTriggered = false; botPlay(roomId); }, 500);
+      }
+    }
   });
-  setupLetterVoteListener(room);
 }
+
 function resetGameState() {
-  roomId = null; players = []; currentPlayerId = null; currentCreatorId = null; lastWord = ""; usedWords = []; complaintActive = false;
+  roomId = null; players = []; currentPlayerId = null; currentCreatorId = null; lastWord = ""; usedWords = []; complaintActive = false; hasBot = false;
+  if (timerInterval) clearInterval(timerInterval);
   messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Комната удалена. Создайте новую.';
   connectionStatusSpan.innerHTML = '<i class="fas fa-circle" style="font-size:6px;color:var(--text-mute);"></i> ожидание';
+  gameModeBadge.style.display = 'none';
   renderPlayers();
   renderGameUI();
 }
+
 function renderPlayers() {
   let html = '';
   players.forEach(p => {
@@ -755,10 +1459,11 @@ function renderPlayers() {
     let avatarHtml = '';
     if (p.avatarUrl && p.avatarUrl.startsWith('http')) avatarHtml = `<img src="${p.avatarUrl}" alt="">`;
     else avatarHtml = p.avatar || '😎';
-    html += `<div class="player-row ${isActiveTurn ? 'active' : ''}"><div class="player-row-avatar">${avatarHtml}</div><div class="player-row-name">${p.name} ${isMe ? '(вы)' : ''}</div><div class="player-score">${p.score || 0}</div></div>`;
+    html += `<div class="player-row ${isActiveTurn ? 'active' : ''}"><div class="player-row-avatar">${avatarHtml}</div><div class="player-row-name">${p.name} ${isMe ? '(вы)' : ''}${p.isBot ? ' 🤖' : ''}</div><div class="player-score" id="score-${p.id}">${p.score || 0}</div></div>`;
   });
   playersPanelDiv.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--text-mute);font-style:italic;">пока никого</div>';
 }
+
 function renderGameUI() {
   progressLabel.textContent = `Слово ${usedWords.length} · ${players.length} игроков`;
   wordsCountSpan.textContent = usedWords.length;
@@ -800,38 +1505,51 @@ function renderGameUI() {
   else [...usedWords].reverse().slice(0, 20).forEach(w => { historyHtml += `<li>${w}</li>`; });
   wordsHistoryUl.innerHTML = historyHtml;
 }
+
+let prevLetter = '';
+function triggerLetterAnimation(newLetter) {
+  if (newLetter !== prevLetter && newLetter !== '?') {
+    letterHuge.classList.remove('pop');
+    void letterHuge.offsetWidth;
+    letterHuge.classList.add('pop');
+    prevLetter = newLetter;
+  }
+}
+
 if (voteYesBtn) {
   voteYesBtn.onclick = async () => {
     if (!complaintActive || !roomId) return;
-    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Вы уже проголосовали'; return; }
-    if (complaintData.authorId === myId) { messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Нельзя голосовать за своё слово'; return; }
+    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { showToast('Вы уже проголосовали', 'info'); return; }
+    if (complaintData.authorId === myId) { showToast('Нельзя голосовать за своё слово', 'warning'); return; }
     const roomRef = db.ref(`rooms/${roomId}`);
     await roomRef.child('complaint/votesYes').set([...complaintData.votesYes, myId]);
-    messageBoxDiv.innerHTML = '<i class="fas fa-check"></i> Вы проголосовали ЗА удаление';
+    showToast('Вы проголосовали ЗА удаление', 'success');
     voteButtons.style.display = 'none';
   };
 }
 if (voteNoBtn) {
   voteNoBtn.onclick = async () => {
     if (!complaintActive || !roomId) return;
-    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Вы уже проголосовали'; return; }
-    if (complaintData.authorId === myId) { messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Нельзя голосовать за своё слово'; return; }
+    if (complaintData.votesYes.includes(myId) || complaintData.votesNo.includes(myId)) { showToast('Вы уже проголосовали', 'info'); return; }
+    if (complaintData.authorId === myId) { showToast('Нельзя голосовать за своё слово', 'warning'); return; }
     const roomRef = db.ref(`rooms/${roomId}`);
     await roomRef.child('complaint/votesNo').set([...complaintData.votesNo, myId]);
-    messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Вы проголосовали ПРОТИВ удаления';
+    showToast('Вы проголосовали ПРОТИВ удаления', 'success');
     voteButtons.style.display = 'none';
   };
 }
+
 function updateControls() {
   const isMyTurn = (myId === currentPlayerId && !complaintActive && roomId);
   wordInput.disabled = !isMyTurn;
   submitBtn.disabled = !isMyTurn;
   skipBtn.disabled = !isMyTurn;
-  const canComplain = (lastWord && myId !== lastWordAuthor && !complaintActive && roomId && players.length >= 2);
+  const canComplain = (lastWord && myId !== lastWordAuthor && !complaintActive && roomId && players.length >= 2 && !hasBot);
   complaintBtn.disabled = !canComplain;
   complaintBtn.style.opacity = canComplain ? '1' : '0.4';
   complaintBtn.style.pointerEvents = canComplain ? 'auto' : 'none';
 }
+
 function notifyMyTurn() {
   if (myId === currentPlayerId && !complaintActive && roomId) {
     const currentPlayer = players.find(p => p.id === currentPlayerId);
@@ -845,66 +1563,124 @@ function notifyMyTurn() {
     }
   }
 }
-const notifyBtn = document.getElementById('enableNotificationsBtn');
-if (notifyBtn) {
-  notifyBtn.onclick = () => {
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") { messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> Уведомления включены'; showTurnNotification("Тест"); }
-        else { messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Уведомления отклонены'; }
-      });
-    } else if (Notification.permission === "granted") {
-      messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> Уведомления уже включены';
-      showTurnNotification("Тест");
-    } else {
-      messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Уведомления заблокированы';
-    }
-  };
-}
+
 async function submitWordAction() {
-  if (!roomId || myId !== currentPlayerId || complaintActive) return;
+  if (isSubmitting || !roomId || myId !== currentPlayerId || complaintActive) return;
+  isSubmitting = true;
   const raw = wordInput.value.trim().toLowerCase();
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
   submitBtn.disabled = true;
   try {
     const validation = await isValidWordWithDictionary(raw);
-    if (!validation.valid) { messageBoxDiv.innerHTML = validation.message; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; submitBtn.disabled = false; return; }
+    if (!validation.valid) { 
+      showToast(validation.message, 'error'); 
+      triggerHaptic('error');
+      wordInput.value = ''; 
+      isSubmitting = false;
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
+      submitBtn.disabled = false; 
+      return; 
+    }
     const norm = normalize(raw);
-    if (usedWords.some(w => normalize(w) === norm)) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Это слово уже было'; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; submitBtn.disabled = false; return; }
+    if (usedWords.some(w => normalize(w) === norm)) { 
+      showToast('Это слово уже было', 'error'); 
+      triggerHaptic('error');
+      wordInput.value = ''; 
+      isSubmitting = false;
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
+      submitBtn.disabled = false; 
+      return; 
+    }
     if (lastWord) {
       const needed = getLastLetter(lastWord);
       const first = getFirstLetter(raw);
-      if (!needed || first !== needed) { messageBoxDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> Слово должно начинаться на «${needed.toUpperCase()}»`; wordInput.value = ''; submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; submitBtn.disabled = false; return; }
+      if (!needed || first !== needed) { 
+        showToast(`Слово должно начинаться на «${needed.toUpperCase()}»`, 'error'); 
+        triggerHaptic('error');
+        wordInput.value = ''; 
+        isSubmitting = false;
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>'; 
+        submitBtn.disabled = false; 
+        return; 
+      }
     }
+    
+    const points = calculateScore(raw, currentGameMode);
     const roomRef = db.ref(`rooms/${roomId}`);
     const playersArr = players.map(p => p.id);
     const idx = playersArr.indexOf(myId);
     const nextId = playersArr[(idx + 1) % playersArr.length];
-    const updates = { [`players/${myId}/score`]: (players.find(p => p.id === myId)?.score || 0) + 1, currentPlayerId: nextId, lastWord: raw, lastWordAuthor: myId, usedWords: [...usedWords, raw] };
+    const currentScore = players.find(p => p.id === myId)?.score || 0;
+    
+    const updates = { 
+      [`players/${myId}/score`]: currentScore + points, 
+      currentPlayerId: nextId, 
+      lastWord: raw, 
+      lastWordAuthor: myId, 
+      usedWords: [...usedWords, raw],
+      turnStartTime: Date.now()
+    };
     await roomRef.update(updates);
+    
     wordInput.value = '';
-    messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> «${raw}» принято · +1 очко`;
+    triggerHaptic('success');
+    playSound('success');
+    triggerLetterAnimation(getLastLetter(raw) || '?');
+    
+    playerStats.wordsTotal++;
+    playerStats.longestWord = Math.max(playerStats.longestWord, raw.length);
+    addXP(points);
+    updateQuestProgress('wordsToday');
+    updateQuestProgress('scoreToday', points);
+    if (raw.length >= 8) updateQuestProgress('longWordsToday');
+    
+    let scoreMsg = `«${raw}» принято · +${points} очк.`;
+    if (points > 1) scoreMsg += ' (бонус!)';
+    showToast(scoreMsg, 'success');
+    
+    setTimeout(() => {
+      const scoreEl = document.getElementById(`score-${myId}`);
+      if (scoreEl) {
+        scoreEl.classList.add('score-pop');
+        setTimeout(() => scoreEl.classList.remove('score-pop'), 500);
+      }
+    }, 100);
+    
+    checkAchievements(usedWords.length + 1);
+    
   } catch (error) {
     console.error(error);
-    messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Ошибка проверки слова';
+    showToast('Ошибка проверки слова', 'error');
+    triggerHaptic('error');
   } finally {
-    submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
-    submitBtn.disabled = false;
+    setTimeout(() => {
+      isSubmitting = false;
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+      submitBtn.disabled = false;
+    }, 1500);
   }
 }
+
 async function skipTurnAction() {
   if (!roomId || myId !== currentPlayerId || complaintActive) return;
   const playersArr = players.map(p => p.id);
   const idx = playersArr.indexOf(myId);
   const nextId = playersArr[(idx + 1) % playersArr.length];
-  await db.ref(`rooms/${roomId}`).update({ currentPlayerId: nextId });
-  messageBoxDiv.innerHTML = '<i class="fas fa-forward"></i> Ход пропущен';
+  await db.ref(`rooms/${roomId}`).update({ 
+    currentPlayerId: nextId,
+    turnStartTime: Date.now(),
+    turnDuration: currentGameMode === 'blitz' ? 15000 : 45000
+  });
+  showToast('Ход пропущен', 'info');
+  playSound('turn');
 }
+
 async function startComplaint() {
   if (!roomId || !lastWord || myId === lastWordAuthor || complaintActive) return;
   await db.ref(`rooms/${roomId}/complaint`).set({ word: lastWord, authorId: lastWordAuthor, votesYes: [], votesNo: [] });
-  messageBoxDiv.innerHTML = '<i class="fas fa-gavel"></i> Жалоба отправлена! Голосование началось';
+  showToast('Жалоба отправлена! Голосование началось', 'warning');
 }
+
 async function checkVoteResult() {
   if (!complaintActive) return;
   const total = players.length;
@@ -919,18 +1695,22 @@ async function checkVoteResult() {
       }
       const filteredWords = usedWords.filter(w => w !== complaintData.word);
       await roomRef.update({ usedWords: filteredWords, lastWord: '', lastWordAuthor: null, complaint: null });
-      messageBoxDiv.innerHTML = `<i class="fas fa-balance-scale"></i> Жалоба подтверждена · «${complaintData.word}» удалено · автор -1`;
+      showToast(`Жалоба подтверждена · «${complaintData.word}» удалено · автор -1`, 'success');
     } else {
       await roomRef.child('complaint').set(null);
-      messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Жалоба отклонена · слово остаётся';
+      showToast('Жалоба отклонена · слово остаётся', 'info');
     }
   }
 }
+
 async function sendChat() {
   if (!roomId || !myId) return;
   const text = chatInput.value.trim();
   if (!text) return;
-  const msg = { sender: myName, senderId: myId, text, timestamp: Date.now() };
+  const msg = { 
+    id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+    sender: myName, senderId: myId, text, timestamp: Date.now(), reactions: {}
+  };
   const msgsRef = db.ref(`rooms/${roomId}/messages`);
   const snap = await msgsRef.once('value');
   let arr = snap.val() || [];
@@ -938,23 +1718,147 @@ async function sendChat() {
   if (arr.length > 50) arr = arr.slice(-50);
   await msgsRef.set(arr);
   chatInput.value = '';
+  playerStats.messagesSent++;
+  updateQuestProgress('messagesToday');
+  savePlayerStats();
+  checkAchievements();
 }
+
+const GIFTS = ['🌹','🎁','🍰','🍕','🍷','🎈','💎','🌟','🎂','🍫','🎉','🧸'];
+const giftBtn = document.getElementById('giftBtn');
+const giftModal = document.getElementById('giftModal');
+const giftPicker = document.getElementById('giftPicker');
+
+function buildGiftPicker() {
+  giftPicker.innerHTML = '';
+  GIFTS.forEach(gift => {
+    const opt = document.createElement('div');
+    opt.className = 'gift-option';
+    opt.textContent = gift;
+    opt.onclick = () => sendGift(gift);
+    giftPicker.appendChild(opt);
+  });
+}
+buildGiftPicker();
+
+giftBtn.onclick = () => {
+  if (!roomId) { showToast('Сначала войдите в комнату', 'warning'); return; }
+  giftModal.classList.add('show');
+};
+document.getElementById('giftCloseBtn').onclick = () => giftModal.classList.remove('show');
+giftModal.onclick = (e) => { if (e.target === giftModal) giftModal.classList.remove('show'); };
+
+async function sendGift(emoji) {
+  if (!roomId) return;
+  const msg = {
+    id: 'gift_' + Date.now(),
+    sender: myName,
+    senderId: myId,
+    text: '',
+    gift: emoji,
+    timestamp: Date.now(),
+    reactions: {},
+    isGift: true
+  };
+  const msgsRef = db.ref(`rooms/${roomId}/messages`);
+  const snap = await msgsRef.once('value');
+  let arr = snap.val() || [];
+  arr.push(msg);
+  if (arr.length > 50) arr = arr.slice(-50);
+  await msgsRef.set(arr);
+  giftModal.classList.remove('show');
+  playSound('gift');
+  triggerHaptic('success');
+  updateQuestProgress('giftsToday');
+  showToast(`🎁 Подарок ${emoji} отправлен!`, 'success');
+}
+
 function renderChat(messages) {
   if (!messages.length) { chatMessagesDiv.innerHTML = '<div class="chat-msg system">начните общение</div>'; chatCountSpan.textContent = '0'; return; }
   let html = '';
-  messages.forEach(m => {
+  messages.forEach((m, idx) => {
     const isMine = m.senderId === myId;
     const isSystem = m.senderId === 'system';
+    const isGift = m.isGift;
     const time = new Date(m.timestamp).toLocaleTimeString().slice(0, 5);
-    if (isSystem) html += `<div class="chat-msg system">${m.text} <span class="time">${time}</span></div>`;
-    else html += `<div class="chat-msg ${isMine ? 'mine' : ''}"><b>${m.sender}</b><span class="time">${time}</span><div style="margin-top:2px;">${m.text}</div></div>`;
+    let reactionsHtml = '';
+    if (m.reactions && Object.keys(m.reactions).length > 0) {
+      const reactionCounts = {};
+      Object.values(m.reactions).forEach(emoji => { reactionCounts[emoji] = (reactionCounts[emoji] || 0) + 1; });
+      reactionsHtml = '<div class="chat-reactions">';
+      Object.entries(reactionCounts).forEach(([emoji, count]) => {
+        const isMyReaction = m.reactions[myId] === emoji;
+        reactionsHtml += `<div class="chat-reaction ${isMyReaction ? 'mine' : ''}" data-msg-idx="${idx}" data-emoji="${emoji}"><span class="chat-reaction-emoji">${emoji}</span><span class="chat-reaction-count">${count}</span></div>`;
+      });
+      reactionsHtml += '</div>';
+    }
+    if (isGift) {
+      html += `<div class="chat-msg gift"><b>${m.sender}</b> дарит подарок<span class="time">${time}</span><span class="gift-emoji">${m.gift}</span></div>`;
+    } else if (isSystem) {
+      html += `<div class="chat-msg system">${m.text} <span class="time">${time}</span></div>`;
+    } else {
+      html += `<div class="chat-msg ${isMine ? 'mine' : ''}" data-msg-idx="${idx}"><b>${m.sender}</b><span class="time">${time}</span><div style="margin-top:2px;">${m.text}</div>${reactionsHtml}<div class="reaction-picker" id="picker-${idx}"><div class="reaction-picker-item" data-emoji="👍">👍</div><div class="reaction-picker-item" data-emoji="❤️">❤️</div><div class="reaction-picker-item" data-emoji="😂">😂</div><div class="reaction-picker-item" data-emoji="🔥">🔥</div><div class="reaction-picker-item" data-emoji="😮">😮</div></div></div>`;
+    }
   });
   chatMessagesDiv.innerHTML = html;
   chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
   chatCountSpan.textContent = messages.length;
+  
+  document.querySelectorAll('.chat-msg').forEach(msgEl => {
+    if (msgEl.classList.contains('gift') || msgEl.classList.contains('system')) return;
+    let clickTimer = null;
+    msgEl.addEventListener('click', (e) => {
+      if (e.target.closest('.chat-reaction') || e.target.closest('.reaction-picker')) return;
+      if (clickTimer) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+        const picker = msgEl.querySelector('.reaction-picker');
+        if (picker) picker.classList.toggle('show');
+      } else {
+        clickTimer = setTimeout(() => { clickTimer = null; }, 300);
+      }
+    });
+  });
+  
+  document.querySelectorAll('.reaction-picker-item').forEach(item => {
+    item.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const emoji = item.dataset.emoji;
+      const msgIdx = parseInt(item.closest('.chat-msg').dataset.msgIdx);
+      await toggleReaction(msgIdx, emoji);
+      item.closest('.reaction-picker').classList.remove('show');
+    });
+  });
+  
+  document.querySelectorAll('.chat-reaction').forEach(reactionEl => {
+    reactionEl.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const emoji = reactionEl.dataset.emoji;
+      const msgIdx = parseInt(reactionEl.dataset.msgIdx);
+      await toggleReaction(msgIdx, emoji);
+    });
+  });
 }
+
+async function toggleReaction(msgIdx, emoji) {
+  const msgsRef = db.ref(`rooms/${roomId}/messages`);
+  const snap = await msgsRef.once('value');
+  let arr = snap.val() || [];
+  if (!arr[msgIdx]) return;
+  if (!arr[msgIdx].reactions) arr[msgIdx].reactions = {};
+  if (arr[msgIdx].reactions[myId] === emoji) delete arr[msgIdx].reactions[myId];
+  else arr[msgIdx].reactions[myId] = emoji;
+  await msgsRef.set(arr);
+}
+
+wordInput.addEventListener('input', () => {
+  if (!roomId || !myId) return;
+  db.ref(`rooms/${roomId}/typing/${myId}`).set(true);
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => { db.ref(`rooms/${roomId}/typing/${myId}`).remove(); }, 2000);
+});
+
 reconnectBtn.onclick = () => { if(roomId) joinRoom(); };
-createBtn.onclick = createRoom;
 joinBtn.onclick = joinRoom;
 submitBtn.onclick = submitWordAction;
 skipBtn.onclick = skipTurnAction;
@@ -962,6 +1866,22 @@ complaintBtn.onclick = startComplaint;
 chatSend.onclick = sendChat;
 chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChat(); };
 wordInput.onkeypress = (e) => { if(e.key === 'Enter') submitWordAction(); };
+
+copyLinkBtn.onclick = () => {
+  if (!roomId) { showToast('Сначала создайте или войдите в комнату', 'warning'); return; }
+  const url = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Ссылка скопирована в буфер обмена!', 'success');
+    triggerHaptic('success');
+  }).catch(() => showToast('Не удалось скопировать', 'error'));
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const roomParam = params.get('room');
+  if (roomParam) { roomInputEl.value = roomParam; joinRoom(); }
+});
+
 let player, isReady = false, isPlaying = false;
 const tag = document.createElement('script');
 tag.src = 'https://www.youtube.com/iframe_api';
@@ -981,213 +1901,136 @@ const playPauseBtn = document.getElementById('playPauseBtn');
 const stopBtnYt = document.getElementById('stopBtn');
 if (playPauseBtn) playPauseBtn.onclick = () => { if(isReady) { if(isPlaying) player.pauseVideo(); else player.playVideo(); } else document.getElementById('playerStatus').innerHTML = '<i class="fas fa-circle pulse" style="font-size:6px;"></i> загрузка...'; };
 if (stopBtnYt) stopBtnYt.onclick = () => { if(isReady) player.stopVideo(); };
+
+const THEMES = ['default', 'ocean', 'forest', 'sunset', 'violet'];
 function initTheme() {
-  const savedTheme = localStorage.getItem('gameTheme') || 'light';
+  const savedTheme = localStorage.getItem('gameTheme_v5') || 'light';
+  const savedColor = localStorage.getItem('gameColor_v5') || 'default';
+  THEMES.forEach(t => document.body.classList.remove('theme-' + t));
+  if (savedColor !== 'default') document.body.classList.add('theme-' + savedColor);
   if (savedTheme === 'dark') { document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; }
   else { document.body.classList.add('light-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; }
 }
 function toggleTheme() {
-  if (document.body.classList.contains('dark-theme')) { document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); localStorage.setItem('gameTheme', 'light'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; }
-  else { document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); localStorage.setItem('gameTheme', 'dark'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; }
+  if (document.body.classList.contains('dark-theme')) { 
+    document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); 
+    localStorage.setItem('gameTheme_v5', 'light'); 
+    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; 
+  } else { 
+    document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); 
+    localStorage.setItem('gameTheme_v5', 'dark'); 
+    document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; 
+  }
 }
 document.getElementById('themeTopBtn').onclick = toggleTheme;
+
+function applyColorTheme(theme) {
+  THEMES.forEach(t => document.body.classList.remove('theme-' + t));
+  if (theme !== 'default') document.body.classList.add('theme-' + theme);
+  localStorage.setItem('gameColor_v5', theme);
+}
+
 function showTurnNotification(playerName) {
   if (!("Notification" in window)) return;
   if (Notification.permission === "default") { Notification.requestPermission().then(permission => { if (permission === "granted") sendNotification(playerName); }); }
   else if (Notification.permission === "granted") { sendNotification(playerName); }
 }
 function sendNotification(playerName) {
-  const notification = new Notification("🎮 Ваш ход в игре Слова!", { body: `${playerName}, ваша очередь!`, icon: "https://cdn-icons-png.flaticon.com/512/1946/1946425.png", tag: "word-game-turn", requireInteraction: true, silent: false });
+  const notification = new Notification("🎮 Ваш ход в игре Слова!", { body: `${playerName}, ваша очередь!`, tag: "word-game-turn", requireInteraction: true });
   notification.onclick = function() { window.focus(); notification.close(); };
   setTimeout(() => notification.close(), 10000);
 }
-class SoundMixer {
-  constructor() { this.sounds = {}; this.audioContext = null; this.isInitialized = false; }
-  async initAudioContext() { if (this.isInitialized) return; this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); this.isInitialized = true; if (this.audioContext.state === 'suspended') await this.audioContext.resume(); }
-  async loadSound(soundId, url, volume = 0.5) {
-    if (this.sounds[soundId]) return this.sounds[soundId];
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      this.sounds[soundId] = { buffer: audioBuffer, source: null, volume, isPlaying: false, gainNode: null };
-      return this.sounds[soundId];
-    } catch (error) { console.error(`Ошибка загрузки звука ${soundId}:`, error); return null; }
-  }
-  async play(soundId) {
-    const sound = this.sounds[soundId];
-    if (!sound || sound.isPlaying) return;
-    if (this.audioContext.state === 'suspended') await this.audioContext.resume();
-    const source = this.audioContext.createBufferSource();
-    source.buffer = sound.buffer;
-    source.loop = true;
-    const gainNode = this.audioContext.createGain();
-    gainNode.gain.value = sound.volume;
-    source.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
-    source.start();
-    sound.source = source;
-    sound.gainNode = gainNode;
-    sound.isPlaying = true;
-  }
-  stop(soundId) {
-    const sound = this.sounds[soundId];
-    if (!sound || !sound.isPlaying) return;
-    try { sound.source.stop(); sound.source.disconnect(); sound.gainNode.disconnect(); } catch (e) { console.warn(e); }
-    sound.source = null;
-    sound.gainNode = null;
-    sound.isPlaying = false;
-  }
-  setVolume(soundId, volume) {
-    const sound = this.sounds[soundId];
-    if (!sound) return;
-    sound.volume = Math.max(0, Math.min(1, volume));
-    if (sound.gainNode) sound.gainNode.gain.value = sound.volume;
-  }
-  async toggle(soundId) {
-    const sound = this.sounds[soundId];
-    if (!sound) return false;
-    if (sound.isPlaying) { this.stop(soundId); return false; }
-    else { await this.play(soundId); return true; }
-  }
-}
-const soundLibrary = {
-  nature: [
-    { id: 'campfire', name: 'Костер', icon: '🔥', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/campfire.mp3' },
-    { id: 'droplets', name: 'Капли', icon: '💧', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/droplets.mp3' },
-    { id: 'howling-wind', name: 'Ветер', icon: '🌬️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/howling-wind.mp3' },
-    { id: 'jungle', name: 'Джунгли', icon: '🌴', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/jungle.mp3' },
-    { id: 'river', name: 'Река', icon: '🏞️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/river.mp3' },
-    { id: 'walk-in-snow', name: 'Снег', icon: '❄️', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/walk-in-snow.mp3' },
-    { id: 'waterfall', name: 'Водопад', icon: '💦', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/waterfall.mp3' },
-    { id: 'waves', name: 'Волны', icon: '🌊', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/waves.mp3' },
-    { id: 'wind-in-trees', name: 'Листва', icon: '🍃', url: 'https://raw.githubusercontent.com/remvze/moodist/main/public/sounds/nature/wind-in-trees.mp3' }
-  ]
-};
-const soundMixer = new SoundMixer();
-function renderSounds() {
-  const soundsList = document.getElementById('soundsList');
-  if (!soundsList) return;
-  const sounds = soundLibrary.nature;
-  soundsList.innerHTML = '';
-  sounds.forEach(sound => {
-    const soundDiv = document.createElement('div');
-    soundDiv.className = 'sound-item';
-    soundDiv.dataset.soundId = sound.id;
-    soundDiv.innerHTML = `<div class="sound-icon">${sound.icon}</div><div class="sound-info"><div class="sound-name">${sound.name}</div><div class="sound-volume"><input type="range" min="0" max="1" step="0.01" value="0.5" data-sound-id="${sound.id}"><span>50%</span></div></div><div class="sound-play-btn" data-sound-id="${sound.id}" style="color:var(--text-mute);"><i class="fas fa-play"></i></div>`;
-    const playBtn = soundDiv.querySelector('.sound-play-btn');
-    playBtn.onclick = async (e) => {
-      e.stopPropagation();
-      try {
-        if (!soundMixer.isInitialized) await soundMixer.initAudioContext();
-        if (!soundMixer.sounds[sound.id]) await soundMixer.loadSound(sound.id, sound.url, 0.5);
-        const isPlaying = await soundMixer.toggle(sound.id);
-        const icon = playBtn.querySelector('i');
-        if (isPlaying) { icon.className = 'fas fa-stop'; playBtn.style.color = 'var(--danger)'; soundDiv.classList.add('active'); }
-        else { icon.className = 'fas fa-play'; playBtn.style.color = 'var(--text-mute)'; soundDiv.classList.remove('active'); }
-      } catch (error) { console.error(error); }
-    };
-    const volumeSlider = soundDiv.querySelector('input[type="range"]');
-    const volumeSpan = soundDiv.querySelector('.sound-volume span');
-    volumeSlider.oninput = (e) => {
-      const vol = parseFloat(e.target.value);
-      volumeSpan.textContent = Math.round(vol * 100) + '%';
-      if (soundMixer.sounds[sound.id]) soundMixer.setVolume(sound.id, vol);
-    };
-    soundsList.appendChild(soundDiv);
-  });
-}
-function initSoundsPanel() {
-  const soundsHeader = document.getElementById('toggleSoundsPanel');
-  const soundsPanel = document.getElementById('soundsPanel');
-  if (soundsHeader && soundsPanel) {
-    soundsHeader.onclick = () => {
-      if (soundsPanel.style.display === 'none') { soundsPanel.style.display = 'block'; soundsHeader.innerHTML = '<i class="fas fa-chevron-up"></i>'; }
-      else { soundsPanel.style.display = 'none'; soundsHeader.innerHTML = '<i class="fas fa-chevron-down"></i>'; }
-    };
-  }
-  renderSounds();
-}
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSoundsPanel);
-else initSoundsPanel();
-window.addEventListener('beforeunload', () => { if (soundMixer) Object.keys(soundMixer.sounds).forEach(id => soundMixer.stop(id)); });
+
 let profileModal = null;
-let profileStats = { gamesPlayed: 0, wordsTotal: 0, wins: 0, rating: 1000 };
-function loadProfileStats() {
-  const saved = localStorage.getItem('playerStats_' + (myId || 'default'));
-  if (saved) { try { profileStats = JSON.parse(saved); } catch(e) {} }
-  updateStatsDisplay();
+function updateProfileUI() {
+  const levelInfo = getLevelInfo(playerStats.xp);
+  const headerLevel = document.getElementById('headerLevel');
+  if (headerLevel) headerLevel.textContent = `Ур. ${levelInfo.currentLevel.level} · ${levelInfo.currentLevel.name}`;
+  const profileLevel = document.getElementById('profileLevel');
+  if (profileLevel) profileLevel.textContent = `Уровень ${levelInfo.currentLevel.level} · ${levelInfo.currentLevel.name}`;
+  const profileXpText = document.getElementById('profileXpText');
+  if (profileXpText) {
+    if (levelInfo.nextLevel) profileXpText.textContent = `${levelInfo.xpInLevel} / ${levelInfo.xpToNext} XP`;
+    else profileXpText.textContent = `MAX LEVEL`;
+  }
+  const profileXpBar = document.getElementById('profileXpBar');
+  if (profileXpBar) {
+    const pct = levelInfo.nextLevel ? (levelInfo.xpInLevel / levelInfo.xpToNext) * 100 : 100;
+    profileXpBar.style.width = pct + '%';
+  }
+  const profileStreak = document.getElementById('profileStreak');
+  const profileStreakCount = document.getElementById('profileStreakCount');
+  if (profileStreak && profileStreakCount) {
+    if (playerStats.streak > 0) { profileStreak.style.display = 'inline-flex'; profileStreakCount.textContent = playerStats.streak; }
+    else profileStreak.style.display = 'none';
+  }
+  document.getElementById('statGamesPlayed').textContent = playerStats.gamesPlayed;
+  document.getElementById('statWordsTotal').textContent = playerStats.wordsTotal;
+  document.getElementById('statWins').textContent = playerStats.wins;
+  document.getElementById('statRating').textContent = playerStats.rating;
+  
+  // v0.6: Update player ID display
+  const playerIdDisplay = document.getElementById('playerIdDisplay');
+  if (playerIdDisplay && persistentPlayerId) {
+    playerIdDisplay.textContent = persistentPlayerId;
+  }
 }
-function saveProfileStats() { if (myId) localStorage.setItem('playerStats_' + myId, JSON.stringify(profileStats)); }
-function updateStatsDisplay() {
-  document.getElementById('statGamesPlayed').textContent = profileStats.gamesPlayed;
-  document.getElementById('statWordsTotal').textContent = profileStats.wordsTotal;
-  document.getElementById('statWins').textContent = profileStats.wins;
-  document.getElementById('statRating').textContent = profileStats.rating;
-}
+
 function openProfileModal() {
   if (!profileModal) return;
   document.getElementById('profileNameInput').value = myName;
   const previewDiv = document.getElementById('profileAvatarPreview');
   if (myAvatarUrl && myAvatarUrl.startsWith('http')) previewDiv.innerHTML = `<img src="${myAvatarUrl}" alt="">`;
   else previewDiv.innerHTML = myAvatar || '😎';
+  updateProfileUI();
   profileModal.classList.add('show');
 }
 function closeProfileModal() { profileModal.classList.remove('show'); }
 async function saveProfile() {
   const newName = document.getElementById('profileNameInput').value.trim();
-  if (!newName) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Имя не может быть пустым'; return; }
+  if (!newName) { showToast('Имя не может быть пустым', 'error'); return; }
   const oldName = myName;
   myName = newName;
-  if (roomId && myId) {
-    const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
-    await roomRef.update({ name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl });
-  }
+  if (roomId && myId) await db.ref(`rooms/${roomId}/players/${myId}`).update({ name: myName, avatar: myAvatar, avatarUrl: myAvatarUrl });
   localStorage.setItem('playerName', myName);
   localStorage.setItem('playerAvatar', myAvatar);
   localStorage.setItem('playerAvatarUrl', myAvatarUrl || '');
-  messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Профиль обновлён: ${oldName} → ${myName}`;
+  showToast(`Профиль обновлён: ${oldName} → ${myName}`, 'success');
   updateHeaderProfile();
   renderPlayers();
+  updateLeaderboardEntry();
+  savePlayerProfile(); // v0.6: Save to Firebase
   closeProfileModal();
 }
 async function setGifAvatar(url) {
-  if (!url || !url.trim()) { messageBoxDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Введите URL GIF'; return; }
+  if (!url || !url.trim()) { showToast('Введите URL GIF', 'error'); return; }
   const img = new Image();
   img.onload = async () => {
-    myAvatarUrl = url.trim();
-    myAvatar = '';
-    const previewDiv = document.getElementById('profileAvatarPreview');
-    previewDiv.innerHTML = `<img src="${myAvatarUrl}" alt="">`;
+    myAvatarUrl = url.trim(); myAvatar = '';
+    document.getElementById('profileAvatarPreview').innerHTML = `<img src="${myAvatarUrl}" alt="">`;
     updateHeaderProfile();
-    if (roomId && myId) {
-      const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
-      await roomRef.update({ avatar: '', avatarUrl: myAvatarUrl });
-    }
-    messageBoxDiv.innerHTML = '<i class="fas fa-check-circle"></i> GIF установлен';
+    if (roomId && myId) await db.ref(`rooms/${roomId}/players/${myId}`).update({ avatar: '', avatarUrl: myAvatarUrl });
+    showToast('GIF установлен', 'success');
     localStorage.setItem('playerAvatarUrl', myAvatarUrl);
     localStorage.setItem('playerAvatar', '');
     renderPlayers();
+    savePlayerProfile(); // v0.6: Save to Firebase
   };
-  img.onerror = () => { messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Неверный URL'; };
+  img.onerror = () => { showToast('Неверный URL', 'error'); };
   img.src = url.trim();
 }
 function selectEmojiAvatar(emoji) {
-  myAvatar = emoji;
-  myAvatarUrl = null;
-  const previewDiv = document.getElementById('profileAvatarPreview');
-  previewDiv.innerHTML = emoji;
+  myAvatar = emoji; myAvatarUrl = null;
+  document.getElementById('profileAvatarPreview').innerHTML = emoji;
   updateHeaderProfile();
-  if (roomId && myId) {
-    const roomRef = db.ref(`rooms/${roomId}/players/${myId}`);
-    roomRef.update({ avatar: myAvatar, avatarUrl: null });
-  }
+  if (roomId && myId) db.ref(`rooms/${roomId}/players/${myId}`).update({ avatar: myAvatar, avatarUrl: null });
   localStorage.setItem('playerAvatar', myAvatar);
   localStorage.setItem('playerAvatarUrl', '');
   document.querySelectorAll('.avatar-preset').forEach(p => p.classList.remove('selected'));
   event.target.classList.add('selected');
-  messageBoxDiv.innerHTML = `<i class="fas fa-smile"></i> Аватар: ${emoji}`;
+  showToast(`Аватар: ${emoji}`, 'success');
   renderPlayers();
+  savePlayerProfile(); // v0.6: Save to Firebase
 }
 function initAvatarPresets() {
   const presets = ['😀','😂','😎','🤓','😍','🥶','🤯','🥳','🦸','🦹','🧙','🐉','👾','🤖','👻','🎃','🐺','🦊','🐱','🐼','🦁','🐧','🐨','🦄','🍕','🍔','🌮','🍣','🎮','⚽','🎸','🎧','🌟','⭐','🔥','👑','💎','💰','⚙️','💡'];
@@ -1224,125 +2067,214 @@ function updateHeaderProfile() {
 function initProfileModal() {
   profileModal = document.getElementById('profileModal');
   if (!profileModal) return;
-  const openBtn = document.getElementById('profileTopBtn');
-  const closeBtn = document.getElementById('profileCloseBtn');
-  const cancelBtn = document.getElementById('profileCancelBtn');
-  const saveBtn = document.getElementById('profileSaveBtn');
-  const setGifBtn = document.getElementById('setGifBtn');
-  const gifUrlInput = document.getElementById('gifUrlInput');
-  if (openBtn) openBtn.onclick = openProfileModal;
-  if (closeBtn) closeBtn.onclick = closeProfileModal;
-  if (cancelBtn) cancelBtn.onclick = closeProfileModal;
-  if (saveBtn) saveBtn.onclick = saveProfile;
-  if (setGifBtn && gifUrlInput) {
-    setGifBtn.onclick = () => { setGifAvatar(gifUrlInput.value); gifUrlInput.value = ''; };
-    gifUrlInput.onkeypress = (e) => { if (e.key === 'Enter') { setGifAvatar(gifUrlInput.value); gifUrlInput.value = ''; } };
-  }
+  document.getElementById('profileTopBtn').onclick = openProfileModal;
+  document.getElementById('profileCloseBtn').onclick = closeProfileModal;
+  document.getElementById('profileCancelBtn').onclick = closeProfileModal;
+  document.getElementById('profileSaveBtn').onclick = saveProfile;
+  document.getElementById('setGifBtn').onclick = () => { setGifAvatar(document.getElementById('gifUrlInput').value); document.getElementById('gifUrlInput').value = ''; };
+  
+  // v0.6: Copy Player ID button
+  document.getElementById('copyPlayerIdBtn').onclick = () => {
+    if (persistentPlayerId) {
+      navigator.clipboard.writeText(persistentPlayerId).then(() => {
+        showToast('ID скопирован!', 'success');
+      }).catch(() => showToast('Не удалось скопировать', 'error'));
+    }
+  };
+  
   profileModal.onclick = (e) => { if (e.target === profileModal) closeProfileModal(); };
   initAvatarPresets();
-  loadProfileStats();
 }
-let letterChangeVoteActive = false;
-let letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
-const suggestLetterBtn = document.getElementById('suggestLetterBtn');
-function canSuggestLetterChange() {
-  if (!roomId) return false;
-  if (letterChangeVoteActive) return false;
-  if (complaintActive) return false;
-  if (players.length < 2) return false;
-  if (!lastWord && usedWords.length === 0) return false;
-  return true;
+
+function openAchievementsModal() {
+  const grid = document.getElementById('achievementsGrid');
+  grid.innerHTML = '';
+  ACHIEVEMENTS.forEach(ach => {
+    const unlocked = playerStats.unlockedAchievements.includes(ach.id);
+    const card = document.createElement('div');
+    card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
+    card.innerHTML = `<div class="achievement-icon">${unlocked ? ach.icon : '🔒'}</div><div class="achievement-name">${ach.name}</div><div class="achievement-desc">${ach.desc}</div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('achievementsUnlockedCount').textContent = playerStats.unlockedAchievements.length;
+  document.getElementById('achievementsTotalCount').textContent = ACHIEVEMENTS.length;
+  document.getElementById('achievementsModal').classList.add('show');
 }
-async function suggestLetterChange() {
-  if (!canSuggestLetterChange()) { messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Сейчас нельзя предложить смену буквы'; return; }
-  let currentLetter = lastWord ? getLastLetter(lastWord) : '';
-  const letters = 'абвгдежзийклмнопрстуфхцчшщэюя';
-  const excludedLetters = ['ь', 'ъ', 'ы', currentLetter];
-  let availableLetters = letters.split('').filter(l => !excludedLetters.includes(l));
-  if (availableLetters.length === 0) availableLetters = letters.split('').filter(l => l !== currentLetter);
-  const randomIndex = Math.floor(Math.random() * availableLetters.length);
-  const newLetter = availableLetters[randomIndex];
-  letterChangeVoteActive = true;
-  letterChangeVoteData = { proposedBy: myId, newLetter: newLetter, votesFor: [myId], votesAgainst: [] };
-  const roomRef = db.ref(`rooms/${roomId}`);
-  await roomRef.child('letterChangeVote').set(letterChangeVoteData);
-  const msg = { sender: '🔔 СИСТЕМА', senderId: 'system', text: `📢 ${myName} предложил сменить букву на "${newLetter.toUpperCase()}"`, timestamp: Date.now(), isSystem: true };
-  const msgsRef = db.ref(`rooms/${roomId}/messages`);
-  const snap = await msgsRef.once('value');
-  let arr = snap.val() || [];
-  arr.push(msg);
-  if (arr.length > 50) arr = arr.slice(-50);
-  await msgsRef.set(arr);
-  messageBoxDiv.innerHTML = `<i class="fas fa-shuffle"></i> Предложена буква "${newLetter.toUpperCase()}"`;
+document.getElementById('achievementsNavBtn').onclick = openAchievementsModal;
+document.getElementById('achievementsCloseBtn').onclick = () => document.getElementById('achievementsModal').classList.remove('show');
+
+function openHistoryModal() {
+  const list = document.getElementById('matchHistoryList');
+  if (matchHistory.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-mute);font-style:italic;">Нет сыгранных матчей</div>';
+  } else {
+    list.innerHTML = '';
+    matchHistory.forEach(match => {
+      const date = new Date(match.date);
+      const dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) + ' ' + date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      const winner = match.players.find(p => p.id === match.winnerId);
+      const isWin = match.winnerId === myId;
+      const item = document.createElement('div');
+      item.className = 'match-item';
+      item.innerHTML = `<div class="match-info"><div class="match-date">${dateStr} · ${match.mode === 'blitz' ? '⚡ Блиц' : '🎯 Классика'}</div><div class="match-players">${match.players.length} игроков · Победитель: ${winner ? winner.name : '—'}</div></div><div class="match-result ${isWin ? 'win' : 'loss'}">${isWin ? '🏆 Победа' : '💔 Поражение'}</div>`;
+      list.appendChild(item);
+    });
+  }
+  document.getElementById('historyModal').classList.add('show');
 }
-async function getWordStartingWith(letter) {
-  await loadRussianDictionary();
-  const possibleWords = Array.from(russianDictionary).filter(word => word.length >= 2 && word[0] === letter && !usedWords.includes(word));
-  if (possibleWords.length > 0) return possibleWords[Math.floor(Math.random() * possibleWords.length)];
-  const fallbackWords = { 'а':'арбуз','б':'банан','в':'волк','г':'город','д':'дом','е':'енот','ж':'жук','з':'зебра','и':'игра','й':'йогурт','к':'кот','л':'лес','м':'мост','н':'нос','о':'окно','п':'пол','р':'река','с':'стол','т':'трава','у':'утка','ф':'флаг','х':'хлеб','ц':'цвет','ч':'час','ш':'шар','щ':'щука','э':'эхо','ю':'юла','я':'яблоко' };
-  return fallbackWords[letter] || 'слово';
+document.getElementById('historyNavBtn').onclick = openHistoryModal;
+document.getElementById('historyCloseBtn').onclick = () => document.getElementById('historyModal').classList.remove('show');
+
+function openLeaderboardModal() {
+  document.getElementById('leaderboardModal').classList.add('show');
+  loadLeaderboard();
 }
-function setupLetterVoteListener(room) {
-  const roomRef = db.ref(`rooms/${room}`);
-  roomRef.child('letterChangeVote').on('value', async (snap) => {
-    const data = snap.val();
-    if (data && data.proposedBy && data.newLetter) {
-      letterChangeVoteActive = true;
-      letterChangeVoteData = data;
-      const totalPlayers = players.length;
-      const totalVotes = letterChangeVoteData.votesFor.length + letterChangeVoteData.votesAgainst.length;
-      if (totalVotes >= totalPlayers - 1 || totalVotes === totalPlayers) {
-        const roomRef2 = db.ref(`rooms/${roomId}`);
-        if (letterChangeVoteData.votesFor.length > letterChangeVoteData.votesAgainst.length) {
-          const newLetter = letterChangeVoteData.newLetter;
-          let newLastWord = await getWordStartingWith(newLetter);
-          await roomRef2.update({ lastWord: newLastWord, lastWordAuthor: null, letterChangeVote: null });
-          messageBoxDiv.innerHTML = `<i class="fas fa-check-circle"></i> Буква сменена на "${newLetter.toUpperCase()}" · слово: "${newLastWord}"`;
-        } else {
-          await roomRef2.child('letterChangeVote').set(null);
-          messageBoxDiv.innerHTML = '<i class="fas fa-xmark"></i> Смена буквы отклонена';
-        }
-        letterChangeVoteActive = false;
-        letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
-      }
-    } else if (!data && letterChangeVoteActive) {
-      letterChangeVoteActive = false;
-      letterChangeVoteData = { proposedBy: null, newLetter: null, votesFor: [], votesAgainst: [] };
+document.getElementById('leaderboardNavBtn').onclick = openLeaderboardModal;
+document.getElementById('leaderboardCloseBtn').onclick = () => document.getElementById('leaderboardModal').classList.remove('show');
+
+async function loadLeaderboard() {
+  const list = document.getElementById('leaderboardList');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-mute);"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>';
+  try {
+    const snap = await db.ref('leaderboard').orderByChild('xp').limitToLast(10).once('value');
+    const data = snap.val() || {};
+    const entries = Object.entries(data).map(([id, entry]) => ({ id, ...entry }));
+    entries.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    if (entries.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-mute);font-style:italic;">Пока нет игроков в рейтинге. Будьте первым!</div>';
+      return;
     }
+    list.innerHTML = '';
+    entries.forEach((entry, idx) => {
+      const levelInfo = getLevelInfo(entry.xp || 0);
+      const isMe = entry.id === myId;
+      const item = document.createElement('div');
+      item.className = `leaderboard-item ${isMe ? 'me' : ''}`;
+      item.innerHTML = `
+        <div class="leaderboard-rank">${idx + 1}</div>
+        <div class="leaderboard-avatar">${entry.avatar || '😎'}</div>
+        <div class="leaderboard-info">
+          <div class="leaderboard-name">${entry.name || 'Игрок'} ${isMe ? '(вы)' : ''}</div>
+          <div class="leaderboard-level">Ур. ${levelInfo.currentLevel.level} · ${levelInfo.currentLevel.name}</div>
+        </div>
+        <div class="leaderboard-xp">${entry.xp || 0} XP</div>
+      `;
+      list.appendChild(item);
+    });
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--danger);">Ошибка загрузки</div>';
+  }
+}
+
+async function updateLeaderboardEntry() {
+  if (!myId) return;
+  try {
+    await db.ref(`leaderboard/${myId}`).set({
+      name: myName,
+      avatar: myAvatar,
+      xp: playerStats.xp,
+      lastSeen: Date.now()
+    });
+  } catch (e) { console.warn('Leaderboard update failed', e); }
+}
+
+function openQuestsModal() {
+  const list = document.getElementById('questsList');
+  list.innerHTML = '';
+  playerStats.dailyQuests.forEach(questId => {
+    const quest = DAILY_QUESTS_POOL.find(q => q.id === questId);
+    if (!quest) return;
+    const current = playerStats[quest.stat] || 0;
+    const completed = playerStats.questsClaimed.includes(questId);
+    const progress = Math.min(current, quest.target);
+    const item = document.createElement('div');
+    item.className = `quest-item ${completed ? 'completed' : ''}`;
+    item.innerHTML = `
+      <div class="quest-icon">${quest.icon}</div>
+      <div class="quest-info">
+        <div class="quest-name">${quest.name}</div>
+        <div class="quest-progress">${progress} / ${quest.target} ${completed ? '✅' : ''}</div>
+      </div>
+      <div class="quest-reward">+${quest.reward} XP</div>
+    `;
+    list.appendChild(item);
   });
+  document.getElementById('questsModal').classList.add('show');
 }
-if (suggestLetterBtn) suggestLetterBtn.onclick = suggestLetterChange;
-let adminMode = false;
-let bannedWords = new Set();
-let gameBackup = null;
-let currentTurnTime = 60;
-function loadBannedWords() {
-  const saved = localStorage.getItem('bannedWords');
-  if (saved) { try { bannedWords = new Set(JSON.parse(saved)); } catch(e) {} }
-  updateBannedWordsList();
-}
-function saveBannedWords() { localStorage.setItem('bannedWords', JSON.stringify([...bannedWords])); }
-function addBannedWord(word) {
-  if (word && word.length >= 2) { bannedWords.add(word.toLowerCase()); saveBannedWords(); updateBannedWordsList(); return true; }
-  return false;
-}
-function removeBannedWord(word) { bannedWords.delete(word.toLowerCase()); saveBannedWords(); updateBannedWordsList(); }
-function updateBannedWordsList() {
-  const container = document.getElementById('bannedWordsList');
-  if (!container) return;
-  if (bannedWords.size === 0) { container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-mute);font-style:italic;">нет забаненных слов</div>'; return; }
-  container.innerHTML = '';
-  [...bannedWords].forEach(word => {
+document.getElementById('questsNavBtn').onclick = openQuestsModal;
+document.getElementById('questsCloseBtn').onclick = () => document.getElementById('questsModal').classList.remove('show');
+
+function showEndGameModal(game) {
+  const modal = document.getElementById('endGameModal');
+  const podium = document.getElementById('endGamePodium');
+  const rematchBtn = document.getElementById('rematchBtn');
+  const xpRewardDiv = document.getElementById('endGameXpReward');
+  
+  const sortedPlayers = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+  const winner = sortedPlayers[0];
+  
+  document.getElementById('endGameSubtitle').textContent = winner ? `Победитель: ${winner.name}` : 'Игра завершена';
+  
+  podium.innerHTML = '';
+  sortedPlayers.slice(0, 3).forEach((p, index) => {
+    const medals = ['🥇', '🥈', '🥉'];
     const div = document.createElement('div');
-    div.className = 'banned-word';
-    div.innerHTML = `<span>📖 ${word}</span><button class="word-delete" data-word="${word}">✕</button>`;
-    div.querySelector('.word-delete').onclick = () => removeBannedWord(word);
-    container.appendChild(div);
+    div.className = `podium-item ${index === 0 ? 'first' : ''}`;
+    div.innerHTML = `<div class="podium-rank">${medals[index]}</div><div class="podium-name">${p.name} ${p.id === myId ? '(вы)' : ''}${p.isBot ? ' 🤖' : ''}</div><div class="podium-score">${p.score || 0} очк.</div>`;
+    podium.appendChild(div);
   });
+  
+  let xpEarned = 0;
+  if (winner && winner.id === myId) {
+    xpEarned = 50;
+    playerStats.wins++;
+    playerStats.winStreak++;
+    playerStats.gamesPlayed++;
+    playerStats.lastPlayDate = new Date().toDateString();
+    playerStats.streak++;
+    if (currentGameMode === 'blitz') playerStats.blitzWins++;
+    updateQuestProgress('winsToday');
+    if (xpEarned > 0) { xpRewardDiv.style.display = 'block'; xpRewardDiv.innerHTML = `🎉 +${xpEarned} XP за победу!`; }
+  } else {
+    playerStats.gamesPlayed++;
+    playerStats.winStreak = 0;
+    playerStats.lastPlayDate = new Date().toDateString();
+    playerStats.streak = Math.max(1, playerStats.streak);
+  }
+  updateQuestProgress('gamesToday');
+  addXP(xpEarned);
+  savePlayerStats();
+  saveMatchToHistory(players, winner?.id || null, currentGameMode);
+  checkAchievements();
+  
+  if (myId === currentCreatorId) rematchBtn.style.display = 'inline-flex';
+  else rematchBtn.style.display = 'none';
+  
+  modal.classList.add('show');
+  
+  if (winner && myId === winner.id) {
+    triggerHaptic('success');
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+  }
 }
-function enableAdminMode() {
-  if (!adminMode) { adminMode = true; showAdminPanel(); updateAdminStats(); updateAdminPlayersList(); updateWordsList(); loadBannedWords(); }
+
+async function rematchGame() {
+  if (!roomId) return;
+  const updates = { gameEnded: false, usedWords: [], lastWord: '', lastWordAuthor: null, complaint: null, turnStartTime: Date.now() };
+  players.forEach(p => { updates[`players/${p.id}/score`] = 0; });
+  updates.currentPlayerId = players[0]?.id || null;
+  await db.ref(`rooms/${roomId}`).update(updates);
+  document.getElementById('endGameModal').classList.remove('show');
+  window.gameEndedShown = false;
+  showToast('Реванш начался! Очки сброшены.', 'success');
 }
+
+document.getElementById('endGameCloseBtn').onclick = () => { document.getElementById('endGameModal').classList.remove('show'); };
+document.getElementById('rematchBtn').onclick = rematchGame;
+
+let adminMode = false;
+function enableAdminMode() { if (!adminMode) { adminMode = true; showAdminPanel(); updateAdminStats(); updateAdminPlayersList(); } }
 function disableAdminMode() { if (adminMode) { adminMode = false; hideAdminPanel(); } }
 window.enableAdmin = enableAdminMode;
 window.disableAdmin = disableAdminMode;
@@ -1350,7 +2282,7 @@ Object.defineProperty(window, 'admin', { get: function() { enableAdminMode(); re
 function showAdminPanel() {
   const adminPanel = document.getElementById('adminPanel');
   const adminOverlay = document.getElementById('adminOverlay');
-  if (adminPanel && adminOverlay) { adminPanel.classList.add('show'); adminOverlay.classList.add('show'); updateAdminStats(); updateAdminPlayersList(); updateWordsList(); updatePlayerActivity(); }
+  if (adminPanel && adminOverlay) { adminPanel.classList.add('show'); adminOverlay.classList.add('show'); updateAdminStats(); updateAdminPlayersList(); }
 }
 function hideAdminPanel() {
   const adminPanel = document.getElementById('adminPanel');
@@ -1360,23 +2292,18 @@ function hideAdminPanel() {
 function toggleAdmin() { if (adminMode) disableAdminMode(); else enableAdminMode(); }
 function updateAdminStats() {
   if (!adminMode) return;
-  document.getElementById('statPlayers').textContent = players.length;
+  document.getElementById('statPlayers').textContent = players.filter(p => !p.isBot).length;
   document.getElementById('statWords').textContent = usedWords.length;
-  document.getElementById('statComplaints').textContent = complaintActive ? 1 : 0;
-  const currentPlayer = players.find(p => p.id === currentPlayerId);
-  document.getElementById('statTurn').textContent = currentPlayer ? currentPlayer.name : '—';
 }
-function updateAdminPlayersList(searchTerm = '') {
+function updateAdminPlayersList() {
   const container = document.getElementById('adminPlayersList');
   if (!container) return;
-  let filteredPlayers = players;
-  if (searchTerm) filteredPlayers = players.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  if (filteredPlayers.length === 0) { container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-mute);">нет игроков</div>'; return; }
+  if (players.length === 0) { container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-mute);">нет игроков</div>'; return; }
   container.innerHTML = '';
-  filteredPlayers.forEach(player => {
+  players.forEach(player => {
     const div = document.createElement('div');
     div.className = 'player-list-item';
-    div.innerHTML = `<div class="player-list-info"><div class="player-list-avatar">${player.avatar || '😎'}</div><div><div class="player-list-name">${player.name} ${player.id === myId ? '(вы)' : ''}</div><div class="player-list-score">${player.score || 0} очков</div></div></div><div class="player-list-actions"><button class="admin-btn admin-btn-sm admin-btn-success" onclick="adminAddPoints('${player.id}', 1)">+1</button><button class="admin-btn admin-btn-sm admin-btn-danger" onclick="adminRemovePoints('${player.id}', 1)">-1</button><button class="admin-btn admin-btn-sm" onclick="adminTransferTurn('${player.id}')">Ход</button><button class="admin-btn admin-btn-sm admin-btn-danger" onclick="adminKickPlayer('${player.id}')">Кик</button></div>`;
+    div.innerHTML = `<div class="player-list-info"><div class="player-list-avatar">${player.avatar || '😎'}</div><div><div class="player-list-name">${player.name} ${player.id === myId ? '(вы)' : ''}${player.isBot ? ' 🤖' : ''}</div><div class="player-list-score">${player.score || 0} очков</div></div></div><div class="player-list-actions"><button class="admin-btn admin-btn-sm" onclick="adminTransferTurn('${player.id}')">Ход</button></div>`;
     container.appendChild(div);
   });
   const select = document.getElementById('adminPlayerSelect');
@@ -1385,172 +2312,23 @@ function updateAdminPlayersList(searchTerm = '') {
     players.forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.name; select.appendChild(opt); });
   }
 }
-function updateWordsList() {
-  const container = document.getElementById('adminWordsList');
-  if (!container) return;
-  if (usedWords.length === 0) { container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-mute);">нет слов</div>'; return; }
-  container.innerHTML = '';
-  [...usedWords].reverse().forEach((word, index) => {
-    const div = document.createElement('div');
-    div.className = 'word-item';
-    div.innerHTML = `<span>${usedWords.length - index}. ${word}</span><button class="word-delete" data-word="${word}">✕</button>`;
-    div.querySelector('.word-delete').onclick = () => deleteWordFromHistory(word);
-    container.appendChild(div);
-  });
-}
-function updatePlayerActivity() {
-  const container = document.getElementById('playerActivity');
-  if (!container) return;
-  container.innerHTML = '';
-  players.forEach(player => {
-    const div = document.createElement('div');
-    div.className = 'player-list-item';
-    div.innerHTML = `<div class="player-list-info"><div class="player-list-avatar">${player.avatar || '😎'}</div><div><div class="player-list-name">${player.name}</div><div class="player-list-score">${player.score || 0} очков</div></div></div><div class="player-list-actions"><span style="font-size:11px;color:var(--text-mute);font-family:'JetBrains Mono',monospace;">${player.id === currentPlayerId ? '🎯 ходит' : '💤 ждёт'}</span></div>`;
-    container.appendChild(div);
-  });
-}
-async function adminAddPoints(playerId, points) {
-  const player = players.find(p => p.id === playerId);
-  if (player) {
-    const newScore = (player.score || 0) + points;
-    await db.ref(`rooms/${roomId}/players/${playerId}/score`).set(newScore);
-    messageBoxDiv.innerHTML = `<i class="fas fa-plus-circle"></i> +${points} очков: ${player.name}`;
-    updateAdminPlayersList();
-    updateAdminStats();
-  }
-}
-async function adminRemovePoints(playerId, points) {
-  const player = players.find(p => p.id === playerId);
-  if (player) {
-    const newScore = Math.max(0, (player.score || 0) - points);
-    await db.ref(`rooms/${roomId}/players/${playerId}/score`).set(newScore);
-    messageBoxDiv.innerHTML = `<i class="fas fa-minus-circle"></i> -${points} очков: ${player.name}`;
-    updateAdminPlayersList();
-    updateAdminStats();
-  }
-}
 async function adminTransferTurn(playerId) {
   if (roomId && playerId) {
-    await db.ref(`rooms/${roomId}`).update({ currentPlayerId: playerId });
-    messageBoxDiv.innerHTML = '<i class="fas fa-forward"></i> Ход передан';
-    updateAdminStats();
-    updatePlayerActivity();
-  }
-}
-async function adminKickPlayer(playerId) {
-  const player = players.find(p => p.id === playerId);
-  if (player && confirm(`Кикнуть ${player.name}?`)) {
-    await db.ref(`rooms/${roomId}/players/${playerId}`).remove();
-    messageBoxDiv.innerHTML = `<i class="fas fa-ban"></i> Кикнут: ${player.name}`;
-    if (playerId === myId) setTimeout(() => location.reload(), 2000);
-    updateAdminPlayersList();
+    await db.ref(`rooms/${roomId}`).update({ currentPlayerId: playerId, turnStartTime: Date.now() });
+    showToast('Ход передан', 'info');
     updateAdminStats();
   }
-}
-async function deleteWordFromHistory(word) {
-  const filtered = usedWords.filter(w => w !== word);
-  await db.ref(`rooms/${roomId}`).update({ usedWords: filtered });
-  messageBoxDiv.innerHTML = `<i class="fas fa-trash"></i> Удалено: "${word}"`;
-  updateWordsList();
-  updateAdminStats();
-}
-async function clearChat() {
-  await db.ref(`rooms/${roomId}/messages`).set([]);
-  messageBoxDiv.innerHTML = '<i class="fas fa-trash"></i> Чат очищен';
-}
-async function clearHistory() {
-  await db.ref(`rooms/${roomId}`).update({ usedWords: [] });
-  messageBoxDiv.innerHTML = '<i class="fas fa-eraser"></i> История очищена';
-  updateWordsList();
-  updateAdminStats();
 }
 async function resetGame() {
   if (confirm('Сбросить игру?')) {
-    await db.ref(`rooms/${roomId}`).update({ usedWords: [], lastWord: '', lastWordAuthor: null, complaint: null, currentPlayerId: players[0]?.id || null });
-    messageBoxDiv.innerHTML = '<i class="fas fa-rotate"></i> Игра сброшена';
+    await db.ref(`rooms/${roomId}`).update({ usedWords: [], lastWord: '', lastWordAuthor: null, complaint: null, currentPlayerId: players[0]?.id || null, turnStartTime: Date.now(), gameEnded: false });
+    showToast('Игра сброшена', 'warning');
     updateAdminStats();
-    updateWordsList();
   }
 }
-async function massAddPoints() {
-  for (let player of players) await db.ref(`rooms/${roomId}/players/${player.id}/score`).set((player.score || 0) + 5);
-  messageBoxDiv.innerHTML = '<i class="fas fa-plus-circle"></i> +5 всем';
-  updateAdminPlayersList();
-  updateAdminStats();
-}
-async function massRemovePoints() {
-  for (let player of players) {
-    const newScore = Math.max(0, (player.score || 0) - 3);
-    await db.ref(`rooms/${roomId}/players/${player.id}/score`).set(newScore);
-  }
-  messageBoxDiv.innerHTML = '<i class="fas fa-minus-circle"></i> -3 всем';
-  updateAdminPlayersList();
-  updateAdminStats();
-}
-async function massKickAll() {
-  if (confirm('Кикнуть всех?')) {
-    for (let player of players) { if (player.id !== myId) await db.ref(`rooms/${roomId}/players/${player.id}`).remove(); }
-    messageBoxDiv.innerHTML = '<i class="fas fa-ban"></i> Все кикнуты';
-    setTimeout(() => location.reload(), 2000);
-  }
-}
-async function massResetScores() {
-  for (let player of players) await db.ref(`rooms/${roomId}/players/${player.id}/score`).set(0);
-  messageBoxDiv.innerHTML = '<i class="fas fa-chart-line"></i> Очки сброшены';
-  updateAdminPlayersList();
-  updateAdminStats();
-}
-async function setRandomLetter() {
-  const letters = 'абвгдежзийклмнопрстуфхцчшщъыьэюя';
-  const randomLetter = letters[Math.floor(Math.random() * letters.length)];
-  await db.ref(`rooms/${roomId}`).update({ lastWord: randomLetter + 'а' });
-  messageBoxDiv.innerHTML = `<i class="fas fa-shuffle"></i> Случайная буква: "${randomLetter.toUpperCase()}"`;
-}
-async function changeRequiredLetter(letter) {
-  if (letter && letter.length === 1) {
-    await db.ref(`rooms/${roomId}`).update({ lastWord: letter + 'а' });
-    messageBoxDiv.innerHTML = `<i class="fas fa-font"></i> Буква: "${letter.toUpperCase()}"`;
-  }
-}
-async function setLastWord(word) {
-  if (word && word.length >= 2) {
-    await db.ref(`rooms/${roomId}`).update({ lastWord: word.toLowerCase() });
-    messageBoxDiv.innerHTML = `<i class="fas fa-pen"></i> Слово: "${word}"`;
-  }
-}
-async function addWordToDictionary(word) {
-  if (word && word.length >= 2) {
-    russianDictionary.add(word.toLowerCase());
-    messageBoxDiv.innerHTML = `<i class="fas fa-plus"></i> Добавлено: "${word}"`;
-  }
-}
-async function sendSystemMessage() {
-  const msg = document.getElementById('systemMessage').value;
-  if (msg && roomId) {
-    const systemMsg = { sender: '🔔 СИСТЕМА', senderId: 'system', text: `🔔 АДМИН: ${msg}`, timestamp: Date.now() };
-    const msgsRef = db.ref(`rooms/${roomId}/messages`);
-    const snap = await msgsRef.once('value');
-    let arr = snap.val() || [];
-    arr.push(systemMsg);
-    if (arr.length > 50) arr = arr.slice(-50);
-    await msgsRef.set(arr);
-    document.getElementById('systemMessage').value = '';
-    messageBoxDiv.innerHTML = '<i class="fas fa-bullhorn"></i> Сообщение отправлено';
-  }
-}
-async function backupGame() {
-  if (!roomId) return;
-  const snapshot = await db.ref(`rooms/${roomId}`).once('value');
-  gameBackup = snapshot.val();
-  localStorage.setItem('gameBackup_' + roomId, JSON.stringify(gameBackup));
-  messageBoxDiv.innerHTML = '<i class="fas fa-download"></i> Бэкап сохранён';
-}
-async function restoreBackup() {
-  if (gameBackup && roomId && confirm('Восстановить из бэкапа?')) {
-    await db.ref(`rooms/${roomId}`).set(gameBackup);
-    messageBoxDiv.innerHTML = '<i class="fas fa-upload"></i> Восстановлено';
-    updateAdminStats();
-    updateWordsList();
+async function endGame() {
+  if (confirm('Завершить игру и показать результаты?')) {
+    await db.ref(`rooms/${roomId}`).update({ gameEnded: true });
   }
 }
 function initAdminTabs() {
@@ -1564,84 +2342,35 @@ function initAdminTabs() {
       tab.classList.add('active');
       document.querySelector(`.tab-content[data-tab="${tabName}"]`).style.display = 'block';
       if (tabName === 'players') updateAdminPlayersList();
-      if (tabName === 'words') updateWordsList();
       if (tabName === 'main') updateAdminStats();
     };
   });
 }
 function initAdminPanel() {
   initAdminTabs();
-  const searchInput = document.getElementById('searchPlayer');
-  if (searchInput) searchInput.oninput = (e) => updateAdminPlayersList(e.target.value);
   document.getElementById('adminCloseBtn')?.addEventListener('click', hideAdminPanel);
   document.getElementById('adminOverlay')?.addEventListener('click', hideAdminPanel);
   document.getElementById('quickResetGame')?.addEventListener('click', resetGame);
-  document.getElementById('quickClearChat')?.addEventListener('click', clearChat);
-  document.getElementById('quickClearHistory')?.addEventListener('click', clearHistory);
+  document.getElementById('quickEndGame')?.addEventListener('click', endGame);
   document.getElementById('adminTransferTurnBtn')?.addEventListener('click', () => {
     const select = document.getElementById('adminPlayerSelect');
     if (select?.value) adminTransferTurn(select.value);
-    else messageBoxDiv.textContent = '❌ Выберите игрока';
+    else showToast('Выберите игрока', 'error');
   });
-  document.getElementById('adminChangeLetterBtn')?.addEventListener('click', () => {
-    const letter = document.getElementById('adminRequiredLetter')?.value;
-    if (letter) changeRequiredLetter(letter.toLowerCase());
-    else messageBoxDiv.textContent = '❌ Введите букву';
-  });
-  document.getElementById('adminRandomLetterBtn')?.addEventListener('click', setRandomLetter);
-  document.getElementById('adminSetWordBtn')?.addEventListener('click', () => {
-    const word = document.getElementById('adminSetLastWord')?.value;
-    if (word) setLastWord(word);
-    else messageBoxDiv.textContent = '❌ Введите слово';
-  });
-  document.getElementById('addBanWordBtn')?.addEventListener('click', () => {
-    const word = document.getElementById('banWordInput')?.value;
-    if (word && addBannedWord(word)) { document.getElementById('banWordInput').value = ''; messageBoxDiv.innerHTML = `<i class="fas fa-ban"></i> Забанено: "${word}"`; }
-  });
-  document.getElementById('addWordToDictBtn')?.addEventListener('click', () => {
-    const word = document.getElementById('addWordInput')?.value;
-    if (word) addWordToDictionary(word);
-    document.getElementById('addWordInput').value = '';
-  });
-  document.getElementById('massAddPoints')?.addEventListener('click', massAddPoints);
-  document.getElementById('massRemovePoints')?.addEventListener('click', massRemovePoints);
-  document.getElementById('massKickAll')?.addEventListener('click', massKickAll);
-  document.getElementById('massResetScores')?.addEventListener('click', massResetScores);
-  document.getElementById('sendSystemMessage')?.addEventListener('click', sendSystemMessage);
-  document.getElementById('backupGame')?.addEventListener('click', backupGame);
-  document.getElementById('restoreBackup')?.addEventListener('click', restoreBackup);
-  const musicVolume = document.getElementById('musicVolume');
-  const soundsVolume = document.getElementById('soundsVolume');
-  musicVolume?.addEventListener('input', (e) => { document.getElementById('musicVolumeValue').textContent = e.target.value; if (player && isReady) player.setVolume(e.target.value); });
-  soundsVolume?.addEventListener('input', (e) => { document.getElementById('soundsVolumeValue').textContent = e.target.value; Object.keys(soundMixer.sounds).forEach(id => soundMixer.setVolume(id, e.target.value / 100)); });
-  document.getElementById('setLightTheme')?.addEventListener('click', () => { document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); localStorage.setItem('gameTheme', 'light'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; });
-  document.getElementById('setDarkTheme')?.addEventListener('click', () => { document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); localStorage.setItem('gameTheme', 'dark'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; });
-  document.getElementById('setAutoTheme')?.addEventListener('click', () => {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (isDark) { document.body.classList.add('dark-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-sun"></i>'; }
-    else { document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); document.getElementById('themeTopBtn').innerHTML = '<i class="fas fa-moon"></i>'; }
-    localStorage.removeItem('gameTheme');
-  });
-  const turnTimer = document.getElementById('turnTimer');
-  turnTimer?.addEventListener('input', (e) => { currentTurnTime = parseInt(e.target.value); document.getElementById('turnTimerValue').textContent = currentTurnTime; });
 }
 setTimeout(initAdminPanel, 1000);
-setInterval(() => { if (adminMode && document.getElementById('adminPanel')?.classList.contains('show')) { updateAdminStats(); updatePlayerActivity(); } }, 3000);
-async function sendSystemMessageToChat(message, type = 'info') {
-  if (!roomId) return;
-  const icons = { join: '🎉', leave: '👋', info: 'ℹ️', warning: '⚠️' };
-  const systemMsg = { sender: '🔔 СИСТЕМА', senderId: 'system', text: `${icons[type] || '📢'} ${message}`, timestamp: Date.now(), isSystem: true };
-  const msgsRef = db.ref(`rooms/${roomId}/messages`);
-  const snap = await msgsRef.once('value');
-  let arr = snap.val() || [];
-  arr.push(systemMsg);
-  if (arr.length > 50) arr = arr.slice(-50);
-  await msgsRef.set(arr);
-}
+setInterval(() => { if (adminMode && document.getElementById('adminPanel')?.classList.contains('show')) { updateAdminStats(); } }, 3000);
+
 async function sendWelcomeMessage() {
   if (!roomId) return;
   setTimeout(async () => {
-    const welcomeMsg = { sender: '🔔 СИСТЕМА', senderId: 'system', text: `👋 Добро пожаловать, ${myName}! Правила: существительные, ед.ч, именительный падеж. Удачи!`, timestamp: Date.now(), isSystem: true };
+    const modeText = hasBot ? '🤖 Режим: Игра с ботом' : currentGameMode === 'blitz' ? '⚡ Режим БЛИЦ: 15 сек, x2 очки!' : '🎯 Режим Классика: 45 сек.';
+    const welcomeMsg = { 
+      id: 'msg_' + Date.now(),
+      sender: '🔔 СИСТЕМА', senderId: 'system', 
+      text: `👋 Добро пожаловать, ${myName}! ${modeText}. Удачи!`, 
+      timestamp: Date.now(), reactions: {}
+    };
     const msgsRef = db.ref(`rooms/${roomId}/messages`);
     const snap = await msgsRef.once('value');
     let arr = snap.val() || [];
@@ -1650,13 +2379,34 @@ async function sendWelcomeMessage() {
     await msgsRef.set(arr);
   }, 1000);
 }
-document.addEventListener('DOMContentLoaded', () => {
+
+if ('serviceWorker' in navigator) {
+  const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => e.waitUntil(clients.claim())); self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => new Response('Offline'))); });`;
+  const swBlob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// v0.6: Initialize with persistent profile
+document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
   initProfileModal();
   loadSavedProfile();
   updateHeaderProfile();
-  messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка словаря Ожегова...';
-  loadRussianDictionary().then(() => { if (messageBoxDiv.innerHTML.includes('Загрузка')) messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Готов к битве слов. Создайте или войдите в комнату.'; }).catch(console.warn);
+  
+  // v0.6: Load profile from Firebase
+  await loadPlayerProfile();
+  loadMatchHistory();
+  updateProfileUI();
+  
+  if (playerStats.gamesPlayed > 0) document.getElementById('historyNavBtn').style.display = 'inline-block';
+  if (playerStats.unlockedAchievements.length > 0 || playerStats.xp > 0) document.getElementById('achievementsNavBtn').style.display = 'inline-block';
+  document.getElementById('questsNavBtn').style.display = 'inline-block';
+  
+  messageBoxDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Загрузка словаря...';
+  loadRussianDictionary().then(() => { 
+    if (messageBoxDiv.innerHTML.includes('Загрузка')) messageBoxDiv.innerHTML = '<i class="fas fa-info-circle"></i> Готов к битве слов. Создайте комнату или играйте с ботом!'; 
+  }).catch(console.warn);
 });
 connectionStatusSpan.innerHTML = '<i class="fas fa-circle" style="font-size:6px;color:var(--text-mute);"></i> ожидание';
 </script>
