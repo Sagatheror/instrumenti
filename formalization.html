@@ -195,6 +195,63 @@
   }
   .has-tooltip:hover .tooltip { opacity: 1; }
 
+  /* Стили для режима "Комплект" */
+  .kit-header-block {
+    background: linear-gradient(135deg, var(--surface), rgba(74, 124, 89, 0.05));
+    border: 2px solid var(--primary);
+  }
+  
+  .kit-spec-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  
+  .kit-spec-row input {
+    flex: 1;
+    margin: 0;
+  }
+  
+  .kit-spec-row button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .kit-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-soft);
+  }
+  
+  .kit-item-header label {
+    margin: 0;
+    color: var(--primary);
+    font-size: 16px;
+  }
+  
+  .kit-item-header .item-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .kit-preview-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(45, 127, 27, 0.1), rgba(46, 204, 113, 0.1));
+    border-radius: 20px;
+    border: 1px dashed var(--primary);
+  }
+  
+  .kit-preview-box h4 {
+    margin: 0 0 15px;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
   @media (max-width: 900px) {
     .organic-container { grid-template-columns: 1fr; height: auto; min-height: 100vh; border-radius: 0; }
     .sidebar { display: none; } 
@@ -221,6 +278,9 @@
     </div>
     <div class="nav-item" onclick="switchTab('list')">
       <i class="fas fa-list-ul"></i> Список
+    </div>
+    <div class="nav-item" onclick="switchTab('kit')">
+      <i class="fas fa-boxes-stacked"></i> Комплект
     </div>
 
     <button id="instructionBtnNav" class="secondary" style="margin-top: auto; width: 100%; justify-content: center;">
@@ -306,6 +366,33 @@
       </div>
     </div>
 
+    <!-- Новая секция "Комплект" -->
+    <div id="section-kit" class="tool-section">
+      <div class="editor-block kit-header-block">
+        <label><i class="fas fa-box"></i> Название набора</label>
+        <input type="text" id="kitName" placeholder="Например: TORUDA Дино Премиум" value="TORUDA Дино Премиум">
+        
+        <label><i class="fas fa-ruler-combined"></i> Размер площадки</label>
+        <input type="text" id="kitSize" placeholder="Например: 1800х2400 см" value="1800х2400 см">
+        
+        <label><i class="fas fa-heading"></i> Заголовок раздела</label>
+        <input type="text" id="kitSectionTitle" placeholder="В комплект ... входит:" value="В комплект TORUDA Дино Премиум входит:">
+      </div>
+
+      <div id="kitItemsContainer"></div>
+
+      <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+        <button class="secondary" id="addKitItemBtn"><i class="fas fa-plus"></i> Добавить товар</button>
+        <button class="secondary" id="showPreviewBtnKit"><i class="fas fa-eye"></i> Предпросмотр</button>
+      </div>
+      
+      <div id="previewContainerKit" class="preview-wrapper"></div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="copy-trigger" onclick="copyContent(this)"><i class="fas fa-copy"></i> Копировать HTML</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -333,6 +420,9 @@
       <h3 style="color: var(--primary); margin-top: 25px;">📝 Режим: Список</h3>
       <p>Структурированный вывод: Заголовок, Описание и Маркированный список.</p>
 
+      <h3 style="color: var(--primary); margin-top: 25px;">📦 Режим: Комплект</h3>
+      <p>Создание красивого блока с набором товаров. Укажите название набора, размер площадки и добавляйте товары с характеристиками. Каждый товар может иметь список параметров (длина, ширина, высота и т.д.).</p>
+
       <div style="background: rgba(74, 124, 89, 0.1); padding: 15px; border-radius: 15px; margin-top: 30px;">
         <strong>💡 Совет:</strong> Код копируется со стилями. Вставляйте его в режим «Источник» на вашем сайте.
       </div>
@@ -347,7 +437,8 @@
     document.querySelectorAll('.nav-item').forEach((el, idx) => {
       el.classList.remove('active');
       if((tabName === 'table' && idx === 0) || (tabName === 'infoBox' && idx === 1) || 
-         (tabName === 'blocks' && idx === 2) || (tabName === 'list' && idx === 3)) {
+         (tabName === 'blocks' && idx === 2) || (tabName === 'list' && idx === 3) ||
+         (tabName === 'kit' && idx === 4)) {
         el.classList.add('active');
       }
     });
@@ -359,7 +450,8 @@
       'table': 'Интерактивная таблица',
       'infoBox': 'Информационная плашка',
       'blocks': 'Блоки описаний',
-      'list': 'Маркированный список'
+      'list': 'Маркированный список',
+      'kit': 'Комплект товаров'
     };
     document.getElementById('pageTitle').innerText = titles[tabName];
 
@@ -368,6 +460,9 @@
     if(tabName === 'table' && !table.dataset.initialized) {
       initTable();
       table.dataset.initialized = 'true';
+    }
+    if(tabName === 'kit' && kitItems.length === 0) {
+      addKitItem();
     }
   }
 
@@ -542,6 +637,125 @@
     document.getElementById('previewText').innerHTML = val ? `⚠️ ${val}` : '⚠️ Ваш текст появится здесь';
   });
 
+  // ================= РЕЖИМ КОМПЛЕКТ =================
+  let kitItems = []; // [{name: '', specs: ['...']}]
+  const kitItemsContainer = document.getElementById('kitItemsContainer');
+  
+  function renderKitItems() {
+    kitItemsContainer.innerHTML = '';
+    kitItems.forEach((item, index) => {
+      const block = document.createElement('div');
+      block.className = 'editor-block';
+      block.innerHTML = `
+        <div class="kit-item-header">
+          <label>📦 Товар #${index + 1}</label>
+          <div class="item-actions">
+            <button class="secondary add-kit-spec" data-index="${index}" style="padding: 8px 14px; font-size: 13px;">
+              <i class="fas fa-plus"></i> Характеристика
+            </button>
+            <button class="secondary remove-kit-item" data-index="${index}" style="padding: 8px 14px; font-size: 13px;">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <label>Название товара</label>
+        <input type="text" class="kit-item-name" data-index="${index}" value="${escapeHtml(item.name)}" placeholder="Например: Детский игровой комплекс...">
+        <label style="margin-top: 15px;">Характеристики</label>
+        <div class="kit-specs-list" data-index="${index}"></div>
+      `;
+      kitItemsContainer.appendChild(block);
+      
+      const specsList = block.querySelector('.kit-specs-list');
+      item.specs.forEach((spec, specIdx) => {
+        const row = document.createElement('div');
+        row.className = 'kit-spec-row';
+        row.innerHTML = `
+          <input type="text" class="kit-spec-input" value="${escapeHtml(spec)}" placeholder="Например: Длина: 7650 мм">
+          <button class="secondary remove-kit-spec" data-item-index="${index}" data-spec-index="${specIdx}">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        specsList.appendChild(row);
+        
+        row.querySelector('.kit-spec-input').addEventListener('input', (e) => {
+          kitItems[index].specs[specIdx] = e.target.value;
+        });
+        
+        row.querySelector('.remove-kit-spec').addEventListener('click', () => {
+          kitItems[index].specs.splice(specIdx, 1);
+          renderKitItems();
+        });
+      });
+      
+      block.querySelector('.kit-item-name').addEventListener('input', (e) => {
+        kitItems[index].name = e.target.value;
+      });
+      
+      block.querySelector('.add-kit-spec').addEventListener('click', () => {
+        kitItems[index].specs.push('');
+        renderKitItems();
+      });
+      
+      block.querySelector('.remove-kit-item').addEventListener('click', () => {
+        kitItems.splice(index, 1);
+        renderKitItems();
+      });
+    });
+  }
+  
+  function addKitItem() {
+    kitItems.push({ name: '', specs: [''] });
+    renderKitItems();
+  }
+  
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  document.getElementById('addKitItemBtn').onclick = addKitItem;
+  
+  document.getElementById('showPreviewBtnKit').onclick = () => {
+    const container = document.getElementById('previewContainerKit');
+    container.style.display = 'block';
+    
+    const kitName = document.getElementById('kitName').value;
+    const kitSize = document.getElementById('kitSize').value;
+    const kitSectionTitle = document.getElementById('kitSectionTitle').value;
+    
+    let html = `<div style="font-family: Montserrat, sans-serif;">
+      <div style="background-color: #2d7f1b; padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #fff;">Размер площадки ${kitName}</h3>
+        <p style="margin: 0; font-size: 16px; color: #fff;"><strong style="font-size: 18px;">${kitSize}</strong></p>
+      </div>
+      <h2 style="font-size: 22px; color: #2d7f1b; border-bottom: 2px dashed #b2bec3; padding-bottom: 8px; margin-top: 10px; margin-bottom: 15px;">${kitSectionTitle}</h2>
+    `;
+    
+    kitItems.forEach(item => {
+      if (!item.name && item.specs.length === 0) return;
+      html += `<div style="background: #fff; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 15px; margin-bottom: 10px;">`;
+      html += `<div style="font-weight: 600; font-size: 18px; color: #2d7f1b; margin-bottom: 8px;">${item.name}</div>`;
+      if (item.specs.length > 0 && item.specs.some(s => s.trim())) {
+        html += `<ul style="list-style: none; padding-left: 20px; margin: 0;">`;
+        item.specs.forEach(spec => {
+          if (spec.trim()) {
+            html += `<li style="font-size: 15px; margin-bottom: 4px; position: relative; padding-left: 15px;">
+              <span style="position: absolute; left: 0; color: #2ecc71; font-size: 20px;">•</span>
+              <strong>${spec}</strong>
+            </li>`;
+          }
+        });
+        html += `</ul>`;
+      }
+      html += `</div>`;
+    });
+    
+    html += `</div>`;
+    container.innerHTML = html;
+  };
+
   function copyContent(btnElement) {
     const mode = document.querySelector('.tool-section.active').id.replace('section-', '');
     let fullHtml = '';
@@ -593,6 +807,125 @@
        const text = document.getElementById('infoText').value;
        const styles = `<style>.custom-warning { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff0f5, #ffe0ec); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); } .warning-text { font-size: 25px; font-weight: 700; color: #d84315; }</style>`;
        fullHtml = styles + `<div class="custom-warning"><div class="warning-text">⚠️ ${text}</div></div>`;
+    } else if (mode === 'kit') {
+       const kitName = document.getElementById('kitName').value;
+       const kitSize = document.getElementById('kitSize').value;
+       const kitSectionTitle = document.getElementById('kitSectionTitle').value;
+       
+       const styles = `<style type="text/css">
+  .custom-style-container {
+    max-width: 950px;
+    margin: 0px;
+    padding: 0px;
+    border-radius: 20px;
+    line-height: 1.6;
+  }
+  .custom-style-container h2 {
+    font-size: 26px;
+    position: relative;
+    border-bottom: 3px solid #74b900;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #2d7f1b;
+  }
+  .custom-style-container h2.section-title {
+    font-size: 22px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border-bottom: 2px dashed #b2bec3;
+    padding-bottom: 8px;
+    background: linear-gradient(90deg, #2d7f1b, #2d7f1b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .custom-style-container .item {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+  }
+  .custom-style-container .item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
+  .custom-style-container .title {
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #2d7f1b;
+    position: relative;
+  }
+  .custom-style-container .specs {
+    list-style: none;
+    padding-left: 20px;
+    margin: 0;
+  }
+  .custom-style-container .specs li {
+    font-size: 15px;
+    margin-bottom: 4px;
+    position: relative;
+    padding-left: 20px;
+  }
+  .custom-style-container .specs li::before {
+    content: "•";
+    color: #2ecc71;
+    font-size: 26px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .custom-style-container .size-banner {
+    background-color: #2d7f1b;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  .custom-style-container .size-banner h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  .custom-style-container .size-banner p {
+    margin: 0;
+    font-size: 16px;
+    color: #ffffff;
+  }
+</style>`;
+
+       let itemsHtml = '';
+       kitItems.forEach(item => {
+         if (!item.name && item.specs.length === 0) return;
+         itemsHtml += `<div class="item">\n<div class="title">${escapeHtml(item.name)}</div>\n`;
+         if (item.specs.length > 0 && item.specs.some(s => s.trim())) {
+           itemsHtml += `<ul class="specs">\n`;
+           item.specs.forEach(spec => {
+             if (spec.trim()) {
+               itemsHtml += `<li><strong><span style="font-size:16px;">${escapeHtml(spec)}</span></strong></li>\n`;
+             }
+           });
+           itemsHtml += `</ul>\n`;
+         }
+         itemsHtml += `</div>\n`;
+       });
+
+       const bodyHtml = `<div class="custom-style-container">
+<div class="size-banner">
+<h3><span style="color:#ffffff;">Размер площадки ${escapeHtml(kitName)}</span></h3>
+<p><span style="color:#ffffff;"><strong><span style="font-size:18px;">${escapeHtml(kitSize)}</span></strong></span></p>
+</div>
+<h2 class="section-title">${escapeHtml(kitSectionTitle)}</h2>
+${itemsHtml}
+</div>`;
+
+       fullHtml = styles + bodyHtml;
     }
 
     if(fullHtml) {
