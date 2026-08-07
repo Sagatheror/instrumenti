@@ -88,7 +88,9 @@
   .nav-item.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--primary); border-radius: 0 4px 4px 0; }
 
   .workspace { padding: 40px 50px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
-  .ws-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+  .ws-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+  .ws-header-left { flex: 1; }
+  .ws-header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   h1 { font-size: 32px; font-weight: 700; margin: 0; color: var(--text-main); }
   .subtitle { color: var(--text-muted); font-size: 15px; margin-top: 5px; }
 
@@ -128,27 +130,33 @@
   
   button.secondary { background: transparent; border: 2px solid var(--border-soft); color: var(--text-muted); box-shadow: none; padding: 12px 20px; font-size: 14px; }
   button.secondary:hover { border-color: var(--primary); color: var(--primary); background: rgba(74, 124, 89, 0.05); transform: translateY(-2px); }
-
-  button.copy-btn-animate.copied {
-    background: #2e7d32 !important;
-    transform: scale(0.95);
-    pointer-events: none;
+  button.secondary:disabled {
+    opacity: 0.4; cursor: not-allowed; transform: none !important;
+    border-color: var(--border-soft) !important; color: var(--text-muted) !important; background: transparent !important;
   }
+
+  button.copy-btn-animate.copied { background: #2e7d32 !important; transform: scale(0.95); pointer-events: none; }
   button.copy-btn-animate.copied i { display: none; }
   button.copy-btn-animate.copied::after {
-    content: "\f00c";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
+    content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900;
   }
 
+  /* ===== ТАБЛИЦА ===== */
   #tableContainer { margin-top: 20px; overflow-x: auto; }
   table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-soft); background: var(--surface); transition: background 0.3s; }
-  th { background: var(--primary); color: white; padding: 16px; font-weight: 600; text-align: left; }
-  td { padding: 16px; border-bottom: 1px solid var(--border-soft); color: var(--text-main); background: var(--surface); min-height: 24px; vertical-align: middle; }
+  th { background: var(--primary); color: white; padding: 16px; font-weight: 600; text-align: left; position: relative; }
+  td { padding: 16px; border-bottom: 1px solid var(--border-soft); color: var(--text-main); background: transparent; min-height: 24px; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
-  #interactiveTable tbody tr:nth-child(even) { background-color: rgba(74, 124, 89, 0.03); }
+  #interactiveTable tbody tr { background: var(--surface); transition: background 0.2s; }
+  #interactiveTable tbody tr:nth-child(even) { background-color: rgba(74, 124, 89, 0.04); }
   #interactiveTable tbody tr:hover { background-color: rgba(74, 124, 89, 0.08); }
   td.selected { background: rgba(74, 124, 89, 0.1) !important; outline: 2px solid var(--primary); }
+
+  th.drag-col { width: 44px; min-width: 44px; text-align: center; padding: 8px; }
+  td.drag-col { width: 44px; min-width: 44px; text-align: center; padding: 8px; border-bottom: 1px solid var(--border-soft); }
+  tr:last-child td.drag-col { border-bottom: none; }
+
+  .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
   .theme-switcher {
     background: var(--surface); padding: 8px 16px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
@@ -178,78 +186,95 @@
   .preview-wrapper { display: none; margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px dashed var(--primary); }
 
   .tooltip {
-    position: absolute;
-    background: var(--text-main);
-    color: var(--surface);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 100;
-    white-space: nowrap;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute; background: var(--text-main); color: var(--surface);
+    padding: 6px 12px; border-radius: 8px; font-size: 12px; pointer-events: none;
+    opacity: 0; transition: opacity 0.2s; z-index: 100; white-space: nowrap;
+    bottom: 120%; left: 50%; transform: translateX(-50%);
   }
   .has-tooltip:hover .tooltip { opacity: 1; }
 
-  /* Стили для режима "Комплект" */
-  .kit-header-block {
-    background: linear-gradient(135deg, var(--surface), rgba(74, 124, 89, 0.05));
-    border: 2px solid var(--primary);
+  /* Комплект */
+  .kit-header-block { background: linear-gradient(135deg, var(--surface), rgba(74, 124, 89, 0.05)); border: 2px solid var(--primary); }
+  .kit-spec-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+  .kit-spec-row input { flex: 1; margin: 0; }
+  .kit-spec-row button { padding: 10px 14px; font-size: 13px; }
+  .kit-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-soft); }
+  .kit-item-header label { margin: 0; color: var(--primary); font-size: 16px; }
+  .kit-item-header .item-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* ===== Drag & Drop ===== */
+  .drag-handle {
+    cursor: grab; color: var(--text-muted); padding: 8px; border-radius: 8px;
+    transition: all 0.2s; display: inline-flex; align-items: center; user-select: none;
   }
-  
-  .kit-spec-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
+  .drag-handle:hover { background: rgba(74, 124, 89, 0.1); color: var(--primary); }
+  .drag-handle:active { cursor: grabbing; }
+  .dragging { opacity: 0.4; }
+  tr.dragging { opacity: 0.4; background: rgba(74, 124, 89, 0.15) !important; }
+  .drag-over-top { box-shadow: 0 -3px 0 0 var(--primary) !important; }
+  .drag-over-bottom { box-shadow: 0 3px 0 0 var(--primary) !important; }
+
+  /* v0.3: Drag столбцов */
+  .col-handle { margin-right: 8px; padding: 4px 6px; color: rgba(255,255,255,0.55); border-radius: 6px; }
+  .col-handle:hover { color: #fff; background: rgba(255,255,255,0.18); }
+  th.dragging-col { opacity: 0.4; }
+  th.drag-over-left { box-shadow: inset 4px 0 0 0 var(--secondary) !important; }
+  th.drag-over-right { box-shadow: inset -4px 0 0 0 var(--secondary) !important; }
+
+  /* v0.3: Контекстное меню */
+  .context-menu {
+    position: fixed; z-index: 3000; background: var(--surface); border: 1px solid var(--border-soft);
+    border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); padding: 6px; min-width: 230px; display: none;
+    animation: ctxPop 0.15s ease;
   }
-  
-  .kit-spec-row input {
-    flex: 1;
-    margin: 0;
+  @keyframes ctxPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .context-menu.active { display: block; }
+  .ctx-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px;
+    cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-main); transition: all 0.15s;
   }
-  
-  .kit-spec-row button {
-    padding: 10px 14px;
-    font-size: 13px;
+  .ctx-item i { width: 16px; text-align: center; color: var(--text-muted); transition: color 0.15s; }
+  .ctx-item:hover { background: rgba(74, 124, 89, 0.1); color: var(--primary); }
+  .ctx-item:hover i { color: var(--primary); }
+  .ctx-item.danger:hover { background: rgba(198, 40, 40, 0.1); color: #c62828; }
+  .ctx-item.danger:hover i { color: #c62828; }
+  .ctx-sep { height: 1px; background: var(--border-soft); margin: 6px 8px; }
+
+  /* ===== История ===== */
+  .history-controls { display: flex; gap: 8px; align-items: center; }
+  .history-btn {
+    padding: 10px 16px; font-size: 13px; border-radius: 16px; background: var(--surface);
+    color: var(--text-muted); border: 2px solid var(--border-soft); box-shadow: none; transition: var(--trans-speed);
   }
-  
-  .kit-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 12px;
-    border-bottom: 1px dashed var(--border-soft);
+  .history-btn:hover:not(:disabled) {
+    border-color: var(--primary); color: var(--primary); background: rgba(74, 124, 89, 0.05);
+    transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74, 124, 89, 0.15);
   }
-  
-  .kit-item-header label {
-    margin: 0;
-    color: var(--primary);
-    font-size: 16px;
+  .history-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+  .history-indicator { font-size: 11px; color: var(--text-muted); padding: 4px 10px; background: var(--bg-main); border-radius: 12px; white-space: nowrap; }
+
+  /* ===== Адаптивный предпросмотр ===== */
+  .viewport-switcher {
+    display: flex; background: var(--surface); border-radius: 16px; padding: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid var(--border-soft); align-items: center;
   }
-  
-  .kit-item-header .item-actions {
-    display: flex;
-    gap: 8px;
+  .viewport-btn {
+    padding: 8px 14px; font-size: 13px; border-radius: 12px; background: transparent;
+    color: var(--text-muted); border: none; box-shadow: none; cursor: pointer; transition: var(--trans-speed);
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  
-  .kit-preview-box {
-    margin-top: 25px;
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(45, 127, 27, 0.1), rgba(46, 204, 113, 0.1));
-    border-radius: 20px;
-    border: 1px dashed var(--primary);
-  }
-  
-  .kit-preview-box h4 {
-    margin: 0 0 15px;
-    color: var(--primary);
-    font-weight: 600;
+  .viewport-btn:hover { background: rgba(74, 124, 89, 0.08); color: var(--primary); transform: none; }
+  .viewport-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(74, 124, 89, 0.3); }
+  .viewport-label { font-size: 11px; color: var(--text-muted); padding: 0 10px 0 6px; white-space: nowrap; font-weight: 600; }
+
+  #tableContainer, .preview-wrapper { transition: max-width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); max-width: 100%; }
+  .viewport-desktop { max-width: 100% !important; }
+  .viewport-tablet { max-width: 768px !important; }
+  .viewport-mobile { max-width: 375px !important; }
+  #tableContainer.viewport-tablet, #tableContainer.viewport-mobile,
+  .preview-wrapper.viewport-tablet, .preview-wrapper.viewport-mobile {
+    margin-left: auto; margin-right: auto;
+    outline: 2px dashed var(--primary); outline-offset: 10px; border-radius: 12px;
   }
 
   @media (max-width: 900px) {
@@ -257,6 +282,7 @@
     .sidebar { display: none; } 
     .workspace { padding: 20px; }
     .ws-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .ws-header-right { width: 100%; }
   }
 </style>
 </head>
@@ -290,27 +316,53 @@
 
   <div class="workspace">
     <div class="ws-header">
-      <div>
+      <div class="ws-header-left">
         <h1 id="pageTitle">Интерактивная таблица</h1>
         <div class="subtitle">Создавайте и редактируйте структуры данных</div>
       </div>
       
-      <div class="theme-switcher" id="themeToggle">
-        <i class="fas fa-moon" id="themeIcon"></i>
-        <span id="themeText">Тема</span>
+      <div class="ws-header-right">
+        <div class="history-controls">
+          <button class="history-btn has-tooltip" id="undoBtn" disabled onclick="historyManager.undo()">
+            <i class="fas fa-undo"></i><span class="tooltip">Отменить (Ctrl+Z)</span>
+          </button>
+          <button class="history-btn has-tooltip" id="redoBtn" disabled onclick="historyManager.redo()">
+            <i class="fas fa-redo"></i><span class="tooltip">Повторить (Ctrl+Y)</span>
+          </button>
+          <span class="history-indicator" id="historyIndicator">0/0</span>
+        </div>
+        
+        <div class="viewport-switcher">
+          <button class="viewport-btn active" data-viewport="desktop" onclick="setViewport('desktop')">
+            <i class="fas fa-desktop"></i>
+          </button>
+          <button class="viewport-btn" data-viewport="tablet" onclick="setViewport('tablet')">
+            <i class="fas fa-tablet-screen-button"></i>
+          </button>
+          <button class="viewport-btn" data-viewport="mobile" onclick="setViewport('mobile')">
+            <i class="fas fa-mobile-screen"></i>
+          </button>
+          <span class="viewport-label" id="viewportLabel">Desktop · 100%</span>
+        </div>
+        
+        <div class="theme-switcher" id="themeToggle">
+          <i class="fas fa-moon" id="themeIcon"></i>
+          <span id="themeText">Тема</span>
+        </div>
       </div>
     </div>
 
     <div id="section-table" class="tool-section active">
       <div class="editor-block">
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
           <button class="secondary has-tooltip" onclick="addRow()"><i class="fas fa-plus"></i> Строка<span class="tooltip">Добавить строку (Ctrl+Enter)</span></button>
           <button class="secondary has-tooltip" onclick="addColumn()"><i class="fas fa-plus"></i> Столбец<span class="tooltip">Добавить столбец (Ctrl+i)</span></button>
           <button class="secondary has-tooltip" onclick="removeLastRow()"><i class="fas fa-trash"></i><span class="tooltip">Удалить строку (Ctrl+Del)</span></button>
           <button class="secondary has-tooltip" onclick="removeLastColumn()"><i class="fas fa-trash"></i><span class="tooltip">Удалить столбец (Ctrl+Back)</span></button>
         </div>
+        <div class="hint"><i class="fas fa-lightbulb"></i> Правый клик по ячейке — контекстное меню · Заголовки столбцов перетаскиваются за ⋮ · Строки — за ⋮ слева</div>
         
-        <div id="tableContainer">
+        <div id="tableContainer" class="viewport-target">
           <table id="interactiveTable">
             <thead><tr></tr></thead>
             <tbody></tbody>
@@ -366,7 +418,6 @@
       </div>
     </div>
 
-    <!-- Новая секция "Комплект" -->
     <div id="section-kit" class="tool-section">
       <div class="editor-block kit-header-block">
         <label><i class="fas fa-box"></i> Название набора</label>
@@ -396,34 +447,40 @@
   </div>
 </div>
 
+<!-- v0.3: Контекстное меню -->
+<div id="contextMenu" class="context-menu"></div>
+
 <div id="instructionModal" class="modal">
   <div class="modal-content">
     <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
-    <h2 style="color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--border-soft); padding-bottom: 15px;">📖 Инструкция по использованию</h2>
+    <h2 style="color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--border-soft); padding-bottom: 15px;">📖 Инструкция</h2>
     
     <div style="line-height: 1.7; color: var(--text-main); font-size: 15px;">
       <p>Добро пожаловать! Этот инструмент помогает создавать красивые HTML-блоки.</p>
       
       <h3 style="color: var(--primary); margin-top: 25px;">📊 Режим: Таблица</h3>
       <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li>Используйте кнопки сверху для управления структурой.</li>
-        <li><strong>Магия иконок:</strong> Поставьте <code>+</code> в ячейку для галочки ✔ или <code>-</code> для крестика ✘ при копировании.</li>
-        <li><strong>Горячие клавиши:</strong> <code>Ctrl+Enter</code> (строка), <code>Ctrl+i</code> (столбец), <code>Ctrl+Del</code> (уд. строку), <code>Ctrl+Back</code> (уд. столбец).</li>
+        <li>Кнопки сверху — управление структурой.</li>
+        <li><strong>Магия иконок:</strong> <code>+</code> → ✔, <code>-</code> → ✘ при копировании.</li>
+        <li><strong>Горячие клавиши:</strong> <code>Ctrl+Enter</code>, <code>Ctrl+i</code>, <code>Ctrl+Del</code>, <code>Ctrl+Back</code>.</li>
+        <li><strong>Перетаскивание строк:</strong> за иконку ⋮ слева.</li>
+        <li><strong>🆕 Перетаскивание столбцов:</strong> за иконку ⋮⋮ в заголовке столбца.</li>
+        <li><strong>🆕 Контекстное меню:</strong> правый клик по ячейке — очистка, дублирование и удаление строк/столбцов, вставка рядом.</li>
       </ul>
 
-      <h3 style="color: var(--primary); margin-top: 25px;">⚠️ Режим: Плашка</h3>
-      <p>Яркий блок для важных предупреждений. Текст отображается в предпросмотре в реальном времени.</p>
+      <h3 style="color: var(--primary); margin-top: 25px;">⚠️ Плашка / 📦 Блоки / 📝 Список</h3>
+      <p>Блоки можно перетаскивать за ⋮ и <strong> дублировать</strong> кнопкой <i class="fas fa-clone"></i>.</p>
 
-      <h3 style="color: var(--primary); margin-top: 25px;">📦 Режим: Блоки</h3>
-      <p>Сворачиваемые секции (аккордеоны). Используйте редактор для форматирования текста внутри.</p>
+      <h3 style="color: var(--primary); margin-top: 25px;">📦 Комплект</h3>
+      <p>Товары перетаскиваются за ⋮⋮ и <strong>🆕 дублируются</strong> кнопкой <i class="fas fa-clone"></i> вместе со всеми характеристиками.</p>
 
-      <h3 style="color: var(--primary); margin-top: 25px;">📝 Режим: Список</h3>
-      <p>Структурированный вывод: Заголовок, Описание и Маркированный список.</p>
+      <h3 style="color: var(--primary); margin-top: 25px;">🛠 Инструменты v0.2</h3>
+      <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li><strong>История:</strong> <code>Ctrl+Z</code> / <code>Ctrl+Y</code> (до 50 шагов).</li>
+        <li><strong>Адаптивный предпросмотр:</strong> 🖥️ /  в шапке — сужает таблицу и превью.</li>
+      </ul>
 
-      <h3 style="color: var(--primary); margin-top: 25px;">📦 Режим: Комплект</h3>
-      <p>Создание красивого блока с набором товаров. Укажите название набора, размер площадки и добавляйте товары с характеристиками. Каждый товар может иметь список параметров (длина, ширина, высота и т.д.).</p>
-
-      <div style="background: rgba(74, 124, 89, 0.1); padding: 15px; border-radius: 15px; margin-top: 30px;">
+      <div style="background: rgba(74, 124, 89, 0.1); padding: 15px; border-radius: 15px; margin-top: 20px;">
         <strong>💡 Совет:</strong> Код копируется со стилями. Вставляйте его в режим «Источник» на вашем сайте.
       </div>
     </div>
@@ -433,6 +490,237 @@
 <div id="notification">Скопировано в буфер обмена!</div>
 
 <script>
+  // ================= СОСТОЯНИЕ =================
+  let quillEditors = [];
+  let listQuillEditors = [];
+  let kitItems = [];
+  let blocksInitialized = false;
+  let listInitialized = false;
+  let kitInitialized = false;
+  let colCount = 3;
+  let rowCount = 3;
+  let selectedCell = null;
+  let currentViewport = 'desktop';
+
+  const table = document.getElementById('interactiveTable');
+  const theadRow = table.querySelector('thead tr');
+  const tbody = table.querySelector('tbody');
+  const blocksContainer = document.getElementById('blocksContainer');
+  const listBlocksContainer = document.getElementById('listBlocksContainer');
+  const kitItemsContainer = document.getElementById('kitItemsContainer');
+  const ctxMenu = document.getElementById('contextMenu');
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function isTypingContext() {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = el.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (el.closest && el.closest('.ql-editor')) return true;
+    return false;
+  }
+
+  // ================= ИСТОРИЯ =================
+  class HistoryManager {
+    constructor(maxStates = 50) {
+      this.history = [];
+      this.currentIndex = -1;
+      this.maxStates = maxStates;
+      this.isRestoring = false;
+      this.enabled = false;
+    }
+
+    saveState(action = 'action') {
+      if (!this.enabled || this.isRestoring) return;
+      const state = this.captureState();
+      if (this.currentIndex < this.history.length - 1) {
+        this.history = this.history.slice(0, this.currentIndex + 1);
+      }
+      this.history.push({ state, action, timestamp: Date.now() });
+      if (this.history.length > this.maxStates) this.history.shift();
+      this.currentIndex = this.history.length - 1;
+      this.updateUI();
+    }
+
+    captureState() {
+      return {
+        activeTab: document.querySelector('.tool-section.active')?.id.replace('section-', ''),
+        table: this.captureTable(),
+        infoBox: this.captureInfoBox(),
+        blocks: this.captureBlocks(),
+        list: this.captureList(),
+        kit: this.captureKit(),
+        viewport: currentViewport
+      };
+    }
+
+    captureTable() {
+      if (!table.dataset.initialized) return null;
+      const headers = dataThs().map(th => th.innerText.trim());
+      const rows = Array.from(tbody.querySelectorAll('tr')).map(tr =>
+        Array.from(tr.querySelectorAll('td:not(.drag-col)')).map(td => td.innerText)
+      );
+      return { headers, rows };
+    }
+
+    captureInfoBox() { return { text: document.getElementById('infoText').value }; }
+
+    captureBlocks() {
+      if (!blocksInitialized) return null;
+      return quillEditors.map(item => ({ html: item.quill.root.innerHTML }));
+    }
+
+    captureList() {
+      if (!listInitialized) return null;
+      return listQuillEditors.map(item => ({ type: item.type, html: item.quill.root.innerHTML }));
+    }
+
+    captureKit() {
+      if (!kitInitialized) return null;
+      return {
+        name: document.getElementById('kitName').value,
+        size: document.getElementById('kitSize').value,
+        sectionTitle: document.getElementById('kitSectionTitle').value,
+        items: JSON.parse(JSON.stringify(kitItems))
+      };
+    }
+
+    restoreState(index) {
+      if (index < 0 || index >= this.history.length) return;
+      this.isRestoring = true;
+      const state = this.history[index].state;
+      
+      if (state.activeTab) switchTab(state.activeTab);
+      if (state.table) this.restoreTable(state.table);
+      if (state.infoBox) {
+        document.getElementById('infoText').value = state.infoBox.text;
+        document.getElementById('previewText').innerHTML = state.infoBox.text ? `⚠️ ${state.infoBox.text}` : '⚠️ Ваш текст появится здесь';
+      }
+      if (state.blocks !== null && state.blocks !== undefined) this.restoreBlocks(state.blocks);
+      if (state.list !== null && state.list !== undefined) this.restoreList(state.list);
+      if (state.kit !== null && state.kit !== undefined) this.restoreKit(state.kit);
+      if (state.viewport) setViewport(state.viewport, false);
+      
+      this.currentIndex = index;
+      this.updateUI();
+      setTimeout(() => { this.isRestoring = false; }, 100);
+    }
+
+    restoreTable(data) {
+      theadRow.innerHTML = '';
+      tbody.innerHTML = '';
+      selectedCell = null;
+      
+      const hTh = document.createElement('th');
+      hTh.className = 'drag-col';
+      theadRow.appendChild(hTh);
+      
+      data.headers.forEach(h => theadRow.appendChild(createDataTh(h)));
+      
+      data.rows.forEach(row => {
+        const tr = createRowWithData(row);
+        tbody.appendChild(tr);
+      });
+      
+      colCount = data.headers.length;
+      rowCount = data.rows.length;
+    }
+
+    restoreBlocks(blocksData) {
+      blocksContainer.innerHTML = '';
+      quillEditors = [];
+      blocksInitialized = true;
+      
+      blocksData.forEach((blockData, index) => {
+        const wrapper = createBlockWrapper(index);
+        blocksContainer.appendChild(wrapper);
+        const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+        quill.root.innerHTML = blockData.html;
+        attachQuillSave(quill);
+        quillEditors.push({ quill, wrapper });
+      });
+      
+      setupBlocksDrag();
+      document.getElementById('removeBlockBtn').style.display = quillEditors.length > 1 ? 'inline-flex' : 'none';
+    }
+
+    restoreList(listData) {
+      listBlocksContainer.innerHTML = '';
+      listQuillEditors = [];
+      listInitialized = true;
+      
+      listData.forEach(item => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'editor-block';
+        wrapper.innerHTML = `<label>${escapeHtml(item.type)}</label><div class="quill-holder"></div>`;
+        listBlocksContainer.appendChild(wrapper);
+        
+        const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+        quill.root.innerHTML = item.html;
+        attachQuillSave(quill);
+        listQuillEditors.push({ quill, type: item.type });
+      });
+    }
+
+    restoreKit(kitData) {
+      kitInitialized = true;
+      document.getElementById('kitName').value = kitData.name;
+      document.getElementById('kitSize').value = kitData.size;
+      document.getElementById('kitSectionTitle').value = kitData.sectionTitle;
+      kitItems = JSON.parse(JSON.stringify(kitData.items));
+      renderKitItems();
+    }
+
+    undo() { if (this.currentIndex > 0) this.restoreState(this.currentIndex - 1); }
+    redo() { if (this.currentIndex < this.history.length - 1) this.restoreState(this.currentIndex + 1); }
+
+    updateUI() {
+      document.getElementById('undoBtn').disabled = this.currentIndex <= 0;
+      document.getElementById('redoBtn').disabled = this.currentIndex >= this.history.length - 1;
+      document.getElementById('historyIndicator').textContent = `${this.currentIndex + 1}/${this.history.length}`;
+    }
+  }
+
+  const historyManager = new HistoryManager(50);
+  
+  let saveStateTimeout = null;
+  function debouncedSaveState(action = 'change', delay = 500) {
+    if (!historyManager.enabled || historyManager.isRestoring) return;
+    clearTimeout(saveStateTimeout);
+    saveStateTimeout = setTimeout(() => historyManager.saveState(action), delay);
+  }
+
+  function attachQuillSave(quill) {
+    quill.on('text-change', () => debouncedSaveState('редактирование текста'));
+  }
+
+  // ================= VIEWPORT =================
+  const viewportInfo = {
+    desktop: 'Desktop · 100%',
+    tablet: 'Tablet · 768px',
+    mobile: 'Mobile · 375px'
+  };
+  
+  function setViewport(viewport, saveHistory = true) {
+    currentViewport = viewport;
+    document.querySelectorAll('.viewport-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.viewport === viewport);
+    });
+    document.querySelectorAll('.preview-wrapper, .viewport-target').forEach(el => {
+      el.classList.remove('viewport-desktop', 'viewport-tablet', 'viewport-mobile');
+      el.classList.add(`viewport-${viewport}`);
+    });
+    document.getElementById('viewportLabel').textContent = viewportInfo[viewport];
+    if (saveHistory) debouncedSaveState(`viewport: ${viewport}`, 100);
+  }
+
+  // ================= ВКЛАДКИ =================
   function switchTab(tabName) {
     document.querySelectorAll('.nav-item').forEach((el, idx) => {
       el.classList.remove('active');
@@ -455,17 +743,16 @@
     };
     document.getElementById('pageTitle').innerText = titles[tabName];
 
-    if(tabName === 'blocks' && quillEditors.length === 0) addNewBlock();
+    if(tabName === 'blocks' && quillEditors.length === 0) addNewBlock(true);
     if(tabName === 'list' && listQuillEditors.length === 0) initListBlocks();
     if(tabName === 'table' && !table.dataset.initialized) {
       initTable();
       table.dataset.initialized = 'true';
     }
-    if(tabName === 'kit' && kitItems.length === 0) {
-      addKitItem();
-    }
+    if(tabName === 'kit' && kitItems.length === 0) addKitItem(true);
   }
 
+  // ================= ТЕМА =================
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
   const themeText = document.getElementById('themeText');
@@ -482,35 +769,58 @@
     }
   }
 
-  function checkCircadianRhythm() {
-    const hour = new Date().getHours();
-    const isNight = hour >= 22 || hour < 6;
-    updateThemeUI(isNight);
-  }
-
   themeToggle.addEventListener('click', () => {
-    const isDark = !document.body.classList.contains('dark-theme');
-    updateThemeUI(isDark);
+    updateThemeUI(!document.body.classList.contains('dark-theme'));
   });
 
-  checkCircadianRhythm();
+  (function checkCircadianRhythm() {
+    const hour = new Date().getHours();
+    updateThemeUI(hour >= 22 || hour < 6);
+  })();
 
-  const table = document.getElementById('interactiveTable');
-  const theadRow = table.querySelector('thead tr');
-  const tbody = table.querySelector('tbody');
-  let colCount = 3;
-  let rowCount = 3;
-  let selectedCell = null;
+  // ================= ТАБЛИЦА: СОЗДАНИЕ ЭЛЕМЕНТОВ =================
+  function createHandleCell() {
+    const td = document.createElement('td');
+    td.className = 'drag-col';
+    td.innerHTML = '<span class="drag-handle" title="Перетащите строку"><i class="fas fa-grip-vertical"></i></span>';
+    return td;
+  }
+
+  // v0.3: заголовок с ручкой для перетаскивания столбца
+  function createDataTh(text) {
+    const th = document.createElement('th');
+    th.contentEditable = true;
+    th.innerHTML = `<span class="drag-handle col-handle" contenteditable="false" title="Перетащить столбец"><i class="fas fa-grip-vertical"></i></span>${escapeHtml(text)}`;
+    th.onclick = () => selectCell(th);
+    return th;
+  }
+
+  function createRowWithData(texts) {
+    const tr = document.createElement('tr');
+    tr.appendChild(createHandleCell());
+    texts.forEach((t, i) => {
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.innerText = t;
+      if (i === 0) td.classList.add('product-name');
+      td.onclick = () => selectCell(td);
+      tr.appendChild(td);
+    });
+    setupRowDrag(tr);
+    return tr;
+  }
+
+  function dataThs() { return Array.from(theadRow.children).slice(1); }
+  function dataIndexOfTh(th) { return dataThs().indexOf(th); }
+  function dataIndexOfTd(td) { return Array.from(td.parentElement.children).slice(1).indexOf(td); }
 
   function initTable() {
-    for(let i=0; i<colCount; i++) {
-      const th = document.createElement('th');
-      th.contentEditable = true;
-      th.innerText = `Заголовок ${i+1}`;
-      th.onclick = () => selectCell(th);
-      theadRow.appendChild(th);
-    }
-    for(let i=0; i<rowCount; i++) addRow();
+    const hTh = document.createElement('th');
+    hTh.className = 'drag-col';
+    theadRow.appendChild(hTh);
+    
+    for(let i=0; i<colCount; i++) theadRow.appendChild(createDataTh(`Заголовок ${i+1}`));
+    for(let i=0; i<rowCount; i++) tbody.appendChild(createRowWithData(Array.from({length: colCount}, () => 'Данные')));
   }
 
   function selectCell(cell) {
@@ -520,26 +830,13 @@
     selectedCell.focus();
   }
 
-  function addRow() {
-    const tr = document.createElement('tr');
-    for(let i=0; i<colCount; i++) {
-      const td = document.createElement('td');
-      td.contentEditable = true;
-      td.innerText = 'Данные';
-      if(i===0) td.classList.add('product-name');
-      td.onclick = () => selectCell(td);
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
+  function addRow(save = true) {
+    tbody.appendChild(createRowWithData(Array.from({length: colCount}, () => 'Данные')));
+    if (save) historyManager.saveState('добавлена строка');
   }
 
   function addColumn() {
-    const th = document.createElement('th');
-    th.contentEditable = true;
-    th.innerText = `Новый столбец`;
-    th.onclick = () => selectCell(th);
-    theadRow.appendChild(th);
-    
+    theadRow.appendChild(createDataTh('Новый столбец'));
     Array.from(tbody.children).forEach(tr => {
       const td = document.createElement('td');
       td.contentEditable = true;
@@ -548,58 +845,506 @@
       tr.appendChild(td);
     });
     colCount++;
+    historyManager.saveState('добавлен столбец');
   }
 
-  function removeLastRow() { if(tbody.lastChild) tbody.removeChild(tbody.lastChild); }
+  function removeLastRow() { 
+    if(tbody.lastChild) {
+      tbody.removeChild(tbody.lastChild);
+      historyManager.saveState('удалена строка');
+    }
+  }
+  
   function removeLastColumn() {
-    if(theadRow.lastChild) {
+    if(colCount <= 1) return;
+    if(theadRow.lastChild && !theadRow.lastChild.classList.contains('drag-col')) {
       theadRow.removeChild(theadRow.lastChild);
       Array.from(tbody.children).forEach(tr => {
-        if(tr.lastChild) tr.removeChild(tr.lastChild);
+        if(tr.lastChild && !tr.lastChild.classList.contains('drag-col')) tr.removeChild(tr.lastChild);
       });
+      colCount--;
+      selectedCell = null;
+      historyManager.saveState('удалён столбец');
     }
   }
 
+  table.addEventListener('input', () => debouncedSaveState('редактирование таблицы'));
+
+  // ================= v0.3: СТРУКТТУРНЫЕ ОПЕРАЦИИ (меню + дублирование) =================
+  function clearCell(cell) {
+    if (cell.tagName === 'TH') {
+      const handle = cell.querySelector('.col-handle');
+      cell.innerHTML = '';
+      if (handle) cell.appendChild(handle);
+    } else {
+      cell.innerHTML = '';
+    }
+  }
+
+  function insertRowBelow(rowIdx, save = true) {
+    const tr = tbody.children[rowIdx];
+    if (!tr) return;
+    tr.after(createRowWithData(Array.from({length: colCount}, () => '')));
+    if (save) historyManager.saveState('строка вставлена');
+  }
+
+  function duplicateRow(rowIdx) {
+    const tr = tbody.children[rowIdx];
+    if (!tr) return;
+    const texts = Array.from(tr.children).slice(1).map(td => td.innerText);
+    tr.after(createRowWithData(texts));
+    historyManager.saveState('строка дублирована');
+  }
+
+  function deleteRowAt(rowIdx) {
+    const tr = tbody.children[rowIdx];
+    if (!tr) return;
+    tr.remove();
+    selectedCell = null;
+    historyManager.saveState('строка удалена');
+  }
+
+  function insertColumnRight(colIdx, headerText = 'Новый столбец', cellText = '', save = true) {
+    const ths = dataThs();
+    const newTh = createDataTh(headerText);
+    if (colIdx >= ths.length - 1) theadRow.appendChild(newTh);
+    else ths[colIdx].after(newTh);
+    
+    Array.from(tbody.children).forEach(tr => {
+      const tds = Array.from(tr.children).slice(1);
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.innerText = cellText;
+      td.onclick = () => selectCell(td);
+      if (colIdx >= tds.length - 1) tr.appendChild(td);
+      else tds[colIdx].after(td);
+    });
+    colCount++;
+    if (save) historyManager.saveState('столбец вставлен');
+  }
+
+  function duplicateColumn(colIdx) {
+    const ths = dataThs();
+    const srcTh = ths[colIdx];
+    if (!srcTh) return;
+    
+    const newTh = createDataTh(srcTh.innerText.trim());
+    srcTh.after(newTh);
+    
+    Array.from(tbody.children).forEach(tr => {
+      const tds = Array.from(tr.children).slice(1);
+      const src = tds[colIdx];
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.innerHTML = src.innerHTML;
+      td.className = src.className;
+      td.onclick = () => selectCell(td);
+      src.after(td);
+    });
+    colCount++;
+    historyManager.saveState('столбец дублирован');
+  }
+
+  function deleteColumnAt(colIdx) {
+    if (colCount <= 1) return;
+    const ths = dataThs();
+    if (!ths[colIdx]) return;
+    ths[colIdx].remove();
+    Array.from(tbody.children).forEach(tr => {
+      const tds = Array.from(tr.children).slice(1);
+      if (tds[colIdx]) tds[colIdx].remove();
+    });
+    colCount--;
+    selectedCell = null;
+    historyManager.saveState('столбец удалён');
+  }
+
+  // v0.3: перемещение столбца по новому порядку
+  function applyColumnOrder(newOrder) {
+    const ths = dataThs();
+    const rows = Array.from(tbody.children);
+    const tdsPerRow = rows.map(tr => Array.from(tr.children).slice(1));
+    newOrder.forEach(idx => theadRow.appendChild(ths[idx]));
+    rows.forEach((tr, r) => newOrder.forEach(idx => tr.appendChild(tdsPerRow[r][idx])));
+  }
+
+  // ================= DRAG & DROP: СТРОКИ =================
+  let draggedRow = null, draggedOverRow = null, dragPosition = null;
+
+  function setupRowDrag(row) {
+    const handle = row.querySelector('.drag-handle');
+    if (!handle || handle.dataset.setup) return;
+    handle.dataset.setup = 'true';
+    
+    handle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      draggedRow = row;
+      row.classList.add('dragging');
+      
+      const onMouseMove = (ev) => {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        let found = false;
+        for (let r of rows) {
+          if (r === row) continue;
+          const rect = r.getBoundingClientRect();
+          const middle = rect.top + rect.height / 2;
+          if (ev.clientY < middle) {
+            clearDragStyles();
+            r.classList.add('drag-over-top');
+            draggedOverRow = r; dragPosition = 'top'; found = true;
+            break;
+          } else if (ev.clientY > middle && rows.indexOf(r) === rows.length - 1) {
+            clearDragStyles();
+            r.classList.add('drag-over-bottom');
+            draggedOverRow = r; dragPosition = 'bottom'; found = true;
+            break;
+          }
+        }
+        if (!found) clearDragStyles();
+      };
+      
+      const onMouseUp = () => {
+        if (draggedRow && draggedOverRow && dragPosition) {
+          if (dragPosition === 'top') tbody.insertBefore(draggedRow, draggedOverRow);
+          else tbody.insertBefore(draggedRow, draggedOverRow.nextSibling);
+          historyManager.saveState('строка перемещена');
+        }
+        draggedRow.classList.remove('dragging');
+        clearDragStyles();
+        draggedRow = draggedOverRow = null; dragPosition = null;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      };
+      
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
+  
+  function clearDragStyles() {
+    document.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+      el.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+  }
+
+  // ================= v0.3: DRAG & DROP СТОЛБЦОВ =================
+  let draggedColIdx = null, overColIdx = null, colDropSide = null;
+
+  theadRow.addEventListener('mousedown', (e) => {
+    const handle = e.target.closest('.col-handle');
+    if (!handle) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const th = handle.closest('th');
+    draggedColIdx = dataIndexOfTh(th);
+    th.classList.add('dragging-col');
+    
+    const markCol = (i, side) => {
+      clearColMarks();
+      dataThs()[i].classList.add(side === 'left' ? 'drag-over-left' : 'drag-over-right');
+      overColIdx = i;
+      colDropSide = side;
+    };
+    
+    const onMove = (ev) => {
+      const ths = dataThs();
+      let found = false;
+      for (let i = 0; i < ths.length; i++) {
+        if (i === draggedColIdx) continue;
+        const rect = ths[i].getBoundingClientRect();
+        const mid = rect.left + rect.width / 2;
+        if (ev.clientX < mid) { markCol(i, 'left'); found = true; break; }
+        else if (ev.clientX > mid && i === ths.length - 1) { markCol(i, 'right'); found = true; break; }
+      }
+      if (!found) clearColMarks();
+    };
+    
+    const onUp = () => {
+      if (draggedColIdx !== null && overColIdx !== null && overColIdx !== draggedColIdx) {
+        const order = Array.from({length: colCount}, (_, i) => i).filter(i => i !== draggedColIdx);
+        let pos = order.indexOf(overColIdx);
+        if (colDropSide === 'right') pos += 1;
+        order.splice(pos, 0, draggedColIdx);
+        
+        const current = Array.from({length: colCount}, (_, i) => i);
+        if (JSON.stringify(order) !== JSON.stringify(current)) {
+          applyColumnOrder(order);
+          historyManager.saveState('столбец перемещён');
+        }
+      }
+      clearColMarks();
+      dataThs().forEach(t => t.classList.remove('dragging-col'));
+      draggedColIdx = overColIdx = null; colDropSide = null;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  function clearColMarks() {
+    document.querySelectorAll('th.drag-over-left, th.drag-over-right').forEach(el => {
+      el.classList.remove('drag-over-left', 'drag-over-right');
+    });
+  }
+
+  // ================= v0.3: КОНТЕКСТНОЕ МЕНЮ =================
+  let ctxTarget = null;
+
+  function ctxItem(action, icon, label, extra = '') {
+    return `<div class="ctx-item ${extra}" data-action="${action}"><i class="fas ${icon}"></i>${label}</div>`;
+  }
+
+  function openCtxMenu(x, y, isHeader) {
+    let html = '';
+    if (!isHeader) {
+      html += ctxItem('clear', 'fa-eraser', 'Очистить ячейку');
+      html += '<div class="ctx-sep"></div>';
+      html += ctxItem('row-below', 'fa-plus', 'Вставить строку ниже');
+      html += ctxItem('row-dup', 'fa-clone', 'Дублировать строку');
+      html += ctxItem('row-del', 'fa-trash', 'Удалить строку', 'danger');
+      html += '<div class="ctx-sep"></div>';
+    } else {
+      html += ctxItem('clear', 'fa-eraser', 'Очистить заголовок');
+      html += '<div class="ctx-sep"></div>';
+    }
+    html += ctxItem('col-right', 'fa-plus', 'Вставить столбец справа');
+    html += ctxItem('col-dup', 'fa-clone', 'Дублировать столбец');
+    html += ctxItem('col-del', 'fa-trash', 'Удалить столбец', 'danger');
+    
+    ctxMenu.innerHTML = html;
+    ctxMenu.classList.add('active');
+    
+    const rect = ctxMenu.getBoundingClientRect();
+    const left = Math.min(x, window.innerWidth - rect.width - 10);
+    const top = Math.min(y, window.innerHeight - rect.height - 10);
+    ctxMenu.style.left = left + 'px';
+    ctxMenu.style.top = top + 'px';
+  }
+
+  function closeCtxMenu() {
+    ctxMenu.classList.remove('active');
+    ctxTarget = null;
+  }
+
+  table.addEventListener('contextmenu', (e) => {
+    const cell = e.target.closest('td, th');
+    if (!cell || cell.classList.contains('drag-col')) return;
+    e.preventDefault();
+    
+    const isHeader = cell.tagName === 'TH';
+    ctxTarget = {
+      isHeader,
+      cell,
+      rowIdx: isHeader ? null : Array.from(tbody.children).indexOf(cell.parentElement),
+      colIdx: isHeader ? dataIndexOfTh(cell) : dataIndexOfTd(cell)
+    };
+    openCtxMenu(e.clientX, e.clientY, isHeader);
+  });
+
+  ctxMenu.addEventListener('click', (e) => {
+    const item = e.target.closest('.ctx-item');
+    if (!item || !ctxTarget) return;
+    
+    switch (item.dataset.action) {
+      case 'clear':
+        clearCell(ctxTarget.cell);
+        historyManager.saveState('ячейка очищена');
+        break;
+      case 'row-below': insertRowBelow(ctxTarget.rowIdx); break;
+      case 'row-dup': duplicateRow(ctxTarget.rowIdx); break;
+      case 'row-del': deleteRowAt(ctxTarget.rowIdx); break;
+      case 'col-right': insertColumnRight(ctxTarget.colIdx); break;
+      case 'col-dup': duplicateColumn(ctxTarget.colIdx); break;
+      case 'col-del': deleteColumnAt(ctxTarget.colIdx); break;
+    }
+    closeCtxMenu();
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    if (!ctxMenu.contains(e.target)) closeCtxMenu();
+  });
+  document.querySelector('.workspace').addEventListener('scroll', closeCtxMenu);
+
+  // ================= ГОРЯЧИЕ КЛАВИШИ =================
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('instructionModal').classList.remove('active');
+      closeCtxMenu();
+      return;
+    }
+    
+    const ctrl = e.ctrlKey || e.metaKey;
+    const key = e.key.toLowerCase();
+    
+    if (ctrl && key === 'z' && !e.shiftKey) {
+      if (isTypingContext()) return;
+      e.preventDefault(); historyManager.undo(); return;
+    }
+    if (ctrl && (key === 'y' || (key === 'z' && e.shiftKey))) {
+      if (isTypingContext()) return;
+      e.preventDefault(); historyManager.redo(); return;
+    }
+    
+    if (isTypingContext()) return;
     if (!selectedCell) return;
+    
     if (e.key === 'Delete' && e.ctrlKey) { removeLastRow(); e.preventDefault(); }
     else if (e.key === 'Backspace' && e.ctrlKey) { removeLastColumn(); e.preventDefault(); }
     else if (e.key === 'Enter' && e.ctrlKey) { addRow(); e.preventDefault(); }
-    else if (e.key === 'i' && e.ctrlKey) { addColumn(); e.preventDefault(); }
-    if (e.key === 'Escape') {
-        document.getElementById('instructionModal').classList.remove('active');
-    }
+    else if (key === 'i' && e.ctrlKey) { addColumn(); e.preventDefault(); }
   });
 
-  let quillEditors = [];
-  const blocksContainer = document.getElementById('blocksContainer');
-  
-  function addNewBlock() {
+  // ================= БЛОКИ =================
+  function createBlockWrapper(index) {
     const wrapper = document.createElement('div');
     wrapper.className = 'editor-block';
-    wrapper.innerHTML = `<label>Блок ${quillEditors.length + 1}</label><div class="quill-holder"></div>`;
+    wrapper.setAttribute('data-draggable', 'true');
+    wrapper.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <label style="margin: 0;">Блок ${index + 1}</label>
+        <div class="item-actions">
+          <button class="secondary duplicate-block" style="padding: 8px 12px; font-size: 12px;" title="Дублировать блок">
+            <i class="fas fa-clone"></i>
+          </button>
+          <span class="drag-handle" title="Перетащить блок"><i class="fas fa-grip-vertical"></i></span>
+        </div>
+      </div>
+      <div class="quill-holder"></div>
+    `;
+    return wrapper;
+  }
+
+  function renumberBlocks() {
+    quillEditors.forEach((item, idx) => {
+      const label = item.wrapper.querySelector('label');
+      if (label) label.textContent = `Блок ${idx + 1}`;
+    });
+  }
+
+  function addNewBlock(save = true) {
+    blocksInitialized = true;
+    const wrapper = createBlockWrapper(quillEditors.length);
     blocksContainer.appendChild(wrapper);
     
-    const editorDiv = wrapper.querySelector('.quill-holder');
-    const quill = new Quill(editorDiv, { theme: 'snow' });
+    const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+    attachQuillSave(quill);
     quillEditors.push({ quill, wrapper });
     
     document.getElementById('removeBlockBtn').style.display = 'inline-flex';
+    setupBlocksDrag();
+    if (save) historyManager.saveState('добавлен блок');
   }
 
-  document.getElementById('addBlockBtn').onclick = addNewBlock;
+  // v0.3: дублирование блока
+  function duplicateBlock(idx) {
+    const src = quillEditors[idx];
+    if (!src) return;
+    const wrapper = createBlockWrapper(0);
+    src.wrapper.after(wrapper);
+    
+    const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+    quill.root.innerHTML = src.quill.root.innerHTML;
+    attachQuillSave(quill);
+    
+    quillEditors.splice(idx + 1, 0, { quill, wrapper });
+    renumberBlocks();
+    setupBlocksDrag();
+    document.getElementById('removeBlockBtn').style.display = 'inline-flex';
+    historyManager.saveState('блок дублирован');
+  }
+
+  // v0.3: делегирование клика по кнопке дублирования блока
+  blocksContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.duplicate-block');
+    if (!btn) return;
+    const wrapper = btn.closest('.editor-block');
+    const idx = quillEditors.findIndex(q => q.wrapper === wrapper);
+    if (idx >= 0) duplicateBlock(idx);
+  });
+
+  document.getElementById('addBlockBtn').onclick = () => addNewBlock();
   document.getElementById('removeBlockBtn').onclick = () => {
     if(quillEditors.length > 1) {
       const last = quillEditors.pop();
       last.wrapper.remove();
+      renumberBlocks();
       if(quillEditors.length === 1) document.getElementById('removeBlockBtn').style.display = 'none';
+      historyManager.saveState('удалён блок');
     }
   };
 
-  let listQuillEditors = [];
-  const listBlocksContainer = document.getElementById('listBlocksContainer');
+  // ================= DRAG & DROP: БЛОКИ =================
+  let draggedBlock = null, draggedOverBlock = null, blockDragPosition = null;
+
+  function setupBlocksDrag() {
+    quillEditors.forEach((item) => {
+      const handle = item.wrapper.querySelector('.drag-handle');
+      if (!handle || handle.dataset.setup) return;
+      handle.dataset.setup = 'true';
+      
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        draggedBlock = item.wrapper;
+        item.wrapper.classList.add('dragging');
+        
+        const onMouseMove = (ev) => {
+          const blocks = Array.from(blocksContainer.querySelectorAll('.editor-block'));
+          let found = false;
+          for (let block of blocks) {
+            if (block === draggedBlock) continue;
+            const rect = block.getBoundingClientRect();
+            const middle = rect.top + rect.height / 2;
+            if (ev.clientY < middle) {
+              clearBlockDragStyles();
+              block.classList.add('drag-over-top');
+              draggedOverBlock = block; blockDragPosition = 'top'; found = true;
+              break;
+            } else if (ev.clientY > middle && blocks.indexOf(block) === blocks.length - 1) {
+              clearBlockDragStyles();
+              block.classList.add('drag-over-bottom');
+              draggedOverBlock = block; blockDragPosition = 'bottom'; found = true;
+              break;
+            }
+          }
+          if (!found) clearBlockDragStyles();
+        };
+        
+        const onMouseUp = () => {
+          if (draggedBlock && draggedOverBlock && blockDragPosition) {
+            if (blockDragPosition === 'top') blocksContainer.insertBefore(draggedBlock, draggedOverBlock);
+            else blocksContainer.insertBefore(draggedBlock, draggedOverBlock.nextSibling);
+            
+            const newOrder = Array.from(blocksContainer.querySelectorAll('.editor-block'));
+            quillEditors.sort((a, b) => newOrder.indexOf(a.wrapper) - newOrder.indexOf(b.wrapper));
+            renumberBlocks();
+            historyManager.saveState('блок перемещён');
+          }
+          draggedBlock.classList.remove('dragging');
+          clearBlockDragStyles();
+          draggedBlock = draggedOverBlock = null; blockDragPosition = null;
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        };
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+    });
+  }
   
+  function clearBlockDragStyles() {
+    blocksContainer.querySelectorAll('.editor-block').forEach(el => {
+      el.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+  }
+
+  // ================= СПИСОК =================
   function initListBlocks() {
+    listInitialized = true;
     const types = ['Заголовок', 'Описание', 'Список'];
     types.forEach(type => {
       const wrapper = document.createElement('div');
@@ -608,10 +1353,12 @@
       listBlocksContainer.appendChild(wrapper);
       
       const quill = new Quill(wrapper.querySelector('.quill-holder'), { theme: 'snow' });
+      attachQuillSave(quill);
       listQuillEditors.push({ quill, type });
     });
   }
 
+  // ================= ПРЕДПРОСМОТРЫ =================
   document.getElementById('showPreviewBtnBlocks').onclick = () => {
     const container = document.getElementById('previewContainerBlocks');
     container.style.display = 'block';
@@ -621,6 +1368,7 @@
     });
     html += '</div>';
     container.innerHTML = html;
+    setViewport(currentViewport, false);
   };
 
   document.getElementById('showPreviewBtnList').onclick = () => {
@@ -630,26 +1378,30 @@
     const d = listQuillEditors.find(i => i.type === 'Описание')?.quill.root.innerHTML || '';
     const l = listQuillEditors.find(i => i.type === 'Список')?.quill.root.innerHTML || '';
     container.innerHTML = `<div class="my-custom-section"><h3>${h}</h3><p>${d}</p><ul>${l.replace(/<p>/g, '<li>').replace(/<\/p>/g, '</li>')}</ul></div>`;
+    setViewport(currentViewport, false);
   };
 
   document.getElementById('infoText').addEventListener('input', (e) => {
     const val = e.target.value;
     document.getElementById('previewText').innerHTML = val ? `⚠️ ${val}` : '⚠️ Ваш текст появится здесь';
+    debouncedSaveState('редактирование плашки');
   });
 
-  // ================= РЕЖИМ КОМПЛЕКТ =================
-  let kitItems = []; // [{name: '', specs: ['...']}]
-  const kitItemsContainer = document.getElementById('kitItemsContainer');
-  
+  // ================= КОМПЛЕКТ =================
   function renderKitItems() {
     kitItemsContainer.innerHTML = '';
     kitItems.forEach((item, index) => {
       const block = document.createElement('div');
       block.className = 'editor-block';
+      block.setAttribute('data-kit-index', index);
       block.innerHTML = `
         <div class="kit-item-header">
           <label>📦 Товар #${index + 1}</label>
           <div class="item-actions">
+            <button class="secondary duplicate-kit-item" style="padding: 8px 12px; font-size: 12px;" title="Дублировать товар">
+              <i class="fas fa-clone"></i>
+            </button>
+            <span class="drag-handle" title="Перетащить товар"><i class="fas fa-grip-vertical"></i></span>
             <button class="secondary add-kit-spec" data-index="${index}" style="padding: 8px 14px; font-size: 13px;">
               <i class="fas fa-plus"></i> Характеристика
             </button>
@@ -679,44 +1431,127 @@
         
         row.querySelector('.kit-spec-input').addEventListener('input', (e) => {
           kitItems[index].specs[specIdx] = e.target.value;
+          debouncedSaveState('редактирование комплекта');
         });
         
         row.querySelector('.remove-kit-spec').addEventListener('click', () => {
           kitItems[index].specs.splice(specIdx, 1);
           renderKitItems();
+          historyManager.saveState('характеристика удалена');
         });
       });
       
       block.querySelector('.kit-item-name').addEventListener('input', (e) => {
         kitItems[index].name = e.target.value;
+        debouncedSaveState('редактирование комплекта');
       });
       
       block.querySelector('.add-kit-spec').addEventListener('click', () => {
         kitItems[index].specs.push('');
         renderKitItems();
+        historyManager.saveState('характеристика добавлена');
       });
       
       block.querySelector('.remove-kit-item').addEventListener('click', () => {
         kitItems.splice(index, 1);
         renderKitItems();
+        historyManager.saveState('товар удалён');
+      });
+    });
+    
+    setupKitItemsDrag();
+  }
+  
+  function addKitItem(save = true) {
+    kitInitialized = true;
+    kitItems.push({ name: '', specs: [''] });
+    renderKitItems();
+    if (save) historyManager.saveState('товар добавлен');
+  }
+  
+  // v0.3: дублирование товара (делегирование)
+  kitItemsContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.duplicate-kit-item');
+    if (!btn) return;
+    const block = btn.closest('.editor-block[data-kit-index]');
+    const idx = parseInt(block.dataset.kitIndex, 10);
+    kitItems.splice(idx + 1, 0, JSON.parse(JSON.stringify(kitItems[idx])));
+    renderKitItems();
+    historyManager.saveState('товар дублирован');
+  });
+
+  document.getElementById('addKitItemBtn').onclick = () => addKitItem();
+
+  // ================= DRAG & DROP: ТОВАРЫ =================
+  let draggedKitItem = null, draggedOverKitItem = null, kitItemDragPosition = null;
+
+  function setupKitItemsDrag() {
+    kitItemsContainer.querySelectorAll('.editor-block[data-kit-index]').forEach(block => {
+      const handle = block.querySelector('.drag-handle');
+      if (!handle || handle.dataset.setup) return;
+      handle.dataset.setup = 'true';
+      
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        draggedKitItem = block;
+        block.classList.add('dragging');
+        
+        const onMouseMove = (ev) => {
+          const allBlocks = Array.from(kitItemsContainer.querySelectorAll('.editor-block[data-kit-index]'));
+          let found = false;
+          for (let b of allBlocks) {
+            if (b === block) continue;
+            const rect = b.getBoundingClientRect();
+            const middle = rect.top + rect.height / 2;
+            if (ev.clientY < middle) {
+              clearKitItemDragStyles();
+              b.classList.add('drag-over-top');
+              draggedOverKitItem = b; kitItemDragPosition = 'top'; found = true;
+              break;
+            } else if (ev.clientY > middle && allBlocks.indexOf(b) === allBlocks.length - 1) {
+              clearKitItemDragStyles();
+              b.classList.add('drag-over-bottom');
+              draggedOverKitItem = b; kitItemDragPosition = 'bottom'; found = true;
+              break;
+            }
+          }
+          if (!found) clearKitItemDragStyles();
+        };
+        
+        const onMouseUp = () => {
+          if (draggedKitItem && draggedOverKitItem && kitItemDragPosition) {
+            if (kitItemDragPosition === 'top') kitItemsContainer.insertBefore(draggedKitItem, draggedOverKitItem);
+            else kitItemsContainer.insertBefore(draggedKitItem, draggedOverKitItem.nextSibling);
+            
+            const newOrder = Array.from(kitItemsContainer.querySelectorAll('.editor-block[data-kit-index]'));
+            kitItems = newOrder.map(b => kitItems[parseInt(b.dataset.kitIndex, 10)]);
+            
+            renderKitItems();
+            historyManager.saveState('товар перемещён');
+          }
+          if (draggedKitItem) draggedKitItem.classList.remove('dragging');
+          clearKitItemDragStyles();
+          draggedKitItem = draggedOverKitItem = null; kitItemDragPosition = null;
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        };
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
       });
     });
   }
   
-  function addKitItem() {
-    kitItems.push({ name: '', specs: [''] });
-    renderKitItems();
+  function clearKitItemDragStyles() {
+    kitItemsContainer.querySelectorAll('.editor-block').forEach(el => {
+      el.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
   }
-  
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-  
-  document.getElementById('addKitItemBtn').onclick = addKitItem;
-  
+
+  ['kitName', 'kitSize', 'kitSectionTitle'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => debouncedSaveState('редактирование комплекта'));
+  });
+
   document.getElementById('showPreviewBtnKit').onclick = () => {
     const container = document.getElementById('previewContainerKit');
     container.style.display = 'block';
@@ -726,24 +1561,24 @@
     const kitSectionTitle = document.getElementById('kitSectionTitle').value;
     
     let html = `<div style="font-family: Montserrat, sans-serif;">
-      <div style="background-color: #2d7f1b; padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #fff;">${kitName}</h3>
-        <p style="margin: 0; font-size: 16px; color: #fff;"><strong style="font-size: 18px;">Размер площадки ${kitSize}</strong></p>
+      <div style="background-color: #2d7f1b; padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #fff;">${escapeHtml(kitName)}</h3>
+        <p style="margin: 0; font-size: 16px; color: #fff;"><strong style="font-size: 18px;">Размер площадки ${escapeHtml(kitSize)}</strong></p>
       </div>
-      <h2 style="font-size: 22px; color: #2d7f1b; border-bottom: 2px dashed #b2bec3; padding-bottom: 8px; margin-top: 10px; margin-bottom: 15px;">${kitSectionTitle}</h2>
+      <h2 style="font-size: 22px; color: #2d7f1b; border-bottom: 2px dashed #b2bec3; padding-bottom: 8px; margin-top: 10px; margin-bottom: 15px;">${escapeHtml(kitSectionTitle)}</h2>
     `;
     
     kitItems.forEach(item => {
       if (!item.name && item.specs.length === 0) return;
       html += `<div style="background: #fff; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 15px; margin-bottom: 10px;">`;
-      html += `<div style="font-weight: 600; font-size: 18px; color: #2d7f1b; margin-bottom: 8px;">${item.name}</div>`;
+      html += `<div style="font-weight: 600; font-size: 18px; color: #2d7f1b; margin-bottom: 8px;">${escapeHtml(item.name)}</div>`;
       if (item.specs.length > 0 && item.specs.some(s => s.trim())) {
         html += `<ul style="list-style: none; padding-left: 20px; margin: 0;">`;
         item.specs.forEach(spec => {
           if (spec.trim()) {
             html += `<li style="font-size: 15px; margin-bottom: 4px; position: relative; padding-left: 15px;">
               <span style="position: absolute; left: 0; color: #2ecc71; font-size: 20px;">•</span>
-              <strong>${spec}</strong>
+              <strong>${escapeHtml(spec)}</strong>
             </li>`;
           }
         });
@@ -754,8 +1589,10 @@
     
     html += `</div>`;
     container.innerHTML = html;
+    setViewport(currentViewport, false);
   };
 
+  // ================= КОПИРОВАНИЕ =================
   function copyContent(btnElement) {
     const mode = document.querySelector('.tool-section.active').id.replace('section-', '');
     let fullHtml = '';
@@ -771,14 +1608,18 @@
 .my-custom-section .copied-table tbody tr:hover { background-color: #dcedc8; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transform: translateY(-2px); }
 .my-custom-section .copied-table td, .my-custom-section .copied-table th { padding: 14px 12px; font-size: 15px; border: none; vertical-align: middle; }
 .my-custom-section .copied-table td.product-name { text-align: left; font-weight: 600; color: #37474f; }
-.my-custom-section .copied-table td.icon-yes { text-align: center; }
-.my-custom-section .copied-table td.icon-no { text-align: center; }
 .my-custom-section td.icon-yes, .my-custom-section td.icon-no { text-align: center; font-size: 22px; }
 .my-custom-section .icon-yes::before { content: "✔"; color: #2e7d32; font-size: 22px; display: inline-block; }
 .my-custom-section .icon-no::before { content: "✘"; color: #c62828; font-size: 22px; display: inline-block; }
 </style>`;
 
       tableClone.className = 'copied-table';
+      tableClone.querySelectorAll('.drag-col').forEach(el => el.remove());
+      // v0.3: чистим ручки столбцов из копии
+      tableClone.querySelectorAll('.col-handle').forEach(el => el.remove());
+      tableClone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+      tableClone.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+      
       Array.from(tableClone.querySelectorAll('td')).forEach(td => {
         const cellText = td.innerText.trim();
         if (cellText === '+') { td.innerHTML = '<i></i>'; td.className = 'icon-yes'; }
@@ -806,98 +1647,25 @@
     } else if (mode === 'infoBox') {
        const text = document.getElementById('infoText').value;
        const styles = `<style>.custom-warning { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff0f5, #ffe0ec); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); } .warning-text { font-size: 25px; font-weight: 700; color: #d84315; }</style>`;
-       fullHtml = styles + `<div class="custom-warning"><div class="warning-text">⚠️ ${text}</div></div>`;
+       fullHtml = styles + `<div class="custom-warning"><div class="warning-text">⚠️ ${escapeHtml(text)}</div></div>`;
     } else if (mode === 'kit') {
        const kitName = document.getElementById('kitName').value;
        const kitSize = document.getElementById('kitSize').value;
        const kitSectionTitle = document.getElementById('kitSectionTitle').value;
        
        const styles = `<style type="text/css">
-  .custom-style-container {
-    max-width: 950px;
-    margin: 0px;
-    padding: 0px;
-    border-radius: 20px;
-    line-height: 1.6;
-  }
-  .custom-style-container h2 {
-    font-size: 26px;
-    position: relative;
-    border-bottom: 3px solid #74b900;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: #2d7f1b;
-  }
-  .custom-style-container h2.section-title {
-    font-size: 22px;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    border-bottom: 2px dashed #b2bec3;
-    padding-bottom: 8px;
-    background: linear-gradient(90deg, #2d7f1b, #2d7f1b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .custom-style-container .item {
-    background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    padding: 15px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-  }
-  .custom-style-container .item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-  }
-  .custom-style-container .title {
-    font-weight: 600;
-    font-size: 20px;
-    margin-bottom: 8px;
-    color: #2d7f1b;
-    position: relative;
-  }
-  .custom-style-container .specs {
-    list-style: none;
-    padding-left: 20px;
-    margin: 0;
-  }
-  .custom-style-container .specs li {
-    font-size: 15px;
-    margin-bottom: 4px;
-    position: relative;
-    padding-left: 20px;
-  }
-  .custom-style-container .specs li::before {
-    content: "•";
-    color: #2ecc71;
-    font-size: 26px;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .custom-style-container .size-banner {
-    background-color: #2d7f1b;
-    padding: 15px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
-    margin-bottom: 15px;
-  }
-  .custom-style-container .size-banner h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #ffffff;
-  }
-  .custom-style-container .size-banner p {
-    margin: 0;
-    font-size: 16px;
-    color: #ffffff;
-  }
+  .custom-style-container { max-width: 950px; margin: 0px; padding: 0px; border-radius: 20px; line-height: 1.6; }
+  .custom-style-container h2 { font-size: 26px; position: relative; border-bottom: 3px solid #74b900; font-weight: 700; letter-spacing: 1px; color: #2d7f1b; }
+  .custom-style-container h2.section-title { font-size: 22px; margin-top: 10px; margin-bottom: 15px; border-bottom: 2px dashed #b2bec3; padding-bottom: 8px; }
+  .custom-style-container .item { background: #ffffff; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 15px; margin-bottom: 10px; transition: all 0.3s ease; }
+  .custom-style-container .item:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.2); }
+  .custom-style-container .title { font-weight: 600; font-size: 20px; margin-bottom: 8px; color: #2d7f1b; }
+  .custom-style-container .specs { list-style: none; padding-left: 20px; margin: 0; }
+  .custom-style-container .specs li { font-size: 15px; margin-bottom: 4px; position: relative; padding-left: 20px; }
+  .custom-style-container .specs li::before { content: "•"; color: #2ecc71; font-size: 26px; position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+  .custom-style-container .size-banner { background-color: #2d7f1b; padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+  .custom-style-container .size-banner h3 { margin: 0; font-size: 20px; font-weight: 600; color: #ffffff; }
+  .custom-style-container .size-banner p { margin: 0; font-size: 16px; color: #ffffff; }
 </style>`;
 
        let itemsHtml = '';
@@ -948,14 +1716,13 @@ ${itemsHtml}
     
     if (btnElement) {
         btnElement.classList.add('copy-btn-animate', 'copied');
-        setTimeout(() => {
-            btnElement.classList.remove('copied');
-        }, 2000);
+        setTimeout(() => btnElement.classList.remove('copied'), 2000);
     }
 
     setTimeout(() => notif.classList.remove('show'), 3000);
   }
 
+  // ================= МОДАЛКА =================
   const instrModal = document.getElementById('instructionModal');
   document.getElementById('instructionBtnNav').onclick = () => instrModal.classList.add('active');
   document.getElementById('closeModal').onclick = () => instrModal.classList.remove('active');
@@ -964,8 +1731,13 @@ ${itemsHtml}
     if(e.target == instrModal) instrModal.classList.remove('active');
   }
 
+  // ================= ИНИЦИАЛИЗАЦИЯ =================
   initTable();
   table.dataset.initialized = 'true';
+  setViewport('desktop', false);
+  
+  historyManager.enabled = true;
+  historyManager.saveState('начальное состояние');
 
 </script>
 </body>
