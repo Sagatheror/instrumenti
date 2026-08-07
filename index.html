@@ -74,7 +74,6 @@
             line-height: 1.5;
         }
 
-        /* [v0.3] Smooth Theme Switch - глобальные transition */
         body, .top-bar, .dock-container, .os-window, .window-header, 
         .settings-panel, .context-menu, .login-card, .dock-item,
         .window-content, .wallpaper-selector, .tutorial-card {
@@ -94,7 +93,6 @@
             transition: opacity 0.8s ease, background 1.2s ease;
         }
 
-        /* [v0.3] Animated Wallpaper Canvas */
         #wallpaper-canvas {
             position: fixed;
             inset: 0;
@@ -123,14 +121,12 @@
             opacity: 0.4;
         }
 
-        /* --- Top Bar --- */
         .top-bar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 48px;
-            /* [v0.3] Glassmorphism */
             background: var(--glass-bg);
             backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
             -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
@@ -193,7 +189,6 @@
 
         .top-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
-        /* --- Desktop & Windows --- */
         .desktop {
             position: absolute;
             top: 48px;
@@ -240,7 +235,6 @@
             -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            /* [v0.3] Window Shadows+ */
             box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
@@ -256,7 +250,6 @@
 
         .os-window.snapping { transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1); }
 
-        /* [v0.3] Window Shadows+ — elevated states */
         .os-window.focused {
             box-shadow: 0 12px 40px rgba(0,0,0,0.12), 
                         0 4px 12px rgba(0,0,0,0.08),
@@ -343,7 +336,6 @@
             background: var(--bg-solid);
         }
 
-        /* --- Drag Overlay --- */
         .drag-overlay {
             position: absolute;
             inset: 0;
@@ -353,7 +345,6 @@
             pointer-events: auto;
         }
 
-        /* --- Iframe Loader --- */
         .iframe-loader {
             position: absolute;
             inset: 0;
@@ -423,7 +414,6 @@
 
         .iframe-error .retry-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 
-        /* --- Resizing Handles --- */
         .resize-handle { position: absolute; z-index: 100; }
         .rh-r { top: 0; right: 0; bottom: 0; width: 6px; cursor: e-resize; }
         .rh-b { bottom: 0; left: 0; right: 0; height: 6px; cursor: s-resize; }
@@ -431,7 +421,6 @@
         .rh-l { top: 0; left: 0; bottom: 0; width: 6px; cursor: w-resize; }
         .rh-t { top: 0; left: 0; right: 0; height: 6px; cursor: n-resize; }
 
-        /* --- Dock --- */
         .dock-container {
             position: fixed;
             bottom: 1.5rem;
@@ -441,7 +430,6 @@
             display: flex;
             align-items: flex-end;
             padding: 10px;
-            /* [v0.3] Glassmorphism */
             background: var(--glass-bg);
             backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
             -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
@@ -494,7 +482,6 @@
             color: var(--bg-primary);
         }
 
-        /* [v0.2] Dock running indicator */
         .dock-item.active::after {
             content: '';
             position: absolute;
@@ -534,7 +521,6 @@
             transform: translateY(0);
         }
 
-        /* [v0.3] Dock Hover Preview */
         .dock-preview {
             position: absolute;
             bottom: 70px;
@@ -605,7 +591,6 @@
             opacity: 0.5;
         }
 
-        /* --- Settings Panel --- */
         .settings-panel {
             position: fixed;
             top: 60px;
@@ -753,7 +738,6 @@
         
         .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
 
-        /* --- Tutorial --- */
         .tutorial-overlay {
             position: fixed;
             inset: 0;
@@ -806,7 +790,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* --- Quote Card --- */
         .quote-card {
             position: fixed;
             bottom: 110px;
@@ -838,7 +821,6 @@
             fill: currentColor;
         }
 
-        /* --- Context Menu --- */
         .context-menu {
             position: fixed;
             background: var(--glass-bg);
@@ -880,7 +862,6 @@
         .context-item svg { width: 14px; height: 14px; fill: currentColor; }
         .context-divider { height: 1px; background: var(--border); margin: 6px 0; }
 
-        /* --- Wallpaper Selector --- */
         .wallpaper-selector {
             position: fixed;
             top: 50%;
@@ -1027,7 +1008,6 @@
 
         .custom-upload-input { display: none; }
 
-        /* --- Login System Styles --- */
         .login-overlay {
             position: fixed;
             inset: 0;
@@ -1047,7 +1027,7 @@
         }
 
         .login-card {
-            width: 360px;
+            width: 380px;
             padding: 32px;
             background: var(--glass-bg);
             backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
@@ -1138,6 +1118,19 @@
             animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
+        .login-success {
+            color: var(--success);
+            font-size: 12px;
+            margin-top: 12px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-success.show {
+            opacity: 1;
+        }
+
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
             20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -1158,7 +1151,45 @@
             color: var(--text-secondary);
         }
 
-        /* [v0.2] Snap Preview */
+        .auth-switch {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: var(--bg-softer);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .auth-switch-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-switch-btn.active {
+            background: var(--bg-solid);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
         .snap-preview {
             position: fixed;
             background: var(--accent);
@@ -1174,12 +1205,33 @@
 
         .snap-preview.active { display: block; animation: fadeIn 0.15s ease; }
 
-        /* [v0.3] Split View Pro - multiple zones */
         .snap-preview.zone-tl, .snap-preview.zone-tr, 
         .snap-preview.zone-bl, .snap-preview.zone-br {
             width: calc(50% - 4px);
             height: calc(50% - 4px);
         }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--accent-soft);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-badge:hover {
+            background: var(--bg-soft);
+            color: var(--text-primary);
+        }
+
+        .user-badge svg { width: 12px; height: 12px; fill: currentColor; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1196,10 +1248,343 @@
             .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
             .dock-preview { display: none; }
         }
+.logout-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 11000;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.logout-modal.show {
+    display: flex;
+    opacity: 1;
+    animation: fadeIn 0.2s ease;
+}
+
+.logout-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    width: 380px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: var(--glass-shadow);
+    animation: modalPop 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.logout-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--danger);
+}
+
+.logout-card h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+}
+
+.logout-card p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 28px;
+}
+
+.logout-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.logout-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+}
+
+.logout-btn:hover {
+    transform: translateY(-1px);
+}
+
+.logout-btn.cancel {
+    background: var(--bg-soft);
+    color: var(--text-primary);
+}
+
+.logout-btn.cancel:hover {
+    background: var(--bg-softer);
+    border-color: var(--border-strong);
+}
+
+.logout-btn.confirm {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+}
+
+.logout-btn.confirm:hover {
+    opacity: 0.9;
+}
+.user-badge-wrapper {
+    position: relative;
+}
+
+.account-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 320px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow), 0 20px 60px rgba(0,0,0,0.15);
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.98);
+    transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+    z-index: 5200;
+    pointer-events: none;
+}
+
+.account-panel.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.account-panel::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 20px;
+    width: 12px;
+    height: 12px;
+    background: var(--glass-bg);
+    border-left: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-border);
+    transform: rotate(45deg);
+    backdrop-filter: blur(var(--blur-strength));
+    -webkit-backdrop-filter: blur(var(--blur-strength));
+}
+
+.account-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.account-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.account-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.account-username {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.account-status {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.account-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+}
+
+.account-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-softer);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.stat-row:hover {
+    background: var(--accent-soft);
+    border-color: var(--border-strong);
+    transform: translateX(2px);
+}
+
+.stat-icon {
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-solid);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    margin-bottom: 1px;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.account-action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.account-action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.7;
+}
+
+.account-action-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--border);
+    transform: translateX(2px);
+}
+
+.account-action-btn.logout {
+    color: var(--danger);
+}
+
+.account-action-btn.logout:hover {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 768px) {
+    .account-panel {
+        position: fixed;
+        top: 60px;
+        right: 1rem;
+        left: auto;
+        width: calc(100% - 2rem);
+        max-width: 360px;
+    }
+}
     </style>
 </head>
 <body data-theme="light">
-    <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-card">
             <div class="user-avatar">
@@ -1209,22 +1594,47 @@
             </div>
             <div class="login-header">
                 <h2 id="greetingText">Добро пожаловать</h2>
-                <p>Введите ключ доступа для продолжения</p>
+                <p id="authSubtitle">Введите данные для входа</p>
+            </div>
+
+            <div class="auth-switch">
+                <button class="auth-switch-btn active" id="switchLogin" onclick="switchAuthMode('login')">Вход</button>
+                <button class="auth-switch-btn" id="switchRegister" onclick="switchAuthMode('register')">Регистрация</button>
             </div>
             
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
                 <div class="input-group">
-                    <label>Идентификатор</label>
-                    <input type="text" class="login-input" id="usernameInput" placeholder="Введите логин" autocomplete="off">
+                    <label>Логин</label>
+                    <input type="text" class="login-input" id="loginUsername" placeholder="Введите логин" autocomplete="username" required>
                 </div>
                 <div class="input-group">
-                    <label>Ключ доступа</label>
-                    <input type="password" class="login-input" id="passwordInput" placeholder="••••••••">
+                    <label>Пароль</label>
+                    <input type="password" class="login-input" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">
-                    <span id="btnText">Разблокировать систему</span>
+                    <span id="loginBtnText">Войти</span>
                 </button>
-                <div class="login-error" id="loginError">Неверные данные доступа</div>
+                <div class="login-error" id="loginError"></div>
+            </form>
+
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="input-group">
+                    <label>Придумайте логин</label>
+                    <input type="text" class="login-input" id="regUsername" placeholder="Минимум 3 символа" autocomplete="username" required minlength="3">
+                </div>
+                <div class="input-group">
+                    <label>Придумайте пароль</label>
+                    <input type="password" class="login-input" id="regPassword" placeholder="Минимум 4 символа" autocomplete="new-password" required minlength="4">
+                </div>
+                <div class="input-group">
+                    <label>Повторите пароль</label>
+                    <input type="password" class="login-input" id="regPasswordConfirm" placeholder="••••••••" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="login-btn" id="regBtn">
+                    <span id="regBtnText">Зарегистрироваться</span>
+                </button>
+                <div class="login-error" id="regError"></div>
+                <div class="login-success" id="regSuccess"></div>
             </form>
         </div>
     </div>
@@ -1241,6 +1651,75 @@
             </span>
         </div>
         <div class="top-bar-right">
+            <div class="user-badge-wrapper">
+    <div class="user-badge" id="userBadge" onclick="toggleAccountPanel(event)" title="Профиль" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span id="userBadgeName">user</span>
+    </div>
+    
+    <div class="account-panel" id="accountPanel">
+        <div class="account-header">
+            <div class="account-avatar">
+                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+            <div class="account-info">
+                <div class="account-username" id="accountUsername">user</div>
+                <div class="account-status">
+                    <span class="status-dot"></span>
+                    В сети
+                </div>
+            </div>
+        </div>
+
+        <div class="account-divider"></div>
+
+        <div class="account-stats">
+            <div class="stat-row">
+                <div class="stat-icon">⏱</div>
+                <div class="stat-content">
+                    <div class="stat-label">Время на сайте</div>
+                    <div class="stat-value" id="statTotalTime">0ч 0м</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-content">
+                    <div class="stat-label">Любимый инструмент</div>
+                    <div class="stat-value" id="statFavoriteTool">—</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-label">Всего сессий</div>
+                    <div class="stat-value" id="statSessions">0</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <div class="stat-label">С нами</div>
+                    <div class="stat-value" id="statDaysSince">0 дней</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-divider"></div>
+
+        <div class="account-actions">
+            <button class="account-action-btn" onclick="resetMySettings()">
+                <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                Сбросить настройки
+            </button>
+            <button class="account-action-btn logout" onclick="showLogoutModal()">
+                <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                Выйти из аккаунта
+            </button>
+        </div>
+    </div>
+</div>
             <div class="clock-display" id="clock">00:00</div>
             <button class="top-btn" onclick="toggleTutorial()" title="Обучение">
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
@@ -1290,7 +1769,6 @@
         </div>
     </div>
 
-    <!-- Wallpaper Selector Modal -->
     <div class="wallpaper-selector" id="wallpaperSelector">
         <div class="wallpaper-header">
             <h3>Выберите фон</h3>
@@ -1359,13 +1837,56 @@
                 3. Поднесите окно к <b>краю или углу</b> для разделения экрана.<br>
                 4. Наведите на иконку в доке для <b>превью окна</b>.<br>
                 5. Правый клик открывает контекстное меню.<br>
+                6. Нажатие на ПКМ открывает контекстное менюгде можно изменить обои (статичный цвет, анимированные, динамические в зависимости от времени суток).
             </p>
             <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
         </div>
     </div>
+<div class="logout-modal" id="logoutModal">
+    <div class="logout-card">
+        <div class="logout-icon">
+            <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: currentColor;">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+        </div>
+        <h3>Выйти из аккаунта?</h3>
+        <p>Вы уверены, что хотите выйти? Открытые окна будут закрыты.</p>
+        <div class="logout-actions">
+            <button class="logout-btn cancel" onclick="hideLogoutModal()">Отмена</button>
+            <button class="logout-btn confirm" onclick="confirmLogout()">Выйти</button>
+        </div>
+    </div>
+</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPV9-uUkRa-siCKpKYwLDEjV_kd83tHwc",
+            authDomain: "monopoly-multiplayer.firebaseapp.com",
+            databaseURL: "https://monopoly-multiplayer-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "monopoly-multiplayer",
+            storageBucket: "monopoly-multiplayer.firebasestorage.app",
+            messagingSenderId: "49002223534",
+            appId: "1:49002223534:web:2e1266b6e4450a8923da3f",
+            measurementId: "G-BM5PJ238N2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.firebaseDB = db;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseGet = get;
+        window.firebaseChild = child;
+        window.firebaseUpdate = update;
+        window.firebaseRemove = remove;
+
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
 
     <script>
-
         const ICONS = {
             chart: '<path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-7h-2v7zm4 0h2v-10h-2v10z"/>',
             file: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>',
@@ -1421,7 +1942,6 @@
             { name: "Forest", value: "linear-gradient(135deg, #14532d 0%, #166534 100%)", type: 'dark' }
         ];
 
-        // [v0.3-5] Animated Wallpapers
         const ANIMATED_WALLPAPERS = [
             { id: 'aurora', name: 'Aurora', type: 'animated' },
             { id: 'starfield', name: 'Starfield', type: 'animated' },
@@ -1429,7 +1949,6 @@
             { id: 'gradient', name: 'Flow', type: 'animated' }
         ];
 
-        // [v0.3-6] Dynamic Wallpaper presets
         const DYNAMIC_WALLPAPERS = {
             morning: { name: 'Morning', gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
             day: { name: 'Day', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
@@ -1437,19 +1956,20 @@
             night: { name: 'Night', gradient: 'linear-gradient(135deg, #0c1445 0%, #183b6b 100%)' }
         };
 
-        // ========== GLOBAL STATE ==========
         const Z_MIN = 100;
         const Z_MAX = 10000;
         let zIndexCounter = Z_MIN;
         let windows = {};
         let soundEnabled = true;
         let particlesEnabled = true;
-        let genieEnabled = true;  // [v0.3-1]
+        let genieEnabled = true;
         let quoteIndex = 0;
         let currentWallpaper = null;
-        let currentWallpaperType = 'static'; // static, animated, dynamic
-
-        // Particle state
+        let currentWallpaperType = 'static';
+        let currentUser = null;
+        let firebaseReady = false;
+        let loginAttempts = 0;
+        let isLocked = false;
         let particlesInitialized = false;
         let particleAnimationId = null;
         let particleColor = '#999999';
@@ -1457,31 +1977,576 @@
         let particleCanvas = null;
         let particles = [];
         let mouse = { x: null, y: null };
-
-        // [v0.3-5] Animated wallpaper state
         let wallpaperCanvas = null;
         let wallpaperCtx = null;
         let wallpaperAnimationId = null;
         let currentAnimatedWallpaper = null;
-
-        // [v0.3-3] Snap state with zones
         let snapState = { active: false, type: null, windowId: null };
-        
-        // Drag/resize state
         let isDragging = false, currentWin = null, dragOffsetX = 0, dragOffsetY = 0;
         let isResizing = false, resizeWin = null, resizeDir = '', startX, startY, startW, startH, startL, startT;
-
-        // [v0.3-2] Dock preview state
         let dockPreviewTimeout = null;
         let currentDockPreview = null;
+let userStats = {
+    totalTimeMs: 0,
+    sessionsCount: 0,
+    registeredAt: Date.now(),
+    lastSeen: Date.now(),
+    toolUsage: {},
+    favoriteWallpaper: null
+};
+let sessionStartTime = Date.now();
+let statsSaveInterval = null;
+let accountPanelOpen = false;
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                if (window.firebaseDB) {
+                    firebaseReady = true;
+                    resolve();
+                } else {
+                    window.addEventListener('firebaseReady', () => {
+                        firebaseReady = true;
+                        resolve();
+                    }, { once: true });
+                    setTimeout(() => { firebaseReady = !!window.firebaseDB; resolve(); }, 5000);
+                }
+            });
+        }
 
-        // Auth state
-        const VALID_USER_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
-        const VALID_PASS_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
-        let loginAttempts = 0;
-        let isLocked = false;
+        async function hashString(str) {
+            const msgBuffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-        // ========== INIT ==========
+        function sanitizeUsername(username) {
+            return username.replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
+        }
+
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const switchLogin = document.getElementById('switchLogin');
+            const switchRegister = document.getElementById('switchRegister');
+            const subtitle = document.getElementById('authSubtitle');
+
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('regError').classList.remove('show');
+            document.getElementById('regSuccess').classList.remove('show');
+
+            if (mode === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                switchLogin.classList.add('active');
+                switchRegister.classList.remove('active');
+                subtitle.textContent = 'Введите данные для входа';
+            } else {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                switchLogin.classList.remove('active');
+                switchRegister.classList.add('active');
+                subtitle.textContent = 'Создайте новый аккаунт';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            if (!firebaseReady) {
+                showError('regError', 'Сервер недоступен, попробуйте позже');
+                return;
+            }
+
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const regBtn = document.getElementById('regBtn');
+            const regBtnText = document.getElementById('regBtnText');
+
+            if (username.length < 3) {
+                showError('regError', 'Логин должен быть минимум 3 символа');
+                return;
+            }
+            if (password.length < 4) {
+                showError('regError', 'Пароль должен быть минимум 4 символа');
+                return;
+            }
+            if (password !== passwordConfirm) {
+                showError('regError', 'Пароли не совпадают');
+                return;
+            }
+
+            regBtnText.textContent = "Регистрация...";
+            regBtn.disabled = true;
+
+            try {
+                const sanitizedUser = sanitizeUsername(username);
+                const passwordHash = await hashString(password);
+
+                const snapshot = await window.firebaseGet(window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${sanitizedUser}`));
+                
+                if (snapshot.exists()) {
+                    showError('regError', 'Пользователь с таким логином уже существует');
+                    regBtnText.textContent = "Зарегистрироваться";
+                    regBtn.disabled = false;
+                    return;
+                }
+
+                const userData = {
+    passwordHash: passwordHash,
+    createdAt: Date.now(),
+    settings: {
+        theme: 'light',
+        color: '#1a1a1a',
+        sound: true,
+        particles: true,
+        genie: true
+    },
+    wallpaper: {
+        value: "linear-gradient(135deg, #fafaf7 0%, #f5f5f0 100%)",
+        type: 'static'
+    },
+    windowPositions: {},
+    sessionWindows: [],
+    stats: {
+        totalTimeMs: 0,
+        sessionsCount: 0,
+        registeredAt: Date.now(),
+        lastSeen: Date.now(),
+        toolUsage: {},
+        favoriteWallpaper: null
+    }
+};
+
+                await window.firebaseSet(window.firebaseRef(window.firebaseDB, `users/${sanitizedUser}`), userData);
+
+                showSuccess('regSuccess', 'Аккаунт создан! Выполняется вход...');
+                
+                setTimeout(() => {
+                    currentUser = sanitizedUser;
+                    unlockSystem();
+                    loadUserSettings();
+                }, 1000);
+
+            } catch (err) {
+                console.error('Registration error:', err);
+                showError('regError', 'Ошибка регистрации: ' + err.message);
+                regBtnText.textContent = "Зарегистрироваться";
+                regBtn.disabled = false;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            if (isLocked) return;
+            if (!firebaseReady) {
+                showError('loginError', 'Сервер недоступен, попробуйте позже');
+                return;
+            }
+
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+
+            loginBtnText.textContent = "Проверка...";
+            loginBtn.disabled = true;
+
+            try {
+                const sanitizedUser = sanitizeUsername(username);
+                const passwordHash = await hashString(password);
+
+                const snapshot = await window.firebaseGet(window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${sanitizedUser}`));
+                
+                if (!snapshot.exists()) {
+                    handleLoginFail('Пользователь не найден');
+                    return;
+                }
+
+                const userData = snapshot.val();
+                
+                if (userData.passwordHash !== passwordHash) {
+                    handleLoginFail('Неверный пароль');
+                    return;
+                }
+
+                currentUser = sanitizedUser;
+                playSound('open');
+                
+                localStorage.setItem('os_current_user', sanitizedUser);
+                
+                unlockSystem();
+                loadUserSettings();
+
+            } catch (err) {
+                console.error('Login error:', err);
+                handleLoginFail('Ошибка соединения: ' + err.message);
+            }
+        }
+
+        function handleLoginFail(message) {
+            loginAttempts++;
+            playSound('close');
+            showError('loginError', message);
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            loginBtnText.textContent = "Войти";
+            loginBtn.disabled = false;
+            
+            if (loginAttempts >= 5) {
+                isLocked = true;
+                loginBtnText.textContent = "Заблокировано (30с)";
+                loginBtn.disabled = true;
+                setTimeout(() => {
+                    isLocked = false;
+                    loginBtn.disabled = false;
+                    loginBtnText.textContent = "Войти";
+                    loginAttempts = 0;
+                }, 30000);
+            }
+        }
+
+        function handleLogout() {
+    showLogoutModal();
+}
+
+function showLogoutModal() {
+    const modal = document.getElementById('logoutModal');
+    modal.classList.add('show');
+    playSound('click');
+}
+
+function hideLogoutModal() {
+    const modal = document.getElementById('logoutModal');
+    modal.classList.remove('show');
+}
+
+function confirmLogout() {
+    hideLogoutModal();
+    closeAccountPanel();
+    
+    updateUserStats();
+    saveStatsToFirebase();
+    if (statsSaveInterval) clearInterval(statsSaveInterval);
+    
+    playSound('close');
+    
+    currentUser = null;
+    localStorage.removeItem('os_current_user');
+    
+    Object.keys(windows).forEach(id => closeWindow(id));
+    
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('userBadge').style.display = 'none';
+    
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+    switchAuthMode('login');
+    
+    userStats = {
+        totalTimeMs: 0,
+        sessionsCount: 0,
+        registeredAt: Date.now(),
+        lastSeen: Date.now(),
+        toolUsage: {},
+        favoriteWallpaper: null
+    };
+}
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 4000);
+        }
+
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show');
+        }
+
+        function unlockSystem() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    const badge = document.getElementById('userBadge');
+    badge.style.display = 'flex';
+    document.getElementById('userBadgeName').textContent = currentUser;
+    updateAccountPanel();
+}
+function startSessionTimer() {
+    sessionStartTime = Date.now();
+    
+    userStats.sessionsCount = (userStats.sessionsCount || 0) + 1;
+    userStats.lastSeen = Date.now();
+    
+    if (statsSaveInterval) clearInterval(statsSaveInterval);
+    statsSaveInterval = setInterval(() => {
+        updateUserStats();
+        saveStatsToFirebase();
+    }, 30000);
+    
+    window.addEventListener('beforeunload', () => {
+        updateUserStats();
+        saveStatsToFirebaseSync();
+    });
+}
+
+function updateUserStats() {
+    const sessionDuration = Date.now() - sessionStartTime;
+    userStats.totalTimeMs = (userStats.totalTimeMs || 0) + sessionDuration;
+    sessionStartTime = Date.now();
+}
+
+function saveStatsToFirebase() {
+    if (!firebaseReady || !currentUser) return;
+    debouncedSave('stats', {
+        totalTimeMs: userStats.totalTimeMs,
+        sessionsCount: userStats.sessionsCount,
+        lastSeen: userStats.lastSeen,
+        registeredAt: userStats.registeredAt,
+        toolUsage: userStats.toolUsage,
+        favoriteWallpaper: userStats.favoriteWallpaper
+    });
+}
+
+function saveStatsToFirebaseSync() {
+    if (!firebaseReady || !currentUser) return;
+    try {
+        const ref = window.firebaseRef(window.firebaseDB, `users/${currentUser}/stats`);
+        navigator.sendBeacon?.(ref.toString(), JSON.stringify(userStats));
+    } catch (e) {}
+}
+
+function trackToolUsage(toolId) {
+    if (!userStats.toolUsage) userStats.toolUsage = {};
+    userStats.toolUsage[toolId] = (userStats.toolUsage[toolId] || 0) + 1;
+    debouncedSave('stats/toolUsage', userStats.toolUsage);
+}
+
+function trackWallpaperChange(wallpaperId) {
+    userStats.favoriteWallpaper = wallpaperId;
+    debouncedSave('stats/favoriteWallpaper', wallpaperId);
+}
+
+async function loadUserStats() {
+    if (!firebaseReady || !currentUser) return;
+    try {
+        const snapshot = await window.firebaseGet(
+            window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${currentUser}/stats`)
+        );
+        if (snapshot.exists()) {
+            userStats = snapshot.val();
+        }
+    } catch (err) {
+        console.warn('Failed to load stats:', err);
+    }
+}
+
+function getFavoriteTool() {
+    const usage = userStats.toolUsage || {};
+    const entries = Object.entries(usage);
+    if (entries.length === 0) return null;
+    const top = entries.reduce((a, b) => b[1] > a[1] ? b : a);
+    const mod = MODULES.find(m => m.id === top[0]);
+    return mod ? mod.title : null;
+}
+
+function formatTime(ms) {
+    const totalMinutes = Math.floor(ms / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours > 0) return `${hours}ч ${minutes}м`;
+    if (minutes > 0) return `${minutes}м`;
+    return '<1м';
+}
+
+function formatDaysSince(timestamp) {
+    const days = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
+    if (days === 0) return 'сегодня';
+    if (days === 1) return '1 день';
+    if (days < 5) return `${days} дня`;
+    return `${days} дней`;
+}
+
+function updateAccountPanel() {
+    document.getElementById('accountUsername').textContent = currentUser || 'user';
+    document.getElementById('statTotalTime').textContent = formatTime(userStats.totalTimeMs || 0);
+    
+    const favTool = getFavoriteTool();
+    document.getElementById('statFavoriteTool').textContent = favTool || 'Пока нет данных';
+    
+    document.getElementById('statSessions').textContent = userStats.sessionsCount || 0;
+    document.getElementById('statDaysSince').textContent = formatDaysSince(userStats.registeredAt || Date.now());
+}
+
+function toggleAccountPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('accountPanel');
+    accountPanelOpen = !accountPanelOpen;
+    
+    if (accountPanelOpen) {
+        updateAccountPanel();
+        panel.classList.add('show');
+        playSound('click');
+    } else {
+        panel.classList.remove('show');
+    }
+}
+
+function closeAccountPanel() {
+    const panel = document.getElementById('accountPanel');
+    panel.classList.remove('show');
+    accountPanelOpen = false;
+}
+
+function resetMySettings() {
+    if (!confirm('Сбросить все настройки к значениям по умолчанию?')) return;
+    
+    performThemeChange('light');
+    changeColor('#1a1a1a');
+    soundEnabled = true;
+    particlesEnabled = true;
+    genieEnabled = true;
+    
+    document.getElementById('soundToggle').value = 1;
+    document.getElementById('soundValue').textContent = 'Вкл';
+    document.getElementById('particleToggle').value = 1;
+    document.getElementById('particleValue').textContent = 'Вкл';
+    document.getElementById('genieToggle').value = 1;
+    document.getElementById('genieValue').textContent = 'Вкл';
+    
+    applyWallpaper("linear-gradient(135deg, #fafaf7 0%, #f5f5f0 100%)", 'static');
+    saveAllSettings();
+    closeAccountPanel();
+    playSound('maximize');
+}
+        async function loadUserSettings() {
+            if (!firebaseReady || !currentUser) return;
+
+            try {
+                const snapshot = await window.firebaseGet(window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${currentUser}`));
+                if (!snapshot.exists()) return;
+
+                const data = snapshot.val();
+
+                if (data.settings?.theme) {
+                    performThemeChange(data.settings.theme);
+                }
+
+                if (data.settings?.color) {
+                    changeColor(data.settings.color);
+                }
+
+                if (data.settings?.sound !== undefined) {
+                    soundEnabled = data.settings.sound;
+                    document.getElementById('soundToggle').value = soundEnabled ? 1 : 0;
+                    document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
+                }
+
+                if (data.settings?.particles !== undefined) {
+                    particlesEnabled = data.settings.particles;
+                    document.getElementById('particleToggle').value = particlesEnabled ? 1 : 0;
+                    document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
+                    document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
+                    if (particlesEnabled && particlesInitialized && !document.hidden) animateParticles();
+                }
+
+                if (data.settings?.genie !== undefined) {
+                    genieEnabled = data.settings.genie;
+                    document.getElementById('genieToggle').value = genieEnabled ? 1 : 0;
+                    document.getElementById('genieValue').textContent = genieEnabled ? 'Вкл' : 'Выкл';
+                }
+
+                if (data.wallpaper) {
+                    applyWallpaper(data.wallpaper.value, data.wallpaper.type);
+                }
+
+                if (data.windowPositions) {
+                    window._savedPositions = data.windowPositions;
+                }
+
+                if (data.sessionWindows && Array.isArray(data.sessionWindows)) {
+                    setTimeout(() => {
+                        data.sessionWindows.forEach((id, index) => {
+                            const mod = MODULES.find(m => m.id === id);
+                            if (mod && !windows[id]) {
+                                setTimeout(() => createWindow(mod), index * 150);
+                            }
+                        });
+                    }, 300);
+                }
+if (data.stats) {
+    userStats = data.stats;
+} else {
+    userStats = {
+        totalTimeMs: 0,
+        sessionsCount: 0,
+        registeredAt: data.createdAt || Date.now(),
+        lastSeen: Date.now(),
+        toolUsage: {},
+        favoriteWallpaper: null
+    };
+}
+startSessionTimer();
+            } catch (err) {
+                console.warn('Failed to load settings from Firebase:', err);
+            }
+        }
+
+        async function saveSettingToFirebase(path, value) {
+            if (!firebaseReady || !currentUser) return;
+            try {
+                await window.firebaseSet(window.firebaseRef(window.firebaseDB, `users/${currentUser}/${path}`), value);
+            } catch (err) {
+                console.warn('Failed to save setting:', err);
+            }
+        }
+
+        async function saveAllSettings() {
+            if (!firebaseReady || !currentUser) return;
+            try {
+                const settings = {
+                    theme: document.body.getAttribute('data-theme') || 'light',
+                    color: localStorage.getItem('os_color') || '#1a1a1a',
+                    sound: soundEnabled,
+                    particles: particlesEnabled,
+                    genie: genieEnabled
+                };
+                await window.firebaseSet(window.firebaseRef(window.firebaseDB, `users/${currentUser}/settings`), settings);
+            } catch (err) {
+                console.warn('Failed to save settings:', err);
+            }
+        }
+
+        let saveTimeout = null;
+        function debouncedSave(path, value) {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveSettingToFirebase(path, value);
+            }, 500);
+        }
+
+        async function checkAutoLogin() {
+            await waitForFirebase();
+            
+            const savedUser = localStorage.getItem('os_current_user');
+            if (savedUser) {
+                try {
+                    const snapshot = await window.firebaseGet(window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${savedUser}`));
+                    if (snapshot.exists()) {
+                        currentUser = savedUser;
+                        unlockSystem();
+                        loadUserSettings();
+                        return;
+                    }
+                } catch (err) {
+                    console.warn('Auto-login failed:', err);
+                }
+            }
+            
+            updateGreeting();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initParticles();
             initWallpaperCanvas();
@@ -1489,17 +2554,11 @@
             updateClock();
             setInterval(updateClock, 1000);
             setInterval(rotateQuote, 8000);
-            
-            // [v0.3-6] Check dynamic wallpaper every minute
             setInterval(checkDynamicWallpaper, 60000);
             
-            if (!localStorage.getItem('os_tutorial_seen')) {
-                setTimeout(() => document.getElementById('tutorialOverlay').classList.add('show'), 500);
-            }
+            loadDefaultSettings();
             
-            loadSettings();
-            loadWallpaper();
-            restoreSession();
+            checkAutoLogin();
             
             document.getElementById('desktop').addEventListener('contextmenu', (e) => {
                 e.preventDefault();
@@ -1507,23 +2566,17 @@
             });
             
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.context-menu')) hideContextMenu();
-                if (!e.target.closest('.wallpaper-selector') && !e.target.closest('.context-item')) hideWallpaperSelector();
-            });
+    if (!e.target.closest('.context-menu')) hideContextMenu();
+    if (!e.target.closest('.wallpaper-selector') && !e.target.closest('.context-item')) hideWallpaperSelector();
+    if (!e.target.closest('.account-panel') && !e.target.closest('.user-badge')) closeAccountPanel();
+});
             
             document.addEventListener('keydown', handleKeyboard);
-            document.addEventListener('keyup', handleKeyboardUp);
             
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
-                    if (particleAnimationId) {
-                        cancelAnimationFrame(particleAnimationId);
-                        particleAnimationId = null;
-                    }
-                    if (wallpaperAnimationId) {
-                        cancelAnimationFrame(wallpaperAnimationId);
-                        wallpaperAnimationId = null;
-                    }
+                    if (particleAnimationId) { cancelAnimationFrame(particleAnimationId); particleAnimationId = null; }
+                    if (wallpaperAnimationId) { cancelAnimationFrame(wallpaperAnimationId); wallpaperAnimationId = null; }
                 } else {
                     if (particlesEnabled && particlesInitialized) animateParticles();
                     if (currentAnimatedWallpaper) animateWallpaper();
@@ -1531,17 +2584,26 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-            updateGreeting();
-            setInterval(updateGreeting, 60000);
-        });
+        function loadDefaultSettings() {
+            const theme = localStorage.getItem('os_theme') || 'light';
+            performThemeChange(theme);
+            
+            const color = localStorage.getItem('os_color');
+            if (color) changeColor(color);
+            
+            const saved = localStorage.getItem('os_wallpaper');
+            if (saved) {
+                try {
+                    const { value, type } = JSON.parse(saved);
+                    applyWallpaper(value, type);
+                } catch (e) {}
+            }
+        }
 
         function getSvg(iconPath) { 
             return `<svg viewBox="0 0 24 24">${iconPath}</svg>`; 
         }
 
-        // ========== DOCK ==========
         function buildDock() {
             const dock = document.getElementById('dock');
             MODULES.forEach(mod => {
@@ -1551,7 +2613,6 @@
                 item.innerHTML = `${getSvg(mod.icon)}<div class="dock-tooltip">${mod.title}</div>`;
                 item.onclick = () => toggleWindow(mod.id);
                 
-                // [v0.3-2] Dock hover preview
                 item.addEventListener('mouseenter', () => showDockPreview(mod.id));
                 item.addEventListener('mouseleave', hideDockPreview);
                 
@@ -1559,7 +2620,6 @@
             });
         }
 
-        // [v0.3-2] Dock Hover Preview
         function showDockPreview(id) {
             clearTimeout(dockPreviewTimeout);
             hideDockPreview();
@@ -1577,7 +2637,6 @@
                 preview.id = `preview-${id}`;
                 
                 if (winData && winData.win.dataset.state !== 'minimized') {
-                    // Window is open - show live preview
                     const iframeSrc = winData.win.querySelector('iframe')?.src;
                     preview.innerHTML = `
                         <div class="dock-preview-content">
@@ -1586,7 +2645,6 @@
                         </div>
                     `;
                 } else {
-                    // Window is closed - show placeholder
                     preview.innerHTML = `
                         <div class="dock-preview-placeholder">
                             ${getSvg(mod.icon)}
@@ -1612,7 +2670,6 @@
                 setTimeout(() => previewEl.remove(), 200);
                 currentDockPreview = null;
             }
-            // Also remove any lingering previews
             document.querySelectorAll('.dock-preview').forEach(p => {
                 p.classList.remove('show');
                 setTimeout(() => p.remove(), 200);
@@ -1620,21 +2677,22 @@
         }
 
         function toggleWindow(id) {
-            playSound('click');
-            const mod = MODULES.find(m => m.id === id);
-            const winData = windows[id];
-            
-            if (!winData || winData.win.dataset.state === 'minimized') {
-                if (!winData) createWindow(mod);
-                else restoreWindow(id);
-            } else if (parseInt(winData.win.style.zIndex) < zIndexCounter) {
-                focusWindow(winData.win);
-            } else {
-                minimizeWindow(id);
-            }
-        }
+    playSound('click');
+    const mod = MODULES.find(m => m.id === id);
+    const winData = windows[id];
+    
+    trackToolUsage(id);
+    
+    if (!winData || winData.win.dataset.state === 'minimized') {
+        if (!winData) createWindow(mod);
+        else restoreWindow(id);
+    } else if (parseInt(winData.win.style.zIndex) < zIndexCounter) {
+        focusWindow(winData.win);
+    } else {
+        minimizeWindow(id);
+    }
+}
 
-        // ========== WINDOWS ==========
         function createWindow(mod) {
             const win = document.createElement('div');
             win.className = 'os-window';
@@ -1759,9 +2817,10 @@
             document.getElementById(`dock-${mod.id}`).classList.add('active');
             document.getElementById('desktop').classList.add('has-windows');
             playSound('open');
+
+            saveSessionToFirebase();
         }
 
-        // [v0.3-1] Genie Effect for minimize
         function minimizeWindow(id) {
             const winData = windows[id];
             if (!winData) return;
@@ -1773,7 +2832,6 @@
             win.dataset.state = 'minimized';
             
             if (genieEnabled) {
-                // Genie-like animation
                 const winRect = win.getBoundingClientRect();
                 const dockRect = dockItem.getBoundingClientRect();
                 
@@ -1781,26 +2839,10 @@
                 const targetY = dockRect.top - winRect.top;
                 
                 const animation = win.animate([
-                    { 
-                        transform: 'translate(0, 0) scale(1, 1)', 
-                        opacity: 1,
-                        borderRadius: '16px'
-                    },
-                    { 
-                        transform: `translate(${targetX * 0.4}px, ${targetY * 0.4}px) scale(0.6, 0.7)`,
-                        opacity: 0.8,
-                        offset: 0.5
-                    },
-                    { 
-                        transform: `translate(${targetX}px, ${targetY}px) scale(0.05, 0.02)`,
-                        opacity: 0,
-                        borderRadius: '50%'
-                    }
-                ], {
-                    duration: 550,
-                    easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
-                    fill: 'forwards'
-                });
+                    { transform: 'translate(0, 0) scale(1, 1)', opacity: 1, borderRadius: '16px' },
+                    { transform: `translate(${targetX * 0.4}px, ${targetY * 0.4}px) scale(0.6, 0.7)`, opacity: 0.8, offset: 0.5 },
+                    { transform: `translate(${targetX}px, ${targetY}px) scale(0.05, 0.02)`, opacity: 0, borderRadius: '50%' }
+                ], { duration: 550, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', fill: 'forwards' });
                 
                 animation.onfinish = () => {
                     win.style.display = 'none';
@@ -1809,7 +2851,6 @@
                     animation.cancel();
                 };
             } else {
-                // Fallback: simple fade
                 win.style.transition = 'all 0.3s ease';
                 win.style.opacity = '0';
                 win.style.transform = 'scale(0.95)';
@@ -1849,7 +2890,6 @@
             if (!winData) return;
             
             saveWindowPosition(id);
-            removeWindowFromSession(id);
             
             try { winData.abortCtrl.abort(); } catch (e) {}
             
@@ -1868,6 +2908,7 @@
                 }
             }
             playSound('close');
+            saveSessionToFirebase();
         }
 
         function focusWindow(win) {
@@ -1921,7 +2962,6 @@
             el.innerHTML = `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--text-secondary)">${iconSvg}</svg> ${title}`;
         }
 
-        // ========== DRAG & DROP ==========
         function startDrag(e, id) {
             if (e.target.closest('.window-controls')) return;
             const winData = windows[id];
@@ -1933,8 +2973,6 @@
             currentWin = win;
             currentWin.dataset.dragId = id;
             focusWindow(win);
-            
-            // [v0.3-7] Add dragging class for enhanced shadow
             win.classList.add('dragging');
             
             const content = win.querySelector('.window-content');
@@ -1967,7 +3005,6 @@
             const win = currentWin;
             const id = win?.dataset.dragId;
             
-            // [v0.3-7] Remove dragging class
             if (win) {
                 win.classList.remove('dragging');
                 const overlay = win.querySelector('.drag-overlay');
@@ -1986,20 +3023,27 @@
             document.removeEventListener('mousemove', onDrag);
             document.removeEventListener('mouseup', stopDrag);
             
-            if (id) saveWindowPosition(id);
+            if (id) {
+                saveWindowPosition(id);
+                debouncedSave(`windowPositions/${id}`, {
+                    x: parseInt(win.style.left),
+                    y: parseInt(win.style.top),
+                    width: parseInt(win.style.width),
+                    height: parseInt(win.style.height)
+                });
+            }
         }
 
-        // ========== RESIZE ==========
         function initResize(e, id, dir) {
-            e.preventDefault(); 
+            e.preventDefault();
             e.stopPropagation();
             const winData = windows[id];
             if (!winData) return;
             
-            isResizing = true; 
-            resizeWin = winData.win; 
+            isResizing = true;
+            resizeWin = winData.win;
             resizeDir = dir;
-            startX = e.clientX; 
+            startX = e.clientX;
             startY = e.clientY;
             startW = parseInt(resizeWin.offsetWidth);
             startH = parseInt(resizeWin.offsetHeight);
@@ -2041,15 +3085,24 @@
                 const overlay = resizeWin.querySelector('.drag-overlay');
                 if (overlay) overlay.remove();
                 resizeWin.style.transition = '';
+                
+                const id = resizeWin.id.replace('win-', '');
+                if (id) {
+                    debouncedSave(`windowPositions/${id}`, {
+                        x: parseInt(resizeWin.style.left),
+                        y: parseInt(resizeWin.style.top),
+                        width: parseInt(resizeWin.style.width),
+                        height: parseInt(resizeWin.style.height)
+                    });
+                }
             }
             
-            isResizing = false; 
+            isResizing = false;
             resizeWin = null;
             document.removeEventListener('mousemove', doResize);
             document.removeEventListener('mouseup', stopResize);
         }
 
-        // ========== [v0.3-3] SPLIT VIEW PRO ==========
         function checkSnapZones(mouseX, mouseY) {
             const edgeThreshold = 30;
             const cornerThreshold = 120;
@@ -2070,7 +3123,6 @@
             const isTopArea = mouseY < screenHeight / 2;
             const isBottomArea = mouseY >= screenHeight / 2;
             
-            // Corners (quarters)
             if (isLeft && isTopArea && mouseY > topBarHeight + cornerThreshold) {
                 newSnapType = 'tl';
                 previewRect = { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight / 2 };
@@ -2083,9 +3135,7 @@
             } else if (isRight && isBottomArea) {
                 newSnapType = 'br';
                 previewRect = { left: screenWidth / 2, top: topBarHeight + availableHeight / 2, width: screenWidth / 2, height: availableHeight / 2 };
-            }
-            // Edges (halves)
-            else if (isLeft) {
+            } else if (isLeft) {
                 newSnapType = 'left';
                 previewRect = { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight };
             } else if (isRight) {
@@ -2097,11 +3147,7 @@
             }
             
             if (newSnapType) {
-                snapState = { 
-                    active: true, 
-                    type: newSnapType, 
-                    windowId: currentWin?.dataset.dragId 
-                };
+                snapState = { active: true, type: newSnapType, windowId: currentWin?.dataset.dragId };
                 preview.style.left = previewRect.left + 'px';
                 preview.style.top = previewRect.top + 'px';
                 preview.style.width = previewRect.width + 'px';
@@ -2150,7 +3196,6 @@
             playSound('maximize');
         }
 
-        // ========== CLOCK & QUOTES ==========
         function updateClock() {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
         }
@@ -2165,7 +3210,6 @@
             }, 300);
         }
 
-        // ========== CONTEXT MENU ==========
         function showContextMenu(x, y) {
             const menu = document.getElementById('contextMenu');
             menu.style.left = x + 'px';
@@ -2187,7 +3231,6 @@
             Object.keys(windows).forEach(id => minimizeWindow(id));
         }
 
-        // ========== WALLPAPER SYSTEM ==========
         function initWallpaperCanvas() {
             wallpaperCanvas = document.getElementById('wallpaper-canvas');
             wallpaperCtx = wallpaperCanvas.getContext('2d');
@@ -2206,7 +3249,6 @@
             const currentTheme = document.body.getAttribute('data-theme');
             const filteredWallpapers = WALLPAPERS.filter(wp => wp.type === currentTheme);
             
-            // Static wallpapers
             filteredWallpapers.forEach(wp => {
                 const option = document.createElement('div');
                 option.className = 'wallpaper-option';
@@ -2218,7 +3260,6 @@
                 grid.appendChild(option);
             });
             
-            // [v0.3-5] Animated wallpapers
             ANIMATED_WALLPAPERS.forEach(aw => {
                 const option = document.createElement('div');
                 option.className = 'wallpaper-option animated';
@@ -2230,7 +3271,6 @@
                 grid.appendChild(option);
             });
             
-            // [v0.3-6] Dynamic wallpaper option
             const dynamicOption = document.createElement('div');
             dynamicOption.className = 'wallpaper-option dynamic';
             dynamicOption.style.background = getDynamicGradient();
@@ -2240,7 +3280,6 @@
             }
             grid.appendChild(dynamicOption);
             
-            // Custom upload
             const customOption = document.createElement('div');
             customOption.className = 'wallpaper-option custom';
             customOption.innerHTML = `<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Загрузить</span>`;
@@ -2281,7 +3320,6 @@
             currentWallpaper = value;
             currentWallpaperType = type;
             
-            // Stop any running wallpaper animation
             if (wallpaperAnimationId) {
                 cancelAnimationFrame(wallpaperAnimationId);
                 wallpaperAnimationId = null;
@@ -2304,6 +3342,10 @@
             }
             
             localStorage.setItem('os_wallpaper', JSON.stringify({ value, type }));
+            
+debouncedSave('wallpaper', { value, type });
+trackWallpaperChange(value);
+            
             playSound('click');
         }
 
@@ -2319,22 +3361,6 @@
             }
         }
 
-        function loadWallpaper() {
-            const saved = localStorage.getItem('os_wallpaper');
-            if (saved) {
-                try {
-                    const { value, type } = JSON.parse(saved);
-                    applyWallpaper(value, type);
-                    return;
-                } catch (e) {}
-            }
-            // Default
-            const theme = document.body.getAttribute('data-theme');
-            const defaultWp = WALLPAPERS.find(wp => wp.type === theme);
-            if (defaultWp) applyWallpaper(defaultWp.value, 'static');
-        }
-
-        // [v0.3-6] Dynamic Wallpaper
         function getTimePeriod() {
             const hour = new Date().getHours();
             if (hour >= 5 && hour < 11) return 'morning';
@@ -2357,7 +3383,6 @@
             }
         }
 
-        // [v0.3-5] Animated Wallpaper Renderers
         function animateWallpaper() {
             if (!currentAnimatedWallpaper || document.hidden) {
                 wallpaperAnimationId = null;
@@ -2388,7 +3413,6 @@
             wallpaperCtx.fillStyle = gradient;
             wallpaperCtx.fillRect(0, 0, w, h);
             
-            // Aurora waves
             for (let i = 0; i < 3; i++) {
                 wallpaperCtx.beginPath();
                 wallpaperCtx.moveTo(0, h * 0.3);
@@ -2408,7 +3432,6 @@
             wallpaperCtx.fillStyle = '#0a0a1a';
             wallpaperCtx.fillRect(0, 0, w, h);
             
-            // Stars
             for (let i = 0; i < 100; i++) {
                 const x = (Math.sin(i * 12.9898) * 0.5 + 0.5) * w;
                 const y = (Math.sin(i * 78.233) * 0.5 + 0.5) * h;
@@ -2421,7 +3444,6 @@
                 wallpaperCtx.fill();
             }
             
-            // Shooting star occasionally
             const shootTime = time % 8;
             if (shootTime < 0.5) {
                 const sx = w * 0.8 - shootTime * w * 0.5;
@@ -2445,7 +3467,6 @@
             wallpaperCtx.fillStyle = gradient;
             wallpaperCtx.fillRect(0, 0, w, h);
             
-            // Waves
             for (let i = 0; i < 4; i++) {
                 wallpaperCtx.beginPath();
                 wallpaperCtx.moveTo(0, h);
@@ -2473,7 +3494,6 @@
             wallpaperCtx.fillStyle = gradient;
             wallpaperCtx.fillRect(0, 0, w, h);
             
-            // Floating orbs
             for (let i = 0; i < 5; i++) {
                 const x = w * (0.2 + 0.6 * Math.sin(time * 0.5 + i * 1.3) * 0.5 + 0.5);
                 const y = h * (0.2 + 0.6 * Math.cos(time * 0.4 + i * 1.7) * 0.5 + 0.5);
@@ -2489,7 +3509,6 @@
             }
         }
 
-        // ========== KEYBOARD ==========
         function handleKeyboard(e) {
             if (e.ctrlKey && e.key === 'Tab') {
                 e.preventDefault();
@@ -2501,14 +3520,13 @@
                 }
             }
             if (e.key === 'Escape') {
-                hideWallpaperSelector();
-                hideContextMenu();
-            }
+    hideWallpaperSelector();
+    hideContextMenu();
+    hideLogoutModal();
+    closeAccountPanel();
+}
         }
 
-        function handleKeyboardUp(e) {}
-
-        // ========== SOUND ==========
         function playSound(type) {
             if (!soundEnabled) return;
             try {
@@ -2541,6 +3559,7 @@
             soundEnabled = val === "1";
             document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
             localStorage.setItem('os_sound', soundEnabled);
+            debouncedSave('settings/sound', soundEnabled);
         }
 
         function toggleParticles(val) {
@@ -2548,6 +3567,7 @@
             document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
             document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
             localStorage.setItem('os_particles', particlesEnabled);
+            debouncedSave('settings/particles', particlesEnabled);
             
             if (particlesEnabled && particlesInitialized && !particleAnimationId && !document.hidden) {
                 animateParticles();
@@ -2558,9 +3578,9 @@
             genieEnabled = val === "1";
             document.getElementById('genieValue').textContent = genieEnabled ? 'Вкл' : 'Выкл';
             localStorage.setItem('os_genie', genieEnabled);
+            debouncedSave('settings/genie', genieEnabled);
         }
 
-        // ========== SESSION MANAGEMENT ==========
         function saveWindowPosition(id) {
             if (!id || !windows[id]) return;
             const win = windows[id].win;
@@ -2572,38 +3592,22 @@
                 height: parseInt(win.style.height) 
             };
             localStorage.setItem('os_window_positions', JSON.stringify(positions));
-            
-            const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
-            if (!session.includes(id)) session.push(id);
-            localStorage.setItem('os_session_windows', JSON.stringify(session));
-        }
-
-        function removeWindowFromSession(id) {
-            const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
-            const filtered = session.filter(sid => sid !== id);
-            localStorage.setItem('os_session_windows', JSON.stringify(filtered));
         }
 
         function getWindowPosition(id) {
+            if (window._savedPositions && window._savedPositions[id]) {
+                return window._savedPositions[id];
+            }
             const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
             return positions[id];
         }
 
-        function restoreSession() {
-            try {
-                const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
-                session.forEach((id, index) => {
-                    const mod = MODULES.find(m => m.id === id);
-                    if (mod && !windows[id]) {
-                        setTimeout(() => createWindow(mod), index * 100);
-                    }
-                });
-            } catch (e) {
-                console.warn('Failed to restore session:', e);
-            }
+        function saveSessionToFirebase() {
+            if (!currentUser) return;
+            const sessionWindows = Object.keys(windows);
+            debouncedSave('sessionWindows', sessionWindows);
         }
 
-        // ========== UI TOGGLES ==========
         function toggleSettings() { 
             document.getElementById('settingsPanel').classList.toggle('open'); 
         }
@@ -2612,12 +3616,9 @@
         }
         function closeTutorial() {
             document.getElementById('tutorialOverlay').classList.remove('show');
-            localStorage.setItem('os_tutorial_seen', 'true');
         }
 
-        // [v0.3-8] Smooth Theme Switch
         function applyTheme(theme) {
-            // Use View Transitions API if available
             if (document.startViewTransition) {
                 document.startViewTransition(() => {
                     performThemeChange(theme);
@@ -2635,7 +3636,6 @@
             
             updateParticleColor();
             
-            // Update dynamic wallpaper if active
             if (currentWallpaperType === 'dynamic') {
                 applyDynamicWallpaper();
             }
@@ -2644,6 +3644,8 @@
                 b.classList.remove('active');
                 if(b.innerText.toLowerCase().includes(theme === 'light' ? 'светлая' : 'тёмная')) b.classList.add('active');
             });
+
+            debouncedSave('settings/theme', theme);
         }
 
         function toggleTheme() {
@@ -2665,39 +3667,10 @@
                     el.classList.add('active');
                 }
             });
+
+            debouncedSave('settings/color', color);
         }
 
-        function loadSettings() {
-            const theme = localStorage.getItem('os_theme') || 'light';
-            performThemeChange(theme);
-            
-            const color = localStorage.getItem('os_color');
-            if (color) changeColor(color);
-            
-            const sound = localStorage.getItem('os_sound');
-            if (sound !== null) {
-                soundEnabled = sound === 'true';
-                document.getElementById('soundToggle').value = soundEnabled ? 1 : 0;
-                document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
-            }
-            
-            const particles = localStorage.getItem('os_particles');
-            if (particles !== null) {
-                particlesEnabled = particles === 'true';
-                document.getElementById('particleToggle').value = particlesEnabled ? 1 : 0;
-                document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
-                document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
-            }
-            
-            const genie = localStorage.getItem('os_genie');
-            if (genie !== null) {
-                genieEnabled = genie === 'true';
-                document.getElementById('genieToggle').value = genieEnabled ? 1 : 0;
-                document.getElementById('genieValue').textContent = genieEnabled ? 'Вкл' : 'Выкл';
-            }
-        }
-
-        // ========== PARTICLES ==========
         function updateParticleColor() {
             particleColor = getComputedStyle(document.body).getPropertyValue('--text-mute').trim();
         }
@@ -2774,14 +3747,6 @@
             particleAnimationId = requestAnimationFrame(animateParticles);
         }
 
-        // ========== AUTH ==========
-        async function hashString(str) {
-            const msgBuffer = new TextEncoder().encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         function updateGreeting() {
             const hour = new Date().getHours();
             const greetingEl = document.getElementById('greetingText');
@@ -2792,66 +3757,6 @@
             else if (hour >= 18 && hour < 23) text = "Добрый вечер";
             else text = "Доброй ночи";
             greetingEl.textContent = text;
-        }
-
-        function checkSession() {
-            const session = localStorage.getItem('os_session');
-            if (session) {
-                const data = JSON.parse(session);
-                if (new Date().getTime() - data.timestamp < 86400000) unlockSystem();
-                else localStorage.removeItem('os_session');
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            if (isLocked) return;
-
-            const userIn = document.getElementById('usernameInput').value;
-            const passIn = document.getElementById('passwordInput').value;
-            const errorEl = document.getElementById('loginError');
-            const btn = document.getElementById('loginBtn');
-            const btnText = document.getElementById('btnText');
-
-            btnText.textContent = "Проверка...";
-            btn.style.opacity = "0.7";
-            await new Promise(r => setTimeout(r, 600));
-
-            const userHash = await hashString(userIn);
-            const passHash = await hashString(passIn);
-
-            if (userHash === VALID_USER_HASH && passHash === VALID_PASS_HASH) {
-                playSound('open');
-                localStorage.setItem('os_session', JSON.stringify({ 
-                    user: 'Assortea', 
-                    timestamp: new Date().getTime(), 
-                    token: Math.random().toString(36).substring(2) 
-                }));
-                unlockSystem();
-            } else {
-                loginAttempts++;
-                playSound('close');
-                errorEl.classList.add('show');
-                btnText.textContent = "Разблокировать систему";
-                btn.style.opacity = "1";
-                
-                if (loginAttempts >= 3) {
-                    isLocked = true;
-                    btnText.textContent = "Система заблокирована (30с)";
-                    btn.disabled = true;
-                    setTimeout(() => {
-                        isLocked = false; 
-                        btn.disabled = false; 
-                        btnText.textContent = "Разблокировать систему"; 
-                        loginAttempts = 0;
-                    }, 30000);
-                }
-                setTimeout(() => errorEl.classList.remove('show'), 3000);
-            }
-        }
-
-        function unlockSystem() {
-            document.getElementById('loginOverlay').classList.add('hidden');
         }
     </script>
 </body>
