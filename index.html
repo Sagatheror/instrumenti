@@ -16,15 +16,16 @@
 
         :root {
             --bg-primary: #fafaf7;
-            --bg-soft: #ffffff;
+            --bg-soft: rgba(255, 255, 255, 0.72);
+            --bg-solid: #ffffff;
             --bg-softer: #f5f5f0;
-            --border: #e5e5e0;
+            --border: rgba(229, 229, 224, 0.8);
             --border-strong: #d4d4cf;
             --text-primary: #1a1a1a;
             --text-secondary: #666666;
             --text-mute: #999999;
             --accent: #1a1a1a;
-            --accent-soft: #f0f0ec;
+            --accent-soft: rgba(240, 240, 236, 0.8);
             --success: #10b981;
             --danger: #dc2626;
             --radius-sm: 8px;
@@ -34,22 +35,31 @@
             --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
             --shadow-lg: 0 16px 48px rgba(0,0,0,0.08);
             --noise-opacity: 0.02;
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --blur-strength: 20px;
+            --saturation: 180%;
         }
 
         [data-theme="dark"] {
             --bg-primary: #1a1a1a;
-            --bg-soft: #222222;
+            --bg-soft: rgba(34, 34, 34, 0.72);
+            --bg-solid: #222222;
             --bg-softer: #2a2a2a;
-            --border: #333333;
+            --border: rgba(51, 51, 51, 0.8);
             --border-strong: #444444;
             --text-primary: #f4f4f4;
             --text-secondary: #a0a0a0;
             --text-mute: #666666;
             --accent: #f4f4f4;
-            --accent-soft: #333333;
+            --accent-soft: rgba(51, 51, 51, 0.8);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
             --shadow-lg: 0 16px 48px rgba(0,0,0,0.4);
+            --glass-bg: rgba(30, 30, 30, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         body {
@@ -59,20 +69,42 @@
             height: 100vh;
             width: 100vw;
             color: var(--text-primary);
-            transition: background 0.4s ease, color 0.4s ease;
             position: relative;
             font-size: 14px;
             line-height: 1.5;
         }
 
+        /* [v0.3] Smooth Theme Switch - глобальные transition */
+        body, .top-bar, .dock-container, .os-window, .window-header, 
+        .settings-panel, .context-menu, .login-card, .dock-item,
+        .window-content, .wallpaper-selector, .tutorial-card {
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.4s ease,
+                        box-shadow 0.6s ease;
+        }
+
         .background-layer {
             position: fixed;
             inset: 0;
-            z-index: -1;
+            z-index: -2;
             background-size: cover;
             background-position: center;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.8s ease, background 1.2s ease;
         }
+
+        /* [v0.3] Animated Wallpaper Canvas */
+        #wallpaper-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        #wallpaper-canvas.active { opacity: 1; }
 
         .noise-overlay {
             position: fixed;
@@ -98,14 +130,17 @@
             left: 0;
             right: 0;
             height: 48px;
-            background: var(--bg-soft);
-            border-bottom: 1px solid var(--border);
+            /* [v0.3] Glassmorphism */
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 1.5rem;
             z-index: 5000;
-            transition: all 0.3s ease;
+            box-shadow: var(--glass-shadow);
         }
 
         .top-bar-left { display: flex; align-items: center; gap: 1rem; }
@@ -128,7 +163,8 @@
             font-size: 12px;
             font-weight: 500;
             color: var(--text-secondary);
-            background: var(--bg-softer);
+            background: var(--accent-soft);
+            backdrop-filter: blur(8px);
             padding: 6px 12px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border);
@@ -145,13 +181,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .top-btn:hover {
             background: var(--accent-soft);
             color: var(--text-primary);
             border-color: var(--border);
+            transform: translateY(-1px);
         }
 
         .top-btn svg { width: 16px; height: 16px; fill: currentColor; }
@@ -186,6 +223,7 @@
             letter-spacing: -1px;
             color: var(--text-primary);
             margin-bottom: 1rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.1);
         }
 
         .welcome-widget p {
@@ -198,42 +236,65 @@
         .os-window {
             position: absolute;
             background: var(--bg-soft);
-            border: 1px solid var(--border);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            /* [v0.3] Window Shadows+ */
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             min-width: 400px;
             min-height: 300px;
-            transition: opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), width 0.1s, height 0.1s, box-shadow 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
+                        transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), 
+                        width 0.2s, height 0.2s, top 0.2s, left 0.2s, 
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             animation: windowPop 0.3s cubic-bezier(0.2, 1, 0.3, 1);
         }
+
+        .os-window.snapping { transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1); }
+
+        /* [v0.3] Window Shadows+ — elevated states */
+        .os-window.focused {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12), 
+                        0 4px 12px rgba(0,0,0,0.08),
+                        0 0 0 1px var(--glass-border);
+        }
+
+        .os-window.dragging {
+            box-shadow: 0 32px 80px rgba(0,0,0,0.18),
+                        0 16px 32px rgba(0,0,0,0.12),
+                        0 0 0 1px var(--glass-border);
+            transform: scale(1.01);
+        }
+
+        [data-theme="dark"] .os-window { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        [data-theme="dark"] .os-window.focused { box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--glass-border); }
+        [data-theme="dark"] .os-window.dragging { box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
 
         @keyframes windowPop {
             from { opacity: 0; transform: scale(0.96) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .os-window.focused {
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px var(--border-strong);
-            z-index: 9999 !important;
-        }
-
         .window-header {
             height: 40px;
-            background: var(--bg-softer);
+            background: var(--accent-soft);
+            backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 16px;
             cursor: grab;
-            transition: background 0.2s;
+            transition: background 0.3s;
+            flex-shrink: 0;
         }
 
         .window-header:active { cursor: grabbing; }
-        .window-header:hover { background: var(--bg-primary); }
+        .window-header:hover { background: var(--bg-softer); }
 
         .window-title {
             display: flex;
@@ -260,7 +321,7 @@
             border: 1px solid rgba(0,0,0,0.1);
         }
 
-        .win-btn:hover { transform: scale(1.1); filter: brightness(0.9); }
+        .win-btn:hover { transform: scale(1.15); filter: brightness(0.9); }
         .win-close { background: #ff5f57; border-color: #e0443e; }
         .win-min { background: #febc2e; border-color: #d89e24; }
         .win-max { background: #28c840; border-color: #1aab29; }
@@ -268,7 +329,7 @@
         .window-content {
             flex: 1;
             position: relative;
-            background: var(--bg-primary);
+            background: var(--bg-solid);
             overflow: hidden;
             border-radius: 0 0 var(--radius-lg) var(--radius-lg);
         }
@@ -279,8 +340,88 @@
             border: none;
             display: block;
             pointer-events: auto;
-            background: var(--bg-primary);
+            background: var(--bg-solid);
         }
+
+        /* --- Drag Overlay --- */
+        .drag-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1000;
+            background: transparent;
+            cursor: grabbing;
+            pointer-events: auto;
+        }
+
+        /* --- Iframe Loader --- */
+        .iframe-loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-solid);
+            z-index: 10;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: opacity 0.3s;
+        }
+
+        .iframe-loader.hidden { opacity: 0; pointer-events: none; }
+
+        .iframe-loader .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .iframe-error {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-solid);
+            z-index: 11;
+            gap: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .iframe-error.show { display: flex; }
+
+        .iframe-error svg {
+            width: 48px;
+            height: 48px;
+            color: var(--danger);
+            fill: currentColor;
+            opacity: 0.6;
+        }
+
+        .iframe-error .retry-btn {
+            margin-top: 8px;
+            padding: 8px 20px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .iframe-error .retry-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 
         /* --- Resizing Handles --- */
         .resize-handle { position: absolute; z-index: 100; }
@@ -300,10 +441,13 @@
             display: flex;
             align-items: flex-end;
             padding: 10px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            /* [v0.3] Glassmorphism */
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--glass-shadow);
             gap: 8px;
             transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
         }
@@ -312,13 +456,13 @@
             width: 48px;
             height: 48px;
             border-radius: var(--radius);
-            background: var(--bg-softer);
+            background: var(--accent-soft);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             position: relative;
-            transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
             color: var(--text-secondary);
             border: 1px solid transparent;
         }
@@ -327,16 +471,18 @@
             width: 22px;
             height: 22px;
             fill: currentColor;
-            transition: transform 0.2s;
+            transition: transform 0.25s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         .dock-item:hover {
             transform: translateY(-8px) scale(1.1);
-            background: var(--bg-primary);
-            border-color: var(--border-strong);
+            background: var(--bg-soft);
+            border-color: var(--glass-border);
             color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
         }
+
+        .dock-item:hover svg { transform: scale(1.1); }
 
         .dock-item.active {
             background: var(--accent);
@@ -346,6 +492,24 @@
         
         .dock-item.active:hover {
             color: var(--bg-primary);
+        }
+
+        /* [v0.2] Dock running indicator */
+        .dock-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .dock-item.active:hover::after {
+            background: var(--text-primary);
         }
 
         .dock-tooltip {
@@ -359,12 +523,87 @@
             font-weight: 500;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.2s;
             white-space: nowrap;
             font-family: 'Inter', sans-serif;
+            transform: translateY(4px);
         }
 
-        .dock-item:hover .dock-tooltip { opacity: 1; }
+        .dock-item:hover .dock-tooltip { 
+            opacity: 1; 
+            transform: translateY(0);
+        }
+
+        /* [v0.3] Dock Hover Preview */
+        .dock-preview {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9) translateY(10px);
+            width: 220px;
+            height: 140px;
+            background: var(--bg-solid);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .dock-preview.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+
+        .dock-preview-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dock-preview iframe {
+            width: 200%;
+            height: 200%;
+            transform: scale(0.5);
+            transform-origin: top left;
+            pointer-events: none;
+        }
+
+        .dock-preview-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Unbounded', sans-serif;
+        }
+
+        .dock-preview-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-mute);
+            background: var(--bg-softer);
+        }
+
+        .dock-preview-placeholder svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+            opacity: 0.5;
+        }
 
         /* --- Settings Panel --- */
         .settings-panel {
@@ -373,14 +612,16 @@
             right: -420px;
             width: 380px;
             height: calc(100vh - 140px);
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             z-index: 5500;
             transition: right 0.4s cubic-bezier(0.2, 1, 0.3, 1);
             padding: 24px;
             overflow-y: auto;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--glass-shadow);
         }
 
         .settings-panel.open { right: 1.5rem; }
@@ -461,7 +702,7 @@
             background: var(--accent);
             cursor: pointer;
             transition: transform 0.2s;
-            border: 2px solid var(--bg-soft);
+            border: 2px solid var(--bg-solid);
         }
 
         .setting-item input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
@@ -493,7 +734,7 @@
         }
         
         .color-option:hover { transform: scale(1.1); }
-        .color-option.active { border-color: var(--text-primary); box-shadow: 0 0 0 2px var(--bg-soft), 0 0 0 4px var(--text-primary); }
+        .color-option.active { border-color: var(--text-primary); box-shadow: 0 0 0 2px var(--bg-solid), 0 0 0 4px var(--text-primary); }
 
         .btn-primary { 
             width: 100%;
@@ -510,7 +751,7 @@
             margin-top: 1rem;
         }
         
-        .btn-primary:hover { opacity: 0.85; }
+        .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
 
         /* --- Tutorial --- */
         .tutorial-overlay {
@@ -528,13 +769,14 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         .tutorial-card {
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             padding: 28px;
             border-radius: var(--radius-lg);
             max-width: 480px;
             color: var(--text-primary);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--glass-shadow);
         }
 
         .tutorial-card h2 {
@@ -574,8 +816,9 @@
             align-items: center;
             gap: 12px;
             padding: 10px 20px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
             border-radius: 100px;
             color: var(--text-secondary);
             font-style: italic;
@@ -585,12 +828,6 @@
             pointer-events: none;
             box-shadow: var(--shadow-sm);
             font-family: 'JetBrains Mono', monospace;
-        }
-
-        .quote-card:hover { 
-            opacity: 1; 
-            transform: translateX(-50%) translateY(-4px); 
-            border-color: var(--border-strong);
         }
 
         .quote-icon {
@@ -604,17 +841,24 @@
         /* --- Context Menu --- */
         .context-menu {
             position: fixed;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             padding: 6px;
             z-index: 8000;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--glass-shadow);
             display: none;
             min-width: 200px;
         }
 
-        .context-menu.show { display: block; }
+        .context-menu.show { display: block; animation: menuPop 0.2s cubic-bezier(0.2, 1, 0.3, 1); }
+
+        @keyframes menuPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
         .context-item {
             padding: 8px 12px;
@@ -642,17 +886,20 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.95);
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: 24px;
             z-index: 8500;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--glass-shadow);
             display: none;
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
             max-width: 700px;
             width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .wallpaper-selector.show {
@@ -724,7 +971,7 @@
 
         .wallpaper-option.active {
             border-color: var(--accent);
-            box-shadow: 0 0 0 2px var(--bg-soft), 0 0 0 4px var(--accent);
+            box-shadow: 0 0 0 2px var(--bg-solid), 0 0 0 4px var(--accent);
         }
 
         .wallpaper-option.custom {
@@ -744,6 +991,38 @@
             border-color: var(--accent);
             color: var(--text-primary);
             background: var(--accent-soft);
+        }
+
+        .wallpaper-option.animated {
+            position: relative;
+        }
+
+        .wallpaper-option.animated::before {
+            content: '▶';
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .wallpaper-option.dynamic {
+            position: relative;
+        }
+
+        .wallpaper-option.dynamic::before {
+            content: '🕐';
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 12px;
         }
 
         .custom-upload-input { display: none; }
@@ -770,10 +1049,11 @@
         .login-card {
             width: 360px;
             padding: 32px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength)) saturate(var(--saturation));
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--glass-shadow);
             text-align: center;
             position: relative;
         }
@@ -817,11 +1097,12 @@
             font-size: 14px;
             font-family: 'Inter', sans-serif;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .login-input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
         }
 
         .login-btn {
@@ -839,8 +1120,9 @@
             margin-top: 8px;
         }
 
-        .login-btn:hover { opacity: 0.85; }
+        .login-btn:hover { opacity: 0.85; transform: translateY(-1px); }
         .login-btn:active { transform: translateY(1px); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
         .login-error {
             color: var(--danger);
@@ -876,6 +1158,29 @@
             color: var(--text-secondary);
         }
 
+        /* [v0.2] Snap Preview */
+        .snap-preview {
+            position: fixed;
+            background: var(--accent);
+            opacity: 0.12;
+            border-radius: var(--radius);
+            border: 2px solid var(--accent);
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.15s ease;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .snap-preview.active { display: block; animation: fadeIn 0.15s ease; }
+
+        /* [v0.3] Split View Pro - multiple zones */
+        .snap-preview.zone-tl, .snap-preview.zone-tr, 
+        .snap-preview.zone-bl, .snap-preview.zone-br {
+            width: calc(50% - 4px);
+            height: calc(50% - 4px);
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
@@ -889,6 +1194,7 @@
             .top-bar { padding: 0 1rem; }
             .quote-card { bottom: 90px; padding: 8px 16px; font-size: 12px; }
             .wallpaper-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+            .dock-preview { display: none; }
         }
     </style>
 </head>
@@ -924,6 +1230,7 @@
     </div>
 
     <div class="background-layer" id="backgroundLayer"></div>
+    <canvas id="wallpaper-canvas"></canvas>
     <div class="noise-overlay"></div>
     <canvas id="particle-canvas"></canvas>
 
@@ -958,6 +1265,8 @@
             <svg class="quote-icon" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
         </div>
     </div>
+
+    <div class="snap-preview" id="snapPreview"></div>
 
     <div class="dock-container" id="dock"></div>
 
@@ -1030,6 +1339,11 @@
                 <input type="range" id="particleToggle" min="0" max="1" value="1" step="1" oninput="toggleParticles(this.value)">
                 <span class="value-display" id="particleValue">Вкл</span>
             </div>
+            <div class="setting-item">
+                <label>Genie</label>
+                <input type="range" id="genieToggle" min="0" max="1" value="1" step="1" oninput="toggleGenie(this.value)">
+                <span class="value-display" id="genieValue">Вкл</span>
+            </div>
         </div>
 
         <button class="btn-primary" onclick="toggleSettings()">Закрыть настройки</button>
@@ -1037,19 +1351,21 @@
 
     <div class="tutorial-overlay" id="tutorialOverlay">
         <div class="tutorial-card">
-            <h2>🎓 Добро пожаловать</h2>
+            <h2>🎓 Добро пожаловать в Центр Инструментов</h2>
             <p>
                 Интерфейс работает как полноценный рабочий стол.<br><br>
                 1. Окна можно <b>перетаскивать</b> за заголовок.<br>
                 2. Потяните за <b>любой край</b>, чтобы изменить размер.<br>
-                3. Правый клик открывает контекстное меню.<br>
-                4. Используйте <kbd>Ctrl</kbd> + <kbd>Tab</kbd> для переключения окон.
+                3. Поднесите окно к <b>краю или углу</b> для разделения экрана.<br>
+                4. Наведите на иконку в доке для <b>превью окна</b>.<br>
+                5. Правый клик открывает контекстное меню.<br>
             </p>
             <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
         </div>
     </div>
 
     <script>
+
         const ICONS = {
             chart: '<path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-7h-2v7zm4 0h2v-10h-2v10z"/>',
             file: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>',
@@ -1059,7 +1375,8 @@
             palette: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>',
             moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
             textFormat: '<path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/>',
-            sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>'
+            sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
+            error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
         };
 
         const MODULES = [
@@ -1073,27 +1390,27 @@
         ];
 
         const QUOTES = [
-    "Ничто не истинно, всё похер",
-    "Баги — это фичи, которые ещё не поняли",
-    "Работает? Не трогай!",
-    "Лучший код — это тот, который не нужно писать",
-    "Всё — ложь, а мне всё равно",
-    "Идиотизм — это норма, а я в деле",
-    "Похуй — это моя религия",
-    "Нет смысла — есть похеру",
-    "Все пидорасы, и мне похер",
-    "Жизнь — это игра, и я в ней пас",
-    "Время лечит, а похер — нет",
-    "Что было — то прошло, а что будет — похер",
-    "Самое важное — это ничего не важно",
-    "Лучшее решение — ничего не делать",
-    "Плыви по течению, и пусть всё идёт к херам",
-    "Меньше знаешь — крепче спишь",
-    "Не парься, всё когда-нибудь закончится",
-    "Если не можешь изменить ситуацию — измени отношение",
-    "Пошёл ты со своей серьезностью",
-    "На всё есть своё место — в мусоре"
-];
+            "Ничто не истинно, всё похер",
+            "Баги — это фичи, которые ещё не поняли",
+            "Работает? Не трогай!",
+            "Лучший код — это тот, который не нужно писать",
+            "Всё — ложь, а мне всё равно",
+            "Идиотизм — это норма, а я в деле",
+            "Похуй — это моя религия",
+            "Нет смысла — есть похеру",
+            "Все пидорасы, и мне похер",
+            "Жизнь — это игра, и я в ней пас",
+            "Время лечит, а похер — нет",
+            "Что было — то прошло, а что будет — похер",
+            "Самое важное — это ничего не важно",
+            "Лучшее решение — ничего не делать",
+            "Плыви по течению, и пусть всё идёт к херам",
+            "Меньше знаешь — крепче спишь",
+            "Не парься, всё когда-нибудь закончится",
+            "Если не можешь изменить ситуацию — измени отношение",
+            "Пошёл ты со своей серьезностью",
+            "На всё есть своё место — в мусоре"
+        ];
 
         const WALLPAPERS = [
             { name: "Default Light", value: "linear-gradient(135deg, #fafaf7 0%, #f5f5f0 100%)", type: 'light' },
@@ -1104,27 +1421,85 @@
             { name: "Forest", value: "linear-gradient(135deg, #14532d 0%, #166534 100%)", type: 'dark' }
         ];
 
-        let zIndexCounter = 100;
+        // [v0.3-5] Animated Wallpapers
+        const ANIMATED_WALLPAPERS = [
+            { id: 'aurora', name: 'Aurora', type: 'animated' },
+            { id: 'starfield', name: 'Starfield', type: 'animated' },
+            { id: 'waves', name: 'Waves', type: 'animated' },
+            { id: 'gradient', name: 'Flow', type: 'animated' }
+        ];
+
+        // [v0.3-6] Dynamic Wallpaper presets
+        const DYNAMIC_WALLPAPERS = {
+            morning: { name: 'Morning', gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
+            day: { name: 'Day', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+            evening: { name: 'Evening', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+            night: { name: 'Night', gradient: 'linear-gradient(135deg, #0c1445 0%, #183b6b 100%)' }
+        };
+
+        // ========== GLOBAL STATE ==========
+        const Z_MIN = 100;
+        const Z_MAX = 10000;
+        let zIndexCounter = Z_MIN;
         let windows = {};
         let soundEnabled = true;
         let particlesEnabled = true;
+        let genieEnabled = true;  // [v0.3-1]
         let quoteIndex = 0;
         let currentWallpaper = null;
+        let currentWallpaperType = 'static'; // static, animated, dynamic
 
+        // Particle state
+        let particlesInitialized = false;
+        let particleAnimationId = null;
+        let particleColor = '#999999';
+        let particleCtx = null;
+        let particleCanvas = null;
+        let particles = [];
+        let mouse = { x: null, y: null };
+
+        // [v0.3-5] Animated wallpaper state
+        let wallpaperCanvas = null;
+        let wallpaperCtx = null;
+        let wallpaperAnimationId = null;
+        let currentAnimatedWallpaper = null;
+
+        // [v0.3-3] Snap state with zones
+        let snapState = { active: false, type: null, windowId: null };
+        
+        // Drag/resize state
+        let isDragging = false, currentWin = null, dragOffsetX = 0, dragOffsetY = 0;
+        let isResizing = false, resizeWin = null, resizeDir = '', startX, startY, startW, startH, startL, startT;
+
+        // [v0.3-2] Dock preview state
+        let dockPreviewTimeout = null;
+        let currentDockPreview = null;
+
+        // Auth state
+        const VALID_USER_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
+        const VALID_PASS_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
+        let loginAttempts = 0;
+        let isLocked = false;
+
+        // ========== INIT ==========
         document.addEventListener('DOMContentLoaded', () => {
             initParticles();
+            initWallpaperCanvas();
             buildDock();
             updateClock();
             setInterval(updateClock, 1000);
             setInterval(rotateQuote, 8000);
+            
+            // [v0.3-6] Check dynamic wallpaper every minute
+            setInterval(checkDynamicWallpaper, 60000);
             
             if (!localStorage.getItem('os_tutorial_seen')) {
                 setTimeout(() => document.getElementById('tutorialOverlay').classList.add('show'), 500);
             }
             
             loadSettings();
-            loadWindowPositions();
             loadWallpaper();
+            restoreSession();
             
             document.getElementById('desktop').addEventListener('contextmenu', (e) => {
                 e.preventDefault();
@@ -1137,10 +1512,36 @@
             });
             
             document.addEventListener('keydown', handleKeyboard);
+            document.addEventListener('keyup', handleKeyboardUp);
+            
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (particleAnimationId) {
+                        cancelAnimationFrame(particleAnimationId);
+                        particleAnimationId = null;
+                    }
+                    if (wallpaperAnimationId) {
+                        cancelAnimationFrame(wallpaperAnimationId);
+                        wallpaperAnimationId = null;
+                    }
+                } else {
+                    if (particlesEnabled && particlesInitialized) animateParticles();
+                    if (currentAnimatedWallpaper) animateWallpaper();
+                }
+            });
         });
 
-        function getSvg(iconPath) { return `<svg viewBox="0 0 24 24">${iconPath}</svg>`; }
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            updateGreeting();
+            setInterval(updateGreeting, 60000);
+        });
 
+        function getSvg(iconPath) { 
+            return `<svg viewBox="0 0 24 24">${iconPath}</svg>`; 
+        }
+
+        // ========== DOCK ==========
         function buildDock() {
             const dock = document.getElementById('dock');
             MODULES.forEach(mod => {
@@ -1149,27 +1550,98 @@
                 item.id = `dock-${mod.id}`;
                 item.innerHTML = `${getSvg(mod.icon)}<div class="dock-tooltip">${mod.title}</div>`;
                 item.onclick = () => toggleWindow(mod.id);
+                
+                // [v0.3-2] Dock hover preview
+                item.addEventListener('mouseenter', () => showDockPreview(mod.id));
+                item.addEventListener('mouseleave', hideDockPreview);
+                
                 dock.appendChild(item);
+            });
+        }
+
+        // [v0.3-2] Dock Hover Preview
+        function showDockPreview(id) {
+            clearTimeout(dockPreviewTimeout);
+            hideDockPreview();
+            
+            dockPreviewTimeout = setTimeout(() => {
+                const winData = windows[id];
+                const mod = MODULES.find(m => m.id === id);
+                if (!mod) return;
+                
+                const dockItem = document.getElementById(`dock-${id}`);
+                if (!dockItem) return;
+                
+                const preview = document.createElement('div');
+                preview.className = 'dock-preview';
+                preview.id = `preview-${id}`;
+                
+                if (winData && winData.win.dataset.state !== 'minimized') {
+                    // Window is open - show live preview
+                    const iframeSrc = winData.win.querySelector('iframe')?.src;
+                    preview.innerHTML = `
+                        <div class="dock-preview-content">
+                            ${iframeSrc ? `<iframe src="${iframeSrc}" sandbox="allow-scripts allow-same-origin"></iframe>` : ''}
+                            <div class="dock-preview-label">${mod.title}</div>
+                        </div>
+                    `;
+                } else {
+                    // Window is closed - show placeholder
+                    preview.innerHTML = `
+                        <div class="dock-preview-placeholder">
+                            ${getSvg(mod.icon)}
+                            <span style="font-size: 11px;">${mod.title}</span>
+                        </div>
+                    `;
+                }
+                
+                dockItem.appendChild(preview);
+                currentDockPreview = preview;
+                
+                requestAnimationFrame(() => {
+                    preview.classList.add('show');
+                });
+            }, 300);
+        }
+
+        function hideDockPreview() {
+            clearTimeout(dockPreviewTimeout);
+            if (currentDockPreview) {
+                currentDockPreview.classList.remove('show');
+                const previewEl = currentDockPreview;
+                setTimeout(() => previewEl.remove(), 200);
+                currentDockPreview = null;
+            }
+            // Also remove any lingering previews
+            document.querySelectorAll('.dock-preview').forEach(p => {
+                p.classList.remove('show');
+                setTimeout(() => p.remove(), 200);
             });
         }
 
         function toggleWindow(id) {
             playSound('click');
             const mod = MODULES.find(m => m.id === id);
-            if (!windows[id] || windows[id].dataset.state === 'minimized') {
-                if (!windows[id]) createWindow(mod);
+            const winData = windows[id];
+            
+            if (!winData || winData.win.dataset.state === 'minimized') {
+                if (!winData) createWindow(mod);
                 else restoreWindow(id);
-            } else if (parseInt(windows[id].style.zIndex) < zIndexCounter) {
-                focusWindow(windows[id]);
+            } else if (parseInt(winData.win.style.zIndex) < zIndexCounter) {
+                focusWindow(winData.win);
             } else {
                 minimizeWindow(id);
             }
         }
 
+        // ========== WINDOWS ==========
         function createWindow(mod) {
             const win = document.createElement('div');
             win.className = 'os-window';
             win.id = `win-${mod.id}`;
+            
+            const abortCtrl = new AbortController();
+            const signal = abortCtrl.signal;
             
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight - 148;
@@ -1192,25 +1664,96 @@
             win.style.zIndex = ++zIndexCounter;
 
             win.innerHTML = `
-                <div class="window-header" onmousedown="startDrag(event, '${mod.id}')">
+                <div class="window-header">
                     <div class="window-title">${getSvg(mod.icon)} ${mod.title}</div>
                     <div class="window-controls">
-                        <div class="win-btn win-min" onclick="event.stopPropagation(); minimizeWindow('${mod.id}')"></div>
-                        <div class="win-btn win-max" onclick="event.stopPropagation(); maximizeWindow('${mod.id}')"></div>
-                        <div class="win-btn win-close" onclick="event.stopPropagation(); closeWindow('${mod.id}')"></div>
+                        <div class="win-btn win-min" data-action="min"></div>
+                        <div class="win-btn win-max" data-action="max"></div>
+                        <div class="win-btn win-close" data-action="close"></div>
                     </div>
                 </div>
-                <div class="window-content"><iframe src="${mod.url}" loading="lazy"></iframe></div>
-                <div class="resize-handle rh-r" onmousedown="initResize(event, '${mod.id}', 'r')"></div>
-                <div class="resize-handle rh-b" onmousedown="initResize(event, '${mod.id}', 'b')"></div>
-                <div class="resize-handle rh-br" onmousedown="initResize(event, '${mod.id}', 'br')"></div>
-                <div class="resize-handle rh-l" onmousedown="initResize(event, '${mod.id}', 'l')"></div>
-                <div class="resize-handle rh-t" onmousedown="initResize(event, '${mod.id}', 't')"></div>
+                <div class="window-content">
+                    <div class="iframe-loader">
+                        <div class="spinner"></div>
+                        <span>Загрузка ${mod.title}...</span>
+                    </div>
+                    <div class="iframe-error">
+                        ${getSvg(ICONS.error)}
+                        <div><b>Не удалось загрузить</b></div>
+                        <div style="font-size: 12px; opacity: 0.7;">${mod.url}</div>
+                        <button class="retry-btn">Повторить</button>
+                    </div>
+                    <iframe src="${mod.url}" loading="lazy" 
+                            sandbox="allow-scripts allow-forms allow-same-origin allow-popups" 
+                            referrerpolicy="no-referrer"></iframe>
+                </div>
+                <div class="resize-handle rh-r" data-dir="r"></div>
+                <div class="resize-handle rh-b" data-dir="b"></div>
+                <div class="resize-handle rh-br" data-dir="br"></div>
+                <div class="resize-handle rh-l" data-dir="l"></div>
+                <div class="resize-handle rh-t" data-dir="t"></div>
             `;
 
-            win.onmousedown = () => focusWindow(win);
+            win.addEventListener('mousedown', () => focusWindow(win), { signal });
+            
+            win.querySelectorAll('.win-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const action = btn.dataset.action;
+                    if (action === 'min') minimizeWindow(mod.id);
+                    else if (action === 'max') maximizeWindow(mod.id);
+                    else if (action === 'close') closeWindow(mod.id);
+                }, { signal });
+            });
+
+            const header = win.querySelector('.window-header');
+            header.addEventListener('mousedown', (e) => startDrag(e, mod.id), { signal });
+
+            win.querySelectorAll('.resize-handle').forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    initResize(e, mod.id, handle.dataset.dir);
+                }, { signal });
+            });
+
+            const iframe = win.querySelector('iframe');
+            const loader = win.querySelector('.iframe-loader');
+            const errorEl = win.querySelector('.iframe-error');
+            const retryBtn = win.querySelector('.retry-btn');
+            
+            let iframeLoaded = false;
+            let loadTimeout;
+
+            const handleIframeLoad = () => {
+                iframeLoaded = true;
+                clearTimeout(loadTimeout);
+                if (loader) loader.classList.add('hidden');
+                setTimeout(() => { if (loader) loader.style.display = 'none'; }, 300);
+            };
+
+            const handleIframeError = () => {
+                clearTimeout(loadTimeout);
+                if (loader) { loader.classList.add('hidden'); loader.style.display = 'none'; }
+                if (errorEl) errorEl.classList.add('show');
+            };
+
+            const retryLoad = () => {
+                if (errorEl) errorEl.classList.remove('show');
+                if (loader) { loader.style.display = 'flex'; loader.classList.remove('hidden'); }
+                iframeLoaded = false;
+                iframe.src = mod.url + '?t=' + Date.now();
+                loadTimeout = setTimeout(handleIframeError, 10000);
+            };
+
+            iframe.addEventListener('load', handleIframeLoad, { signal });
+            iframe.addEventListener('error', handleIframeError, { signal });
+            retryBtn.addEventListener('click', retryLoad, { signal });
+            
+            loadTimeout = setTimeout(() => {
+                if (!iframeLoaded) handleIframeError();
+            }, 10000);
+
             document.getElementById('desktop').appendChild(win);
-            windows[mod.id] = win;
+            windows[mod.id] = { win, abortCtrl, mod };
             
             updateActiveAppTitle(mod.title, mod.icon);
             document.getElementById(`dock-${mod.id}`).classList.add('active');
@@ -1218,36 +1761,74 @@
             playSound('open');
         }
 
+        // [v0.3-1] Genie Effect for minimize
         function minimizeWindow(id) {
-            const win = windows[id];
+            const winData = windows[id];
+            if (!winData) return;
+            const win = winData.win;
             const dockItem = document.getElementById(`dock-${id}`);
-            if (win && dockItem) {
-                win.dataset.state = 'minimized';
+            
+            if (!win || !dockItem) return;
+            
+            win.dataset.state = 'minimized';
+            
+            if (genieEnabled) {
+                // Genie-like animation
                 const winRect = win.getBoundingClientRect();
                 const dockRect = dockItem.getBoundingClientRect();
-                const scaleX = dockRect.width / winRect.width;
-                const scaleY = dockRect.height / winRect.height;
-                const translateX = dockRect.left - winRect.left + (dockRect.width - winRect.width) / 2;
-                const translateY = dockRect.top - winRect.top + (dockRect.height - winRect.height) / 2;
-
-                win.style.transformOrigin = 'top left';
-                win.style.transition = 'all 0.4s cubic-bezier(0.2, 1, 0.3, 1)';
-                win.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-                win.style.opacity = '0';
-                win.style.pointerEvents = 'none';
                 
+                const targetX = dockRect.left + dockRect.width / 2 - winRect.left - winRect.width / 2;
+                const targetY = dockRect.top - winRect.top;
+                
+                const animation = win.animate([
+                    { 
+                        transform: 'translate(0, 0) scale(1, 1)', 
+                        opacity: 1,
+                        borderRadius: '16px'
+                    },
+                    { 
+                        transform: `translate(${targetX * 0.4}px, ${targetY * 0.4}px) scale(0.6, 0.7)`,
+                        opacity: 0.8,
+                        offset: 0.5
+                    },
+                    { 
+                        transform: `translate(${targetX}px, ${targetY}px) scale(0.05, 0.02)`,
+                        opacity: 0,
+                        borderRadius: '50%'
+                    }
+                ], {
+                    duration: 550,
+                    easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+                    fill: 'forwards'
+                });
+                
+                animation.onfinish = () => {
+                    win.style.display = 'none';
+                    win.style.transform = '';
+                    win.style.opacity = '';
+                    animation.cancel();
+                };
+            } else {
+                // Fallback: simple fade
+                win.style.transition = 'all 0.3s ease';
+                win.style.opacity = '0';
+                win.style.transform = 'scale(0.95)';
                 setTimeout(() => {
                     win.style.display = 'none';
-                    win.style.transform = ''; 
-                }, 400);
-
-                updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
-                playSound('minimize');
+                    win.style.transform = '';
+                    win.style.opacity = '';
+                    win.style.transition = '';
+                }, 300);
             }
+
+            updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
+            playSound('minimize');
         }
 
         function restoreWindow(id) {
-            const win = windows[id];
+            const winData = windows[id];
+            if (!winData) return;
+            const win = winData.win;
             if (win) {
                 win.style.display = 'flex';
                 win.dataset.state = 'normal';
@@ -1258,37 +1839,61 @@
                     win.style.transform = 'scale(1)';
                 });
                 focusWindow(win);
-                const mod = MODULES.find(m => m.id === id);
-                updateActiveAppTitle(mod.title, mod.icon);
+                updateActiveAppTitle(winData.mod.title, winData.mod.icon);
                 playSound('restore');
             }
         }
 
         function closeWindow(id) {
-            if (windows[id]) {
-                saveWindowPosition(id);
-                windows[id].remove();
-                delete windows[id];
-                document.getElementById(`dock-${id}`).classList.remove('active');
-                if (Object.keys(windows).length === 0) {
-                    document.getElementById('desktop').classList.remove('has-windows');
-                    updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
+            const winData = windows[id];
+            if (!winData) return;
+            
+            saveWindowPosition(id);
+            removeWindowFromSession(id);
+            
+            try { winData.abortCtrl.abort(); } catch (e) {}
+            
+            winData.win.remove();
+            delete windows[id];
+            document.getElementById(`dock-${id}`).classList.remove('active');
+            
+            if (Object.keys(windows).length === 0) {
+                document.getElementById('desktop').classList.remove('has-windows');
+                updateActiveAppTitle("Ready", '<circle cx="12" cy="12" r="10"/>');
+            } else {
+                const remaining = Object.keys(windows);
+                if (remaining.length > 0) {
+                    const lastWin = windows[remaining[remaining.length - 1]].win;
+                    focusWindow(lastWin);
                 }
-                playSound('close');
             }
+            playSound('close');
         }
 
         function focusWindow(win) {
             document.querySelectorAll('.os-window').forEach(w => w.classList.remove('focused'));
+            
+            if (zIndexCounter > Z_MAX) {
+                const sorted = Object.values(windows)
+                    .map(wd => wd.win)
+                    .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
+                sorted.forEach((w, i) => {
+                    w.style.zIndex = Z_MIN + i;
+                });
+                zIndexCounter = Z_MIN + sorted.length;
+            }
+            
             win.style.zIndex = ++zIndexCounter;
             win.classList.add('focused');
             const id = win.id.replace('win-', '');
-            const mod = MODULES.find(m => m.id === id);
-            if (mod) updateActiveAppTitle(mod.title, mod.icon);
+            const winData = windows[id];
+            if (winData) updateActiveAppTitle(winData.mod.title, winData.mod.icon);
         }
 
         function maximizeWindow(id) {
-            const win = windows[id];
+            const winData = windows[id];
+            if (!winData) return;
+            const win = winData.win;
             if (win) {
                 if (win.dataset.maximized === 'true') {
                     win.style.top = win.dataset.prevTop || '80px';
@@ -1316,17 +1921,31 @@
             el.innerHTML = `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--text-secondary)">${iconSvg}</svg> ${title}`;
         }
 
-        let isDragging = false, currentWin = null, dragOffsetX = 0, dragOffsetY = 0;
+        // ========== DRAG & DROP ==========
         function startDrag(e, id) {
             if (e.target.closest('.window-controls')) return;
-            const win = windows[id];
+            const winData = windows[id];
+            if (!winData) return;
+            const win = winData.win;
             if (win.dataset.maximized === 'true') return;
+            
             isDragging = true;
             currentWin = win;
+            currentWin.dataset.dragId = id;
             focusWindow(win);
+            
+            // [v0.3-7] Add dragging class for enhanced shadow
+            win.classList.add('dragging');
+            
+            const content = win.querySelector('.window-content');
+            const overlay = document.createElement('div');
+            overlay.className = 'drag-overlay';
+            content.appendChild(overlay);
+            
             const rect = win.getBoundingClientRect();
             dragOffsetX = e.clientX - rect.left;
             dragOffsetY = e.clientY - rect.top;
+            
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -1335,34 +1954,63 @@
             if (!isDragging || !currentWin) return;
             let x = e.clientX - dragOffsetX;
             let y = Math.max(48, e.clientY - dragOffsetY);
-            const snapThreshold = 20;
-            const winWidth = parseInt(currentWin.offsetWidth);
             
-            if (x < snapThreshold) x = 0;
-            if (x > window.innerWidth - winWidth - snapThreshold) x = window.innerWidth - winWidth;
-            if (y < 48 + snapThreshold) y = 48;
-            
+            currentWin.style.transition = 'none';
             currentWin.style.left = x + 'px';
             currentWin.style.top = y + 'px';
+            
+            checkSnapZones(e.clientX, e.clientY);
         }
         
         function stopDrag() {
-            isDragging = false; 
+            if (!isDragging) return;
+            const win = currentWin;
+            const id = win?.dataset.dragId;
+            
+            // [v0.3-7] Remove dragging class
+            if (win) {
+                win.classList.remove('dragging');
+                const overlay = win.querySelector('.drag-overlay');
+                if (overlay) overlay.remove();
+                win.style.transition = '';
+            }
+            
+            if (snapState.active && snapState.windowId === id) {
+                applySnap(snapState.type, win);
+            }
+            
+            clearSnapPreview();
+            
+            isDragging = false;
             currentWin = null;
             document.removeEventListener('mousemove', onDrag);
             document.removeEventListener('mouseup', stopDrag);
-            saveWindowPosition(currentWin?.id.replace('win-', ''));
+            
+            if (id) saveWindowPosition(id);
         }
 
-        let isResizing = false, resizeWin = null, resizeDir = '', startX, startY, startW, startH, startL, startT;
+        // ========== RESIZE ==========
         function initResize(e, id, dir) {
-            e.preventDefault(); e.stopPropagation();
-            isResizing = true; resizeWin = windows[id]; resizeDir = dir;
-            startX = e.clientX; startY = e.clientY;
+            e.preventDefault(); 
+            e.stopPropagation();
+            const winData = windows[id];
+            if (!winData) return;
+            
+            isResizing = true; 
+            resizeWin = winData.win; 
+            resizeDir = dir;
+            startX = e.clientX; 
+            startY = e.clientY;
             startW = parseInt(resizeWin.offsetWidth);
             startH = parseInt(resizeWin.offsetHeight);
             startL = parseInt(resizeWin.offsetLeft);
             startT = parseInt(resizeWin.offsetTop);
+            
+            const content = resizeWin.querySelector('.window-content');
+            const overlay = document.createElement('div');
+            overlay.className = 'drag-overlay';
+            content.appendChild(overlay);
+            
             document.addEventListener('mousemove', doResize);
             document.addEventListener('mouseup', stopResize);
         }
@@ -1372,6 +2020,7 @@
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
 
+            resizeWin.style.transition = 'none';
             if (resizeDir.includes('r')) resizeWin.style.width = Math.max(400, startW + dx) + 'px';
             if (resizeDir.includes('b')) resizeWin.style.height = Math.max(300, startH + dy) + 'px';
             if (resizeDir.includes('l')) {
@@ -1387,11 +2036,121 @@
         }
         
         function stopResize() {
-            isResizing = false; resizeWin = null;
+            if (!isResizing) return;
+            if (resizeWin) {
+                const overlay = resizeWin.querySelector('.drag-overlay');
+                if (overlay) overlay.remove();
+                resizeWin.style.transition = '';
+            }
+            
+            isResizing = false; 
+            resizeWin = null;
             document.removeEventListener('mousemove', doResize);
             document.removeEventListener('mouseup', stopResize);
         }
 
+        // ========== [v0.3-3] SPLIT VIEW PRO ==========
+        function checkSnapZones(mouseX, mouseY) {
+            const edgeThreshold = 30;
+            const cornerThreshold = 120;
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const topBarHeight = 48;
+            const availableHeight = screenHeight - 148;
+            const preview = document.getElementById('snapPreview');
+            
+            let newSnapType = null;
+            let previewRect = null;
+            
+            const isLeft = mouseX < edgeThreshold;
+            const isRight = mouseX > screenWidth - edgeThreshold;
+            const isTop = mouseY < topBarHeight + edgeThreshold;
+            const isBottom = mouseY > screenHeight - edgeThreshold;
+            
+            const isTopArea = mouseY < screenHeight / 2;
+            const isBottomArea = mouseY >= screenHeight / 2;
+            
+            // Corners (quarters)
+            if (isLeft && isTopArea && mouseY > topBarHeight + cornerThreshold) {
+                newSnapType = 'tl';
+                previewRect = { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight / 2 };
+            } else if (isLeft && isBottomArea) {
+                newSnapType = 'bl';
+                previewRect = { left: 0, top: topBarHeight + availableHeight / 2, width: screenWidth / 2, height: availableHeight / 2 };
+            } else if (isRight && isTopArea && mouseY > topBarHeight + cornerThreshold) {
+                newSnapType = 'tr';
+                previewRect = { left: screenWidth / 2, top: topBarHeight, width: screenWidth / 2, height: availableHeight / 2 };
+            } else if (isRight && isBottomArea) {
+                newSnapType = 'br';
+                previewRect = { left: screenWidth / 2, top: topBarHeight + availableHeight / 2, width: screenWidth / 2, height: availableHeight / 2 };
+            }
+            // Edges (halves)
+            else if (isLeft) {
+                newSnapType = 'left';
+                previewRect = { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight };
+            } else if (isRight) {
+                newSnapType = 'right';
+                previewRect = { left: screenWidth / 2, top: topBarHeight, width: screenWidth / 2, height: availableHeight };
+            } else if (isTop) {
+                newSnapType = 'max';
+                previewRect = { left: 0, top: topBarHeight, width: screenWidth, height: availableHeight };
+            }
+            
+            if (newSnapType) {
+                snapState = { 
+                    active: true, 
+                    type: newSnapType, 
+                    windowId: currentWin?.dataset.dragId 
+                };
+                preview.style.left = previewRect.left + 'px';
+                preview.style.top = previewRect.top + 'px';
+                preview.style.width = previewRect.width + 'px';
+                preview.style.height = previewRect.height + 'px';
+                preview.className = `snap-preview active zone-${newSnapType}`;
+            } else {
+                clearSnapPreview();
+            }
+        }
+
+        function clearSnapPreview() {
+            snapState = { active: false, type: null, windowId: null };
+            const preview = document.getElementById('snapPreview');
+            preview.classList.remove('active');
+            preview.className = 'snap-preview';
+        }
+
+        function applySnap(type, win) {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const topBarHeight = 48;
+            const availableHeight = screenHeight - 148;
+            
+            win.classList.add('snapping');
+            
+            const positions = {
+                'left': { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight },
+                'right': { left: screenWidth / 2, top: topBarHeight, width: screenWidth / 2, height: availableHeight },
+                'max': { left: 0, top: topBarHeight, width: screenWidth, height: availableHeight },
+                'tl': { left: 0, top: topBarHeight, width: screenWidth / 2, height: availableHeight / 2 },
+                'tr': { left: screenWidth / 2, top: topBarHeight, width: screenWidth / 2, height: availableHeight / 2 },
+                'bl': { left: 0, top: topBarHeight + availableHeight / 2, width: screenWidth / 2, height: availableHeight / 2 },
+                'br': { left: screenWidth / 2, top: topBarHeight + availableHeight / 2, width: screenWidth / 2, height: availableHeight / 2 }
+            };
+            
+            const pos = positions[type];
+            if (pos) {
+                win.style.left = pos.left + 'px';
+                win.style.top = pos.top + 'px';
+                win.style.width = pos.width + 'px';
+                win.style.height = pos.height + 'px';
+                if (type === 'max') win.dataset.maximized = 'true';
+            }
+            
+            setTimeout(() => win.classList.remove('snapping'), 300);
+            playSound('maximize');
+        }
+
+        // ========== CLOCK & QUOTES ==========
         function updateClock() {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
         }
@@ -1406,6 +2165,7 @@
             }, 300);
         }
 
+        // ========== CONTEXT MENU ==========
         function showContextMenu(x, y) {
             const menu = document.getElementById('contextMenu');
             menu.style.left = x + 'px';
@@ -1427,27 +2187,80 @@
             Object.keys(windows).forEach(id => minimizeWindow(id));
         }
 
-        // --- Wallpaper Functions ---
+        // ========== WALLPAPER SYSTEM ==========
+        function initWallpaperCanvas() {
+            wallpaperCanvas = document.getElementById('wallpaper-canvas');
+            wallpaperCtx = wallpaperCanvas.getContext('2d');
+            
+            function resize() {
+                wallpaperCanvas.width = window.innerWidth;
+                wallpaperCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+        }
+
         function initWallpaperSelector() {
             const grid = document.getElementById('wallpaperGrid');
             grid.innerHTML = '';
             const currentTheme = document.body.getAttribute('data-theme');
             const filteredWallpapers = WALLPAPERS.filter(wp => wp.type === currentTheme);
             
+            // Static wallpapers
             filteredWallpapers.forEach(wp => {
                 const option = document.createElement('div');
                 option.className = 'wallpaper-option';
                 option.style.background = wp.value;
-                option.onclick = () => applyWallpaper(wp.value);
-                if (currentWallpaper === wp.value) option.classList.add('active');
+                option.onclick = () => applyWallpaper(wp.value, 'static');
+                if (currentWallpaper === wp.value && currentWallpaperType === 'static') {
+                    option.classList.add('active');
+                }
                 grid.appendChild(option);
             });
             
+            // [v0.3-5] Animated wallpapers
+            ANIMATED_WALLPAPERS.forEach(aw => {
+                const option = document.createElement('div');
+                option.className = 'wallpaper-option animated';
+                option.style.background = getAnimatedPreviewGradient(aw.id);
+                option.onclick = () => applyWallpaper(aw.id, 'animated');
+                if (currentWallpaper === aw.id && currentWallpaperType === 'animated') {
+                    option.classList.add('active');
+                }
+                grid.appendChild(option);
+            });
+            
+            // [v0.3-6] Dynamic wallpaper option
+            const dynamicOption = document.createElement('div');
+            dynamicOption.className = 'wallpaper-option dynamic';
+            dynamicOption.style.background = getDynamicGradient();
+            dynamicOption.onclick = () => applyWallpaper('dynamic', 'dynamic');
+            if (currentWallpaperType === 'dynamic') {
+                dynamicOption.classList.add('active');
+            }
+            grid.appendChild(dynamicOption);
+            
+            // Custom upload
             const customOption = document.createElement('div');
             customOption.className = 'wallpaper-option custom';
             customOption.innerHTML = `<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span>Загрузить</span>`;
             customOption.onclick = () => document.getElementById('customWallpaperInput').click();
             grid.appendChild(customOption);
+        }
+
+        function getAnimatedPreviewGradient(id) {
+            const gradients = {
+                aurora: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+                starfield: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+                waves: 'linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%)',
+                gradient: 'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)'
+            };
+            return gradients[id] || gradients.aurora;
+        }
+
+        function getDynamicGradient() {
+            const period = getTimePeriod();
+            return DYNAMIC_WALLPAPERS[period].gradient;
         }
 
         function showWallpaperSelector() {
@@ -1461,20 +2274,36 @@
             document.getElementById('wallpaperSelector').classList.remove('show');
         }
 
-        function applyWallpaper(value) {
+        function applyWallpaper(value, type) {
             const bgLayer = document.getElementById('backgroundLayer');
-            bgLayer.style.background = value;
-            bgLayer.style.opacity = '1';
-            bgLayer.style.filter = value.startsWith('url(') && document.body.getAttribute('data-theme') === 'dark' ? 'brightness(0.7)' : 'none';
-            currentWallpaper = value;
-            localStorage.setItem(`os_wallpaper_${document.body.getAttribute('data-theme')}`, value);
+            const canvas = document.getElementById('wallpaper-canvas');
             
-            document.querySelectorAll('.wallpaper-option').forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.style.background === value || (value.startsWith('url') && opt.classList.contains('custom'))) {
-                    // simple active state handling
-                }
-            });
+            currentWallpaper = value;
+            currentWallpaperType = type;
+            
+            // Stop any running wallpaper animation
+            if (wallpaperAnimationId) {
+                cancelAnimationFrame(wallpaperAnimationId);
+                wallpaperAnimationId = null;
+            }
+            
+            if (type === 'animated') {
+                bgLayer.style.background = 'transparent';
+                canvas.classList.add('active');
+                currentAnimatedWallpaper = value;
+                animateWallpaper();
+            } else if (type === 'dynamic') {
+                canvas.classList.remove('active');
+                currentAnimatedWallpaper = null;
+                applyDynamicWallpaper();
+            } else {
+                canvas.classList.remove('active');
+                currentAnimatedWallpaper = null;
+                bgLayer.style.background = value;
+                bgLayer.style.filter = value.startsWith('url(') && document.body.getAttribute('data-theme') === 'dark' ? 'brightness(0.7)' : 'none';
+            }
+            
+            localStorage.setItem('os_wallpaper', JSON.stringify({ value, type }));
             playSound('click');
         }
 
@@ -1483,7 +2312,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    applyWallpaper(`url(${e.target.result})`);
+                    applyWallpaper(`url(${e.target.result})`, 'static');
                     hideWallpaperSelector();
                 };
                 reader.readAsDataURL(file);
@@ -1491,25 +2320,184 @@
         }
 
         function loadWallpaper() {
+            const saved = localStorage.getItem('os_wallpaper');
+            if (saved) {
+                try {
+                    const { value, type } = JSON.parse(saved);
+                    applyWallpaper(value, type);
+                    return;
+                } catch (e) {}
+            }
+            // Default
             const theme = document.body.getAttribute('data-theme');
-            const savedWallpaper = localStorage.getItem(`os_wallpaper_${theme}`);
+            const defaultWp = WALLPAPERS.find(wp => wp.type === theme);
+            if (defaultWp) applyWallpaper(defaultWp.value, 'static');
+        }
+
+        // [v0.3-6] Dynamic Wallpaper
+        function getTimePeriod() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 11) return 'morning';
+            if (hour >= 11 && hour < 17) return 'day';
+            if (hour >= 17 && hour < 22) return 'evening';
+            return 'night';
+        }
+
+        function applyDynamicWallpaper() {
+            const period = getTimePeriod();
+            const wallpaper = DYNAMIC_WALLPAPERS[period];
             const bgLayer = document.getElementById('backgroundLayer');
-            if (savedWallpaper) {
-                applyWallpaper(savedWallpaper);
-            } else {
-                const defaultWp = WALLPAPERS.find(wp => wp.type === theme);
-                if (defaultWp) applyWallpaper(defaultWp.value);
+            bgLayer.style.background = wallpaper.gradient;
+            bgLayer.style.filter = 'none';
+        }
+
+        function checkDynamicWallpaper() {
+            if (currentWallpaperType === 'dynamic') {
+                applyDynamicWallpaper();
             }
         }
 
+        // [v0.3-5] Animated Wallpaper Renderers
+        function animateWallpaper() {
+            if (!currentAnimatedWallpaper || document.hidden) {
+                wallpaperAnimationId = null;
+                return;
+            }
+            
+            const w = wallpaperCanvas.width;
+            const h = wallpaperCanvas.height;
+            const time = Date.now() * 0.001;
+            
+            wallpaperCtx.clearRect(0, 0, w, h);
+            
+            switch (currentAnimatedWallpaper) {
+                case 'aurora': renderAurora(w, h, time); break;
+                case 'starfield': renderStarfield(w, h, time); break;
+                case 'waves': renderWaves(w, h, time); break;
+                case 'gradient': renderGradientFlow(w, h, time); break;
+            }
+            
+            wallpaperAnimationId = requestAnimationFrame(animateWallpaper);
+        }
+
+        function renderAurora(w, h, time) {
+            const gradient = wallpaperCtx.createLinearGradient(0, 0, w, h);
+            gradient.addColorStop(0, `hsl(${240 + Math.sin(time * 0.3) * 30}, 70%, 30%)`);
+            gradient.addColorStop(0.5, `hsl(${280 + Math.cos(time * 0.2) * 30}, 60%, 40%)`);
+            gradient.addColorStop(1, `hsl(${200 + Math.sin(time * 0.4) * 20}, 80%, 25%)`);
+            wallpaperCtx.fillStyle = gradient;
+            wallpaperCtx.fillRect(0, 0, w, h);
+            
+            // Aurora waves
+            for (let i = 0; i < 3; i++) {
+                wallpaperCtx.beginPath();
+                wallpaperCtx.moveTo(0, h * 0.3);
+                for (let x = 0; x <= w; x += 20) {
+                    const y = h * 0.3 + Math.sin(x * 0.01 + time + i) * 50 + i * 30;
+                    wallpaperCtx.lineTo(x, y);
+                }
+                wallpaperCtx.lineTo(w, h);
+                wallpaperCtx.lineTo(0, h);
+                wallpaperCtx.closePath();
+                wallpaperCtx.fillStyle = `hsla(${160 + i * 40}, 80%, 60%, ${0.1 - i * 0.02})`;
+                wallpaperCtx.fill();
+            }
+        }
+
+        function renderStarfield(w, h, time) {
+            wallpaperCtx.fillStyle = '#0a0a1a';
+            wallpaperCtx.fillRect(0, 0, w, h);
+            
+            // Stars
+            for (let i = 0; i < 100; i++) {
+                const x = (Math.sin(i * 12.9898) * 0.5 + 0.5) * w;
+                const y = (Math.sin(i * 78.233) * 0.5 + 0.5) * h;
+                const twinkle = Math.sin(time * 2 + i) * 0.5 + 0.5;
+                const size = twinkle * 2;
+                
+                wallpaperCtx.beginPath();
+                wallpaperCtx.arc(x, y, size, 0, Math.PI * 2);
+                wallpaperCtx.fillStyle = `rgba(255, 255, 255, ${0.3 + twinkle * 0.5})`;
+                wallpaperCtx.fill();
+            }
+            
+            // Shooting star occasionally
+            const shootTime = time % 8;
+            if (shootTime < 0.5) {
+                const sx = w * 0.8 - shootTime * w * 0.5;
+                const sy = h * 0.2 + shootTime * h * 0.3;
+                const gradient = wallpaperCtx.createLinearGradient(sx, sy, sx + 100, sy - 50);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                wallpaperCtx.strokeStyle = gradient;
+                wallpaperCtx.lineWidth = 2;
+                wallpaperCtx.beginPath();
+                wallpaperCtx.moveTo(sx, sy);
+                wallpaperCtx.lineTo(sx + 100, sy - 50);
+                wallpaperCtx.stroke();
+            }
+        }
+
+        function renderWaves(w, h, time) {
+            const gradient = wallpaperCtx.createLinearGradient(0, 0, 0, h);
+            gradient.addColorStop(0, '#1a2a4a');
+            gradient.addColorStop(1, '#0d1520');
+            wallpaperCtx.fillStyle = gradient;
+            wallpaperCtx.fillRect(0, 0, w, h);
+            
+            // Waves
+            for (let i = 0; i < 4; i++) {
+                wallpaperCtx.beginPath();
+                wallpaperCtx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 10) {
+                    const y = h * (0.5 + i * 0.12) + 
+                              Math.sin(x * 0.008 + time * (0.5 + i * 0.2)) * 30 +
+                              Math.sin(x * 0.02 + time * 0.3) * 15;
+                    wallpaperCtx.lineTo(x, y);
+                }
+                wallpaperCtx.lineTo(w, h);
+                wallpaperCtx.closePath();
+                wallpaperCtx.fillStyle = `hsla(${200 + i * 15}, 70%, ${40 + i * 10}%, ${0.15 + i * 0.05})`;
+                wallpaperCtx.fill();
+            }
+        }
+
+        function renderGradientFlow(w, h, time) {
+            const gradient = wallpaperCtx.createLinearGradient(
+                Math.sin(time * 0.3) * w * 0.5 + w * 0.5, 0,
+                Math.cos(time * 0.2) * w * 0.5 + w * 0.5, h
+            );
+            gradient.addColorStop(0, `hsl(${(time * 20) % 360}, 70%, 60%)`);
+            gradient.addColorStop(0.5, `hsl(${(time * 20 + 120) % 360}, 70%, 50%)`);
+            gradient.addColorStop(1, `hsl(${(time * 20 + 240) % 360}, 70%, 40%)`);
+            wallpaperCtx.fillStyle = gradient;
+            wallpaperCtx.fillRect(0, 0, w, h);
+            
+            // Floating orbs
+            for (let i = 0; i < 5; i++) {
+                const x = w * (0.2 + 0.6 * Math.sin(time * 0.5 + i * 1.3) * 0.5 + 0.5);
+                const y = h * (0.2 + 0.6 * Math.cos(time * 0.4 + i * 1.7) * 0.5 + 0.5);
+                const radius = 50 + Math.sin(time + i) * 20;
+                
+                const orbGradient = wallpaperCtx.createRadialGradient(x, y, 0, x, y, radius);
+                orbGradient.addColorStop(0, `hsla(${(time * 30 + i * 60) % 360}, 80%, 70%, 0.3)`);
+                orbGradient.addColorStop(1, 'transparent');
+                wallpaperCtx.fillStyle = orbGradient;
+                wallpaperCtx.beginPath();
+                wallpaperCtx.arc(x, y, radius, 0, Math.PI * 2);
+                wallpaperCtx.fill();
+            }
+        }
+
+        // ========== KEYBOARD ==========
         function handleKeyboard(e) {
             if (e.ctrlKey && e.key === 'Tab') {
                 e.preventDefault();
                 const winIds = Object.keys(windows);
                 if (winIds.length > 0) {
-                    const currentIndex = winIds.findIndex(id => windows[id].classList.contains('focused'));
+                    const currentIndex = winIds.findIndex(id => windows[id].win.classList.contains('focused'));
                     const nextIndex = (currentIndex + 1) % winIds.length;
-                    focusWindow(windows[winIds[nextIndex]]);
+                    focusWindow(windows[winIds[nextIndex]].win);
                 }
             }
             if (e.key === 'Escape') {
@@ -1518,21 +2506,35 @@
             }
         }
 
+        function handleKeyboardUp(e) {}
+
+        // ========== SOUND ==========
         function playSound(type) {
             if (!soundEnabled) return;
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            switch(type) {
-                case 'click': oscillator.frequency.value = 800; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1); break;
-                case 'open': oscillator.frequency.value = 600; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2); break;
-                case 'close': oscillator.frequency.value = 400; gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15); break;
-            }
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                const sounds = {
+                    click: { freq: 800, dur: 0.1 },
+                    open: { freq: 600, dur: 0.2 },
+                    close: { freq: 400, dur: 0.15 },
+                    minimize: { freq: 500, dur: 0.12 },
+                    restore: { freq: 700, dur: 0.15 },
+                    maximize: { freq: 550, dur: 0.18 }
+                };
+                
+                const sound = sounds[type] || { freq: 600, dur: 0.1 };
+                oscillator.frequency.value = sound.freq;
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + sound.dur);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + sound.dur);
+            } catch (err) {}
         }
 
         function toggleSound(val) {
@@ -1546,14 +2548,40 @@
             document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
             document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
             localStorage.setItem('os_particles', particlesEnabled);
+            
+            if (particlesEnabled && particlesInitialized && !particleAnimationId && !document.hidden) {
+                animateParticles();
+            }
         }
 
+        function toggleGenie(val) {
+            genieEnabled = val === "1";
+            document.getElementById('genieValue').textContent = genieEnabled ? 'Вкл' : 'Выкл';
+            localStorage.setItem('os_genie', genieEnabled);
+        }
+
+        // ========== SESSION MANAGEMENT ==========
         function saveWindowPosition(id) {
             if (!id || !windows[id]) return;
-            const win = windows[id];
+            const win = windows[id].win;
             const positions = JSON.parse(localStorage.getItem('os_window_positions') || '{}');
-            positions[id] = { x: parseInt(win.style.left), y: parseInt(win.style.top), width: parseInt(win.style.width), height: parseInt(win.style.height) };
+            positions[id] = { 
+                x: parseInt(win.style.left), 
+                y: parseInt(win.style.top), 
+                width: parseInt(win.style.width), 
+                height: parseInt(win.style.height) 
+            };
             localStorage.setItem('os_window_positions', JSON.stringify(positions));
+            
+            const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
+            if (!session.includes(id)) session.push(id);
+            localStorage.setItem('os_session_windows', JSON.stringify(session));
+        }
+
+        function removeWindowFromSession(id) {
+            const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
+            const filtered = session.filter(sid => sid !== id);
+            localStorage.setItem('os_session_windows', JSON.stringify(filtered));
         }
 
         function getWindowPosition(id) {
@@ -1561,21 +2589,56 @@
             return positions[id];
         }
 
-        function loadWindowPositions() {}
+        function restoreSession() {
+            try {
+                const session = JSON.parse(localStorage.getItem('os_session_windows') || '[]');
+                session.forEach((id, index) => {
+                    const mod = MODULES.find(m => m.id === id);
+                    if (mod && !windows[id]) {
+                        setTimeout(() => createWindow(mod), index * 100);
+                    }
+                });
+            } catch (e) {
+                console.warn('Failed to restore session:', e);
+            }
+        }
 
-        function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
-        function toggleTutorial() { document.getElementById('tutorialOverlay').classList.add('show'); }
+        // ========== UI TOGGLES ==========
+        function toggleSettings() { 
+            document.getElementById('settingsPanel').classList.toggle('open'); 
+        }
+        function toggleTutorial() { 
+            document.getElementById('tutorialOverlay').classList.add('show'); 
+        }
         function closeTutorial() {
             document.getElementById('tutorialOverlay').classList.remove('show');
             localStorage.setItem('os_tutorial_seen', 'true');
         }
 
+        // [v0.3-8] Smooth Theme Switch
         function applyTheme(theme) {
+            // Use View Transitions API if available
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    performThemeChange(theme);
+                });
+            } else {
+                performThemeChange(theme);
+            }
+        }
+
+        function performThemeChange(theme) {
             document.body.setAttribute('data-theme', theme);
             const icon = document.getElementById('themeIcon');
             icon.innerHTML = theme === 'light' ? ICONS.sun : ICONS.moon;
             localStorage.setItem('os_theme', theme);
-            loadWallpaper();
+            
+            updateParticleColor();
+            
+            // Update dynamic wallpaper if active
+            if (currentWallpaperType === 'dynamic') {
+                applyDynamicWallpaper();
+            }
             
             document.querySelectorAll('#themeOptions .grid-btn').forEach(b => {
                 b.classList.remove('active');
@@ -1589,18 +2652,16 @@
         }
 
         function changeColor(color) {
-            document.documentElement.style.setProperty('--accent', color);
-            // For dark theme, ensure text contrast remains good if accent is used for text
+            let actualColor = color;
             if (document.body.getAttribute('data-theme') === 'dark' && color === '#1a1a1a') {
-                document.documentElement.style.setProperty('--accent', '#f4f4f4');
+                actualColor = '#f4f4f4';
             }
+            document.documentElement.style.setProperty('--accent', actualColor);
             localStorage.setItem('os_color', color);
+            
             document.querySelectorAll('.color-option').forEach(el => {
                 el.classList.remove('active');
-                // Normalize color for comparison
-                const elColor = el.style.backgroundColor;
-                const targetColor = color;
-                if (elColor === targetColor || el.onclick.toString().includes(color)) {
+                if (el.onclick && el.onclick.toString().includes(color)) {
                     el.classList.add('active');
                 }
             });
@@ -1608,7 +2669,7 @@
 
         function loadSettings() {
             const theme = localStorage.getItem('os_theme') || 'light';
-            applyTheme(theme);
+            performThemeChange(theme);
             
             const color = localStorage.getItem('os_color');
             if (color) changeColor(color);
@@ -1619,6 +2680,7 @@
                 document.getElementById('soundToggle').value = soundEnabled ? 1 : 0;
                 document.getElementById('soundValue').textContent = soundEnabled ? 'Вкл' : 'Выкл';
             }
+            
             const particles = localStorage.getItem('os_particles');
             if (particles !== null) {
                 particlesEnabled = particles === 'true';
@@ -1626,23 +2688,46 @@
                 document.getElementById('particleValue').textContent = particlesEnabled ? 'Вкл' : 'Выкл';
                 document.getElementById('particle-canvas').style.display = particlesEnabled ? 'block' : 'none';
             }
+            
+            const genie = localStorage.getItem('os_genie');
+            if (genie !== null) {
+                genieEnabled = genie === 'true';
+                document.getElementById('genieToggle').value = genieEnabled ? 1 : 0;
+                document.getElementById('genieValue').textContent = genieEnabled ? 'Вкл' : 'Выкл';
+            }
+        }
+
+        // ========== PARTICLES ==========
+        function updateParticleColor() {
+            particleColor = getComputedStyle(document.body).getPropertyValue('--text-mute').trim();
         }
 
         function initParticles() {
-            const canvas = document.getElementById("particle-canvas");
-            const ctx = canvas.getContext("2d");
-            let particles = [];
-            let mouse = { x: null, y: null };
+            if (particlesInitialized) return;
+            particlesInitialized = true;
             
-            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener('resize', resize); resize();
+            particleCanvas = document.getElementById("particle-canvas");
+            particleCtx = particleCanvas.getContext("2d");
+            particles = [];
             
-            document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+            updateParticleColor();
+            
+            function resize() { 
+                particleCanvas.width = window.innerWidth; 
+                particleCanvas.height = window.innerHeight; 
+            }
+            window.addEventListener('resize', resize); 
+            resize();
+            
+            document.addEventListener('mousemove', (e) => { 
+                mouse.x = e.clientX; 
+                mouse.y = e.clientY; 
+            });
 
             class P {
                 constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
+                    this.x = Math.random() * particleCanvas.width;
+                    this.y = Math.random() * particleCanvas.height;
                     this.vx = (Math.random() - 0.5) * 0.5;
                     this.vy = (Math.random() - 0.5) * 0.5;
                     this.size = Math.random() * 1.5;
@@ -1659,47 +2744,43 @@
                             this.vy -= (dy / distance) * ((100 - distance) / 100) * 0.5;
                         }
                     }
-                    this.x += this.vx; this.y += this.vy;
+                    this.x += this.vx; 
+                    this.y += this.vy;
                     this.vx += (this.baseX - this.x) * 0.01;
                     this.vy += (this.baseY - this.y) * 0.01;
-                    if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                    if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                    if(this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                    if(this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
                 }
                 draw() {
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-mute');
-                    ctx.globalAlpha = 0.3;
-                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+                    particleCtx.fillStyle = particleColor;
+                    particleCtx.globalAlpha = 0.3;
+                    particleCtx.beginPath(); 
+                    particleCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); 
+                    particleCtx.fill();
                 }
             }
             
-            for(let i=0; i<60; i++) particles.push(new P());
-            
-            function animate() {
-                if (!particlesEnabled) { requestAnimationFrame(animate); return; }
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animate);
-            }
-            animate();
+            for(let i = 0; i < 60; i++) particles.push(new P());
+            animateParticles();
         }
 
+        function animateParticles() {
+            if (!particlesEnabled || document.hidden) {
+                particleAnimationId = null;
+                return;
+            }
+            particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            particleAnimationId = requestAnimationFrame(animateParticles);
+        }
+
+        // ========== AUTH ==========
         async function hashString(str) {
             const msgBuffer = new TextEncoder().encode(str);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        
-        const VALID_USER_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
-        const VALID_PASS_HASH = "9e62c939e3f5c9c007554bc7995970e2816bf729e8b8f813519fd12a6cc9244f";
-        let loginAttempts = 0;
-        let isLocked = false;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-            updateGreeting();
-            setInterval(updateGreeting, 60000);
-        });
 
         function updateGreeting() {
             const hour = new Date().getHours();
@@ -1741,7 +2822,11 @@
 
             if (userHash === VALID_USER_HASH && passHash === VALID_PASS_HASH) {
                 playSound('open');
-                localStorage.setItem('os_session', JSON.stringify({ user: 'Assortea', timestamp: new Date().getTime(), token: Math.random().toString(36).substring(2) }));
+                localStorage.setItem('os_session', JSON.stringify({ 
+                    user: 'Assortea', 
+                    timestamp: new Date().getTime(), 
+                    token: Math.random().toString(36).substring(2) 
+                }));
                 unlockSystem();
             } else {
                 loginAttempts++;
@@ -1755,7 +2840,10 @@
                     btnText.textContent = "Система заблокирована (30с)";
                     btn.disabled = true;
                     setTimeout(() => {
-                        isLocked = false; btn.disabled = false; btnText.textContent = "Разблокировать систему"; loginAttempts = 0;
+                        isLocked = false; 
+                        btn.disabled = false; 
+                        btnText.textContent = "Разблокировать систему"; 
+                        loginAttempts = 0;
                     }, 30000);
                 }
                 setTimeout(() => errorEl.classList.remove('show'), 3000);
@@ -1764,7 +2852,6 @@
 
         function unlockSystem() {
             document.getElementById('loginOverlay').classList.add('hidden');
-            if (particlesEnabled) initParticles();
         }
     </script>
 </body>
