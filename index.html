@@ -1410,17 +1410,57 @@
 }
 
 .account-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
 }
+.account-avatar:hover {
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+.account-avatar:hover .avatar-overlay {
+  opacity: 1;
+}
+.account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+}
+.avatar-overlay svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+.user-badge img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-input { display: none; }
 
 .account-info {
     flex: 1;
@@ -1653,17 +1693,23 @@
         <div class="top-bar-right">
             <div class="user-badge-wrapper">
     <div class="user-badge" id="userBadge" onclick="toggleAccountPanel(event)" title="Профиль" style="display:none;">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        <span id="userBadgeName">user</span>
-    </div>
+  <svg id="badgeAvatarPlaceholder" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+  <img id="badgeAvatarImage" src="" style="display:none;">
+  <span id="userBadgeName">user</span>
+</div>
     
     <div class="account-panel" id="accountPanel">
         <div class="account-header">
-            <div class="account-avatar">
-                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-            </div>
+            <div class="account-avatar" id="accountAvatar" onclick="document.getElementById('avatarInput').click()" title="Нажмите, чтобы сменить аватар">
+  <svg id="avatarPlaceholder" viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
+    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+  </svg>
+  <img id="avatarImage" src="" style="display:none;">
+  <div class="avatar-overlay">
+    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+  </div>
+</div>
+<input type="file" id="avatarInput" class="avatar-input" accept="image/*" onchange="handleAvatarUpload(event)">
             <div class="account-info">
                 <div class="account-username" id="accountUsername">user</div>
                 <div class="account-status">
@@ -1713,6 +1759,10 @@
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Сбросить настройки
             </button>
+            <button class="account-action-btn" onclick="showChangePasswordModal()">
+  <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+  Сменить пароль
+</button>
             <button class="account-action-btn logout" onclick="showLogoutModal()">
                 <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                 Выйти из аккаунта
@@ -1828,20 +1878,30 @@
     </div>
 
     <div class="tutorial-overlay" id="tutorialOverlay">
-        <div class="tutorial-card">
-            <h2>🎓 Добро пожаловать в Центр Инструментов</h2>
-            <p>
-                Интерфейс работает как полноценный рабочий стол.<br><br>
-                1. Окна можно <b>перетаскивать</b> за заголовок.<br>
-                2. Потяните за <b>любой край</b>, чтобы изменить размер.<br>
-                3. Поднесите окно к <b>краю или углу</b> для разделения экрана.<br>
-                4. Наведите на иконку в доке для <b>превью окна</b>.<br>
-                5. Правый клик открывает контекстное меню.<br>
-                6. Нажатие на ПКМ открывает контекстное менюгде можно изменить обои (статичный цвет, анимированные, динамические в зависимости от времени суток).
-            </p>
-            <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
-        </div>
+    <div class="tutorial-card">
+        <h2>🎓 Добро пожаловать в Центр Инструментов</h2>
+        <p>
+            Интерфейс работает как полноценный рабочий стол.<br><br>
+
+            <b>Окна:</b><br>
+            1. Окна можно <b>перетаскивать</b> за заголовок.<br>
+            2. Потяните за <b>любой край</b>, чтобы изменить размер.<br>
+            3. Поднесите окно к <b>краю или углу</b> для разделения экрана.<br>
+            4. Наведите на иконку в доке для <b>превью окна</b>.<br><br>
+
+            <b>Рабочий стол:</b><br>
+            5. Правый клик открывает <b>контекстное меню</b> — смена обоев, настройки, новое окно.<br>
+            6. Обои бывают <b>статичные</b>, <b>анимированные</b> и <b>динамические</b> (меняются по времени суток).<br><br>
+
+            <b>Аккаунт:</b><br>
+            7. Нажмите на <b>бейдж с именем</b> в правом верхнем углу — откроется панель профиля со статистикой.<br>
+            8. Нажмите на <b>аватарку</b> в панели профиля, чтобы загрузить своё изображение.<br>
+            9. В панели профиля можно <b>сменить пароль</b>, <b>сбросить настройки</b> или <b>выйти</b> из аккаунта.<br>
+            10. Все настройки, обои и позиции окон <b>сохраняются</b> в вашем профиле.
+        </p>
+        <button class="btn-primary" onclick="closeTutorial()">Начать работу</button>
     </div>
+</div>
 <div class="logout-modal" id="logoutModal">
     <div class="logout-card">
         <div class="logout-icon">
@@ -1856,6 +1916,36 @@
             <button class="logout-btn confirm" onclick="confirmLogout()">Выйти</button>
         </div>
     </div>
+</div>
+<div class="logout-modal" id="changePasswordModal">
+  <div class="logout-card">
+    <div class="logout-icon" style="color: var(--accent);">
+      <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: currentColor;">
+        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+      </svg>
+    </div>
+    <h3>Смена пароля</h3>
+    <div style="text-align: left; margin-bottom: 16px;">
+      <div class="input-group">
+        <label>Текущий пароль</label>
+        <input type="password" class="login-input" id="currentPasswordInput" placeholder="••••••••">
+      </div>
+      <div class="input-group">
+        <label>Новый пароль</label>
+        <input type="password" class="login-input" id="newPasswordInput" placeholder="Минимум 4 символа">
+      </div>
+      <div class="input-group">
+        <label>Повторите новый пароль</label>
+        <input type="password" class="login-input" id="newPasswordConfirmInput" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="login-error" id="changePasswordError"></div>
+    <div class="login-success" id="changePasswordSuccess"></div>
+    <div class="logout-actions">
+      <button class="logout-btn cancel" onclick="hideChangePasswordModal()">Отмена</button>
+      <button class="logout-btn confirm" id="changePasswordBtn" onclick="handleChangePassword()" style="background: var(--accent); border-color: var(--accent); color: var(--bg-primary);">Сменить</button>
+    </div>
+  </div>
 </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -2222,7 +2312,79 @@ function hideLogoutModal() {
     const modal = document.getElementById('logoutModal');
     modal.classList.remove('show');
 }
+function showChangePasswordModal() {
+  closeAccountPanel();
+  document.getElementById('currentPasswordInput').value = '';
+  document.getElementById('newPasswordInput').value = '';
+  document.getElementById('newPasswordConfirmInput').value = '';
+  document.getElementById('changePasswordError').classList.remove('show');
+  document.getElementById('changePasswordSuccess').classList.remove('show');
+  document.getElementById('changePasswordModal').classList.add('show');
+}
 
+function hideChangePasswordModal() {
+  document.getElementById('changePasswordModal').classList.remove('show');
+}
+
+async function handleChangePassword() {
+  const currentPassword = document.getElementById('currentPasswordInput').value;
+  const newPassword = document.getElementById('newPasswordInput').value;
+  const newPasswordConfirm = document.getElementById('newPasswordConfirmInput').value;
+  const btn = document.getElementById('changePasswordBtn');
+
+  if (!currentPassword) {
+    showError('changePasswordError', 'Введите текущий пароль');
+    return;
+  }
+  if (newPassword.length < 4) {
+    showError('changePasswordError', 'Новый пароль минимум 4 символа');
+    return;
+  }
+  if (newPassword !== newPasswordConfirm) {
+    showError('changePasswordError', 'Новые пароли не совпадают');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Смена...';
+
+  try {
+    const currentHash = await hashString(currentPassword);
+    const snapshot = await window.firebaseGet(
+      window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${currentUser}`)
+    );
+
+    if (!snapshot.exists()) {
+      showError('changePasswordError', 'Пользователь не найден');
+      btn.disabled = false;
+      btn.textContent = 'Сменить';
+      return;
+    }
+
+    const userData = snapshot.val();
+    if (userData.passwordHash !== currentHash) {
+      showError('changePasswordError', 'Текущий пароль неверен');
+      btn.disabled = false;
+      btn.textContent = 'Сменить';
+      return;
+    }
+
+    const newHash = await hashString(newPassword);
+    await window.firebaseUpdate(
+      window.firebaseRef(window.firebaseDB, `users/${currentUser}`),
+      { passwordHash: newHash }
+    );
+
+    showSuccess('changePasswordSuccess', 'Пароль изменён!');
+    setTimeout(hideChangePasswordModal, 1500);
+  } catch (err) {
+    console.error('Change password error:', err);
+    showError('changePasswordError', 'Ошибка соединения');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Сменить';
+  }
+}
 function confirmLogout() {
     hideLogoutModal();
     closeAccountPanel();
@@ -2243,6 +2405,7 @@ function confirmLogout() {
     
     document.getElementById('loginUsername').value = '';
 document.getElementById('loginPassword').value = '';
+applyAvatar(null);
 
 const loginBtn = document.getElementById('loginBtn');
 const loginBtnText = document.getElementById('loginBtnText');
@@ -2409,7 +2572,80 @@ function closeAccountPanel() {
     panel.classList.remove('show');
     accountPanelOpen = false;
 }
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Изображение слишком большое. Максимум 2 МБ.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    applyAvatar(dataUrl);
+    saveAvatarToFirebase(dataUrl);
+  };
+  reader.readAsDataURL(file);
+
+  event.target.value = '';
+}
+
+function applyAvatar(dataUrl) {
+  const avatarImg = document.getElementById('avatarImage');
+  const placeholder = document.getElementById('avatarPlaceholder');
+  if (dataUrl) {
+    avatarImg.src = dataUrl;
+    avatarImg.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    avatarImg.src = '';
+    avatarImg.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+
+  const badgeImg = document.getElementById('badgeAvatarImage');
+  const badgePlaceholder = document.getElementById('badgeAvatarPlaceholder');
+  if (dataUrl) {
+    badgeImg.src = dataUrl;
+    badgeImg.style.display = 'block';
+    badgePlaceholder.style.display = 'none';
+  } else {
+    badgeImg.src = '';
+    badgeImg.style.display = 'none';
+    badgePlaceholder.style.display = 'block';
+  }
+}
+
+async function saveAvatarToFirebase(dataUrl) {
+  if (!firebaseReady || !currentUser) return;
+  try {
+    await window.firebaseSet(
+      window.firebaseRef(window.firebaseDB, `users/${currentUser}/avatar`),
+      dataUrl
+    );
+    playSound('click');
+  } catch (err) {
+    console.warn('Failed to save avatar:', err);
+  }
+}
+
+async function loadAvatar() {
+  if (!firebaseReady || !currentUser) return;
+  try {
+    const snapshot = await window.firebaseGet(
+      window.firebaseChild(window.firebaseRef(window.firebaseDB), `users/${currentUser}/avatar`)
+    );
+    if (snapshot.exists()) {
+      applyAvatar(snapshot.val());
+    } else {
+      applyAvatar(null);
+    }
+  } catch (err) {
+    console.warn('Failed to load avatar:', err);
+  }
+}
 function resetMySettings() {
     if (!confirm('Сбросить все настройки к значениям по умолчанию?')) return;
     
@@ -2486,6 +2722,11 @@ function resetMySettings() {
                         });
                     }, 300);
                 }
+if (data.avatar) {
+  applyAvatar(data.avatar);
+} else {
+  applyAvatar(null);
+}
 if (data.stats) {
     userStats = data.stats;
 } else {
@@ -3534,6 +3775,7 @@ trackWallpaperChange(value);
     hideWallpaperSelector();
     hideContextMenu();
     hideLogoutModal();
+    hideChangePasswordModal();
     closeAccountPanel();
 }
         }
