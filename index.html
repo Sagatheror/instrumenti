@@ -2170,12 +2170,14 @@ let accountPanelOpen = false;
                 }
 
                 currentUser = sanitizedUser;
-                playSound('open');
-                
-                localStorage.setItem('os_current_user', sanitizedUser);
-                
-                unlockSystem();
-                loadUserSettings();
+playSound('open');
+localStorage.setItem('os_current_user', sanitizedUser);
+
+loginBtn.disabled = false;
+loginBtnText.textContent = "Войти";
+
+unlockSystem();
+loadUserSettings();
 
             } catch (err) {
                 console.error('Login error:', err);
@@ -2240,8 +2242,17 @@ function confirmLogout() {
     document.getElementById('userBadge').style.display = 'none';
     
     document.getElementById('loginUsername').value = '';
-    document.getElementById('loginPassword').value = '';
-    switchAuthMode('login');
+document.getElementById('loginPassword').value = '';
+
+const loginBtn = document.getElementById('loginBtn');
+const loginBtnText = document.getElementById('loginBtnText');
+loginBtn.disabled = false;
+loginBtnText.textContent = 'Войти';
+
+loginAttempts = 0;
+isLocked = false;
+
+switchAuthMode('login');
     
     userStats = {
         totalTimeMs: 0,
